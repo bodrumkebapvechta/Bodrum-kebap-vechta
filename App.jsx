@@ -24,25 +24,25 @@ const FOOD_G4 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYF
 /* ============ MENU DATA ============ */
 const MENU = [
   { key: 'kebap', label: 'Kebap', items: [
-    { id: 'k1', name: 'Kalb Kebap', price: 8.0 },
-    { id: 'k2', name: 'Kebap Spezial Weichkäse', price: 8.5 },
-    { id: 'k3', name: 'Kebap Hollandaise Soße', price: 8.5 },
-    { id: 'k4', name: 'Bodrum Gemüse Kebap', price: 9.0 },
-    { id: 'k5', name: 'Jumbo Kebap', price: 9.0 },
-    { id: 'k6', name: 'Kebap Box', price: 8.0 },
-    { id: 'k7', name: 'Vegetarische Tasche', price: 7.0 },
-    { id: 'k8', name: 'Dürüm Kebap', price: 9.0 },
-    { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0 },
-    { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0 },
-    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0 },
-    { id: 'k12', name: 'Steak Teller', price: 14.0 },
-    { id: 'k13', name: 'Kebap Teller', price: 12.0 },
-    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0 },
-    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0 },
-    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5 },
-    { id: 'k17', name: 'Falafel Tasche', price: 7.0 },
-    { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0 },
-    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0 },
+    { id: 'k1', name: 'Kalb Kebap', price: 8.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
+    { id: 'k2', name: 'Kebap Spezial Weichkäse', price: 8.5, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln, Weichkäse in Salzlake' },
+    { id: 'k3', name: 'Kebap Hollandaise Soße', price: 8.5, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Salat, Zwiebeln' },
+    { id: 'k4', name: 'Bodrum Gemüse Kebap', price: 9.0, desc: 'Fritiertes Gemüse, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln' },
+    { id: 'k5', name: 'Jumbo Kebap', price: 9.0, desc: 'Extra Portion Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln' },
+    { id: 'k6', name: 'Kebap Box', price: 8.0, desc: 'Fleisch vom Drehspieß, Pommes und Knoblauchsoße' },
+    { id: 'k7', name: 'Vegetarische Tasche', price: 7.0, desc: 'Brot mit Salat, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
+    { id: 'k8', name: 'Dürüm Kebap', price: 9.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße und Zwiebeln' },
+    { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse' },
+    { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln' },
+    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
+    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis' },
+    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis' },
+    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes oder Reis' },
+    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes oder Reis' },
+    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes oder Reis' },
+    { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße' },
+    { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße' },
+    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes oder Reis' },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
     { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0 },
@@ -50,112 +50,112 @@ const MENU = [
     { id: 'p26', name: 'Pizza Schinken', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p27', name: 'Pizza Kebap', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p28', name: 'Pizza Kebap Hollandaise', priceSmall: 9.0, priceLarge: 10.0 },
-    { id: 'p29', name: 'Pizza Bodrum', priceSmall: 10.0, priceLarge: 11.0 },
-    { id: 'p30', name: 'Pizza Rastaa', priceSmall: 10.0, priceLarge: 11.0 },
-    { id: 'p31', name: 'Pizza Oldenburger Münsterland', priceSmall: 10.0, priceLarge: 11.0 },
-    { id: 'p32', name: 'Pizza Thunfisch', priceSmall: 9.0, priceLarge: 10.0 },
+    { id: 'p29', name: 'Pizza Bodrum', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln, Jalapeños und Hollandaise Soße' },
+    { id: 'p30', name: 'Pizza Rastaa', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Mais und Peperoni, Hollandaise Soße' },
+    { id: 'p31', name: 'Pizza Oldenburger Münsterland', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais und Hollandaise Soße' },
+    { id: 'p32', name: 'Pizza Thunfisch', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mit Zwiebeln' },
     { id: 'p33', name: 'Pizza Steak', priceSmall: 9.0, priceLarge: 10.0 },
-    { id: 'p34', name: 'Pizza Hawaii', priceSmall: 9.0, priceLarge: 10.0 },
-    { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0 },
-    { id: 'p36', name: 'Pizza Sucuk', priceSmall: 8.5, priceLarge: 9.5 },
-    { id: 'p37', name: 'Pizza Spezial', priceSmall: 8.5, priceLarge: 9.5 },
-    { id: 'p38', name: 'Pizza Vechta', priceSmall: 10.5, priceLarge: 11.5 },
-    { id: 'p39', name: 'Pizza Deutschland', priceSmall: 9.5, priceLarge: 10.5 },
-    { id: 'p40', name: 'Pizza Spinat', priceSmall: 8.5, priceLarge: 9.5 },
-    { id: 'p41', name: 'Pizza Vegetarisch', priceSmall: 8.0, priceLarge: 9.0 },
-    { id: 'p42', name: 'Pizza Mozzarella', priceSmall: 8.5, priceLarge: 9.5 },
-    { id: 'p43', name: 'Pizza Taverna', priceSmall: 9.5, priceLarge: 10.5 },
-    { id: 'p44', name: 'Pizza Krabben', priceSmall: 8.5, priceLarge: 9.5 },
-    { id: 'p45', name: 'Pizza Meeresfrüchte', priceSmall: 8.5, priceLarge: 9.5 },
-    { id: 'p46', name: 'Pizza QuattroStagioni', priceSmall: 9.5, priceLarge: 10.5 },
-    { id: 'p47', name: 'Pizza Vier Käse', priceSmall: 9.0, priceLarge: 10.0 },
-    { id: 'p48', name: 'Pizza Bolognese', priceSmall: 8.0, priceLarge: 9.0 },
+    { id: 'p34', name: 'Pizza Hawaii', priceSmall: 9.0, priceLarge: 10.0, desc: 'Putenschinken und Ananas' },
+    { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0, desc: 'Rindersalami, Putenschinken, Pilzen und Ei' },
+    { id: 'p36', name: 'Pizza Sucuk', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit türkischer Knoblauchwurst' },
+    { id: 'p37', name: 'Pizza Spezial', priceSmall: 8.5, priceLarge: 9.5, desc: 'Thunfisch, Putenschinken, Ananas und Pilzen' },
+    { id: 'p38', name: 'Pizza Vechta', priceSmall: 10.5, priceLarge: 11.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Zwiebeln, Paprika, Hollandaise Soße, Weichkäse in Salzlake' },
+    { id: 'p39', name: 'Pizza Deutschland', priceSmall: 9.5, priceLarge: 10.5, desc: 'Fleisch vom Drehspieß und Paprika' },
+    { id: 'p40', name: 'Pizza Spinat', priceSmall: 8.5, priceLarge: 9.5, desc: 'Knoblauch und Weichkäse in Salzlake' },
+    { id: 'p41', name: 'Pizza Vegetarisch', priceSmall: 8.0, priceLarge: 9.0, desc: 'Pilzen, Brokkoli, Paprika und Mais' },
+    { id: 'p42', name: 'Pizza Mozzarella', priceSmall: 8.5, priceLarge: 9.5, desc: 'Frische Tomaten und Mozzarella' },
+    { id: 'p43', name: 'Pizza Taverna', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Ei' },
+    { id: 'p44', name: 'Pizza Krabben', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch' },
+    { id: 'p45', name: 'Pizza Meeresfrüchte', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch' },
+    { id: 'p46', name: 'Pizza QuattroStagioni', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Paprika' },
+    { id: 'p47', name: 'Pizza Vier Käse', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mozzarella, Gorgonzola und Weichkäse' },
+    { id: 'p48', name: 'Pizza Bolognese', priceSmall: 8.0, priceLarge: 9.0, desc: 'Mit Fleischsoße' },
     { id: 'p49', name: 'Pizza Brokoli', priceSmall: 8.0, priceLarge: 9.0 },
-    { id: 'p52', name: 'Pizza Oythe', priceSmall: 9.5, priceLarge: 10.5 },
-    { id: 'p53', name: 'Pizza Italia', priceSmall: 9.5, priceLarge: 10.5 },
-    { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5 },
+    { id: 'p52', name: 'Pizza Oythe', priceSmall: 9.5, priceLarge: 10.5, desc: 'Krabben, Putenschinken, Knoblauch' },
+    { id: 'p53', name: 'Pizza Italia', priceSmall: 9.5, priceLarge: 10.5, desc: 'Brokkoli, Pilzen, Zwiebeln und Weichkäse in Salzlake' },
+    { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni' },
     { id: 'p56', name: 'Pizzabrot', price: 4.5 },
     { id: 'p57', name: 'Pizzabrot mit Käse', price: 5.5 },
     { id: 'p58', name: 'Pizzabrot mit Knoblauch', price: 5.5 },
     { id: 'p59', name: 'Pizzabrot mit Kräuterbutter', price: 5.5 },
-    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0 },
-    { id: 'p61', name: 'Pizzabrötchen mit Fleisch', price: 8.0 },
-    { id: 'p62', name: 'Pizzabrötchen mit Salami', price: 8.0 },
-    { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0 },
+    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive' },
+    { id: 'p61', name: 'Pizzabrötchen mit Fleisch', price: 8.0, desc: 'Gratis Dip inklusive' },
+    { id: 'p62', name: 'Pizzabrötchen mit Salami', price: 8.0, desc: 'Gratis Dip inklusive' },
+    { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0, desc: 'Gratis Dip inklusive' },
   ]},
   { key: 'calzone', label: 'Calzone', items: [
-    { id: 'c78', name: 'Calzone Steak', price: 12.0 },
-    { id: 'c79', name: 'Calzone Kebap', price: 10.0 },
-    { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0 },
-    { id: 'c81', name: 'Calzone Thunfisch', price: 10.0 },
-    { id: 'c82', name: 'Calzone Vegetarisch', price: 9.5 },
-    { id: 'c83', name: 'Calzone Gourmet', price: 10.0 },
-    { id: 'c84', name: 'Calzone Hawaii', price: 9.5 },
+    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse' },
+    { id: 'c79', name: 'Calzone Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
+    { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Zwiebeln, Jalapeños und Weichkäse in Salzlake' },
+    { id: 'c81', name: 'Calzone Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
+    { id: 'c82', name: 'Calzone Vegetarisch', price: 9.5, desc: 'Paprika, Pilzen, Brokoli, Mais und Weichkäse' },
+    { id: 'c83', name: 'Calzone Gourmet', price: 10.0, desc: 'Rindersalami, Schinken und Pilzen' },
+    { id: 'c84', name: 'Calzone Hawaii', price: 9.5, desc: 'Putenschinken und Ananas' },
   ]},
   { key: 'baguette', label: 'Baguette', items: [
-    { id: 'b114', name: 'Baguette Kebap', price: 10.0 },
-    { id: 'b115', name: 'Baguette Bodrum', price: 11.0 },
-    { id: 'b116', name: 'Baguette Salami', price: 9.0 },
-    { id: 'b117', name: 'Baguette Schinken', price: 9.0 },
-    { id: 'b118', name: 'Baguette Hawaii', price: 9.0 },
-    { id: 'b119', name: 'Baguette Thunfisch', price: 9.0 },
-    { id: 'b120', name: 'Baguette Vegetarisch', price: 9.0 },
+    { id: 'b114', name: 'Baguette Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Pilzen, Zwiebeln, Käse, Salat, Tomaten, Gurken' },
+    { id: 'b115', name: 'Baguette Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Käse, Hollandaise Soße, Weichkäse in Salzlake, Salat, Tomaten und Gurken' },
+    { id: 'b116', name: 'Baguette Salami', price: 9.0, desc: 'Salat, Tomaten, Gurken, Rindersalami und Käse' },
+    { id: 'b117', name: 'Baguette Schinken', price: 9.0, desc: 'Salat, Tomaten, Gurken und Käse' },
+    { id: 'b118', name: 'Baguette Hawaii', price: 9.0, desc: 'Putenschinken, Ananas, Salat, Tomaten, Gurken' },
+    { id: 'b119', name: 'Baguette Thunfisch', price: 9.0, desc: 'Thunfisch, Zwiebeln, Käse, Salat, Tomaten und Gurken' },
+    { id: 'b120', name: 'Baguette Vegetarisch', price: 9.0, desc: 'Pilzen, Paprika, Mais, Käse, Salat, Tomaten und Gurken' },
   ]},
   { key: 'ueberbacken', label: 'Kebap überbacken', items: [
-    { id: 'u130', name: 'Hähnchen überbacken', price: 11.0 },
-    { id: 'u131', name: 'Kebap überbacken', price: 9.5 },
-    { id: 'u132', name: 'Kebap überbacken Bodrum', price: 11.0 },
-    { id: 'u133', name: 'Kebap Hawaii überbacken', price: 11.0 },
-    { id: 'u134', name: 'Kebap Spezial überbacken', price: 11.0 },
-    { id: 'u135', name: 'Kebap Hollandaise überbacken', price: 11.0 },
-    { id: 'u136', name: 'Kebap Vechta überbacken', price: 11.0 },
+    { id: 'u130', name: 'Hähnchen überbacken', price: 11.0, desc: 'Gebratenes Hähnchen, Sahnesoße, Paprika und Pilzen' },
+    { id: 'u131', name: 'Kebap überbacken', price: 9.5, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße' },
+    { id: 'u132', name: 'Kebap überbacken Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Pilzen und Sahnesoße' },
+    { id: 'u133', name: 'Kebap Hawaii überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße und Ananas' },
+    { id: 'u134', name: 'Kebap Spezial überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, Brokoli, Pilzen und Weichkäse' },
+    { id: 'u135', name: 'Kebap Hollandaise überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomaten, Paprika und Pilzen' },
+    { id: 'u136', name: 'Kebap Vechta überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais, Brokoli und Sahnesoße' },
   ]},
   { key: 'rollo', label: 'Rollo überbacken', items: [
-    { id: 'r146', name: 'Rollo Steak', price: 12.0 },
-    { id: 'r147', name: 'Rollo Kebap', price: 10.0 },
-    { id: 'r148', name: 'Rollo Bodrum', price: 11.0 },
-    { id: 'r149', name: 'Rollo Thunfisch', price: 10.0 },
-    { id: 'r150', name: 'Rollo Hawaii', price: 10.0 },
-    { id: 'r153', name: 'Rollo Spezial', price: 10.0 },
+    { id: 'r146', name: 'Rollo Steak', price: 12.0, desc: 'Steak Fleisch, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat' },
+    { id: 'r147', name: 'Rollo Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat' },
+    { id: 'r148', name: 'Rollo Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Hollandaise Soße, mit kleinem Beilagensalat' },
+    { id: 'r149', name: 'Rollo Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
+    { id: 'r150', name: 'Rollo Hawaii', price: 10.0, desc: 'Putenschinken und Ananas' },
+    { id: 'r153', name: 'Rollo Spezial', price: 10.0, desc: 'Rindersalami, Putenschinken und Pilzen' },
   ]},
   { key: 'nudeln', label: 'Nudeln', items: [
-    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5 },
-    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0 },
-    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5 },
-    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0 },
-    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5 },
-    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0 },
-    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0 },
-    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5 },
-    { id: 'n165', name: 'Alpine Pesto', price: 10.0 },
-    { id: 'n166', name: 'Curry-Madras', price: 10.0 },
-    { id: 'n167', name: 'Fungi di Roma', price: 10.0 },
-    { id: 'n168', name: 'Balkan Spirit', price: 10.0 },
-    { id: 'n169', name: 'Soja Salsa', price: 11.0 },
+    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Mit Tomatensoße' },
+    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Mit Fleischsoße' },
+    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße' },
+    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
+    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Brokkoli, Pilzen, Paprika, Tomatensoße' },
+    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse' },
+    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
+    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken' },
+    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat' },
+    { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
+    { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
+    { id: 'n168', name: 'Balkan Spirit', price: 10.0, desc: 'Hähnchenbrust in Paprika-Auberginen-Soße, serviert mit Kurkuma-Penne & Marktsalat' },
+    { id: 'n169', name: 'Soja Salsa', price: 11.0, desc: 'Hähnchenbrust mit Paprika & Pilzen in Sojasoße, serviert mit Kurkuma-Penne & Marktsalat' },
   ]},
   { key: 'schnitzel', label: 'Schnitzel', items: [
-    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0 },
-    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0 },
-    { id: 's186', name: 'Jäger Schnitzel', price: 11.0 },
-    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0 },
-    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0 },
-    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0 },
-    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0 },
-    { id: 's191', name: 'Rahm Schnitzel', price: 11.0 },
+    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes oder Reis' },
+    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes oder Reis' },
+    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes oder Reis' },
+    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes oder Reis' },
+    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes oder Reis, überbacken mit Käse' },
+    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes oder Reis' },
+    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes oder Reis, überbacken mit Käse und Salat' },
+    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes oder Reis' },
   ]},
   { key: 'salat', label: 'Salat', items: [
-    { id: 'sa95', name: 'Nizza Salat', price: 8.0 },
-    { id: 'sa96', name: 'Bauern Salat', price: 7.0 },
-    { id: 'sa97', name: 'Thunfisch Salat', price: 8.0 },
-    { id: 'sa98', name: 'Mais Salat', price: 7.0 },
-    { id: 'sa100', name: 'Mozzarella Salat', price: 8.0 },
-    { id: 'sa101', name: 'Bodrum Salat', price: 9.5 },
-    { id: 'sa102', name: 'Kebap Salat', price: 9.0 },
-    { id: 'sa104', name: 'Hähnchen Salat', price: 9.0 },
+    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse' },
+    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse' },
+    { id: 'sa97', name: 'Thunfisch Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Thunfisch und Zwiebeln' },
+    { id: 'sa98', name: 'Mais Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Zwiebeln und Mais' },
+    { id: 'sa100', name: 'Mozzarella Salat', price: 8.0, desc: 'Grüner Salat, Tomaten und Mozzarella' },
+    { id: 'sa101', name: 'Bodrum Salat', price: 9.5, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Mais, Weißkohl, Thunfisch, Putenschinken, Paprika und Weichkäse in Salzlake' },
+    { id: 'sa102', name: 'Kebap Salat', price: 9.0, desc: 'Fleisch vom Drehspieß, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl' },
+    { id: 'sa104', name: 'Hähnchen Salat', price: 9.0, desc: 'Gebratenes Hähnchen, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl' },
   ]},
   { key: 'finger', label: 'Finger Food', items: [
-    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0 },
-    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0 },
+    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück' },
+    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück' },
     { id: 'f203', name: 'Pommes Frites', price: 3.5 },
     { id: 'f204', name: 'Portion Knoblauch/Spezialsoße', price: 2.5 },
     { id: 'f205', name: 'Portion Oliven (Schwarz)', price: 2.0 },
@@ -163,11 +163,26 @@ const MENU = [
     { id: 'f207', name: 'Portion Beilagensalat / Weißkohl', price: 3.5 },
     { id: 'f208', name: 'Portion Fleisch', price: 8.0 },
   ]},
+  { key: 'getraenke', label: 'Getränke', items: [
+    { id: 'g301', name: 'Coca-Cola (Dose)', price: 2.5 },
+    { id: 'g302', name: 'Coca-Cola Zero (Dose)', price: 2.5 },
+    { id: 'g303', name: 'Fanta (Dose)', price: 2.5 },
+    { id: 'g304', name: 'Uludağ Gazoz (Dose)', price: 2.5 },
+    { id: 'g305', name: 'Ayran', price: 2.0 },
+    { id: 'g306', name: 'Wasser (still/spritzig)', price: 2.0 },
+    { id: 'g307', name: 'Eistee Pfirsich (Dose)', price: 2.5 },
+    { id: 'g308', name: 'Fritz-Kola', price: 3.0 },
+    { id: 'g309', name: 'Fritz-Limo', price: 3.0, desc: 'Zitrone oder Apfel-Kirsch-Holunder' },
+    { id: 'g310', name: 'Fritz-Spritz', price: 3.0, desc: 'Bio-Rhabarber oder Bio-Traubenschorle' },
+    { id: 'g311', name: 'Vita Malz', price: 3.0 },
+    { id: 'g312', name: 'Energy Drink', price: 3.0 },
+  ]},
 ];
 const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilze', 'Sucuk'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+function menuNum(id) { if (/^g\d/.test(id)) return ''; return id.replace(/^[a-z]+/i, ''); }
 function normalizePhone(raw) { return raw.replace(/[^\d+]/g, ''); }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 async function safeGet(key) {
@@ -243,6 +258,40 @@ function QtyRow({ label, qty, onAdd, onRemove }) {
     <div className="flex-1 flex items-center justify-between px-2.5 py-2 rounded-lg" style={{ background: '#f7f0e2' }}>
       <span className="text-[11px] font-semibold" style={{ color: '#7c6d55' }}>{label}</span>
       <Stepper qty={qty} onAdd={onAdd} onRemove={onRemove} />
+    </div>
+  );
+}
+
+const CATEGORY_ICONS = {
+  kebap: '🥙', pizza: '🍕', calzone: '🥟', baguette: '🥖', ueberbacken: '🧀',
+  rollo: '🌯', nudeln: '🍝', schnitzel: '🍗', salat: '🥗', finger: '🍟', getraenke: '🥤',
+};
+
+const UPSELL_ITEMS = [
+  { id: 'f203', name: 'Pommes Frites', price: 3.5, emoji: '🍟' },
+  { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, emoji: '🍗' },
+  { id: 'f204', name: 'Portion Soße', price: 2.5, emoji: '🥫' },
+  { id: 'g301', name: 'Coca-Cola', price: 2.5, emoji: '🥤' },
+];
+
+function UpsellStrip({ addItem }) {
+  return (
+    <div className="mx-5 mt-1 mb-3 rounded-xl overflow-hidden" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
+      <div className="px-3.5 pt-2.5 text-[11px] font-black tracking-wide" style={{ color: '#8a5a1f' }}>🔥 DAZU PASST PERFEKT — nicht vergessen!</div>
+      <div className="flex gap-2 overflow-x-auto px-3.5 pb-3 pt-1.5">
+        {UPSELL_ITEMS.map((u) => (
+          <button
+            key={u.id}
+            onClick={() => addItem(u.id, u.name, u.price)}
+            className="flex-none flex items-center gap-2 pl-2 pr-3 py-2 rounded-full"
+            style={{ background: '#fff', border: '1px solid #f0d4a8' }}
+          >
+            <span className="text-lg">{u.emoji}</span>
+            <span className="text-xs font-bold" style={{ color: GREEN }}>{u.name}</span>
+            <span className="text-xs font-black" style={{ color: ORANGE }}>+{fmt(u.price)}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -755,10 +804,12 @@ function WhatsAppOrderView({ back }) {
         {MENU.map((m) => (
           <button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap"
             style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>
-            {m.label}
+            {CATEGORY_ICONS[m.key]} {m.label}
           </button>
         ))}
       </div>
+
+      <UpsellStrip addItem={addItem} />
 
       <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
         {activeCategory.items.map((item) => {
@@ -778,7 +829,8 @@ function WhatsAppOrderView({ back }) {
             };
             return (
               <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-                <div className="font-bold text-sm mb-2" style={{ color: GREEN }}>{item.name}</div>
+                <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>
+                {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}
                 <div className="flex gap-2">
                   <button onClick={() => openFor('klein')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>klein · {fmt(item.priceSmall)}</button>
                   <button onClick={() => openFor('gross')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'gross' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>groß · {fmt(item.priceLarge)}</button>
@@ -803,7 +855,7 @@ function WhatsAppOrderView({ back }) {
           const qty = cart[item.id]?.qty || 0;
           return (
             <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-              <div><div className="font-bold text-sm" style={{ color: GREEN }}>{item.name}</div><div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+              <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
               <Stepper qty={qty} onAdd={() => addItem(item.id, item.name, item.price)} onRemove={() => removeItem(item.id)} />
             </div>
           );
@@ -1096,16 +1148,17 @@ function GroupOrderView({ back }) {
       {view === 'order' && (
         <div>
           <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
-            {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>{m.label}</button>))}
+            {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>{CATEGORY_ICONS[m.key]} {m.label}</button>))}
           </div>
+          <UpsellStrip addItem={addLocal} />
           <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
                 const keyS = `${item.id}-s`, keyL = `${item.id}-l`;
-                return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}><div className="font-bold text-sm mb-2" style={{ color: GREEN }}>{item.name}</div><div className="flex gap-2"><QtyRow label={`klein · ${fmt(item.priceSmall)}`} qty={localCart[keyS]?.qty || 0} onAdd={() => addLocal(keyS, `${item.name} (klein)`, item.priceSmall)} onRemove={() => removeLocal(keyS)} /><QtyRow label={`groß · ${fmt(item.priceLarge)}`} qty={localCart[keyL]?.qty || 0} onAdd={() => addLocal(keyL, `${item.name} (groß)`, item.priceLarge)} onRemove={() => removeLocal(keyL)} /></div></div>);
+                return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}><div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>{item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="flex gap-2"><QtyRow label={`klein · ${fmt(item.priceSmall)}`} qty={localCart[keyS]?.qty || 0} onAdd={() => addLocal(keyS, `${item.name} (klein)`, item.priceSmall)} onRemove={() => removeLocal(keyS)} /><QtyRow label={`groß · ${fmt(item.priceLarge)}`} qty={localCart[keyL]?.qty || 0} onAdd={() => addLocal(keyL, `${item.name} (groß)`, item.priceLarge)} onRemove={() => removeLocal(keyL)} /></div></div>);
               }
               const qty = localCart[item.id]?.qty || 0;
-              return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}><div><div className="font-bold text-sm" style={{ color: GREEN }}>{item.name}</div><div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(item.price)}</div></div><Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} /></div>);
+              return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}><div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div><Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} /></div>);
             })}
           </div>
           {myLines.length > 0 && (
@@ -1358,8 +1411,37 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen w-full" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-      <div className="w-full max-w-5xl mx-auto">
+    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: GREEN, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <style>{`
+        @keyframes sideFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-22px) rotate(6deg);} }
+        @keyframes sideFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-30px) rotate(-5deg);} }
+        @keyframes sideFloat3 { 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-16px) rotate(10deg);} }
+        @keyframes sideSpin { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+      `}</style>
+
+      {/* decorative side stripe */}
+      <div className="absolute inset-y-0 left-0 w-2" style={{ background: `repeating-linear-gradient(180deg, ${ORANGE} 0 24px, ${GOLD} 24px 48px, #d62828 48px 72px)` }} />
+      <div className="absolute inset-y-0 right-0 w-2" style={{ background: `repeating-linear-gradient(180deg, ${ORANGE} 0 24px, ${GOLD} 24px 48px, #d62828 48px 72px)` }} />
+
+      {/* floating decorations — only visible when there's real side space */}
+      <div className="hidden 2xl:flex flex-col items-center gap-10 fixed left-10 top-1/3 opacity-90 pointer-events-none">
+        <span style={{ fontSize: 46, animation: 'sideFloat1 5s ease-in-out infinite' }}>🥙</span>
+        <span style={{ fontSize: 34, animation: 'sideSpin 9s linear infinite', display: 'inline-block' }}>🍕</span>
+        <span style={{ fontSize: 30, animation: 'sideFloat3 4.5s ease-in-out infinite' }}>🌶️</span>
+      </div>
+      <div className="hidden 2xl:flex flex-col items-center gap-10 fixed right-10 top-1/4 opacity-90 pointer-events-none">
+        <span style={{ fontSize: 40, animation: 'sideFloat2 6s ease-in-out infinite' }}>🍔</span>
+        <span style={{ fontSize: 30, animation: 'sideFloat1 5.5s ease-in-out infinite' }}>🥤</span>
+        <span style={{ fontSize: 36, animation: 'sideSpin 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
+      </div>
+      <div className="hidden 2xl:block fixed left-10 bottom-16 opacity-80 pointer-events-none" style={{ fontSize: 12, color: GOLD, fontWeight: 700, letterSpacing: 2, writingMode: 'vertical-rl' }}>
+        100% HALAL
+      </div>
+      <div className="hidden 2xl:block fixed right-10 bottom-16 opacity-80 pointer-events-none" style={{ fontSize: 12, color: GOLD, fontWeight: 700, letterSpacing: 2, writingMode: 'vertical-rl' }}>
+        FRISCH VOM DREHSPIESS
+      </div>
+
+      <div className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
