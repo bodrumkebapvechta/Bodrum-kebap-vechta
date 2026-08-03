@@ -104,7 +104,7 @@ const MENU = [
   ]},
   { key: 'ueberbacken', label: 'Kebap überbacken', items: [
     { id: 'u130', name: 'Hähnchen überbacken', price: 11.0, desc: 'Gebratenes Hähnchen, Sahnesoße, Paprika und Pilzen' },
-    { id: 'u131', name: 'Kebap überbacken', price: 9.5, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße' },
+    { id: 'u131', name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße' },
     { id: 'u132', name: 'Kebap überbacken Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Pilzen und Sahnesoße' },
     { id: 'u133', name: 'Kebap Hawaii überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße und Ananas' },
     { id: 'u134', name: 'Kebap Spezial überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, Brokoli, Pilzen und Weichkäse' },
@@ -330,10 +330,16 @@ function WheelWidget({ onWin, compact }) {
     const center = idx * WHEEL_SLICE + WHEEL_SLICE / 2;
     setRotation(5 * 360 + (360 - center));
     setTimeout(async () => {
-      const code = makeSpinCode();
       const prize = WHEEL_PRIZES[idx];
-      await safeSet(`spincode:${code}`, { prize: prize.label, redeemed: false, at: new Date().toISOString() });
-      const res = { prize: prize.label, code };
+      const isReal = prize.label !== 'Nochmal Glück!';
+      let res;
+      if (isReal) {
+        const code = makeSpinCode();
+        await safeSet(`spincode:${code}`, { prize: prize.label, redeemed: false, at: new Date().toISOString() });
+        res = { prize: prize.label, code };
+      } else {
+        res = { prize: prize.label, code: null };
+      }
       setResult(res);
       setSpinning(false);
       onWin && onWin(res);
@@ -368,10 +374,20 @@ function WheelWidget({ onWin, compact }) {
       )}
       {result && (
         <div className="mt-7 w-full bg-white rounded-2xl p-5 text-center shadow-sm" style={{ borderTop: `4px solid ${ORANGE}` }}>
-          <div className="text-2xl mb-1">🎉</div>
-          <div className="font-black text-base mb-1" style={{ color: GREEN }}>{result.prize}</div>
-          <div className="text-xs font-medium mb-3" style={{ color: '#7c6d55' }}>Zeig diesen Code an der Kasse:</div>
-          <div className="text-xl font-black tracking-[0.25em] py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: GREEN }}>{result.code}</div>
+          {result.code ? (
+            <>
+              <div className="text-2xl mb-1">🎉</div>
+              <div className="font-black text-base mb-1" style={{ color: GREEN }}>{result.prize}</div>
+              <div className="text-xs font-medium mb-3" style={{ color: '#7c6d55' }}>Zeig diesen Code an der Kasse:</div>
+              <div className="text-xl font-black tracking-[0.25em] py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: GREEN }}>{result.code}</div>
+            </>
+          ) : (
+            <>
+              <div className="text-2xl mb-1">🍀</div>
+              <div className="font-black text-base" style={{ color: GREEN }}>Diesmal kein Extra-Gewinn</div>
+              <div className="text-xs font-medium mt-1" style={{ color: '#7c6d55' }}>Aber danke fürs Mitspielen — beim nächsten Mal mehr Glück!</div>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -545,7 +561,7 @@ function getGreeting(now) {
 
 const DAILY_SPECIALS = [
   { day: 0, name: 'Pizza Vier Käse', price: 9.0, desc: 'Mozzarella, Gorgonzola & Weichkäse', img: 'g2' },
-  { day: 1, name: 'Kebap Teller', price: 12.0, desc: 'Mit Salat, Knoblauchsoße & Pommes', img: 'g4' },
+  { day: 1, name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße, überbacken mit Käse', img: 'g4' },
   { day: 2, name: null, price: null, desc: null, img: null },
   { day: 3, name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'g3' },
   { day: 4, name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes oder Reis', img: 'g1' },
@@ -637,6 +653,22 @@ function DailySpecial({ go }) {
   const special = DAILY_SPECIALS[day];
   const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4, g5: FOOD_G5 };
   const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  const steakAvailable = [0, 5, 6].includes(day); // Fr, Sa, So
+  const [open, setOpen] = useState(false);
+  const [meat, setMeat] = useState('haehnchen');
+
+  const meatOptions = [
+    { key: 'haehnchen', label: 'Hähnchen', extra: 0, disabled: false },
+    { key: 'kalb', label: 'Kalb/Rind', extra: 0, disabled: false },
+    { key: 'steak', label: 'Steak', extra: 2.0, disabled: !steakAvailable },
+  ];
+
+  const confirm = async () => {
+    const opt = meatOptions.find((m) => m.key === meat);
+    const total = special.price + (opt?.extra || 0);
+    await safeSet('pendingCombo', { title: `${special.name} (${opt.label})`, price: total });
+    go('whatsapp');
+  };
 
   if (day === 6) {
     return <WeekendComboPromo go={go} />;
@@ -660,13 +692,41 @@ function DailySpecial({ go }) {
       <div className="rounded-2xl overflow-hidden grid sm:grid-cols-[220px_1fr] items-stretch" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
         <img src={imgMap[special.img]} className="w-full h-40 sm:h-full object-cover" />
         <div className="p-6 flex flex-col justify-center">
-          <div className="text-[11px] font-bold tracking-[2px] mb-1.5" style={{ color: GOLD }}>HEUTE IM ANGEBOT · {days[day].toUpperCase()}</div>
+          <div className="text-[11px] font-bold tracking-[2px] mb-1.5" style={{ color: GOLD }}>TAGESEMPFEHLUNG · {days[day].toUpperCase()}</div>
           <div className="text-white font-black text-xl mb-1.5">{special.name}</div>
           <div className="text-sm font-medium mb-3" style={{ color: '#d9cdb4' }}>{special.desc}</div>
-          <div className="flex items-center gap-3">
-            <span className="font-black text-lg" style={{ color: GOLD }}>{fmt(special.price)}</span>
-            <button onClick={() => go('whatsapp')} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: ORANGE, color: '#fff' }}>Bestellen →</button>
-          </div>
+
+          {!open && (
+            <div className="flex items-center gap-3">
+              <span className="font-black text-lg" style={{ color: GOLD }}>{fmt(special.price)}</span>
+              <button onClick={() => { setOpen(true); setMeat('haehnchen'); }} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: ORANGE, color: '#fff' }}>Bestellen →</button>
+            </div>
+          )}
+
+          {open && (
+            <div className="rounded-xl p-3.5" style={{ background: 'rgba(255,255,255,.06)' }}>
+              <div className="text-[10px] font-bold mb-2" style={{ color: GOLD }}>FLEISCH WÄHLEN:</div>
+              <div className="flex flex-col gap-1.5 mb-3">
+                {meatOptions.map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => !m.disabled && setMeat(m.key)}
+                    disabled={m.disabled}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold disabled:opacity-40"
+                    style={meat === m.key && !m.disabled ? { background: GOLD, color: GREEN } : { background: 'rgba(255,255,255,.1)', color: '#fff' }}
+                  >
+                    <span>{m.label}{m.disabled && <span className="ml-1.5 font-medium">(nur Fr–So)</span>}</span>
+                    <span>{m.extra > 0 ? `+${fmt(m.extra)}` : 'inklusive'}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setOpen(false)} className="px-4 py-2.5 rounded-full font-semibold text-xs" style={{ background: 'rgba(255,255,255,.1)', color: '#fff' }}>Abbrechen</button>
+                <button onClick={confirm} className="flex-1 py-2.5 rounded-full font-bold text-xs text-white" style={{ background: ORANGE }}>Zur Bestellung hinzufügen</button>
+              </div>
+            </div>
+          )}
+
           <WeekendTeaser go={go} />
         </div>
       </div>
@@ -901,7 +961,7 @@ function WhatsAppOrderView({ back }) {
     msg += `\nGesamt: ${fmt(totalPrice)}\n`;
     if (name) msg += `\nName: ${name}`;
     if (note) msg += `\nHinweis: ${note}`;
-    if (wheelResult) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+    if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [lines, totalPrice, name, note, wheelResult]);
@@ -1044,7 +1104,7 @@ function WhatsAppOrderView({ back }) {
                   {lines.length > 0 && !wheelResult && (
                     <div className="mt-4"><WheelPromoBanner onClick={() => setDrawerView('wheel')} /></div>
                   )}
-                  {wheelResult && (
+                  {wheelResult && wheelResult.code && (
                     <div className="w-full mt-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN }}>
                       <Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>Gewonnen: {wheelResult.prize} — wird mitgeschickt</span>
                     </div>
@@ -1129,7 +1189,7 @@ function DonerBuilderView({ back }) {
     if (extras.length > 0) msg += `➕ Extras: ${extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ')}\n`;
     msg += `\nPreis: ${fmt(total)}\n`;
     if (name) msg += `\nName: ${name}`;
-    if (wheelResult) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+    if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [base, meat, sauce, extras, name, total, wheelResult]);
@@ -1165,7 +1225,7 @@ function DonerBuilderView({ back }) {
             {!wheelResult && (
               <div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>
             )}
-            {wheelResult && (
+            {wheelResult && wheelResult.code && (
               <div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN }}>
                 <Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>Gewonnen: {wheelResult.prize} — wird mitgeschickt</span>
               </div>
@@ -1250,7 +1310,7 @@ function GroupOrderView({ back }) {
     let msg = `Hallo Bodrum Kebap Vechta, Gruppenbestellung (Code ${code}):\n`;
     group.people.forEach((p) => { msg += `\n👤 ${p.name}:\n`; p.items.forEach((it) => { msg += `  • ${it.qty}x ${it.name} (${fmt(it.qty * it.price)})\n`; }); });
     msg += `\nGesamt: ${fmt(grandTotal)}\n`;
-    if (wheelResult) msg += `\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})\n`;
+    if (wheelResult && wheelResult.code) msg += `\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})\n`;
     msg += `\n(Abholung, keine Lieferung) Bitte sagt uns, wann es abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [group, grandTotal, code, wheelResult]);
@@ -1322,7 +1382,7 @@ function GroupOrderView({ back }) {
               {!wheelResult && (
                 <div className="mb-3"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>
               )}
-              {wheelResult && (
+              {wheelResult && wheelResult.code && (
                 <div className="w-full mb-3 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN }}>
                   <Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>Gewonnen: {wheelResult.prize} — wird mitgeschickt</span>
                 </div>
