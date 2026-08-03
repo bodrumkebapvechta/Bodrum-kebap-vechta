@@ -35,7 +35,7 @@ const MENU = [
     { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse' },
     { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln' },
     { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
-    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis' },
+    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis', weekend: true },
     { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis' },
     { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes oder Reis' },
     { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes oder Reis' },
@@ -54,7 +54,7 @@ const MENU = [
     { id: 'p30', name: 'Pizza Rastaa', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Mais und Peperoni, Hollandaise Soße' },
     { id: 'p31', name: 'Pizza Oldenburger Münsterland', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais und Hollandaise Soße' },
     { id: 'p32', name: 'Pizza Thunfisch', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mit Zwiebeln' },
-    { id: 'p33', name: 'Pizza Steak', priceSmall: 9.0, priceLarge: 10.0 },
+    { id: 'p33', name: 'Pizza Steak', priceSmall: 9.0, priceLarge: 10.0, weekend: true },
     { id: 'p34', name: 'Pizza Hawaii', priceSmall: 9.0, priceLarge: 10.0, desc: 'Putenschinken und Ananas' },
     { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0, desc: 'Rindersalami, Putenschinken, Pilzen und Ei' },
     { id: 'p36', name: 'Pizza Sucuk', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit türkischer Knoblauchwurst' },
@@ -84,7 +84,7 @@ const MENU = [
     { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0, desc: 'Gratis Dip inklusive' },
   ]},
   { key: 'calzone', label: 'Calzone', items: [
-    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse' },
+    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true },
     { id: 'c79', name: 'Calzone Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
     { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Zwiebeln, Jalapeños und Weichkäse in Salzlake' },
     { id: 'c81', name: 'Calzone Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
@@ -111,7 +111,7 @@ const MENU = [
     { id: 'u136', name: 'Kebap Vechta überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais, Brokoli und Sahnesoße' },
   ]},
   { key: 'rollo', label: 'Rollo überbacken', items: [
-    { id: 'r146', name: 'Rollo Steak', price: 12.0, desc: 'Steak Fleisch, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat' },
+    { id: 'r146', name: 'Rollo Steak', price: 12.0, desc: 'Steak Fleisch, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat', weekend: true },
     { id: 'r147', name: 'Rollo Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat' },
     { id: 'r148', name: 'Rollo Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Hollandaise Soße, mit kleinem Beilagensalat' },
     { id: 'r149', name: 'Rollo Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
@@ -270,8 +270,9 @@ const CATEGORY_ICONS = {
 const UPSELL_ITEMS = [
   { id: 'f203', name: 'Pommes Frites', price: 3.5, emoji: '🍟' },
   { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, emoji: '🍗' },
+  { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, emoji: '🍤' },
   { id: 'f204', name: 'Portion Soße', price: 2.5, emoji: '🥫' },
-  { id: 'g301', name: 'Coca-Cola', price: 2.5, emoji: '🥤' },
+  ...(MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤' })),
 ];
 
 function UpsellStrip({ addItem }) {
@@ -551,11 +552,85 @@ const DAILY_SPECIALS = [
   { day: 6, name: 'Baguette Bodrum', price: 11.0, desc: 'Hollandaise, Weichkäse & frisches Gemüse', img: 'g1' },
 ];
 
+const WEEKEND_MEAT_OPTIONS = [
+  { key: 'haehnchen', label: 'Hähnchen', extra: 0 },
+  { key: 'kalb', label: 'Kalb/Rind', extra: 0 },
+  { key: 'yaprak', label: 'Yaprak Döner', extra: 1.0 },
+];
+const WEEKEND_COMBOS = [
+  { key: 'pizza', title: '28cm Pizza + Dose Getränk', price: 11.0, emoji: '🍕', img: 'g2' },
+  { key: 'doener', title: 'Dönerteller + Dose Getränk', price: 12.5, emoji: '🍽️', img: 'g1' },
+];
+
+function WeekendComboPromo({ go }) {
+  const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4 };
+  const [openCombo, setOpenCombo] = useState(null);
+  const [meat, setMeat] = useState('haehnchen');
+
+  const confirm = async (combo) => {
+    const opt = WEEKEND_MEAT_OPTIONS.find((m) => m.key === meat);
+    const total = combo.price + (opt?.extra || 0);
+    await safeSet('pendingCombo', { title: `${combo.title} (${opt.label})`, price: total });
+    go('whatsapp');
+  };
+
+  return (
+    <section className="max-w-6xl mx-auto px-5 lg:px-10 py-4">
+      <div className="rounded-2xl overflow-hidden" style={{ background: `linear-gradient(120deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 10px 30px rgba(214,40,40,.25)' }}>
+        <div className="px-6 pt-6 pb-2 text-center">
+          <div className="text-white font-black text-xs tracking-[3px] mb-1">🎉 NUR SAMSTAG</div>
+          <div className="text-white font-black text-2xl">Wochenend-Angebot!</div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4 p-6 pt-3">
+          {WEEKEND_COMBOS.map((combo) => (
+            <div key={combo.key} className="rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,.97)' }}>
+              <img src={imgMap[combo.img]} className="w-full h-32 object-cover" />
+              <div className="p-4">
+                <div className="font-black text-sm mb-1" style={{ color: GREEN }}>{combo.emoji} {combo.title}</div>
+                <div className="font-black text-xl mb-3" style={{ color: CHILI }}>{fmt(combo.price)}</div>
+
+                {openCombo !== combo.key && (
+                  <button onClick={() => { setOpenCombo(combo.key); setMeat('haehnchen'); }} className="w-full py-2.5 rounded-full font-bold text-xs text-white" style={{ background: ORANGE }}>
+                    Auswählen →
+                  </button>
+                )}
+
+                {openCombo === combo.key && (
+                  <div>
+                    <div className="text-[10px] font-bold mb-2" style={{ color: '#8a7c62' }}>FLEISCH WÄHLEN:</div>
+                    <div className="flex flex-col gap-1.5 mb-3">
+                      {WEEKEND_MEAT_OPTIONS.map((m) => (
+                        <button key={m.key} onClick={() => setMeat(m.key)} className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold" style={meat === m.key ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN }}>
+                          <span>{m.label}</span>
+                          <span>{m.extra > 0 ? `+${fmt(m.extra)}` : 'inklusive'}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={() => confirm(combo)} className="w-full py-2.5 rounded-full font-bold text-xs text-white" style={{ background: CHILI }}>
+                      Zur Bestellung hinzufügen
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-center text-[11px] font-medium text-white opacity-90 pb-5 px-6">Yaprak Döner gegen Aufpreis von 1,00 € wählbar — nur heute!</p>
+      </div>
+    </section>
+  );
+}
+
 function DailySpecial({ go }) {
   const now = useLiveClock();
   const special = DAILY_SPECIALS[now.getDay()];
   const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4 };
   const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
+  if (now.getDay() === 6) {
+    return <WeekendComboPromo go={go} />;
+  }
+
   return (
     <section className="max-w-6xl mx-auto px-5 lg:px-10 py-4">
       <div className="rounded-2xl overflow-hidden grid sm:grid-cols-[220px_1fr] items-stretch" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
@@ -772,6 +847,18 @@ function WhatsAppOrderView({ back }) {
   const [wheelResult, setWheelResult] = useState(null);
 
   const addItem = (lineKey, label, price) => setCart((c) => ({ ...c, [lineKey]: { name: label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
+
+  useEffect(() => {
+    (async () => {
+      const pending = await safeGet('pendingCombo');
+      if (pending) {
+        await safeSet('pendingCombo', null);
+        const key = `combo-${Date.now()}`;
+        setCart((c) => ({ ...c, [key]: { name: `🎉 ${pending.title}`, price: pending.price, qty: 1 } }));
+      }
+    })();
+  }, []);
+
   const removeItem = (lineKey) => setCart((c) => {
     const ex = c[lineKey]; if (!ex) return c;
     if (ex.qty <= 1) { const cp = { ...c }; delete cp[lineKey]; return cp; }
@@ -829,7 +916,7 @@ function WhatsAppOrderView({ back }) {
             };
             return (
               <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-                <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>
+                <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
                 {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}
                 <div className="flex gap-2">
                   <button onClick={() => openFor('klein')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>klein · {fmt(item.priceSmall)}</button>
@@ -855,7 +942,7 @@ function WhatsAppOrderView({ back }) {
           const qty = cart[item.id]?.qty || 0;
           return (
             <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-              <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+              <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
               <Stepper qty={qty} onAdd={() => addItem(item.id, item.name, item.price)} onRemove={() => removeItem(item.id)} />
             </div>
           );
@@ -863,7 +950,7 @@ function WhatsAppOrderView({ back }) {
       </div>
 
       {totalCount > 0 && !cartOpen && (
-        <button onClick={() => setCartOpen(true)} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: ORANGE, color: '#fff' }}>
+        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: ORANGE, color: '#fff' }}>
           <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} Artikel</span>
           <span className="font-black text-base">{fmt(totalPrice)}</span>
         </button>
@@ -874,8 +961,38 @@ function WhatsAppOrderView({ back }) {
           <div className="w-full max-w-md h-full flex flex-col" style={{ background: CREAM }}>
             <div style={{ background: GREEN }} className="px-5 py-5 flex items-center gap-3">
               <button onClick={() => (drawerView === 'wheel' ? setDrawerView('cart') : setCartOpen(false))} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}><ChevronLeft size={18} color="#fff" /></button>
-              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? 'Glücksrad 🎡' : 'Deine Bestellung'}</div>
+              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? 'Glücksrad 🎡' : drawerView === 'upsell' ? 'Noch etwas dazu?' : 'Deine Bestellung'}</div>
             </div>
+
+            {drawerView === 'upsell' && (
+              <div className="flex-1 overflow-y-auto px-5 py-6">
+                <div className="text-center mb-5">
+                  <div className="text-3xl mb-2">🍟🥤</div>
+                  <div className="font-black text-lg" style={{ color: GREEN }}>Möchtest du noch etwas dazu?</div>
+                  <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>Diese Klassiker passen perfekt zu deiner Bestellung!</p>
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  {UPSELL_ITEMS.map((u) => {
+                    const key = u.id;
+                    const qty = cart[key]?.qty || 0;
+                    return (
+                      <div key={u.id} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{u.emoji}</span>
+                          <div>
+                            <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
+                            <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
+                          </div>
+                        </div>
+                        <Stepper qty={qty} onAdd={() => addItem(u.id, u.name, u.price)} onRemove={() => removeItem(u.id)} />
+                      </div>
+                    );
+                  })}
+                </div>
+                <button onClick={() => setDrawerView('cart')} className="w-full mt-6 py-3.5 rounded-xl font-bold text-base text-white" style={{ background: GREEN }}>Weiter zur Bestellung</button>
+                <button onClick={() => setDrawerView('cart')} className="w-full mt-2 py-2.5 rounded-xl font-semibold text-xs" style={{ color: '#a4906c' }}>Nein danke, überspringen</button>
+              </div>
+            )}
 
             {drawerView === 'wheel' && (
               <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col items-center">
@@ -1155,10 +1272,10 @@ function GroupOrderView({ back }) {
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
                 const keyS = `${item.id}-s`, keyL = `${item.id}-l`;
-                return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}><div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>{item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="flex gap-2"><QtyRow label={`klein · ${fmt(item.priceSmall)}`} qty={localCart[keyS]?.qty || 0} onAdd={() => addLocal(keyS, `${item.name} (klein)`, item.priceSmall)} onRemove={() => removeLocal(keyS)} /><QtyRow label={`groß · ${fmt(item.priceLarge)}`} qty={localCart[keyL]?.qty || 0} onAdd={() => addLocal(keyL, `${item.name} (groß)`, item.priceLarge)} onRemove={() => removeLocal(keyL)} /></div></div>);
+                return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}><div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="flex gap-2"><QtyRow label={`klein · ${fmt(item.priceSmall)}`} qty={localCart[keyS]?.qty || 0} onAdd={() => addLocal(keyS, `${item.name} (klein)`, item.priceSmall)} onRemove={() => removeLocal(keyS)} /><QtyRow label={`groß · ${fmt(item.priceLarge)}`} qty={localCart[keyL]?.qty || 0} onAdd={() => addLocal(keyL, `${item.name} (groß)`, item.priceLarge)} onRemove={() => removeLocal(keyL)} /></div></div>);
               }
               const qty = localCart[item.id]?.qty || 0;
-              return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}><div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div><Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} /></div>);
+              return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}><div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div><Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} /></div>);
             })}
           </div>
           {myLines.length > 0 && (
