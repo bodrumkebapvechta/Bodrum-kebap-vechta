@@ -660,7 +660,7 @@ function WhatsAppOrderView({ back }) {
         ))}
       </div>
 
-      <div className="px-5 pt-2 grid lg:grid-cols-2 gap-2.5 items-start">
+      <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
         {activeCategory.items.map((item) => {
           if (item.priceSmall !== undefined) {
             const isOpen = openExtra?.itemId === item.id;
@@ -998,7 +998,7 @@ function GroupOrderView({ back }) {
           <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
             {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>{m.label}</button>))}
           </div>
-          <div className="px-5 pt-2 grid lg:grid-cols-2 gap-2.5 items-start">
+          <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
                 const keyS = `${item.id}-s`, keyL = `${item.id}-l`;
@@ -1258,8 +1258,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen w-full flex justify-center" style={{ background: '#f2ede1' }}>
-      <div className="w-full max-w-md lg:max-w-3xl min-h-screen lg:shadow-2xl lg:my-0" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <div className="w-full max-w-5xl mx-auto">
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
