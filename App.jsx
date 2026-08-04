@@ -910,6 +910,7 @@ function HomeView({ go }) {
             <button onClick={() => scrollTo('extras')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>Extras</button>
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>Galerie</button>
             <button onClick={() => scrollTo('kontakt')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>Kontakt</button>
+            <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> Personal</button>
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
             </a>
@@ -925,6 +926,7 @@ function HomeView({ go }) {
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Instagram size={15} /> @BodrumKebapVechta</a>
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>Galerie</button>
             <button onClick={() => scrollTo('kontakt')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>Kontakt</button>
+            <button onClick={() => go('staff')} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Lock size={14} /> Personal-Bereich</button>
             <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: ORANGE, color: '#fff' }}>Jetzt bestellen</button>
           </div>
         )}
@@ -1025,7 +1027,7 @@ function HomeView({ go }) {
         <div className="grid lg:grid-cols-2 gap-6 items-stretch">
           <div className="rounded-2xl p-6 flex flex-col justify-center" style={{ background: GREEN }}>
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
-            <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div className="text-white font-bold text-sm">04441 / 95 16 104</div></div>
+            <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
             <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Täglich 11:30–22:00 Uhr</div><div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>Dienstag Ruhetag</div></div></div>
             <div className="flex flex-wrap gap-3">
               <a
@@ -1069,7 +1071,6 @@ function HomeView({ go }) {
           <div className="flex items-center gap-4">
             <button onClick={() => go('impressum')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>Impressum</button>
             <button onClick={() => go('datenschutz')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>Datenschutz</button>
-            <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: '#6b5a3e' }}><Lock size={10} /> Personal-Bereich</button>
           </div>
         </div>
       </footer>
