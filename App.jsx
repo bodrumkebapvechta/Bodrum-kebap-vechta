@@ -602,15 +602,13 @@ function WeekendComboPromo({ go }) {
   const [openDoener, setOpenDoener] = useState(false);
   const [meat, setMeat] = useState('haehnchen');
 
-  const confirmDoener = async () => {
+  const confirmDoener = () => {
     const opt = WEEKEND_MEAT_OPTIONS.find((m) => m.key === meat);
     const total = DOENER_COMBO.price + (opt?.extra || 0);
-    await safeSet('pendingCombo', { title: `${DOENER_COMBO.title} (${opt.label})`, price: total });
-    go('whatsapp');
+    go('whatsapp', { pendingCombo: { title: `${DOENER_COMBO.title} (${opt.label})`, price: total } });
   };
-  const goToPizzaCombo = async () => {
-    await safeSet('pizzaComboMode', true);
-    go('whatsapp');
+  const goToPizzaCombo = () => {
+    go('whatsapp', { pizzaComboMode: true });
   };
 
   return (
@@ -672,7 +670,7 @@ function WeekendComboPromo({ go }) {
           </div>
 
         </div>
-        <p className="text-center text-[11px] font-medium text-white opacity-90 pb-5 px-6">Beim Dönerteller: Yaprak Döner gegen Aufpreis von 1,00 € wählbar — nur heute!</p>
+        <div className="pb-5" />
       </div>
     </section>
   );
@@ -713,7 +711,7 @@ function MittagsBanner() {
             {active ? `noch ${mm}:${ss.toString().padStart(2, '0')} Min. · inkl. Getränk` : 'Mo.–Fr. 11:30–14:00 Uhr · inkl. Getränk'}
           </span>
         </div>
-        <span className="text-white text-xs font-semibold opacity-85">Wähle aus dem heutigen Tagesgericht — z. B. Schnitzel, Nudeln oder Kebap überbacken</span>
+        <span className="text-white text-xs font-semibold opacity-85">28cm Pizza · Salat · Schnitzel · Nudelgericht</span>
       </div>
     </section>
   );
@@ -730,14 +728,12 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
     { key: 'kalb', label: 'Kalb/Rind', extra: 0 },
   ];
 
-  const addDirect = async () => {
-    await safeSet('pendingCombo', { title: item.name, price: displayPrice });
-    go('whatsapp');
+  const addDirect = () => {
+    go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
   };
-  const confirmMeat = async () => {
+  const confirmMeat = () => {
     const opt = meatOptions.find((m) => m.key === meat);
-    await safeSet('pendingCombo', { title: `${item.name} (${opt.label})`, price: displayPrice });
-    go('whatsapp');
+    go('whatsapp', { pendingCombo: { title: `${item.name} (${opt.label})`, price: displayPrice } });
   };
 
   return (
@@ -975,7 +971,8 @@ function HomeView({ go }) {
         </div>
 
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>EIN BLICK IN UNSERE KÜCHE</div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <img src={DOENER_TELLER_IMG} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
           <img src={FOOD_G1} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
           <img src={FOOD_G2} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
           <img src={FOOD_G3} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
@@ -1040,8 +1037,8 @@ function HomeView({ go }) {
 }
 
 /* ============ WHATSAPP ORDER ============ */
-function WhatsAppOrderView({ back }) {
-  const [tab, setTab] = useState(MENU[0].key);
+function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
+  const [tab, setTab] = useState(initialAction?.pizzaComboMode ? 'pizza' : MENU[0].key);
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
@@ -1050,27 +1047,18 @@ function WhatsAppOrderView({ back }) {
   const [note, setNote] = useState('');
   const [drawerView, setDrawerView] = useState('cart');
   const [wheelResult, setWheelResult] = useState(null);
-  const [pizzaComboActive, setPizzaComboActive] = useState(false);
+  const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
 
   const addItem = (lineKey, label, price) => setCart((c) => ({ ...c, [lineKey]: { name: label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
 
   useEffect(() => {
-    (async () => {
-      const pending = await safeGet('pendingCombo');
-      if (pending) {
-        await safeSet('pendingCombo', null);
-        const key = `combo-${Date.now()}`;
-        setCart((c) => ({ ...c, [key]: { name: `🎉 ${pending.title}`, price: pending.price, qty: 1 } }));
-        setDrawerView('upsell');
-        setCartOpen(true);
-      }
-      const pizzaCombo = await safeGet('pizzaComboMode');
-      if (pizzaCombo) {
-        await safeSet('pizzaComboMode', null);
-        setTab('pizza');
-        setPizzaComboActive(true);
-      }
-    })();
+    if (initialAction?.pendingCombo) {
+      const key = `combo-${Date.now()}`;
+      setCart((c) => ({ ...c, [key]: { name: `🎉 ${initialAction.pendingCombo.title}`, price: initialAction.pendingCombo.price, qty: 1 } }));
+      setDrawerView('upsell');
+      setCartOpen(true);
+    }
+    onConsumeAction && onConsumeAction();
   }, []);
 
   const addPizzaCombo = (item) => {
@@ -1770,11 +1758,13 @@ function LoyaltyView({ back }) {
 export default function App() {
   const [booted, setBooted] = useState(false);
   const [view, setView] = useState('home');
+  const [pendingAction, setPendingAction] = useState(null);
+  const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
 
   if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
   if (view === 'home') {
-    return <HomeView go={setView} />;
+    return <HomeView go={go} />;
   }
 
   return (
@@ -1810,7 +1800,7 @@ export default function App() {
       </div>
 
       <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .35s ease' }}>
-        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} />}
+        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
         {view === 'loyalty' && <LoyaltyView back={() => setView('home')} />}
