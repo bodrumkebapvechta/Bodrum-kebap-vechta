@@ -188,13 +188,33 @@ function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 function menuNum(id) { if (/^g\d/.test(id)) return ''; return id.replace(/^[a-z]+/i, ''); }
 function normalizePhone(raw) { return raw.replace(/[^\d+]/g, ''); }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
+const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
+
 async function safeGet(key) {
-  try { const res = await window.storage.get(key, true); return res ? JSON.parse(res.value) : null; }
-  catch { return null; }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}&select=value`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.length ? rows[0].value : null;
+  } catch { return null; }
 }
 async function safeSet(key, value) {
-  try { await window.storage.set(key, JSON.stringify(value), true); return true; }
-  catch { return false; }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+    });
+    return res.ok;
+  } catch { return false; }
 }
 
 /* ============ WHEEL DATA ============ */
