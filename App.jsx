@@ -22,6 +22,7 @@ const FOOD_G3 = "/food-g3.jpg";
 const FOOD_G4 = "/food-g4.jpg";
 const FOOD_G5 = "/food-g5.jpg";
 const TERRACE_IMG = "/terrace.jpg";
+const DOENER_TELLER_IMG = "/doener-teller.jpg";
 
 /* ============ MENU DATA ============ */
 const MENU = [
@@ -594,20 +595,21 @@ const WEEKEND_MEAT_OPTIONS = [
   { key: 'kalb', label: 'Kalb/Rind', extra: 0 },
   { key: 'yaprak', label: 'Yaprak Döner', extra: 1.0 },
 ];
-const WEEKEND_COMBOS = [
-  { key: 'pizza', title: '28cm Pizza + Dose Getränk', price: 11.0, emoji: '🍕', img: 'g2' },
-  { key: 'doener', title: 'Dönerteller + Dose Getränk', price: 12.5, emoji: '🍽️', img: 'g1' },
-];
+const DOENER_COMBO = { title: 'Dönerteller + Dose Getränk', price: 12.5, emoji: '🍽️' };
+const PIZZA_COMBO_PRICE = 11.0;
 
 function WeekendComboPromo({ go }) {
-  const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4, g5: FOOD_G5 };
-  const [openCombo, setOpenCombo] = useState(null);
+  const [openDoener, setOpenDoener] = useState(false);
   const [meat, setMeat] = useState('haehnchen');
 
-  const confirm = async (combo) => {
+  const confirmDoener = async () => {
     const opt = WEEKEND_MEAT_OPTIONS.find((m) => m.key === meat);
-    const total = combo.price + (opt?.extra || 0);
-    await safeSet('pendingCombo', { title: `${combo.title} (${opt.label})`, price: total });
+    const total = DOENER_COMBO.price + (opt?.extra || 0);
+    await safeSet('pendingCombo', { title: `${DOENER_COMBO.title} (${opt.label})`, price: total });
+    go('whatsapp');
+  };
+  const goToPizzaCombo = async () => {
+    await safeSet('pizzaComboMode', true);
     go('whatsapp');
   };
 
@@ -616,45 +618,61 @@ function WeekendComboPromo({ go }) {
       <div className="rounded-2xl overflow-hidden" style={{ background: `linear-gradient(120deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 10px 30px rgba(214,40,40,.3)' }}>
         <div className="px-6 pt-7 pb-3 text-center">
           <div className="text-white font-black text-xs tracking-[4px] mb-1.5 animate-pulse">🎉 NUR HEUTE — SAMSTAG</div>
-          <div className="text-white font-black text-3xl">Wochenend-Angebot!</div>
+          <div className="text-white font-black text-3xl">Wochenende-Angebot!</div>
         </div>
         <div className="grid sm:grid-cols-2 gap-5 p-5 pt-2">
-          {WEEKEND_COMBOS.map((combo) => (
-            <div key={combo.key} className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
-              <div className="relative">
-                <img src={imgMap[combo.img]} className="w-full h-56 sm:h-64 object-cover" />
-                <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(combo.price)}</div>
-              </div>
-              <div className="p-4">
-                <div className="font-black text-lg mb-3 text-center" style={{ color: GREEN }}>{combo.emoji} {combo.title}</div>
 
-                {openCombo !== combo.key && (
-                  <button onClick={() => { setOpenCombo(combo.key); setMeat('haehnchen'); }} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>
-                    Auswählen →
-                  </button>
-                )}
-
-                {openCombo === combo.key && (
-                  <div>
-                    <div className="text-[10px] font-bold mb-2" style={{ color: '#8a7c62' }}>FLEISCH WÄHLEN:</div>
-                    <div className="flex flex-col gap-1.5 mb-3">
-                      {WEEKEND_MEAT_OPTIONS.map((m) => (
-                        <button key={m.key} onClick={() => setMeat(m.key)} className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold" style={meat === m.key ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN }}>
-                          <span>{m.label}</span>
-                          <span>{m.extra > 0 ? `+${fmt(m.extra)}` : 'inklusive'}</span>
-                        </button>
-                      ))}
-                    </div>
-                    <button onClick={() => confirm(combo)} className="w-full py-2.5 rounded-full font-bold text-xs text-white" style={{ background: CHILI }}>
-                      Zur Bestellung hinzufügen
-                    </button>
-                  </div>
-                )}
-              </div>
+          {/* PIZZA CARD — leitet zur echten Pizza-Auswahl */}
+          <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
+            <div className="relative">
+              <img src={FOOD_G2} className="w-full h-56 sm:h-64 object-cover" />
+              <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(PIZZA_COMBO_PRICE)}</div>
             </div>
-          ))}
+            <div className="p-4">
+              <div className="font-black text-lg mb-1 text-center" style={{ color: GREEN }}>🍕 28cm Pizza + Dose Getränk</div>
+              <p className="text-xs text-center mb-3" style={{ color: '#8a7c62' }}>Wähle deine Wunschpizza aus unserer ganzen Pizzakarte!</p>
+              <button onClick={goToPizzaCombo} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>
+                Pizza auswählen →
+              </button>
+            </div>
+          </div>
+
+          {/* DÖNERTELLER CARD */}
+          <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
+            <div className="relative">
+              <img src={DOENER_TELLER_IMG} className="w-full h-56 sm:h-64 object-cover" />
+              <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(DOENER_COMBO.price)}</div>
+            </div>
+            <div className="p-4">
+              <div className="font-black text-lg mb-3 text-center" style={{ color: GREEN }}>{DOENER_COMBO.emoji} {DOENER_COMBO.title}</div>
+
+              {!openDoener && (
+                <button onClick={() => { setOpenDoener(true); setMeat('haehnchen'); }} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>
+                  Auswählen →
+                </button>
+              )}
+
+              {openDoener && (
+                <div>
+                  <div className="text-[11px] font-bold mb-2" style={{ color: '#8a7c62' }}>FLEISCH WÄHLEN:</div>
+                  <div className="flex flex-col gap-2 mb-3">
+                    {WEEKEND_MEAT_OPTIONS.map((m) => (
+                      <button key={m.key} onClick={() => setMeat(m.key)} className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-bold" style={meat === m.key ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN }}>
+                        <span>{m.label}</span>
+                        <span>{m.extra > 0 ? `+${fmt(m.extra)}` : 'inklusive'}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <button onClick={confirmDoener} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: CHILI }}>
+                    Zur Bestellung hinzufügen
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
-        <p className="text-center text-[11px] font-medium text-white opacity-90 pb-5 px-6">Yaprak Döner gegen Aufpreis von 1,00 € wählbar — nur heute!</p>
+        <p className="text-center text-[11px] font-medium text-white opacity-90 pb-5 px-6">Beim Dönerteller: Yaprak Döner gegen Aufpreis von 1,00 € wählbar — nur heute!</p>
       </div>
     </section>
   );
@@ -688,11 +706,14 @@ function MittagsBanner() {
   }
   return (
     <section className="py-4" style={{ background: ORANGE }}>
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 flex flex-wrap items-center justify-center gap-2 text-center" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>
-        <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}MITTAGSANGEBOT · 9,50 €</span>
-        <span className="text-white text-sm font-semibold opacity-90">
-          {active ? `noch ${mm}:${ss.toString().padStart(2, '0')} Min. · inkl. Getränk` : 'Mo.–Fr. 11:30–14:00 Uhr · inkl. Getränk'}
-        </span>
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 flex flex-col items-center justify-center gap-1 text-center" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}MITTAGSANGEBOT · 9,50 €</span>
+          <span className="text-white text-sm font-semibold opacity-90">
+            {active ? `noch ${mm}:${ss.toString().padStart(2, '0')} Min. · inkl. Getränk` : 'Mo.–Fr. 11:30–14:00 Uhr · inkl. Getränk'}
+          </span>
+        </div>
+        <span className="text-white text-xs font-semibold opacity-85">Wähle aus dem heutigen Tagesgericht — z. B. Schnitzel, Nudeln oder Kebap überbacken</span>
       </div>
     </section>
   );
@@ -827,8 +848,9 @@ function HomeView({ go }) {
   };
 
   return (
-    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh' }}>
+    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .35s ease' }}>
       <style>{`
+        @keyframes pageFade { from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
         @keyframes cardIn { from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes floatY { 0%,100%{ transform:translateY(0px) rotate(-3deg);} 50%{ transform:translateY(-10px) rotate(3deg);} }
         @keyframes floatY2 { 0%,100%{ transform:translateY(0px) rotate(4deg);} 50%{ transform:translateY(-14px) rotate(-4deg);} }
@@ -1028,6 +1050,7 @@ function WhatsAppOrderView({ back }) {
   const [note, setNote] = useState('');
   const [drawerView, setDrawerView] = useState('cart');
   const [wheelResult, setWheelResult] = useState(null);
+  const [pizzaComboActive, setPizzaComboActive] = useState(false);
 
   const addItem = (lineKey, label, price) => setCart((c) => ({ ...c, [lineKey]: { name: label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
 
@@ -1041,8 +1064,19 @@ function WhatsAppOrderView({ back }) {
         setDrawerView('upsell');
         setCartOpen(true);
       }
+      const pizzaCombo = await safeGet('pizzaComboMode');
+      if (pizzaCombo) {
+        await safeSet('pizzaComboMode', null);
+        setTab('pizza');
+        setPizzaComboActive(true);
+      }
     })();
   }, []);
+
+  const addPizzaCombo = (item) => {
+    const key = `combo-pizza-${item.id}`;
+    setCart((c) => ({ ...c, [key]: { name: `🎉 ${item.name} (28cm, Wochenende-Angebot inkl. Getränk)`, price: PIZZA_COMBO_PRICE, qty: (c[key]?.qty || 0) + 1 } }));
+  };
 
   const removeItem = (lineKey) => setCart((c) => {
     const ex = c[lineKey]; if (!ex) return c;
@@ -1082,9 +1116,27 @@ function WhatsAppOrderView({ back }) {
       </div>
 
 
+      {pizzaComboActive && tab === 'pizza' && (
+        <div className="mx-5 mt-3 mb-1 px-4 py-3 rounded-xl flex items-center justify-between gap-2 flex-wrap" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
+          <span className="text-xs font-black" style={{ color: '#8a5a1f' }}>🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {fmt(PIZZA_COMBO_PRICE)} inkl. Getränk!</span>
+          <button onClick={() => setPizzaComboActive(false)} className="text-[11px] font-bold underline" style={{ color: '#8a5a1f' }}>Angebot verlassen</button>
+        </div>
+      )}
+
       <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
         {activeCategory.items.map((item) => {
           if (item.priceSmall !== undefined) {
+            if (pizzaComboActive && tab === 'pizza') {
+              return (
+                <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between gap-2" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                  <div>
+                    <div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}</div>
+                    {item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}
+                  </div>
+                  <button onClick={() => addPizzaCombo(item)} className="flex-none px-3.5 py-2.5 rounded-lg text-xs font-black text-white text-center" style={{ background: ORANGE }}>Wählen<br />{fmt(PIZZA_COMBO_PRICE)}</button>
+                </div>
+              );
+            }
             const isOpen = openExtra?.itemId === item.id;
             const size = openExtra?.size;
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
@@ -1732,6 +1784,7 @@ export default function App() {
         @keyframes sideFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-30px) rotate(-5deg);} }
         @keyframes sideFloat3 { 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-16px) rotate(10deg);} }
         @keyframes sideSpin { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+        @keyframes viewFade { from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
       `}</style>
 
       {/* decorative side stripe */}
@@ -1756,7 +1809,7 @@ export default function App() {
         FRISCH VOM DREHSPIESS
       </div>
 
-      <div className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM }}>
+      <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .35s ease' }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
