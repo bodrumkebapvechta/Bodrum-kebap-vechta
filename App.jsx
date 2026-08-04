@@ -187,7 +187,7 @@ const MENU = [
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilze', 'Sucuk'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
@@ -943,10 +943,13 @@ function HomeView({ go }) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{getGreeting(now)} · ☪ 100% HALAL</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)' }}>Frisch vom<br /><span style={{ color: ORANGE }}>Drehspieß</span></h1>
             <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>Kebap · Pizza · Rollo · Calzone · Schnitzel · Salat — täglich frisch zubereitet in Vechta.</p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 mb-3">
               <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: ORANGE, color: '#fff' }}>📱 Per WhatsApp bestellen</button>
               <button onClick={() => scrollTo('extras')} className="px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>Mehr entdecken</button>
             </div>
+            <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
+              <span className="text-lg">👥</span> Gruppenbestellung starten — mit Freunden zusammen bestellen! →
+            </button>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block" style={{ background: 'rgba(255,253,249,.97)' }}>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>Öffnungszeiten</span><span className="font-bold" style={{ color: GREEN }}>Täglich 11:30–22:00</span></div>
@@ -1082,11 +1085,13 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
+  const [configNote, setConfigNote] = useState('');
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
   const [drawerView, setDrawerView] = useState('cart');
   const [wheelResult, setWheelResult] = useState(null);
   const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
+  const [itemNotes, setItemNotes] = useState({});
 
   const addItem = (lineKey, label, price) => setCart((c) => ({ ...c, [lineKey]: { name: label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
 
@@ -1118,14 +1123,14 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
   const waLink = useMemo(() => {
     if (lines.length === 0) return null;
     let msg = `Hallo Bodrum Kebap Vechta, ich möchte gerne folgendes bestellen:\n\n`;
-    lines.forEach(([, v]) => { msg += `• ${v.qty}x ${v.name} (${fmt(v.qty * v.price)})\n`; });
+    lines.forEach(([key, v]) => { const note = itemNotes[key]; msg += `• ${v.qty}x ${v.name}${note ? ` – ${note}` : ''} (${fmt(v.qty * v.price)})\n`; });
     msg += `\nGesamt: ${fmt(totalPrice)}\n`;
     if (name) msg += `\nName: ${name}`;
     if (note) msg += `\nHinweis: ${note}`;
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [lines, totalPrice, name, note, wheelResult]);
+  }, [lines, totalPrice, name, note, wheelResult, itemNotes]);
 
   const activeCategory = MENU.find((m) => m.key === tab);
 
@@ -1168,14 +1173,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
             const size = openExtra?.size;
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
             const configTotal = isOpen ? basePrice + configExtras.length * 1.0 : 0;
-            const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); };
+            const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); setConfigNote(''); };
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
             const confirmAdd = () => {
               const sizeLabel = size === 'klein' ? 'klein' : 'groß';
-              const label = configExtras.length > 0 ? `${item.name} (${sizeLabel}) – ${configExtras.join(', ')}` : `${item.name} (${sizeLabel})`;
+              let label = configExtras.length > 0 ? `${item.name} (${sizeLabel}) – ${configExtras.join(', ')}` : `${item.name} (${sizeLabel})`;
+              if (configNote.trim()) label += ` [${configNote.trim()}]`;
               const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
               addItem(lineKey, label, configTotal);
-              setOpenExtra(null); setConfigExtras([]);
+              setOpenExtra(null); setConfigExtras([]); setConfigNote('');
             };
             return (
               <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
@@ -1193,8 +1199,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
                         <button key={t} onClick={() => toggleExtra(t)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold" style={configExtras.includes(t) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{t}</button>
                       ))}
                     </div>
+                    <input
+                      value={configNote}
+                      onChange={(e) => setConfigNote(e.target.value)}
+                      placeholder="Anmerkung, z.B. ohne Käse"
+                      className="w-full mb-3 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                      style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                    />
                     <div className="flex items-center gap-2">
-                      <button onClick={() => { setOpenExtra(null); setConfigExtras([]); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>Abbrechen</button>
+                      <button onClick={() => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>Abbrechen</button>
                       <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>Zum Warenkorb · {fmt(configTotal)}</button>
                     </div>
                   </div>
@@ -1204,9 +1217,20 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
           }
           const qty = cart[item.id]?.qty || 0;
           return (
-            <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-              <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-              <Stepper qty={qty} onAdd={() => addItem(item.id, item.name, item.price)} onRemove={() => removeItem(item.id)} />
+            <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+              <div className="flex items-center justify-between">
+                <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                <Stepper qty={qty} onAdd={() => addItem(item.id, item.name, item.price)} onRemove={() => removeItem(item.id)} />
+              </div>
+              {qty > 0 && (
+                <input
+                  value={itemNotes[item.id] || ''}
+                  onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
+                  placeholder="Anmerkung, z.B. ohne Zwiebeln"
+                  className="w-full mt-2.5 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                  style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                />
+              )}
             </div>
           );
         })}
@@ -1496,6 +1520,8 @@ function GroupOrderView({ back }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
+  const [configNote, setConfigNote] = useState('');
+  const [itemNotes, setItemNotes] = useState({});
 
   const loadGroup = async (c) => { const data = await safeGet(`grouporder:${c}`); setGroup(data || { code: c, people: [] }); };
   useEffect(() => {
@@ -1521,7 +1547,7 @@ function GroupOrderView({ back }) {
     if (myLines.length === 0) return;
     const fresh = (await safeGet(`grouporder:${code}`)) || { code, people: [] };
     const people = fresh.people.filter((p) => p.name !== name);
-    people.push({ name, items: myLines.map(([, v]) => ({ name: v.name, price: v.price, qty: v.qty })), total: myTotal });
+    people.push({ name, items: myLines.map(([key, v]) => ({ name: itemNotes[key] ? `${v.name} – ${itemNotes[key]}` : v.name, price: v.price, qty: v.qty })), total: myTotal });
     const updated = { ...fresh, people };
     await safeSet(`grouporder:${code}`, updated); setGroup(updated); setView('summary');
   };
@@ -1579,14 +1605,15 @@ function GroupOrderView({ back }) {
                 const size = openExtra?.size;
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
                 const configTotal = isOpen ? basePrice + configExtras.length * 1.0 : 0;
-                const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); };
+                const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); setConfigNote(''); };
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
                 const confirmAdd = () => {
                   const sizeLabel = size === 'klein' ? 'klein' : 'groß';
-                  const label = configExtras.length > 0 ? `${item.name} (${sizeLabel}) – ${configExtras.join(', ')}` : `${item.name} (${sizeLabel})`;
+                  let label = configExtras.length > 0 ? `${item.name} (${sizeLabel}) – ${configExtras.join(', ')}` : `${item.name} (${sizeLabel})`;
+                  if (configNote.trim()) label += ` [${configNote.trim()}]`;
                   const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
                   addLocal(lineKey, label, configTotal);
-                  setOpenExtra(null); setConfigExtras([]);
+                  setOpenExtra(null); setConfigExtras([]); setConfigNote('');
                 };
                 return (
                   <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
@@ -1604,8 +1631,15 @@ function GroupOrderView({ back }) {
                             <button key={t} onClick={() => toggleExtra(t)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold" style={configExtras.includes(t) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{t}</button>
                           ))}
                         </div>
+                        <input
+                          value={configNote}
+                          onChange={(e) => setConfigNote(e.target.value)}
+                          placeholder="Anmerkung, z.B. ohne Käse"
+                          className="w-full mb-3 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                          style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                        />
                         <div className="flex items-center gap-2">
-                          <button onClick={() => { setOpenExtra(null); setConfigExtras([]); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>Abbrechen</button>
+                          <button onClick={() => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>Abbrechen</button>
                           <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>Hinzufügen · {fmt(configTotal)}</button>
                         </div>
                       </div>
@@ -1614,7 +1648,23 @@ function GroupOrderView({ back }) {
                 );
               }
               const qty = localCart[item.id]?.qty || 0;
-              return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}><div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div><Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} /></div>);
+              return (
+                <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                  <div className="flex items-center justify-between">
+                    <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                    <Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} />
+                  </div>
+                  {qty > 0 && (
+                    <input
+                      value={itemNotes[item.id] || ''}
+                      onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
+                      placeholder="Anmerkung, z.B. ohne Zwiebeln"
+                      className="w-full mt-2.5 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                      style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                    />
+                  )}
+                </div>
+              );
             })}
           </div>
           {myLines.length > 0 && (
