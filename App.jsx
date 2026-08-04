@@ -45,6 +45,7 @@ const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧', tr: '🇹🇷', ro: '🇷�
 
 const UI = {
   navExtras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: 'Extra’s' },
+  navMenu: { de: 'Speisekarte', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menukaart' },
   navGallery: { de: 'Galerie', en: 'Gallery', tr: 'Galeri', ro: 'Galerie', nl: 'Galerij' },
   navContact: { de: 'Kontakt', en: 'Contact', tr: 'İletişim', ro: 'Contact', nl: 'Contact' },
   navStaff: { de: 'Personal', en: 'Staff', tr: 'Personel', ro: 'Personal', nl: 'Personeel' },
@@ -211,6 +212,22 @@ const UI = {
   noteExampleCheese: { de: 'Anmerkung, z.B. ohne Käse', en: 'Note, e.g. no cheese', tr: 'Not, örn. peynirsiz', ro: 'Observație, ex. fără brânză', nl: 'Opmerking, bijv. zonder kaas' },
   noteExampleOnions: { de: 'Anmerkung, z.B. ohne Zwiebeln', en: 'Note, e.g. no onions', tr: 'Not, örn. soğansız', ro: 'Observație, ex. fără ceapă', nl: 'Opmerking, bijv. zonder uien' },
   noteOptional: { de: 'Anmerkung (optional)', en: 'Note (optional)', tr: 'Not (isteğe bağlı)', ro: 'Observație (opțional)', nl: 'Opmerking (optioneel)' },
+  pickupTimePh: { de: 'Gewünschte Abholzeit (optional)', en: 'Desired pickup time (optional)', tr: 'İstenen teslim alma saati (isteğe bağlı)', ro: 'Ora de ridicare dorită (opțional)', nl: 'Gewenste ophaaltijd (optioneel)' },
+  pickupTimeLabel: { de: 'Abholzeit', en: 'Pickup time', tr: 'Teslim alma saati', ro: 'Ora de ridicare', nl: 'Ophaaltijd' },
+  titlePizzaBuilder: { de: 'DEINE PIZZA', en: 'YOUR PIZZA', tr: 'SENİN PİZZAN', ro: 'PIZZA TA', nl: 'JOUW PIZZA' },
+  titlePastaBuilder: { de: 'DEINE PASTA', en: 'YOUR PASTA', tr: 'SENİN MAKARNAN', ro: 'PASTA TA', nl: 'JOUW PASTA' },
+  chooseCreationTitle: { de: 'Was möchtest du zusammenstellen?', en: 'What would you like to build?', tr: 'Ne oluşturmak istersin?', ro: 'Ce dorești să creezi?', nl: 'Wat wil je samenstellen?' },
+  chooseCreationSub: { de: 'Wähle deine Basis — Schritt für Schritt zu deinem Wunschgericht.', en: 'Choose your base — step by step to your dream dish.', tr: 'Bazını seç — adım adım hayalindeki yemeğe ulaş.', ro: 'Alege baza — pas cu pas spre felul tău preferat.', nl: 'Kies je basis — stap voor stap naar jouw droomgerecht.' },
+  buildDoener: { de: 'Baue deinen Döner', en: 'Build your Döner', tr: 'Dönerini Oluştur', ro: 'Construiește-ți Kebap-ul', nl: 'Bouw je Döner' },
+  buildPizza: { de: 'Baue deine Pizza', en: 'Build your Pizza', tr: 'Pizzanı Oluştur', ro: 'Construiește-ți Pizza', nl: 'Bouw je Pizza' },
+  buildPasta: { de: 'Baue deine Pasta', en: 'Build your Pasta', tr: 'Makarnanı Oluştur', ro: 'Construiește-ți Pasta', nl: 'Bouw je Pasta' },
+  choosePizzaSize: { de: 'Wähle deine Größe', en: 'Choose your size', tr: 'Boyutunu seç', ro: 'Alege dimensiunea', nl: 'Kies je formaat' },
+  choosePizzaSizeSub: { de: 'Klein oder groß?', en: 'Small or large?', tr: 'Küçük mü büyük mü?', ro: 'Mică sau mare?', nl: 'Klein of groot?' },
+  chooseToppingsSub: { de: 'So viele du möchtest — je 1,00 €.', en: 'As many as you like — €1.00 each.', tr: 'İstediğin kadar — her biri 1,00 €.', ro: 'Câte dorești — 1,00 € fiecare.', nl: 'Zoveel als je wilt — elk € 1,00.' },
+  pizzaReadyTitle: { de: 'Deine Pizza ist fertig! 🎉', en: 'Your Pizza is ready! 🎉', tr: 'Pizzan hazır! 🎉', ro: 'Pizza ta este gata! 🎉', nl: 'Jouw Pizza is klaar! 🎉' },
+  choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' },
+  choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' },
+  pastaReadyTitle: { de: 'Deine Pasta ist fertig! 🎉', en: 'Your Pasta is ready! 🎉', tr: 'Makarnan hazır! 🎉', ro: 'Pasta ta este gata! 🎉', nl: 'Jouw Pasta is klaar! 🎉' },
   sizeSmall: { de: 'klein', en: 'small', tr: 'küçük', ro: 'mic', nl: 'klein' },
   sizeLarge: { de: 'groß', en: 'large', tr: 'büyük', ro: 'mare', nl: 'groot' },
   extrasPricePrefix: { de: 'Extras (je', en: 'Extras (each', tr: 'Ekstralar (her biri', ro: 'Extra (fiecare', nl: 'Extra’s (elk' },
@@ -224,6 +241,14 @@ const UI = {
   installAppBtn: { de: '📲 App installieren', en: '📲 Install app', tr: '📲 Uygulamayı yükle', ro: '📲 Instalează aplicația', nl: '📲 App installeren' },
 };
 
+const CATEGORY_IMAGES = {
+  kebap: LAHMACUN_IMG,
+  pizza: PIZZA_KAESE_IMG,
+  calzone: CALZONE_IMG,
+  nudeln: PENNE_IMG,
+  salat: SALAT_BUNT_IMG,
+  finger: CHICKEN_STRIPS_IMG,
+};
 const CATEGORY_LABELS = {
   kebap: { de: 'Kebap', en: 'Kebap', tr: 'Kebap', ro: 'Kebap', nl: 'Kebap' },
   pizza: { de: 'Pizza', en: 'Pizza', tr: 'Pizza', ro: 'Pizza', nl: 'Pizza' },
@@ -426,7 +451,7 @@ const MENU = [
     { id: 'k8', name: 'Dürüm Kebap', price: 9.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße und Zwiebeln' },
     { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse' },
     { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln' },
-    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln', img: LAHMACUN_IMG },
+    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
     { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes', weekend: true },
     { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes' },
     { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes' },
@@ -434,10 +459,10 @@ const MENU = [
     { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes' },
     { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße' },
     { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße' },
-    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes', img: FALAFEL_IMG },
+    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes' },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
-    { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0, img: PIZZA_KAESE_IMG },
+    { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0 },
     { id: 'p25', name: 'Pizza Salami', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p26', name: 'Pizza Schinken', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p27', name: 'Pizza Kebap', priceSmall: 8.0, priceLarge: 9.0 },
@@ -470,13 +495,13 @@ const MENU = [
     { id: 'p57', name: 'Pizzabrot mit Käse', price: 5.5 },
     { id: 'p58', name: 'Pizzabrot mit Knoblauch', price: 5.5 },
     { id: 'p59', name: 'Pizzabrot mit Kräuterbutter', price: 5.5 },
-    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive', img: PIZZABROETCHEN_IMG },
+    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive' },
     { id: 'p61', name: 'Pizzabrötchen mit Fleisch', price: 8.0, desc: 'Gratis Dip inklusive' },
     { id: 'p62', name: 'Pizzabrötchen mit Salami', price: 8.0, desc: 'Gratis Dip inklusive' },
     { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0, desc: 'Gratis Dip inklusive' },
   ]},
   { key: 'calzone', label: 'Calzone', items: [
-    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true, img: CALZONE_IMG },
+    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true },
     { id: 'c79', name: 'Calzone Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
     { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Zwiebeln, Jalapeños und Weichkäse in Salzlake' },
     { id: 'c81', name: 'Calzone Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
@@ -519,7 +544,7 @@ const MENU = [
     { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse' },
     { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
     { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken' },
-    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat', img: PENNE_IMG },
+    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n168', name: 'Balkan Spirit', price: 10.0, desc: 'Hähnchenbrust in Paprika-Auberginen-Soße, serviert mit Kurkuma-Penne & Marktsalat' },
@@ -536,8 +561,8 @@ const MENU = [
     { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes' },
   ]},
   { key: 'salat', label: 'Salat', items: [
-    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse', img: SALAT_BUNT_IMG },
-    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse', img: BAUERNSALAT_IMG },
+    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse' },
+    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse' },
     { id: 'sa97', name: 'Thunfisch Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Thunfisch und Zwiebeln' },
     { id: 'sa98', name: 'Mais Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Zwiebeln und Mais' },
     { id: 'sa100', name: 'Mozzarella Salat', price: 8.0, desc: 'Grüner Salat, Tomaten und Mozzarella' },
@@ -546,9 +571,9 @@ const MENU = [
     { id: 'sa104', name: 'Hähnchen Salat', price: 9.0, desc: 'Gebratenes Hähnchen, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl' },
   ]},
   { key: 'finger', label: 'Finger Food', items: [
-    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück', img: CHICKEN_STRIPS_IMG },
-    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück', img: NUGGETS_IMG },
-    { id: 'f203', name: 'Pommes Frites', price: 3.5, img: POMMES_IMG },
+    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück' },
+    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück' },
+    { id: 'f203', name: 'Pommes Frites', price: 3.5 },
     { id: 'f204a', name: 'Portion Knoblauchsauce', price: 2.0 },
     { id: 'f204b', name: 'Portion Cocktailsauce', price: 2.0 },
     { id: 'f204c', name: 'Portion Ketchup', price: 1.0 },
@@ -618,7 +643,7 @@ const WHEEL_PRIZES = [
   { label: 'Gratis Pommes', weight: 15, color: GREEN, text: '#fff' },
   { label: 'Nochmal Glück!', weight: 20, color: '#e8d9b8', text: GREEN },
   { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
-  { label: '10% Rabatt', weight: 5, color: GREEN, text: '#fff' },
+  { label: '10% Rabatt', weight: 5, color: GOLD, text: GREEN },
 ];
 const WHEEL_N = WHEEL_PRIZES.length;
 const WHEEL_SLICE = 360 / WHEEL_N;
@@ -1251,6 +1276,12 @@ function HomeView({ go, installPrompt, onInstall }) {
   const now = useLiveClock();
   const status = getOpenStatus(now);
   const { lang, setLang, t } = React.useContext(LangContext);
+  const HERO_IMAGES = [DOENER_SPIESS_IMG, PIZZA_KAESE_IMG, CALZONE_IMG, LAHMACUN_IMG, PENNE_IMG];
+  const [heroIdx, setHeroIdx] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setHeroIdx((i) => (i + 1) % HERO_IMAGES.length), 5000);
+    return () => clearInterval(iv);
+  }, []);
   const scrollTo = (id) => {
     setNavOpen(false);
     const el = document.getElementById(id);
@@ -1273,6 +1304,7 @@ function HomeView({ go, installPrompt, onInstall }) {
         @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
         @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
+        @keyframes closedBlink { 0%,100%{ opacity:1;} 50%{ opacity:.25;} }
         @keyframes shine { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
         .feature-card{ transition: transform .25s ease, box-shadow .25s ease; }
         .feature-card:hover{ transform: translateY(-6px) scale(1.015); box-shadow:0 18px 40px rgba(21,56,38,.22); }
@@ -1316,12 +1348,13 @@ function HomeView({ go, installPrompt, onInstall }) {
               <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
               <div className="text-[10px] font-bold tracking-[3px]" style={{ color: GOLD }}>VECHTA</div>
             </div>
-            <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: 'rgba(255,246,234,.08)' }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#a4906c', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'none' }} />
-              <span className="text-[10.5px] font-bold" style={{ color: status.open ? '#4ade80' : '#a49475' }}>{status.label}</span>
+            <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: status.open ? 'rgba(255,246,234,.08)' : 'rgba(214,40,40,.16)' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#ff4d4d', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
+              <span className="text-[10.5px] font-black" style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{status.label}</span>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
+            <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
             <button onClick={() => scrollTo('extras')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navExtras')}</button>
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
@@ -1344,6 +1377,7 @@ function HomeView({ go, installPrompt, onInstall }) {
         </div>
         {navOpen && (
           <div className="md:hidden px-5 pb-4 flex flex-col gap-3">
+            <button onClick={() => go('whatsapp')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
             <button onClick={() => scrollTo('extras')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navExtras')}</button>
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Instagram size={15} /> @BodrumKebapVechta</a>
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
@@ -1358,13 +1392,19 @@ function HomeView({ go, installPrompt, onInstall }) {
       </header>
 
       {/* HERO */}
-      <section
-        className="relative overflow-hidden"
-        style={{ backgroundImage: `linear-gradient(rgba(21,56,38,.86), rgba(21,56,38,.93)), url('${DOENER_SPIESS_IMG}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-      >
-        <div className="hero-float absolute text-5xl select-none pointer-events-none opacity-20" style={{ top: '8%', left: '4%' }}>🥙</div>
-        <div className="hero-float2 absolute text-5xl select-none pointer-events-none opacity-20" style={{ bottom: '10%', right: '6%' }}>🍕</div>
-        <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%' }}>🔥</div>
+      <section className="relative overflow-hidden">
+        {HERO_IMAGES.map((img, i) => (
+          <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
+        ))}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(21,56,38,.86), rgba(21,56,38,.93))', zIndex: 1 }} />
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          {HERO_IMAGES.map((_, i) => (
+            <span key={i} style={{ width: i === heroIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === heroIdx ? GOLD : 'rgba(255,246,234,.4)', transition: 'all .4s ease' }} />
+          ))}
+        </div>
+        <div className="hero-float absolute text-5xl select-none pointer-events-none opacity-20" style={{ top: '8%', left: '4%', zIndex: 2 }}>🥙</div>
+        <div className="hero-float2 absolute text-5xl select-none pointer-events-none opacity-20" style={{ bottom: '10%', right: '6%', zIndex: 2 }}>🍕</div>
+        <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
@@ -1377,6 +1417,10 @@ function HomeView({ go, installPrompt, onInstall }) {
             <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
               <span className="text-lg">👥</span> {t('heroCtaGroup')}
             </button>
+            <div className="flex flex-wrap gap-2.5 mt-3">
+              <button onClick={() => go('builder')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🧩 {t('featBuilderTitle')}</button>
+              <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
+            </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block" style={{ background: 'rgba(255,253,249,.97)' }}>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold" style={{ color: GREEN }}>{lang === 'de' ? 'Täglich 11:30–22:00' : '11:30–22:00'}</span></div>
@@ -1527,6 +1571,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
   const [configNote, setConfigNote] = useState('');
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
+  const [pickupTime, setPickupTime] = useState('');
   const [drawerView, setDrawerView] = useState('cart');
   const [wheelResult, setWheelResult] = useState(null);
   const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
@@ -1568,11 +1613,12 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
     lines.forEach(([key, v]) => { const note = itemNotes[key]; msg += `• ${v.qty}x ${v.deName || v.name}${note ? ` – ${note}` : ''} (${fmt(v.qty * v.price)})\n`; });
     msg += `\nGesamt: ${fmt(totalPrice)}\n`;
     if (name) msg += `\nName: ${name}`;
+    if (pickupTime) msg += `\nGewünschte Abholzeit: ${pickupTime}`;
     if (note) msg += `\nHinweis: ${note}`;
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [lines, totalPrice, name, note, wheelResult, itemNotes]);
+  }, [lines, totalPrice, name, note, pickupTime, wheelResult, itemNotes]);
 
   const activeCategory = MENU.find((m) => m.key === tab);
 
@@ -1597,6 +1643,16 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
         </div>
       )}
 
+      {CATEGORY_IMAGES[tab] && (
+        <div className="px-5 pt-2">
+          <div className="rounded-2xl overflow-hidden relative h-28" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+            <img src={CATEGORY_IMAGES[tab]} className="w-full h-full object-cover" alt={catLabel(tab, lang)} />
+            <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
+              <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
         {activeCategory.items.map((item) => {
           if (item.priceSmall !== undefined) {
@@ -1802,6 +1858,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
                     <div className="mt-6 flex flex-col gap-3">
                       <p className="text-xs font-medium -mt-1" style={{ color: '#8a7c62' }}>{t('confirmPickupNote')}</p>
                       <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+                      <input value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} placeholder={t('pickupTimePh')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
                       <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={t('noteOptional')} rows={2} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none resize-none" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
                     </div>
                   )}
@@ -1872,28 +1929,86 @@ function OptionCard({ selected, onClick, children }) {
 }
 function DonerBuilderView({ back }) {
   const { t, lang, installPrompt, onInstall } = React.useContext(LangContext);
+  const [kind, setKind] = useState(null); // null | 'doener' | 'pizza' | 'pasta'
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
   const [meat, setMeat] = useState(null);
   const [sauce, setSauce] = useState(null);
   const [extras, setExtras] = useState([]);
+  const [pizzaSize, setPizzaSize] = useState(null);
+  const [pizzaSauce, setPizzaSauce] = useState(null);
+  const [pizzaToppings, setPizzaToppings] = useState([]);
+  const [pastaSauce, setPastaSauce] = useState(null);
+  const [pastaExtras, setPastaExtras] = useState([]);
   const [name, setName] = useState('');
   const [showWheel, setShowWheel] = useState(false);
   const [wheelResult, setWheelResult] = useState(null);
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
   const handleSend = () => { setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200); };
-  const resetBuilder = () => { setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
+  const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPizzaSize(null); setPizzaSauce(null); setPizzaToppings([]); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
   const toggleExtra = (id) => setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+  const togglePizzaTopping = (t) => setPizzaToppings((e) => (e.includes(t) ? e.filter((x) => x !== t) : [...e, t]));
+  const togglePastaExtra = (id) => setPastaExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+
+  const PIZZA_SAUCES = [
+    { id: 'tomate', label: 'Tomatensoße' },
+    { id: 'sahne', label: 'Sahnesoße' },
+  ];
+  const PASTA_SAUCES = [
+    { id: 'sahne', label: 'Sahnesoße', price: 9.5 },
+    { id: 'tomate', label: 'Tomatensoße', price: 9.5 },
+    { id: 'bolognese', label: 'Bolognese-Soße', price: 10.0 },
+  ];
+  const PASTA_EXTRAS = BUILDER_EXTRAS.filter((e) => ['kaese', 'extrafleisch', 'peperoni'].includes(e.id));
+
   const total = useMemo(() => {
+    if (kind === 'pizza') {
+      let t = pizzaSize === 'gross' ? 8.0 : 7.0;
+      t += pizzaToppings.length * 1.0;
+      return t;
+    }
+    if (kind === 'pasta') {
+      let t = pastaSauce?.price || 0;
+      pastaExtras.forEach((id) => { const ex = PASTA_EXTRAS.find((e) => e.id === id); if (ex) t += ex.price; });
+      return t;
+    }
     let t = (base?.price || 0) + (meat?.extra || 0);
     extras.forEach((id) => { const ex = BUILDER_EXTRAS.find((e) => e.id === id); if (ex) t += ex.price; });
     return Math.max(t, 0);
-  }, [base, meat, extras]);
-  const canNext = [!!base, !!meat, !!sauce, true, false][step];
+  }, [kind, base, meat, extras, pizzaSize, pizzaToppings, pastaSauce, pastaExtras]);
+
+  const canNext = kind === 'pizza'
+    ? [!!pizzaSize, !!pizzaSauce, true, false][step]
+    : kind === 'pasta'
+      ? [!!pastaSauce, true, false][step]
+      : [!!base, !!meat, !!sauce, true, false][step];
+  const totalSteps = kind === 'pizza' ? 3 : kind === 'pasta' ? 2 : 4;
 
   const waLink = useMemo(() => {
+    if (kind === 'pizza') {
+      if (!pizzaSize || !pizzaSauce) return null;
+      let msg = `Hallo Bodrum Kebap Vechta, ich möchte mir gerne meine eigene Pizza zusammenstellen:\n\n`;
+      msg += `🍕 Größe: ${pizzaSize === 'gross' ? 'Groß' : 'Klein'}\n🧂 Soße: ${PIZZA_SAUCES.find((s) => s.id === pizzaSauce)?.label}\n`;
+      if (pizzaToppings.length > 0) msg += `➕ Beläge: ${pizzaToppings.join(', ')}\n`;
+      msg += `\nPreis: ${fmt(total)}\n`;
+      if (name) msg += `\nName: ${name}`;
+      if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+      msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
+      return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    }
+    if (kind === 'pasta') {
+      if (!pastaSauce) return null;
+      let msg = `Hallo Bodrum Kebap Vechta, ich möchte mir gerne meine eigene Pasta zusammenstellen:\n\n`;
+      msg += `🍝 ${pastaSauce.label}\n`;
+      if (pastaExtras.length > 0) msg += `➕ Extras: ${pastaExtras.map((id) => PASTA_EXTRAS.find((e) => e.id === id)?.label).join(', ')}\n`;
+      msg += `\nPreis: ${fmt(total)}\n`;
+      if (name) msg += `\nName: ${name}`;
+      if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+      msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
+      return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    }
     if (!base || !meat || !sauce) return null;
     let msg = `Hallo Bodrum Kebap Vechta, ich möchte mir gerne meinen Döner selbst zusammenstellen:\n\n`;
     msg += `🌯 Basis: ${base.label}\n🍖 Fleisch: ${meat.label}\n🧂 Soße: ${SAUCES.find((s) => s.id === sauce)?.label}\n`;
@@ -1903,16 +2018,43 @@ function DonerBuilderView({ back }) {
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [base, meat, sauce, extras, name, total, wheelResult]);
+  }, [kind, base, meat, sauce, extras, pizzaSize, pizzaSauce, pizzaToppings, pastaSauce, pastaExtras, name, total, wheelResult]);
 
   return (
     <div className="pb-10">
-      <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleBuilder')} /></div>
-      {step < 4 && (
-        <div className="flex items-center gap-2 px-5 mb-2">
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= step ? ORANGE : '#e3d5bd' }} />)}
+      <div style={{ background: GREEN }}><TopBar onHome={back} title={kind === 'pizza' ? t('titlePizzaBuilder') : kind === 'pasta' ? t('titlePastaBuilder') : t('titleBuilder')} /></div>
+      {kind === null && (
+        <div className="px-5 pt-4">
+          <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseCreationTitle')}</h2>
+          <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseCreationSub')}</p>
+          <div className="flex flex-col gap-3">
+            <button onClick={() => setKind('doener')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+              <img src={DOENER_SPIESS_IMG} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
+                <span className="text-white font-black text-lg">🥙 {t('buildDoener')}</span>
+              </div>
+            </button>
+            <button onClick={() => setKind('pizza')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+              <img src={PIZZA_KAESE_IMG} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
+                <span className="text-white font-black text-lg">🍕 {t('buildPizza')}</span>
+              </div>
+            </button>
+            <button onClick={() => setKind('pasta')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+              <img src={PENNE_IMG} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
+                <span className="text-white font-black text-lg">🍝 {t('buildPasta')}</span>
+              </div>
+            </button>
+          </div>
         </div>
       )}
+      {kind !== null && step < totalSteps && (
+        <div className="flex items-center gap-2 px-5 mb-2">
+          {Array.from({ length: totalSteps }).map((_, i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= step ? ORANGE : '#e3d5bd' }} />)}
+        </div>
+      )}
+      {kind === 'doener' && (
       <div className="px-5 pt-3">
         {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseBase')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseBaseSub')}</p>
           <div className="flex flex-col gap-2.5">{BASES.map((b) => (<OptionCard key={b.id} selected={base?.id === b.id} onClick={() => setBase(b)}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{b.emoji}</span> {mx(b.label, lang)}<span className="text-xs font-medium opacity-80">· {mx(b.desc, lang)}</span></span></OptionCard>))}</div></div>)}
@@ -1922,7 +2064,7 @@ function DonerBuilderView({ back }) {
           <div className="flex flex-col gap-2.5">{SAUCES.map((s) => (<OptionCard key={s.id} selected={sauce === s.id} onClick={() => setSauce(s.id)}><span className="font-bold text-sm">{mx(s.label, lang)}</span></OptionCard>))}</div></div>)}
         {step === 3 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
           <div className="grid grid-cols-2 gap-2.5">{BUILDER_EXTRAS.map((e) => { const sel = extras.includes(e.id); return (<button key={e.id} onClick={() => toggleExtra(e.id)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(e.label, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{e.price > 0 ? `+${fmt(e.price)}` : t('freeLabel')}</div></button>); })}</div></div>)}
-        {step === 4 && !showWheel && !sent && (
+        {step === totalSteps && !showWheel && !sent && (
           <div>
             <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('doenerReadyTitle')}</h2>
             <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('doenerReadySub')}</p>
@@ -1950,36 +2092,90 @@ function DonerBuilderView({ back }) {
             <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
           </div>
         )}
-        {step === 4 && sent && (
-          <div className="flex flex-col items-center justify-center text-center py-10 relative">
-            {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
-            <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 84, height: 84, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
-              <span className="text-5xl">✅</span>
-            </div>
-            <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
-            <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
-            <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
-              <button onClick={resetBuilder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
-              <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
-              {installPrompt && (
-                <button onClick={onInstall} className="w-full py-3 rounded-xl font-semibold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>{t('installAppBtn')}</button>
-              )}
-            </div>
-          </div>
-        )}
-        {step === 4 && showWheel && (
+      </div>
+      )}
+      {kind === 'pizza' && (
+      <div className="px-5 pt-3">
+        {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('choosePizzaSize')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('choosePizzaSizeSub')}</p>
+          <div className="flex gap-2.5">
+            <OptionCard selected={pizzaSize === 'klein'} onClick={() => setPizzaSize('klein')}><span className="font-bold text-sm">{t('sizeSmall')} · {fmt(7.0)}</span></OptionCard>
+            <OptionCard selected={pizzaSize === 'gross'} onClick={() => setPizzaSize('gross')}><span className="font-bold text-sm">{t('sizeLarge')} · {fmt(8.0)}</span></OptionCard>
+          </div></div>)}
+        {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
+          <div className="flex flex-col gap-2.5">{PIZZA_SAUCES.map((s) => (<OptionCard key={s.id} selected={pizzaSauce === s.id} onClick={() => setPizzaSauce(s.id)}><span className="font-bold text-sm">{mx(s.label, lang)}</span></OptionCard>))}</div></div>)}
+        {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseToppingsSub')}</p>
+          <div className="grid grid-cols-2 gap-2.5">{EXTRA_TOPPINGS.map((top) => { const sel = pizzaToppings.includes(top); return (<button key={top} onClick={() => togglePizzaTopping(top)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(top, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">+{fmt(1.0)}</div></button>); })}</div></div>)}
+        {step === totalSteps && !showWheel && !sent && (
           <div>
-            <button onClick={() => setShowWheel(false)} className="mb-4 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full" style={{ background: '#f0e5cf', color: GREEN }}><ArrowLeft size={13} /> {t('backToOrder')}</button>
-            <h2 className="font-black text-xl mb-1 text-center" style={{ color: GREEN }}>{t('wheelTitle')}</h2>
-            <p className="text-sm mb-5 text-center" style={{ color: '#7c6d55' }}>{t('wheelSpinOnceMsg')}</p>
-            <WheelWidget compact onWin={(res) => setWheelResult(res)} />
-            {wheelResult && (
-              <button onClick={() => setShowWheel(false)} className="mt-4 w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{t('continueToOrder')}</button>
-            )}
+            <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('pizzaReadyTitle')}</h2>
+            <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('doenerReadySub')}</p>
+            <div className="bg-white rounded-xl p-5 mb-4" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+              <Row label={t('rowBasis')} value={pizzaSize === 'gross' ? t('sizeLarge') : t('sizeSmall')} /><Row label={t('rowSauce')} value={mx(PIZZA_SAUCES.find((s) => s.id === pizzaSauce)?.label, lang)} />
+              {pizzaToppings.length > 0 && <Row label={t('rowExtras')} value={pizzaToppings.map((tp) => mx(tp, lang)).join(', ')} />}
+              <div className="flex justify-between items-center pt-3 mt-2" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('rowPrice')}</span><span className="text-xl font-black" style={{ color: GREEN }}>{fmt(total)}</span></div>
+            </div>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none mb-3" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+            {!wheelResult && total >= 30 && (<div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>)}
+            {!wheelResult && total < 30 && (<div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>{t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}</div>)}
+            {wheelResult && wheelResult.code && (<div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN, animation: 'popIn .5s ease' }}><Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>{t('wonPrefix')} {mx(wheelResult.prize, lang)} {t('wonSuffix')}</span></div>)}
+            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
           </div>
         )}
       </div>
-      {step < 4 && (
+      )}
+      {kind === 'pasta' && (
+      <div className="px-5 pt-3">
+        {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('choosePastaStyle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('choosePastaStyleSub')}</p>
+          <div className="flex flex-col gap-2.5">{PASTA_SAUCES.map((p) => (<OptionCard key={p.id} selected={pastaSauce?.id === p.id} onClick={() => setPastaSauce(p)}><span className="font-bold text-sm">{mx(p.label, lang)} · {fmt(p.price)}</span></OptionCard>))}</div></div>)}
+        {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
+          <div className="grid grid-cols-2 gap-2.5">{PASTA_EXTRAS.map((e) => { const sel = pastaExtras.includes(e.id); return (<button key={e.id} onClick={() => togglePastaExtra(e.id)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(e.label, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{e.price > 0 ? `+${fmt(e.price)}` : t('freeLabel')}</div></button>); })}</div></div>)}
+        {step === totalSteps && !showWheel && !sent && (
+          <div>
+            <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('pastaReadyTitle')}</h2>
+            <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('doenerReadySub')}</p>
+            <div className="bg-white rounded-xl p-5 mb-4" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+              <Row label={t('rowSauce')} value={mx(pastaSauce?.label, lang)} />
+              {pastaExtras.length > 0 && <Row label={t('rowExtras')} value={pastaExtras.map((id) => mx(PASTA_EXTRAS.find((e) => e.id === id)?.label, lang)).join(', ')} />}
+              <div className="flex justify-between items-center pt-3 mt-2" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('rowPrice')}</span><span className="text-xl font-black" style={{ color: GREEN }}>{fmt(total)}</span></div>
+            </div>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none mb-3" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+            {!wheelResult && total >= 30 && (<div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>)}
+            {!wheelResult && total < 30 && (<div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>{t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}</div>)}
+            {wheelResult && wheelResult.code && (<div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN, animation: 'popIn .5s ease' }}><Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>{t('wonPrefix')} {mx(wheelResult.prize, lang)} {t('wonSuffix')}</span></div>)}
+            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
+          </div>
+        )}
+      </div>
+      )}
+      {kind !== null && step === totalSteps && sent && (
+        <div className="px-5 flex flex-col items-center justify-center text-center py-10 relative">
+          {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
+          <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 84, height: 84, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
+            <span className="text-5xl">✅</span>
+          </div>
+          <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
+          <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
+          <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
+            <button onClick={resetBuilder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
+            <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+            {installPrompt && (
+              <button onClick={onInstall} className="w-full py-3 rounded-xl font-semibold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>{t('installAppBtn')}</button>
+            )}
+          </div>
+        </div>
+      )}
+      {kind !== null && step === totalSteps && showWheel && (
+        <div className="px-5">
+          <button onClick={() => setShowWheel(false)} className="mb-4 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full" style={{ background: '#f0e5cf', color: GREEN }}><ArrowLeft size={13} /> {t('backToOrder')}</button>
+          <h2 className="font-black text-xl mb-1 text-center" style={{ color: GREEN }}>{t('wheelTitle')}</h2>
+          <p className="text-sm mb-5 text-center" style={{ color: '#7c6d55' }}>{t('wheelSpinOnceMsg')}</p>
+          <WheelWidget compact onWin={(res) => setWheelResult(res)} />
+          {wheelResult && (
+            <button onClick={() => setShowWheel(false)} className="mt-4 w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{t('continueToOrder')}</button>
+          )}
+        </div>
+      )}
+      {kind !== null && step < totalSteps && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px]">
           <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueBtn')} <ArrowRight size={18} /></button>
         </div>
@@ -2141,6 +2337,16 @@ function GroupOrderView({ back }) {
           <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
             {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>{CATEGORY_ICONS[m.key]} {catLabel(m.key, lang)}</button>))}
           </div>
+          {CATEGORY_IMAGES[tab] && (
+            <div className="px-5 pt-2">
+              <div className="rounded-2xl overflow-hidden relative h-28" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+                <img src={CATEGORY_IMAGES[tab]} className="w-full h-full object-cover" alt={catLabel(tab, lang)} />
+                <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
+                  <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
