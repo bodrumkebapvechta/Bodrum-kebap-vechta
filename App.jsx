@@ -325,6 +325,7 @@ const MENU_PHRASES = {
   'Apfel-Kirsch-Holunder': { en: 'Apple-cherry-elderberry', tr: 'Elma-kiraz-mürver', ro: 'Măr-cireșe-soc', nl: 'Appel-kers-vlier' },
   'Gratis Dip inklusive': { en: 'Free dip included', tr: 'Ücretsiz sos dahil', ro: 'Sos gratuit inclus', nl: 'Gratis dipsaus inbegrepen' },
   'mit Käse überbacken': { en: 'baked with cheese', tr: 'peynirli fırınlanmış', ro: 'gratinat cu brânză', nl: 'gegratineerd met kaas' },
+  'Käse überbacken': { en: 'Baked with cheese', tr: 'Peynirli fırınlanmış', ro: 'Gratinat cu brânză', nl: 'Gegratineerd met kaas' },
   'Gebratenes Hähnchen': { en: 'Fried chicken', tr: 'Kızarmış tavuk', ro: 'Pui prăjit', nl: 'Gebakken kip' },
   'Pilzen in Sahnesoße': { en: 'Mushrooms in cream sauce', tr: 'Kremalı soslu mantar', ro: 'Ciuperci în sos de smântână', nl: 'Champignons in roomsaus' },
   'Zigeuner Schnitzel': { en: 'Paprika Schnitzel', tr: 'Biberli Şnitzel', ro: 'Șnițel cu Sos de Ardei', nl: 'Paprika Schnitzel' },
@@ -547,14 +548,14 @@ const MENU = [
     { id: 'r153', name: 'Rollo Spezial', price: 10.0, desc: 'Rindersalami, Putenschinken und Pilzen' },
   ]},
   { key: 'nudeln', label: 'Nudeln', items: [
-    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Soße & Extras frei wählbar', customPasta: true },
-    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Soße & Extras frei wählbar', customPasta: true },
+    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Mit Tomatensoße', customPasta: true },
+    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Mit Fleischsoße', customPasta: true },
+    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', customPasta: true },
+    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße', customPasta: true },
+    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Brokkoli, Pilzen, Paprika, Tomatensoße', customPasta: true },
+    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse', customPasta: true },
+    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße', customPasta: true },
+    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken', customPasta: true },
     { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
@@ -613,7 +614,7 @@ const MENU = [
 const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
 const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
-const PASTA_EXTRA_ITEMS = ['Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais'];
 const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
@@ -1356,6 +1357,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
         @keyframes closedBlink { 0%,100%{ opacity:1;} 50%{ opacity:.25;} }
+        @keyframes cartBadgePulse { 0%,100%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 0 rgba(230,90,10,.4);} 50%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 8px rgba(230,90,10,0);} }
         @keyframes shine { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
         .feature-card{ transition: transform .25s ease, box-shadow .25s ease; }
         .feature-card:hover{ transform: translateY(-6px) scale(1.015); box-shadow:0 18px 40px rgba(21,56,38,.22); }
@@ -1418,9 +1420,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <Instagram size={16} color="#fff" />
             </a>
             {cartCount > 0 && (
-              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-9 h-9 rounded-full flex items-center justify-center" style={{ background: GREEN }}>
-                <ShoppingBag size={16} color={GOLD} />
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white" style={{ background: CHILI }}>{cartCount}</span>
+              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-11 h-11 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 4px 14px rgba(21,56,38,.4)', animation: 'cartBadgePulse 1.8s ease-in-out infinite' }}>
+                <ShoppingBag size={20} color="#fff" strokeWidth={2.5} />
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[11px] font-black text-white" style={{ background: CHILI, border: '2px solid ' + CREAM }}>{cartCount}</span>
               </button>
             )}
             <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
@@ -1428,9 +1430,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
             {cartCount > 0 && (
-              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-9 h-9 rounded-full flex items-center justify-center" style={{ background: GREEN }}>
-                <ShoppingBag size={16} color={GOLD} />
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white" style={{ background: CHILI }}>{cartCount}</span>
+              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-11 h-11 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 4px 14px rgba(21,56,38,.4)', animation: 'cartBadgePulse 1.8s ease-in-out infinite' }}>
+                <ShoppingBag size={20} color="#fff" strokeWidth={2.5} />
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[11px] font-black text-white" style={{ background: CHILI, border: '2px solid ' + CREAM }}>{cartCount}</span>
               </button>
             )}
             <button onClick={() => setNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
@@ -1856,54 +1858,52 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           }
           if (item.customPasta) {
             const isOpen = openExtra?.itemId === item.id;
-            const base = 7.5;
-            const configTotal = base + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
-            const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+            const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
+            const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
+            const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
             const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
             const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
             const confirmAdd = () => {
-              const base_name = `${pastaType} ${pastaSauceSel}`;
-              let deLabel = `${base_name}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
-              let displayLabel = `${mx(pastaType, lang)} ${mx(pastaSauceSel, lang)}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : ''}`;
+              let deLabel = `${item.name} – ${pastaSauceSel}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
+              let displayLabel = `${mx(item.name, lang)} – ${mx(pastaSauceSel, lang)}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : ''}`;
               if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
-              const lineKey = `${item.id}-${pastaType}-${pastaSauceSel}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+              const lineKey = `${item.id}-${pastaSauceSel}-${configExtras.slice().sort().join('_') || 'ohne'}`;
               addItem(lineKey, displayLabel, configTotal, deLabel);
               closeModal();
             };
             return (
               <React.Fragment key={item.id}>
-                <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                   <div className="p-3.5">
-                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}</div>
                     {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
-                    <div className="text-xs font-bold" style={{ color: CHILI }}>{t('chooseArrow')} · {fmt(base)}</div>
+                    <div className="text-xs font-bold" style={{ color: CHILI }}>{fmt(item.price)}</div>
                   </div>
                 </button>
                 {isOpen && (
                   <ConfigModal onClose={closeModal}>
                     <div className="p-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-black text-lg" style={{ color: GREEN }}>{pastaStep === 0 ? t('choosePastaTypeTitle') : pastaStep === 1 ? t('chooseSauceTitle') : t('extrasQ')}</h3>
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
                         <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                       </div>
                       <div className="flex items-center gap-1.5 mb-5">
-                        {[0, 1, 2].map((i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= pastaStep ? ORANGE : '#e3d5bd' }} />)}
+                        {[0, 1].map((i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= pastaStep ? ORANGE : '#e3d5bd' }} />)}
                       </div>
                       {pastaStep === 0 && (
-                        <div className="flex flex-col gap-2.5 mb-4">
-                          {PASTA_TYPES.map((pt) => (<OptionCard key={pt} selected={pastaType === pt} onClick={() => setPastaType(pt)}><span className="font-bold text-sm">{mx(pt, lang)}</span></OptionCard>))}
+                        <div>
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('chooseSauceTitle').toUpperCase()}</div>
+                          <div className="flex flex-col gap-2.5 mb-4">
+                            {PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauceSel === s} onClick={() => setPastaSauceSel(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}
+                          </div>
                         </div>
                       )}
                       {pastaStep === 1 && (
-                        <div className="flex flex-col gap-2.5 mb-4">
-                          {PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauceSel === s} onClick={() => setPastaSauceSel(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}
-                        </div>
-                      )}
-                      {pastaStep === 2 && (
                         <div className="mb-4">
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {PASTA_EXTRA_ITEMS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} +{fmt(1.0)}</button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
                             ))}
                           </div>
                           <input
@@ -1916,9 +1916,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                         </div>
                       )}
                       <div className="flex items-center gap-2">
-                        {pastaStep > 0 && <button onClick={() => setPastaStep((s) => s - 1)} className="px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>}
-                        {pastaStep < 2 && <button onClick={() => setPastaStep((s) => s + 1)} disabled={pastaStep === 0 ? !pastaType : !pastaSauceSel} className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('weiterShort')}</button>}
-                        {pastaStep === 2 && <button onClick={confirmAdd} className="flex-1 py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}><Plus size={16} /> {t('toCart')} · {fmt(configTotal)}</button>}
+                        {pastaStep > 0 && <button onClick={() => setPastaStep(0)} className="px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>}
+                        {pastaStep === 0 && <button onClick={() => setPastaStep(1)} disabled={!pastaSauceSel} className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('weiterShort')}</button>}
+                        {pastaStep === 1 && <button onClick={confirmAdd} className="flex-1 py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}><Plus size={16} /> {t('toCart')} · {fmt(configTotal)}</button>}
                       </div>
                     </div>
                   </ConfigModal>
@@ -2574,54 +2574,52 @@ function GroupOrderView({ back }) {
               }
               if (item.customPasta) {
                 const isOpen = openExtra?.itemId === item.id;
-                const base = 7.5;
-                const configTotal = base + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
-                const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+                const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
+                const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
+                const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
                 const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
                 const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
                 const confirmAdd = () => {
-                  const base_name = `${pastaType} ${pastaSauceSel}`;
-                  let deLabel = `${base_name}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
-                  let displayLabel = `${mx(pastaType, lang)} ${mx(pastaSauceSel, lang)}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : ''}`;
+                  let deLabel = `${item.name} – ${pastaSauceSel}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
+                  let displayLabel = `${mx(item.name, lang)} – ${mx(pastaSauceSel, lang)}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : ''}`;
                   if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
-                  const lineKey = `${item.id}-${pastaType}-${pastaSauceSel}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+                  const lineKey = `${item.id}-${pastaSauceSel}-${configExtras.slice().sort().join('_') || 'ohne'}`;
                   addLocal(lineKey, displayLabel, configTotal, deLabel);
                   closeModal();
                 };
                 return (
                   <React.Fragment key={item.id}>
-                    <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                    <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                       <div className="p-3.5">
-                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
+                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}</div>
                         {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
-                        <div className="text-xs font-bold" style={{ color: CHILI }}>{t('chooseArrow')} · {fmt(base)}</div>
+                        <div className="text-xs font-bold" style={{ color: CHILI }}>{fmt(item.price)}</div>
                       </div>
                     </button>
                     {isOpen && (
                       <ConfigModal onClose={closeModal}>
                         <div className="p-5">
-                          <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-black text-lg" style={{ color: GREEN }}>{pastaStep === 0 ? t('choosePastaTypeTitle') : pastaStep === 1 ? t('chooseSauceTitle') : t('extrasQ')}</h3>
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
                             <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                           </div>
                           <div className="flex items-center gap-1.5 mb-5">
-                            {[0, 1, 2].map((i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= pastaStep ? ORANGE : '#e3d5bd' }} />)}
+                            {[0, 1].map((i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= pastaStep ? ORANGE : '#e3d5bd' }} />)}
                           </div>
                           {pastaStep === 0 && (
-                            <div className="flex flex-col gap-2.5 mb-4">
-                              {PASTA_TYPES.map((pt) => (<OptionCard key={pt} selected={pastaType === pt} onClick={() => setPastaType(pt)}><span className="font-bold text-sm">{mx(pt, lang)}</span></OptionCard>))}
+                            <div>
+                              <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('chooseSauceTitle').toUpperCase()}</div>
+                              <div className="flex flex-col gap-2.5 mb-4">
+                                {PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauceSel === s} onClick={() => setPastaSauceSel(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}
+                              </div>
                             </div>
                           )}
                           {pastaStep === 1 && (
-                            <div className="flex flex-col gap-2.5 mb-4">
-                              {PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauceSel === s} onClick={() => setPastaSauceSel(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}
-                            </div>
-                          )}
-                          {pastaStep === 2 && (
                             <div className="mb-4">
+                              <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                               <div className="grid grid-cols-2 gap-2 mb-4">
                                 {PASTA_EXTRA_ITEMS.map((top) => (
-                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} +{fmt(1.0)}</button>
+                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
                                 ))}
                               </div>
                               <input
@@ -2634,9 +2632,9 @@ function GroupOrderView({ back }) {
                             </div>
                           )}
                           <div className="flex items-center gap-2">
-                            {pastaStep > 0 && <button onClick={() => setPastaStep((s) => s - 1)} className="px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>}
-                            {pastaStep < 2 && <button onClick={() => setPastaStep((s) => s + 1)} disabled={pastaStep === 0 ? !pastaType : !pastaSauceSel} className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('weiterShort')}</button>}
-                            {pastaStep === 2 && <button onClick={confirmAdd} className="flex-1 py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}><Plus size={16} /> {t('hinzufuegen')} · {fmt(configTotal)}</button>}
+                            {pastaStep > 0 && <button onClick={() => setPastaStep(0)} className="px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>}
+                            {pastaStep === 0 && <button onClick={() => setPastaStep(1)} disabled={!pastaSauceSel} className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('weiterShort')}</button>}
+                            {pastaStep === 1 && <button onClick={confirmAdd} className="flex-1 py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}><Plus size={16} /> {t('hinzufuegen')} · {fmt(configTotal)}</button>}
                           </div>
                         </div>
                       </ConfigModal>
