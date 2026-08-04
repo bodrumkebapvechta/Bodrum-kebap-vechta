@@ -567,25 +567,25 @@ function getGreeting(now) {
 
 const DAILY_SPECIALS = [
   { day: 0, items: [
-    { name: 'Pizza Vier Käse', price: 9.0, desc: 'Mozzarella, Gorgonzola & Weichkäse', img: 'g2' },
-    { name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', img: 'g3' },
+    { name: 'Pizza Vier Käse', price: 9.0, desc: 'Mozzarella, Gorgonzola & Weichkäse', img: 'g2', cat: 'pizza' },
+    { name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', img: 'g3', cat: 'nudeln' },
   ]},
   { day: 1, items: [
-    { name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße, überbacken mit Käse', img: 'g4' },
-    { name: 'Baguette Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Pilzen, Zwiebeln & Käse', img: 'g5' },
+    { name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße, überbacken mit Käse', img: 'g4', cat: 'ueberbacken' },
+    { name: 'Baguette Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Pilzen, Zwiebeln & Käse', img: 'g5', cat: 'baguette' },
   ]},
   { day: 2, items: null },
   { day: 3, items: [
-    { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'g3' },
-    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'g1' },
+    { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'g3', cat: 'nudeln' },
+    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'g1', cat: 'schnitzel' },
   ]},
   { day: 4, items: [
-    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes', img: 'g1' },
-    { name: 'Pizza Spinat', price: 8.5, desc: 'Knoblauch und Weichkäse in Salzlake', img: 'g2' },
+    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes', img: 'g1', cat: 'schnitzel' },
+    { name: 'Pizza Spinat', price: 8.5, desc: 'Knoblauch und Weichkäse in Salzlake', img: 'g2', cat: 'pizza' },
   ]},
   { day: 5, items: [
-    { name: 'Baguette Bodrum', price: 11.0, desc: 'Hollandaise, Weichkäse & frisches Gemüse', img: 'g5' },
-    { name: 'Calzone Kebap', price: 10.0, desc: 'Gefüllt mit Fleisch vom Drehspieß & Käse', img: 'g4' },
+    { name: 'Baguette Bodrum', price: 11.0, desc: 'Hollandaise, Weichkäse & frisches Gemüse', img: 'g5', cat: 'baguette' },
+    { name: 'Calzone Kebap', price: 10.0, desc: 'Gefüllt mit Fleisch vom Drehspieß & Käse', img: 'g4', cat: 'calzone' },
   ]},
   { day: 6, items: null },
 ];
@@ -718,22 +718,10 @@ function MittagsBanner() {
 }
 
 function DailySpecialCard({ item, isLunchWindow, go }) {
-  const [open, setOpen] = useState(false);
-  const [meat, setMeat] = useState('haehnchen');
-  const showMeatChoice = item.name.includes('Kebap');
   const displayPrice = isLunchWindow ? 9.5 : item.price;
 
-  const meatOptions = [
-    { key: 'haehnchen', label: 'Hähnchen', extra: 0 },
-    { key: 'kalb', label: 'Kalb/Rind', extra: 0 },
-  ];
-
-  const addDirect = () => {
-    go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
-  };
-  const confirmMeat = () => {
-    const opt = meatOptions.find((m) => m.key === meat);
-    go('whatsapp', { pendingCombo: { title: `${item.name} (${opt.label})`, price: displayPrice } });
+  const goToCategory = () => {
+    go('whatsapp', { categoryMode: item.cat });
   };
 
   return (
@@ -743,31 +731,12 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
         <div className="text-white font-black text-lg mb-1">{item.name}</div>
         <div className="text-xs font-medium mb-3" style={{ color: '#d9cdb4' }}>{item.desc}</div>
 
-        {!open && (
-          <div className="mt-auto flex items-center gap-3">
-            <span className="font-black text-lg" style={{ color: GOLD }}>
-              {fmt(displayPrice)}{isLunchWindow && <span className="text-[10px] font-bold ml-1" style={{ color: '#d9cdb4' }}>inkl. Getränk</span>}
-            </span>
-            <button onClick={() => (showMeatChoice ? (setOpen(true), setMeat('haehnchen')) : addDirect())} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: ORANGE, color: '#fff' }}>Bestellen →</button>
-          </div>
-        )}
-
-        {open && (
-          <div className="rounded-xl p-3.5 mt-auto" style={{ background: 'rgba(255,255,255,.06)' }}>
-            <div className="text-[10px] font-bold mb-2" style={{ color: GOLD }}>FLEISCH WÄHLEN:</div>
-            <div className="flex flex-col gap-1.5 mb-3">
-              {meatOptions.map((m) => (
-                <button key={m.key} onClick={() => setMeat(m.key)} className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold" style={meat === m.key ? { background: GOLD, color: GREEN } : { background: 'rgba(255,255,255,.1)', color: '#fff' }}>
-                  <span>{m.label}</span>
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <button onClick={() => setOpen(false)} className="px-4 py-2.5 rounded-full font-semibold text-xs" style={{ background: 'rgba(255,255,255,.1)', color: '#fff' }}>Abbrechen</button>
-              <button onClick={confirmMeat} className="flex-1 py-2.5 rounded-full font-bold text-xs text-white" style={{ background: ORANGE }}>Hinzufügen</button>
-            </div>
-          </div>
-        )}
+        <div className="mt-auto flex items-center gap-3">
+          <span className="font-black text-lg" style={{ color: GOLD }}>
+            {fmt(displayPrice)}{isLunchWindow && <span className="text-[10px] font-bold ml-1" style={{ color: '#d9cdb4' }}>inkl. Getränk</span>}
+          </span>
+          <button onClick={goToCategory} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: ORANGE, color: '#fff' }}>Bestellen →</button>
+        </div>
       </div>
     </div>
   );
@@ -1049,7 +1018,8 @@ function HomeView({ go }) {
 
 /* ============ WHATSAPP ORDER ============ */
 function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
-  const [tab, setTab] = useState(initialAction?.pizzaComboMode ? 'pizza' : MENU[0].key);
+  const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
+  const [tab, setTab] = useState(initialTab);
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
