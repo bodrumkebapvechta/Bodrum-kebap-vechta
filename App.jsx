@@ -964,22 +964,68 @@ function SplashScreen({ onDone }) {
 }
 
 /* ============ HOME ============ */
-function FeatureCard({ icon, title, sub, color, textColor = '#fff', onClick, index = 0 }) {
+function Reveal({ children, className = '', delay = 0 }) {
+  const ref = React.useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); obs.disconnect(); }
+    }, { threshold: 0.15 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className={className} style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(28px)', transition: `opacity .7s cubic-bezier(.22,1,.36,1) ${delay}s, transform .7s cubic-bezier(.22,1,.36,1) ${delay}s` }}>
+      {children}
+    </div>
+  );
+}
+
+function CountUp({ to, decimals = 0, suffix = '', duration = 1400 }) {
+  const ref = React.useRef(null);
+  const [val, setVal] = useState(0);
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !started) {
+        setStarted(true);
+        const start = performance.now();
+        const tick = (now) => {
+          const p = Math.min(1, (now - start) / duration);
+          setVal(to * (1 - Math.pow(1 - p, 3)));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        obs.disconnect();
+      }
+    }, { threshold: 0.4 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [to, duration, started]);
+  return <span ref={ref}>{val.toFixed(decimals).replace('.', ',')}{suffix}</span>;
+}
+
+function FeatureCard({ icon, title, sub, color, textColor = '#fff', onClick, index = 0, img }) {
   return (
     <button
       onClick={onClick}
-      className="feature-card text-left rounded-2xl p-6 flex flex-col gap-3"
+      className="feature-card relative overflow-hidden text-left rounded-2xl p-6 flex flex-col gap-3"
       style={{
         background: color, boxShadow: '0 10px 30px rgba(21,56,38,.14)',
         animation: `cardIn .6s cubic-bezier(.22,1,.36,1) ${index * 0.12}s both`,
       }}
     >
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl icon-wobble" style={{ background: 'rgba(255,255,255,0.2)' }}>{icon}</div>
-      <div>
+      {img && <img src={img} className="feature-card-bg absolute inset-0 w-full h-full object-cover" style={{ opacity: .08, transition: 'opacity .3s ease, transform .3s ease' }} />}
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl icon-wobble relative" style={{ background: 'rgba(255,255,255,0.2)' }}>{icon}</div>
+      <div className="relative">
         <div className="font-black text-lg leading-tight" style={{ color: textColor }}>{title}</div>
         <div className="text-sm font-medium mt-1" style={{ color: textColor, opacity: 0.85 }}>{sub}</div>
       </div>
-      <div className="flex items-center gap-1.5 text-sm font-bold mt-1" style={{ color: textColor }}>Los geht's <ArrowRight size={15} /></div>
+      <div className="flex items-center gap-1.5 text-sm font-bold mt-1 relative" style={{ color: textColor }}>Los geht's <ArrowRight size={15} /></div>
     </button>
   );
 }
@@ -1006,7 +1052,7 @@ function Testimonials() {
         <div className="flex items-center justify-center gap-1 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (<Star key={i} size={19} fill={GOLD} color={GOLD} />))}
         </div>
-        <div className="font-black text-sm mb-6" style={{ color: GREEN }}>4,6 · 293 Google-Bewertungen</div>
+        <div className="font-black text-sm mb-6" style={{ color: GREEN }}><CountUp to={4.6} decimals={1} /> · <CountUp to={293} /> Google-Bewertungen</div>
         <p className="text-lg sm:text-xl font-semibold mb-4" style={{ color: '#4a4032', minHeight: 64 }}>„{REVIEWS[idx].text}"</p>
         <div className="text-xs font-bold tracking-wide" style={{ color: '#a4906c' }}>— {REVIEWS[idx].name}</div>
         <div className="flex justify-center gap-2 mt-6">
@@ -1359,9 +1405,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes closedBlink { 0%,100%{ opacity:1;} 50%{ opacity:.25;} }
         @keyframes cartBadgePulse { 0%,100%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 0 rgba(230,90,10,.4);} 50%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 8px rgba(230,90,10,0);} }
         @keyframes shine { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
-        .feature-card{ transition: transform .25s ease, box-shadow .25s ease; }
-        .feature-card:hover{ transform: translateY(-6px) scale(1.015); box-shadow:0 18px 40px rgba(21,56,38,.22); }
+        .feature-card{ transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease; transform-style: preserve-3d; }
+        .feature-card:hover{ transform: perspective(700px) rotateX(4deg) rotateY(-4deg) translateY(-8px) scale(1.02); box-shadow:0 22px 44px rgba(21,56,38,.26); }
         .feature-card:hover .icon-wobble{ animation: floatY .9s ease-in-out infinite; }
+        .feature-card:hover .feature-card-bg{ opacity: .16; transform: scale(1.08); }
         .gallery-img{ transition: transform .4s ease, filter .4s ease; }
         .daily-card{ transition: transform .3s ease, box-shadow .3s ease; }
         .daily-card:hover{ transform: translateY(-4px); box-shadow: 0 16px 34px rgba(21,56,38,.24); }
@@ -1473,7 +1520,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
-            <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE }}>{t('heroTitle2')}</span></h1>
+            <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="flex flex-wrap gap-3 mb-3">
               <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
@@ -1487,12 +1534,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
             </div>
           </div>
-          <div className="rounded-2xl p-6 hidden lg:block" style={{ background: 'rgba(255,253,249,.97)' }}>
+          <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold" style={{ color: GREEN }}>{lang === 'de' ? 'Täglich 11:30–22:00' : '11:30–22:00'}</span></div>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : 'Dinsdag'}</span></div>
             <div className="flex justify-between py-2.5 text-sm"><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroAddress')}</span><span className="font-bold text-right" style={{ color: GREEN }}>Oyther Straße 37,<br />49377 Vechta</span></div>
+            <img src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
+            <img src={PENNE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 78, height: 78, bottom: -18, left: -18, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(-8deg)' }} />
           </div>
         </div>
+        <svg viewBox="0 0 1440 60" className="w-full block relative z-10" style={{ marginBottom: -1 }} preserveAspectRatio="none"><path d="M0,32 C240,64 480,0 720,20 C960,40 1200,60 1440,24 L1440,60 L0,60 Z" fill={CREAM} /></svg>
       </section>
 
       {/* DAILY SPECIAL */}
@@ -1504,15 +1554,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
       {/* EXTRAS */}
       <section id="extras" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
-        <div className="text-center mb-9">
+        <Reveal className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('extrasKicker')}</div>
           <h2 className="font-black" style={{ fontSize: 'clamp(26px,4vw,36px)', color: GREEN }}>{t('extrasTitle')}</h2>
-        </div>
+        </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <FeatureCard index={0} icon="📱" title={t('featWaTitle')} sub={t('featWaSub')} color="#25D366" onClick={() => go('whatsapp')} />
-          <FeatureCard index={1} icon="🧩" title={t('featBuilderTitle')} sub={t('featBuilderSub')} color={GREEN} onClick={() => go('builder')} />
-          <FeatureCard index={2} icon="👥" title={t('featGroupTitle')} sub={t('featGroupSub')} color="#2b5c41" onClick={() => go('group')} />
-          <FeatureCard index={3} icon="🎟️" title={t('featLoyaltyTitle')} sub={t('featLoyaltySub')} color={GOLD} textColor={GREEN} onClick={() => go('loyalty')} />
+          <FeatureCard index={0} icon="📱" title={t('featWaTitle')} sub={t('featWaSub')} color="#25D366" onClick={() => go('whatsapp')} img={DOENER_SPIESS_IMG} />
+          <FeatureCard index={1} icon="🧩" title={t('featBuilderTitle')} sub={t('featBuilderSub')} color={GREEN} onClick={() => go('builder')} img={PIZZA_KAESE_IMG} />
+          <FeatureCard index={2} icon="👥" title={t('featGroupTitle')} sub={t('featGroupSub')} color="#2b5c41" onClick={() => go('group')} img={CALZONE_IMG} />
+          <FeatureCard index={3} icon="🎟️" title={t('featLoyaltyTitle')} sub={t('featLoyaltySub')} color={GOLD} textColor={GREEN} onClick={() => go('loyalty')} img={PENNE_IMG} />
         </div>
         <p className="text-center text-xs font-medium mt-6" style={{ color: '#a4906c' }}>{t('extrasTip')}</p>
       </section>
@@ -1531,27 +1581,27 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
 
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>{t('galleryKitchen')}</div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <img src={TERRACE_IMG} onClick={() => setLightbox(TERRACE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={DOENER_TELLER_IMG} onClick={() => setLightbox(DOENER_TELLER_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={SCHNITZEL_IMG} onClick={() => setLightbox(SCHNITZEL_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={SPAGHETTI_IMG} onClick={() => setLightbox(SPAGHETTI_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={FOOD_G1} onClick={() => setLightbox(FOOD_G1)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={FOOD_G2} onClick={() => setLightbox(FOOD_G2)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={FOOD_G3} onClick={() => setLightbox(FOOD_G3)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={FOOD_G4} onClick={() => setLightbox(FOOD_G4)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={DOENER_SPIESS_IMG} onClick={() => setLightbox(DOENER_SPIESS_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={CALZONE_IMG} onClick={() => setLightbox(CALZONE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={LAHMACUN_IMG} onClick={() => setLightbox(LAHMACUN_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={PIZZABROETCHEN_IMG} onClick={() => setLightbox(PIZZABROETCHEN_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={PENNE_IMG} onClick={() => setLightbox(PENNE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={PIZZA_KAESE_IMG} onClick={() => setLightbox(PIZZA_KAESE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={FALAFEL_IMG} onClick={() => setLightbox(FALAFEL_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={SALAT_BUNT_IMG} onClick={() => setLightbox(SALAT_BUNT_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={BAUERNSALAT_IMG} onClick={() => setLightbox(BAUERNSALAT_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={NUGGETS_IMG} onClick={() => setLightbox(NUGGETS_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={CHICKEN_STRIPS_IMG} onClick={() => setLightbox(CHICKEN_STRIPS_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
-          <img src={POMMES_IMG} onClick={() => setLightbox(POMMES_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+        <div className="columns-2 lg:columns-4 gap-3 [column-fill:_balance]">
+          <img src={TERRACE_IMG} onClick={() => setLightbox(TERRACE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 220 }} />
+          <img src={DOENER_TELLER_IMG} onClick={() => setLightbox(DOENER_TELLER_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 }} />
+          <img src={SCHNITZEL_IMG} onClick={() => setLightbox(SCHNITZEL_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
+          <img src={SPAGHETTI_IMG} onClick={() => setLightbox(SPAGHETTI_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 240 }} />
+          <img src={FOOD_G1} onClick={() => setLightbox(FOOD_G1)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
+          <img src={FOOD_G2} onClick={() => setLightbox(FOOD_G2)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
+          <img src={FOOD_G3} onClick={() => setLightbox(FOOD_G3)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 }} />
+          <img src={FOOD_G4} onClick={() => setLightbox(FOOD_G4)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
+          <img src={DOENER_SPIESS_IMG} onClick={() => setLightbox(DOENER_SPIESS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 260 }} />
+          <img src={CALZONE_IMG} onClick={() => setLightbox(CALZONE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 180 }} />
+          <img src={LAHMACUN_IMG} onClick={() => setLightbox(LAHMACUN_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
+          <img src={PIZZABROETCHEN_IMG} onClick={() => setLightbox(PIZZABROETCHEN_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 }} />
+          <img src={PENNE_IMG} onClick={() => setLightbox(PENNE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 220 }} />
+          <img src={PIZZA_KAESE_IMG} onClick={() => setLightbox(PIZZA_KAESE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
+          <img src={FALAFEL_IMG} onClick={() => setLightbox(FALAFEL_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
+          <img src={SALAT_BUNT_IMG} onClick={() => setLightbox(SALAT_BUNT_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 240 }} />
+          <img src={BAUERNSALAT_IMG} onClick={() => setLightbox(BAUERNSALAT_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 180 }} />
+          <img src={NUGGETS_IMG} onClick={() => setLightbox(NUGGETS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 200 }} />
+          <img src={CHICKEN_STRIPS_IMG} onClick={() => setLightbox(CHICKEN_STRIPS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
+          <img src={POMMES_IMG} onClick={() => setLightbox(POMMES_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
         </div>
       </section>
 
