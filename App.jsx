@@ -202,6 +202,14 @@ const UI = {
   sizeSmall: { de: 'klein', en: 'small', tr: 'küçük', ro: 'mic', nl: 'klein' },
   sizeLarge: { de: 'groß', en: 'large', tr: 'büyük', ro: 'mare', nl: 'groot' },
   extrasPricePrefix: { de: 'Extras (je', en: 'Extras (each', tr: 'Ekstralar (her biri', ro: 'Extra (fiecare', nl: 'Extra’s (elk' },
+  cartTitle: { de: 'Deine Bestellung', en: 'Your order', tr: 'Siparişin', ro: 'Comanda ta', nl: 'Jouw bestelling' },
+  drinksTitle: { de: 'Etwas zu trinken?', en: 'Something to drink?', tr: 'İçecek ister misin?', ro: 'Ceva de băut?', nl: 'Iets te drinken?' },
+  itemsWord: { de: 'Artikel', en: 'items', tr: 'ürün', ro: 'articole', nl: 'items' },
+  orderSentTitle: { de: '✓ Bestellung gesendet!', en: '✓ Order sent!', tr: '✓ Sipariş gönderildi!', ro: '✓ Comandă trimisă!', nl: '✓ Bestelling verstuurd!' },
+  orderSentSub: { de: 'Vielen Dank! Wir bereiten deine Bestellung vor.', en: "Thank you! We're preparing your order.", tr: 'Teşekkürler! Siparişini hazırlıyoruz.', ro: 'Mulțumim! Îți pregătim comanda.', nl: 'Bedankt! We bereiden je bestelling voor.' },
+  backToHomeBtn: { de: 'Zurück zur Startseite', en: 'Back to homepage', tr: 'Ana sayfaya dön', ro: 'Înapoi la pagina principală', nl: 'Terug naar startpagina' },
+  newOrderBtn: { de: 'Neue Bestellung starten', en: 'Start a new order', tr: 'Yeni sipariş oluştur', ro: 'Începe o comandă nouă', nl: 'Nieuwe bestelling starten' },
+  installAppBtn: { de: '📲 App installieren', en: '📲 Install app', tr: '📲 Uygulamayı yükle', ro: '📲 Instalează aplicația', nl: '📲 App installeren' },
 };
 
 const CATEGORY_LABELS = {
@@ -1223,7 +1231,7 @@ function DailySpecial({ go }) {
   );
 }
 
-function HomeView({ go }) {
+function HomeView({ go, installPrompt, onInstall }) {
   const [navOpen, setNavOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
   const now = useLiveClock();
@@ -1304,6 +1312,9 @@ function HomeView({ go }) {
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>
+            {installPrompt && (
+              <button onClick={onInstall} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
+            )}
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
@@ -1324,6 +1335,9 @@ function HomeView({ go }) {
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+            {installPrompt && (
+              <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
+            )}
             <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: ORANGE, color: '#fff' }}>{t('orderNow')}</button>
           </div>
         )}
@@ -1491,6 +1505,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
   const [itemNotes, setItemNotes] = useState({});
+  const [burst, setBurst] = useState(false);
+  const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
+  const handleSend = () => { setBurst(true); setTimeout(() => setBurst(false), 1600); setDrawerView('sent'); };
 
   const addItem = (lineKey, label, price, deLabel) => setCart((c) => ({ ...c, [lineKey]: { name: label, deName: deLabel || label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
 
@@ -1639,7 +1656,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
 
       {totalCount > 0 && !cartOpen && (
         <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: ORANGE, color: '#fff' }}>
-          <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} Artikel</span>
+          <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} {t('itemsWord')}</span>
           <span className="font-black text-base">{fmt(totalPrice)}</span>
         </button>
       )}
@@ -1649,7 +1666,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
           <div className="w-full max-w-md h-full flex flex-col" style={{ background: CREAM }}>
             <div style={{ background: GREEN }} className="px-5 py-5 flex items-center gap-3">
               <button onClick={() => (drawerView === 'wheel' || drawerView === 'upsell2' ? setDrawerView(drawerView === 'upsell2' ? 'upsell' : 'cart') : setCartOpen(false))} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}><ChevronLeft size={18} color="#fff" /></button>
-              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? 'Glücksrad 🎡' : drawerView === 'upsell' ? 'Noch etwas dazu?' : drawerView === 'upsell2' ? 'Etwas zu trinken?' : 'Deine Bestellung'}</div>
+              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? t('wheelTitle') : drawerView === 'upsell' ? t('upsellTitle') : drawerView === 'upsell2' ? t('drinksTitle') : drawerView === 'sent' ? t('orderSentTitle') : t('cartTitle')}</div>
             </div>
 
             {drawerView === 'upsell' && (
@@ -1760,10 +1777,23 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
                 {lines.length > 0 && (
                   <div className="px-5 py-4" style={{ borderTop: '1px solid #e3d5bd', background: '#fff' }}>
                     <div className="flex justify-between items-center mb-3"><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('gesamt')}</span><span className="text-lg font-black" style={{ color: GREEN }}>{fmt(totalPrice)}</span></div>
-                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('waSend')}</a>
+                    <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('waSend')}</a>
                   </div>
                 )}
               </>
+            )}
+
+            {drawerView === 'sent' && (
+              <div className="flex-1 overflow-y-auto px-5 py-10 flex flex-col items-center justify-center text-center relative">
+                {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
+                <div className="text-5xl mb-4">✅</div>
+                <div className="font-black text-xl mb-2" style={{ color: GREEN }}>{t('orderSentTitle')}</div>
+                <p className="text-sm mb-8" style={{ color: '#7c6d55' }}>{t('orderSentSub')}</p>
+                <div className="w-full flex flex-col gap-3">
+                  <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
+                  <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -1813,6 +1843,10 @@ function DonerBuilderView({ back }) {
   const [name, setName] = useState('');
   const [showWheel, setShowWheel] = useState(false);
   const [wheelResult, setWheelResult] = useState(null);
+  const [sent, setSent] = useState(false);
+  const [burst, setBurst] = useState(false);
+  const handleSend = () => { setBurst(true); setSent(true); setTimeout(() => setBurst(false), 1600); };
+  const resetBuilder = () => { setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
   const toggleExtra = (id) => setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
   const total = useMemo(() => {
@@ -1851,7 +1885,7 @@ function DonerBuilderView({ back }) {
           <div className="flex flex-col gap-2.5">{SAUCES.map((s) => (<OptionCard key={s.id} selected={sauce === s.id} onClick={() => setSauce(s.id)}><span className="font-bold text-sm">{mx(s.label, lang)}</span></OptionCard>))}</div></div>)}
         {step === 3 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
           <div className="grid grid-cols-2 gap-2.5">{BUILDER_EXTRAS.map((e) => { const sel = extras.includes(e.id); return (<button key={e.id} onClick={() => toggleExtra(e.id)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(e.label, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{e.price > 0 ? `+${fmt(e.price)}` : t('freeLabel')}</div></button>); })}</div></div>)}
-        {step === 4 && !showWheel && (
+        {step === 4 && !showWheel && !sent && (
           <div>
             <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('doenerReadyTitle')}</h2>
             <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('doenerReadySub')}</p>
@@ -1876,7 +1910,19 @@ function DonerBuilderView({ back }) {
               </div>
             )}
 
-            <a href={waLink} target="_blank" rel="noopener noreferrer" className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('waSend')}</a>
+            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('waSend')}</a>
+          </div>
+        )}
+        {step === 4 && sent && (
+          <div className="flex flex-col items-center justify-center text-center py-10 relative">
+            {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
+            <div className="text-5xl mb-4">✅</div>
+            <div className="font-black text-xl mb-2" style={{ color: GREEN }}>{t('orderSentTitle')}</div>
+            <p className="text-sm mb-8" style={{ color: '#7c6d55' }}>{t('orderSentSub')}</p>
+            <div className="w-full flex flex-col gap-3">
+              <button onClick={resetBuilder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
+              <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+            </div>
           </div>
         )}
         {step === 4 && showWheel && (
@@ -1970,13 +2016,18 @@ function GroupOrderView({ back }) {
     msg += `\n(Abholung, keine Lieferung) Bitte sagt uns, wann es abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [group, grandTotal, code]);
+  const [justSent, setJustSent] = useState(false);
   const markSent = async () => {
     const fresh = (await safeGet(`grouporder:${code}`)) || group;
     if (fresh?.sentBy) { setGroup(fresh); return; }
     const updated = { ...fresh, sentBy: name, sentAt: Date.now() };
     await safeSet(`grouporder:${code}`, updated);
     setGroup(updated);
-    setBigBurst(true); setTimeout(() => setBigBurst(false), 2200);
+    setBigBurst(true); setJustSent(true); setTimeout(() => setBigBurst(false), 2200);
+  };
+  const resetGroupOrder = () => {
+    setView('home'); setCode(''); setCodeInput(''); setName(''); setLocalCart({}); setGroup(null); setErr('');
+    setShowWheel(false); setWheelResult(null); setItemNotes({}); setJustSent(false);
   };
   const onGroupWheelWin = async (res) => {
     setWheelResult(res);
@@ -2151,8 +2202,15 @@ function GroupOrderView({ back }) {
                 </div>
               )}
               {group.sentBy ? (
-                <div className="w-full py-3.5 rounded-xl font-bold text-sm text-center" style={{ background: '#f0e5cf', color: GREEN }}>
-                  ✓ {group.sentBy} {t('groupAlreadySent')}
+                <div className="relative">
+                  {justSent && bigBurst && <EmojiConfetti emojis={['🎉', '🥙', '📲', '⭐', '🎊']} />}
+                  <div className="w-full py-3.5 rounded-xl font-bold text-sm text-center mb-3" style={{ background: '#f0e5cf', color: GREEN }}>
+                    ✓ {group.sentBy} {t('groupAlreadySent')}
+                  </div>
+                  <div className="w-full flex flex-col gap-3">
+                    <button onClick={resetGroupOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
+                    <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+                  </div>
                 </div>
               ) : (
                 <a href={waFinalLink} target="_blank" rel="noopener noreferrer" onClick={markSent} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('groupSendFinal')}</a>
@@ -2555,11 +2613,25 @@ export default function App() {
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const langCtx = useLang();
+  const [installPrompt, setInstallPrompt] = useState(null);
+  useEffect(() => {
+    const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    const onInstalled = () => setInstallPrompt(null);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => { window.removeEventListener('beforeinstallprompt', handler); window.removeEventListener('appinstalled', onInstalled); };
+  }, []);
+  const triggerInstall = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
 
   if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
   if (view === 'home') {
-    return <LangContext.Provider value={langCtx}><HomeView go={go} /></LangContext.Provider>;
+    return <LangContext.Provider value={langCtx}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} /></LangContext.Provider>;
   }
 
   return (
