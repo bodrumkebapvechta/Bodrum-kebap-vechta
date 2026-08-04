@@ -11,7 +11,7 @@ const ORANGE = '#ff6a1a';
 const GOLD = '#ffc738';
 const CREAM = '#fff6ea';
 const CHILI = '#d62828';
-const WHATSAPP_NUMBER = '905324104409'; // Test-Nummer — vor Live-Betrieb durch die echte Filial-Nummer ersetzen
+const WHATSAPP_NUMBER = '4915210804759';
 
 /* ============ ASSETS ============ */
 const LOGO_ICON = "/logo.png";
@@ -21,6 +21,7 @@ const FOOD_G2 = "/food-g2.jpg";
 const FOOD_G3 = "/food-g3.jpg";
 const FOOD_G4 = "/food-g4.jpg";
 const FOOD_G5 = "/food-g5.jpg";
+const TERRACE_IMG = "/terrace.jpg";
 
 /* ============ MENU DATA ============ */
 const MENU = [
@@ -36,14 +37,14 @@ const MENU = [
     { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse' },
     { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln' },
     { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
-    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis', weekend: true },
-    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis' },
-    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes oder Reis' },
-    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes oder Reis' },
-    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes oder Reis' },
+    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes', weekend: true },
+    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes' },
+    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes' },
+    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes' },
+    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes' },
     { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße' },
     { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße' },
-    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes oder Reis' },
+    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes' },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
     { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0 },
@@ -135,14 +136,14 @@ const MENU = [
     { id: 'n169', name: 'Soja Salsa', price: 11.0, desc: 'Hähnchenbrust mit Paprika & Pilzen in Sojasoße, serviert mit Kurkuma-Penne & Marktsalat' },
   ]},
   { key: 'schnitzel', label: 'Schnitzel', items: [
-    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes oder Reis' },
-    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes oder Reis' },
-    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes oder Reis' },
-    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes oder Reis' },
-    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes oder Reis, überbacken mit Käse' },
-    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes oder Reis' },
-    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes oder Reis, überbacken mit Käse und Salat' },
-    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes oder Reis' },
+    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes' },
+    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes' },
+    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes' },
+    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes' },
+    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes, überbacken mit Käse' },
+    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes' },
+    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes, überbacken mit Käse und Salat' },
+    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes' },
   ]},
   { key: 'salat', label: 'Salat', items: [
     { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse' },
@@ -357,7 +358,7 @@ function WheelWidget({ onWin, compact }) {
           {WHEEL_PRIZES.map((p, i) => {
             const angle = i * WHEEL_SLICE + WHEEL_SLICE / 2;
             return (
-              <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle}deg) translateX(14px)` }}>
+              <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle - 90}deg) translateX(14px)` }}>
                 <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: 'translateY(-6px)' }}>{p.label}</span>
               </div>
             );
@@ -471,6 +472,10 @@ const REVIEWS = [
   { text: 'Günstig und richtig leckeres Essen. Bestellung ging schnell.', name: 'Google-Bewertung' },
   { text: 'Wirklich gutes Essen, schneller Service und tolle Atmosphäre.', name: 'Google-Bewertung' },
   { text: 'Immer wieder gerne – top Qualität und freundliches Team!', name: 'Google-Bewertung' },
+  { text: 'Bester Döner in Vechta, immer frisch und lecker zubereitet.', name: 'Google-Bewertung' },
+  { text: 'Sehr freundliches Personal und großzügige Portionen.', name: 'Google-Bewertung' },
+  { text: 'Die Pizza ist der Hammer, kommt man immer wieder gerne her.', name: 'Google-Bewertung' },
+  { text: 'Sauberer Laden, schnelle Zubereitung, klare Empfehlung!', name: 'Google-Bewertung' },
 ];
 
 function Testimonials() {
@@ -480,7 +485,7 @@ function Testimonials() {
     return () => clearInterval(t);
   }, []);
   return (
-    <section className="max-w-6xl mx-auto px-5 lg:px-10 py-12">
+    <section className="max-w-7xl mx-auto px-5 lg:px-10 py-12">
       <div className="rounded-2xl p-8 sm:p-10 text-center" style={{ background: '#fff', boxShadow: '0 10px 30px rgba(21,56,38,.1)' }}>
         <div className="flex items-center justify-center gap-1 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (<Star key={i} size={19} fill={GOLD} color={GOLD} />))}
@@ -519,7 +524,7 @@ function LunchCountdown() {
 
   return (
     <div className="py-4 text-center" style={{ background: active ? CHILI : ORANGE, animation: active ? 'urgentPulse 1.4s ease-out infinite' : 'none' }}>
-      <div className="max-w-6xl mx-auto px-5 flex flex-wrap items-center justify-center gap-3">
+      <div className="max-w-7xl mx-auto px-5 flex flex-wrap items-center justify-center gap-3">
         <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}MITTAGSANGEBOT · 9,50 €</span>
         {active ? (
           <span className="text-white text-sm font-black px-3 py-1 rounded-full" style={{ background: 'rgba(255,255,255,.18)' }}>
@@ -571,10 +576,10 @@ const DAILY_SPECIALS = [
   { day: 2, items: null },
   { day: 3, items: [
     { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'g3' },
-    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes oder Reis', img: 'g1' },
+    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'g1' },
   ]},
   { day: 4, items: [
-    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes oder Reis', img: 'g1' },
+    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes', img: 'g1' },
     { name: 'Pizza Spinat', price: 8.5, desc: 'Knoblauch und Weichkäse in Salzlake', img: 'g2' },
   ]},
   { day: 5, items: [
@@ -607,7 +612,7 @@ function WeekendComboPromo({ go }) {
   };
 
   return (
-    <section className="max-w-6xl mx-auto px-5 lg:px-10 py-4">
+    <section className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
       <div className="rounded-2xl overflow-hidden" style={{ background: `linear-gradient(120deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 10px 30px rgba(214,40,40,.3)' }}>
         <div className="px-6 pt-7 pb-3 text-center">
           <div className="text-white font-black text-xs tracking-[4px] mb-1.5 animate-pulse">🎉 NUR HEUTE — SAMSTAG</div>
@@ -615,7 +620,7 @@ function WeekendComboPromo({ go }) {
         </div>
         <div className="grid sm:grid-cols-2 gap-5 p-5 pt-2">
           {WEEKEND_COMBOS.map((combo) => (
-            <div key={combo.key} className="rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
+            <div key={combo.key} className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
               <div className="relative">
                 <img src={imgMap[combo.img]} className="w-full h-56 sm:h-64 object-cover" />
                 <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(combo.price)}</div>
@@ -664,6 +669,35 @@ function WeekendTeaser({ go }) {
   );
 }
 
+function MittagsBanner() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const day = now.getDay();
+  const isLunchDay = [1, 3, 4, 5].includes(day);
+  const start = new Date(now); start.setHours(11, 30, 0, 0);
+  const end = new Date(now); end.setHours(14, 0, 0, 0);
+  const active = isLunchDay && now >= start && now <= end;
+  let mm = 0, ss = 0;
+  if (active) {
+    const diff = end.getTime() - now.getTime();
+    mm = Math.floor(diff / 60000);
+    ss = Math.floor((diff % 60000) / 1000);
+  }
+  return (
+    <section className="py-4" style={{ background: ORANGE }}>
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 flex flex-wrap items-center justify-center gap-2 text-center" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>
+        <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}MITTAGSANGEBOT · 9,50 €</span>
+        <span className="text-white text-sm font-semibold opacity-90">
+          {active ? `noch ${mm}:${ss.toString().padStart(2, '0')} Min. · inkl. Getränk` : 'Mo.–Fr. 11:30–14:00 Uhr · inkl. Getränk'}
+        </span>
+      </div>
+    </section>
+  );
+}
+
 function DailySpecialCard({ item, isLunchWindow, go }) {
   const [open, setOpen] = useState(false);
   const [meat, setMeat] = useState('haehnchen');
@@ -686,8 +720,8 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
   };
 
   return (
-    <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
-      <img src={item.imgSrc} className="w-full h-40 object-cover" />
+    <div className="daily-card rounded-2xl overflow-hidden flex flex-col" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
+      <div className="overflow-hidden"><img src={item.imgSrc} className="daily-card-img w-full h-40 object-cover" /></div>
       <div className="p-5 flex flex-col flex-1">
         <div className="text-white font-black text-lg mb-1">{item.name}</div>
         <div className="text-xs font-medium mb-3" style={{ color: '#d9cdb4' }}>{item.desc}</div>
@@ -750,7 +784,7 @@ function DailySpecial({ go }) {
 
   if (day === 2) {
     return (
-      <section className="max-w-6xl mx-auto px-5 lg:px-10 py-4">
+      <section className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
         <div className="rounded-2xl p-6 text-center" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
           <div className="text-2xl mb-1.5">😴</div>
           <div className="text-white font-black text-lg mb-1">Heute Ruhetag</div>
@@ -762,23 +796,18 @@ function DailySpecial({ go }) {
   }
 
   return (
-    <section className="max-w-6xl mx-auto px-5 lg:px-10 py-4">
-      <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-        <div className="text-[11px] font-bold tracking-[2px]" style={{ color: GREEN }}>TAGESEMPFEHLUNG · {days[day].toUpperCase()}</div>
-        {isLunchWindow ? (
-          <span className="text-white text-xs font-black px-3 py-1.5 rounded-full" style={{ background: CHILI, animation: 'urgentPulse 1.4s ease-out infinite' }}>
-            🔥 Mittagspreis 9,50 € — noch {mm}:{ss.toString().padStart(2, '0')} Min.!
-          </span>
-        ) : isLunchDay ? (
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#fdecd4', color: '#8a5a1f' }}>
-            Mo.–Fr. 11:30–14:00: 9,50 € inkl. Getränk
-          </span>
-        ) : null}
+    <section className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
+      <div className="flex justify-center mb-4">
+        <div className="px-6 py-2.5 rounded-full font-black text-sm sm:text-base tracking-[2px] text-center" style={{ background: GREEN, color: GOLD, animation: 'goldGlow 2.6s ease-in-out infinite' }}>
+          ⭐ TAGESEMPFEHLUNG · {days[day].toUpperCase()} ⭐
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         {entry.items.map((item, i) => (
-          <DailySpecialCard key={i} item={{ ...item, imgSrc: imgMap[item.img] }} isLunchWindow={isLunchWindow} go={go} />
+          <div key={i} style={{ animation: `cardIn .6s cubic-bezier(.22,1,.36,1) ${i * 0.12}s both` }}>
+            <DailySpecialCard item={{ ...item, imgSrc: imgMap[item.img] }} isLunchWindow={isLunchWindow} go={go} />
+          </div>
         ))}
       </div>
 
@@ -798,19 +827,26 @@ function HomeView({ go }) {
   };
 
   return (
-    <div style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh' }}>
+    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh' }}>
       <style>{`
         @keyframes cardIn { from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes floatY { 0%,100%{ transform:translateY(0px) rotate(-3deg);} 50%{ transform:translateY(-10px) rotate(3deg);} }
         @keyframes floatY2 { 0%,100%{ transform:translateY(0px) rotate(4deg);} 50%{ transform:translateY(-14px) rotate(-4deg);} }
         @keyframes ctaGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,106,26,.55);} 50%{ box-shadow:0 0 0 10px rgba(255,106,26,0);} }
         @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
+        @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
         @keyframes shine { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
         .feature-card{ transition: transform .25s ease, box-shadow .25s ease; }
         .feature-card:hover{ transform: translateY(-6px) scale(1.015); box-shadow:0 18px 40px rgba(21,56,38,.22); }
         .feature-card:hover .icon-wobble{ animation: floatY .9s ease-in-out infinite; }
         .gallery-img{ transition: transform .4s ease, filter .4s ease; }
+        .daily-card{ transition: transform .3s ease, box-shadow .3s ease; }
+        .daily-card:hover{ transform: translateY(-4px); box-shadow: 0 16px 34px rgba(21,56,38,.24); }
+        .daily-card-img{ transition: transform .5s ease; }
+        .daily-card:hover .daily-card-img{ transform: scale(1.06); }
+        .combo-card{ transition: transform .3s ease, box-shadow .3s ease; }
+        .combo-card:hover{ transform: translateY(-4px); }
         .gallery-img:hover{ transform: scale(1.05); filter: brightness(1.05); }
         .cta-pulse{ animation: ctaGlow 2.2s ease-out infinite; }
         .hero-float{ animation: floatY 4.5s ease-in-out infinite; }
@@ -820,14 +856,14 @@ function HomeView({ go }) {
 
       {/* NAV */}
       <header className="sticky top-0 z-40" style={{ background: GREEN }}>
-        <div className="max-w-6xl mx-auto px-5 lg:px-10 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10 py-3.5 flex items-center justify-between">
+          <div className="flex items-center flex-wrap gap-2 sm:gap-3">
             <img src={LOGO_ICON} alt="Bodrum Kebap Vechta" className="w-10 h-10 rounded-full object-contain" style={{ background: CREAM, padding: 3 }} />
             <div>
               <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
               <div className="text-[10px] font-bold tracking-[3px]" style={{ color: GOLD }}>VECHTA</div>
             </div>
-            <div className="hidden sm:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full" style={{ background: 'rgba(255,246,234,.08)' }}>
+            <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: 'rgba(255,246,234,.08)' }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#a4906c', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'none' }} />
               <span className="text-[10.5px] font-bold" style={{ color: status.open ? '#4ade80' : '#a49475' }}>{status.label}</span>
             </div>
@@ -864,7 +900,7 @@ function HomeView({ go }) {
         <div className="hero-float absolute text-5xl select-none pointer-events-none opacity-20" style={{ top: '8%', left: '4%' }}>🥙</div>
         <div className="hero-float2 absolute text-5xl select-none pointer-events-none opacity-20" style={{ bottom: '10%', right: '6%' }}>🍕</div>
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%' }}>🔥</div>
-        <div className="max-w-6xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{getGreeting(now)} · ☪ 100% HALAL</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)' }}>Frisch vom<br /><span style={{ color: ORANGE }}>Drehspieß</span></h1>
@@ -884,12 +920,13 @@ function HomeView({ go }) {
 
       {/* DAILY SPECIAL */}
       <DailySpecial go={go} />
+      <MittagsBanner />
 
       {/* TESTIMONIALS */}
       <Testimonials />
 
       {/* EXTRAS */}
-      <section id="extras" className="max-w-6xl mx-auto px-5 lg:px-10 py-14">
+      <section id="extras" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <div className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>UNSERE DIGITALEN EXTRAS</div>
           <h2 className="font-black" style={{ fontSize: 'clamp(26px,4vw,36px)', color: GREEN }}>Mehr als nur bestellen</h2>
@@ -903,7 +940,18 @@ function HomeView({ go }) {
       </section>
 
       {/* GALLERY */}
-      <section id="galerie" className="max-w-6xl mx-auto px-5 lg:px-10 py-10">
+      <section id="galerie" className="max-w-7xl mx-auto px-5 lg:px-10 py-10">
+        <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>UNSERE TERRASSE</div>
+        <div className="relative rounded-2xl overflow-hidden mb-6" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
+          <img src={TERRACE_IMG} className="gallery-img w-full h-56 sm:h-72 lg:h-96 object-cover" />
+          <div className="absolute inset-0 flex items-end" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75) 0%, rgba(21,56,38,0) 45%)' }}>
+            <div className="p-5 sm:p-7">
+              <div className="text-white font-black text-lg sm:text-2xl">Ein Stück Bodrum in Deutschland</div>
+              <div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>Gemütlich draußen sitzen & genießen — direkt bei uns in Vechta.</div>
+            </div>
+          </div>
+        </div>
+
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>EIN BLICK IN UNSERE KÜCHE</div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <img src={FOOD_G1} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
@@ -914,7 +962,7 @@ function HomeView({ go }) {
       </section>
 
       {/* MAP / CONTACT */}
-      <section id="kontakt" className="max-w-6xl mx-auto px-5 lg:px-10 py-14">
+      <section id="kontakt" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <div className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>BESUCH UNS</div>
           <h2 className="font-black" style={{ fontSize: 'clamp(26px,4vw,36px)', color: GREEN }}>So findest du uns</h2>
@@ -957,7 +1005,7 @@ function HomeView({ go }) {
 
       {/* FOOTER */}
       <footer style={{ background: GREEN }} className="mt-4">
-        <div className="max-w-6xl mx-auto px-5 lg:px-10 py-10 flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10 py-10 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img src={LOGO_ICON} alt="logo" className="w-8 h-8 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
             <span className="text-white font-black text-xs">BODRUM KEBAP VECHTA</span>
@@ -990,6 +1038,8 @@ function WhatsAppOrderView({ back }) {
         await safeSet('pendingCombo', null);
         const key = `combo-${Date.now()}`;
         setCart((c) => ({ ...c, [key]: { name: `🎉 ${pending.title}`, price: pending.price, qty: 1 } }));
+        setDrawerView('upsell');
+        setCartOpen(true);
       }
     })();
   }, []);
@@ -1020,7 +1070,7 @@ function WhatsAppOrderView({ back }) {
 
   return (
     <div className="pb-24">
-      <div style={{ background: GREEN }}><TopBar onHome={back} title="WHATSAPP SIPARIŞ" /></div>
+      <div style={{ background: GREEN }}><TopBar onHome={back} title="WHATSAPP BESTELLUNG" /></div>
 
       <div className="flex gap-2 overflow-x-auto px-5 pt-4 pb-2">
         {MENU.map((m) => (
@@ -1151,8 +1201,13 @@ function WhatsAppOrderView({ back }) {
                     ))}
                   </div>
 
-                  {lines.length > 0 && !wheelResult && (
+                  {lines.length > 0 && !wheelResult && totalPrice >= 30 && (
                     <div className="mt-4"><WheelPromoBanner onClick={() => setDrawerView('wheel')} /></div>
+                  )}
+                  {lines.length > 0 && !wheelResult && totalPrice < 30 && (
+                    <div className="mt-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>
+                      🎡 Noch {fmt(30 - totalPrice)} bis zum Glücksrad — ab 30,00 € Bestellwert!
+                    </div>
                   )}
                   {wheelResult && wheelResult.code && (
                     <div className="w-full mt-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN }}>
@@ -1187,7 +1242,7 @@ function WhatsAppOrderView({ back }) {
 const BASES = [
   { id: 'brot', label: 'Im Brot (klassisch)', desc: 'Klassischer Döner im Fladenbrot', price: 8.0, emoji: '🥙' },
   { id: 'duerum', label: 'Dürüm', desc: 'Im Lavasbrot gerollt', price: 9.0, emoji: '🌯' },
-  { id: 'teller', label: 'Teller', desc: 'Mit Pommes oder Reis', price: 12.0, emoji: '🍽️' },
+  { id: 'teller', label: 'Teller', desc: 'Mit Pommes', price: 12.0, emoji: '🍽️' },
   { id: 'box', label: 'Box', desc: 'Mit Pommes & Soße', price: 8.0, emoji: '🥡' },
 ];
 const MEATS = [
@@ -1272,8 +1327,13 @@ function DonerBuilderView({ back }) {
             </div>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none mb-3" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
 
-            {!wheelResult && (
+            {!wheelResult && total >= 30 && (
               <div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>
+            )}
+            {!wheelResult && total < 30 && (
+              <div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>
+                🎡 Noch {fmt(30 - total)} bis zum Glücksrad — ab 30,00 € Bestellwert!
+              </div>
             )}
             {wheelResult && wheelResult.code && (
               <div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN }}>
@@ -1429,8 +1489,13 @@ function GroupOrderView({ back }) {
           {group && group.people.length > 0 && (
             <div className="bg-white rounded-xl p-4">
               <div className="flex justify-between items-center mb-3"><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>Gesamt (alle)</span><span className="text-lg font-black" style={{ color: GREEN }}>{fmt(grandTotal)}</span></div>
-              {!wheelResult && (
+              {!wheelResult && grandTotal >= 30 && (
                 <div className="mb-3"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>
+              )}
+              {!wheelResult && grandTotal < 30 && (
+                <div className="mb-3 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>
+                  🎡 Noch {fmt(30 - grandTotal)} bis zum Glücksrad — ab 30,00 € Bestellwert!
+                </div>
               )}
               {wheelResult && wheelResult.code && (
                 <div className="w-full mb-3 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN }}>
