@@ -1,0 +1,13 @@
+{
+  "name": "Bodrum Kebap Vechta",
+  "short_name": "Bodrum Kebap",
+  "description": "Kebap, Pizza, Rollo & mehr — täglich frisch in Vechta",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff6ea",
+  "theme_color": "#153826",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
