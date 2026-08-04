@@ -1572,6 +1572,28 @@ function GroupOrderView({ back }) {
         <div className="px-5 pt-4 flex flex-col gap-3">
           <button onClick={startGroup} className="w-full flex items-center justify-center gap-2 px-5 py-4 rounded-2xl font-bold text-base" style={{ background: ORANGE, color: '#fff' }}><Plus size={20} /> Neue Gruppenbestellung starten</button>
           <button onClick={() => setView('join')} className="w-full flex items-center justify-center gap-2 px-5 py-4 rounded-2xl font-bold text-base" style={{ background: '#f0e5cf', color: GREEN }}><Users size={20} /> Mit Code beitreten</button>
+
+          <div className="rounded-2xl p-5 mt-4" style={{ background: '#f7f0e2' }}>
+            <div className="font-black text-sm mb-3" style={{ color: GREEN }}>👥 So funktioniert's:</div>
+            <div className="flex flex-col gap-3.5">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style={{ background: GREEN, color: GOLD }}>1</div>
+                <p className="text-sm font-medium" style={{ color: '#3f3524' }}>Eine Person tippt auf <b>„Neue Gruppenbestellung starten"</b> und erhält einen Code.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style={{ background: GREEN, color: GOLD }}>2</div>
+                <p className="text-sm font-medium" style={{ color: '#3f3524' }}>Diesen Code per WhatsApp mit Freunden teilen.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style={{ background: GREEN, color: GOLD }}>3</div>
+                <p className="text-sm font-medium" style={{ color: '#3f3524' }}>Jede/r tippt auf <b>„Mit Code beitreten"</b>, gibt den Code ein und wählt seine eigenen Speisen aus.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style={{ background: GREEN, color: GOLD }}>4</div>
+                <p className="text-sm font-medium" style={{ color: '#3f3524' }}>Am Ende wird alles zu einer gemeinsamen Bestellung zusammengefasst und per WhatsApp an uns geschickt.</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
       {view === 'join' && (
