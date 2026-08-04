@@ -23,6 +23,8 @@ const FOOD_G4 = "/food-g4.jpg";
 const FOOD_G5 = "/food-g5.jpg";
 const TERRACE_IMG = "/terrace.jpg";
 const DOENER_TELLER_IMG = "/doener-teller.jpg";
+const SCHNITZEL_IMG = "/schnitzel.jpg";
+const SPAGHETTI_IMG = "/spaghetti.jpg";
 
 /* ============ MENU DATA ============ */
 const MENU = [
@@ -160,7 +162,11 @@ const MENU = [
     { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück' },
     { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück' },
     { id: 'f203', name: 'Pommes Frites', price: 3.5 },
-    { id: 'f204', name: 'Portion Knoblauch/Spezialsoße', price: 2.5 },
+    { id: 'f204a', name: 'Portion Knoblauchsauce', price: 2.0 },
+    { id: 'f204b', name: 'Portion Cocktailsauce', price: 2.0 },
+    { id: 'f204c', name: 'Portion Ketchup', price: 1.0 },
+    { id: 'f204d', name: 'Portion Mayonnaise', price: 1.0 },
+    { id: 'f204e', name: 'Portion Hollandaise Sauce', price: 2.5 },
     { id: 'f205', name: 'Portion Oliven (Schwarz)', price: 2.0 },
     { id: 'f206', name: 'Portion Peperoni', price: 2.5 },
     { id: 'f207', name: 'Portion Beilagensalat / Weißkohl', price: 3.5 },
@@ -290,13 +296,18 @@ const CATEGORY_ICONS = {
   rollo: '🌯', nudeln: '🍝', schnitzel: '🍗', salat: '🥗', finger: '🍟', getraenke: '🥤',
 };
 
-const UPSELL_ITEMS = [
+const UPSELL_FOOD = [
   { id: 'f203', name: 'Pommes Frites', price: 3.5, emoji: '🍟' },
   { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, emoji: '🍗' },
   { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, emoji: '🍤' },
-  { id: 'f204', name: 'Portion Soße', price: 2.5, emoji: '🥫' },
-  ...(MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤' })),
+  { id: 'f204a', name: 'Knoblauchsauce', price: 2.0, emoji: '🥫' },
+  { id: 'f204b', name: 'Cocktailsauce', price: 2.0, emoji: '🥫' },
+  { id: 'f204c', name: 'Ketchup', price: 1.0, emoji: '🍅' },
+  { id: 'f204d', name: 'Mayonnaise', price: 1.0, emoji: '🥫' },
+  { id: 'f204e', name: 'Hollandaise Sauce', price: 2.5, emoji: '🧈' },
 ];
+const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤' }));
+const UPSELL_ITEMS = [...UPSELL_FOOD, ...UPSELL_DRINKS];
 
 function UpsellStrip({ addItem }) {
   return (
@@ -588,7 +599,7 @@ function getGreeting(now) {
 const DAILY_SPECIALS = [
   { day: 0, items: [
     { name: 'Pizza Vier Käse', price: 9.0, desc: 'Mozzarella, Gorgonzola & Weichkäse', img: 'g2', cat: 'pizza' },
-    { name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', img: 'g3', cat: 'nudeln' },
+    { name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', img: 'spaghetti', cat: 'nudeln' },
   ]},
   { day: 1, items: [
     { name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße, überbacken mit Käse', img: 'g4', cat: 'ueberbacken' },
@@ -596,11 +607,11 @@ const DAILY_SPECIALS = [
   ]},
   { day: 2, items: null },
   { day: 3, items: [
-    { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'g3', cat: 'nudeln' },
-    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'g1', cat: 'schnitzel' },
+    { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'spaghetti', cat: 'nudeln' },
+    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'schnitzel', cat: 'schnitzel' },
   ]},
   { day: 4, items: [
-    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes', img: 'g1', cat: 'schnitzel' },
+    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes', img: 'schnitzel', cat: 'schnitzel' },
     { name: 'Pizza Spinat', price: 8.5, desc: 'Knoblauch und Weichkäse in Salzlake', img: 'g2', cat: 'pizza' },
   ]},
   { day: 5, items: [
@@ -770,7 +781,7 @@ function DailySpecial({ go }) {
   }, []);
   const day = now.getDay();
   const entry = DAILY_SPECIALS[day];
-  const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4, g5: FOOD_G5 };
+  const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4, g5: FOOD_G5, schnitzel: SCHNITZEL_IMG, spaghetti: SPAGHETTI_IMG };
   const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
   const isLunchDay = [1, 3, 4, 5].includes(day);
@@ -839,6 +850,9 @@ function HomeView({ go }) {
         @keyframes pageFade { from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
         @keyframes cardIn { from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes floatY { 0%,100%{ transform:translateY(0px) rotate(-3deg);} 50%{ transform:translateY(-10px) rotate(3deg);} }
+        @keyframes sideFloatHome1 { 0%,100%{ transform:translateY(0) rotate(-8deg);} 50%{ transform:translateY(-24px) rotate(8deg);} }
+        @keyframes sideFloatHome2 { 0%,100%{ transform:translateY(0) rotate(6deg);} 50%{ transform:translateY(-32px) rotate(-6deg);} }
+        @keyframes sideSpinHome { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
         @keyframes floatY2 { 0%,100%{ transform:translateY(0px) rotate(4deg);} 50%{ transform:translateY(-14px) rotate(-4deg);} }
         @keyframes ctaGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,106,26,.55);} 50%{ box-shadow:0 0 0 10px rgba(255,106,26,0);} }
         @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
@@ -861,6 +875,18 @@ function HomeView({ go }) {
         .hero-float2{ animation: floatY2 5.5s ease-in-out infinite; }
       `}</style>
       <div className="h-1.5 w-full" style={{ background: `repeating-linear-gradient(115deg, ${ORANGE} 0 22px, ${GOLD} 22px 44px, ${CHILI} 44px 66px)` }} />
+
+      {/* Dekoration für sehr breite Bildschirme */}
+      <div className="hidden 2xl:flex flex-col items-center gap-12 fixed left-8 top-1/3 opacity-80 pointer-events-none z-0">
+        <span style={{ fontSize: 44, animation: 'sideFloatHome1 5.5s ease-in-out infinite' }}>🥙</span>
+        <span style={{ fontSize: 34, animation: 'sideSpinHome 8s linear infinite', display: 'inline-block' }}>🍕</span>
+        <span style={{ fontSize: 30, animation: 'sideFloatHome2 4.8s ease-in-out infinite' }}>🍝</span>
+      </div>
+      <div className="hidden 2xl:flex flex-col items-center gap-12 fixed right-8 top-1/4 opacity-80 pointer-events-none z-0">
+        <span style={{ fontSize: 38, animation: 'sideFloatHome2 6s ease-in-out infinite' }}>🍗</span>
+        <span style={{ fontSize: 30, animation: 'sideFloatHome1 5s ease-in-out infinite' }}>🥤</span>
+        <span style={{ fontSize: 34, animation: 'sideSpinHome 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
+      </div>
 
       {/* NAV */}
       <header className="sticky top-0 z-40" style={{ background: GREEN }}>
@@ -939,11 +965,12 @@ function HomeView({ go }) {
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>UNSERE DIGITALEN EXTRAS</div>
           <h2 className="font-black" style={{ fontSize: 'clamp(26px,4vw,36px)', color: GREEN }}>Mehr als nur bestellen</h2>
         </div>
-        <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FeatureCard index={0} icon="📱" title="WhatsApp Bestellung" sub="Menü wählen, direkt zur Abholung senden" color="#25D366" onClick={() => go('whatsapp')} />
           <FeatureCard index={1} icon="🧩" title="Baue deinen Döner" sub="Basis, Fleisch, Soße & Extras selbst wählen" color={GREEN} onClick={() => go('builder')} />
+          <FeatureCard index={2} icon="👥" title="Gruppenbestellung" sub="Mit Freunden zusammen bestellen" color="#2b5c41" onClick={() => go('group')} />
+          <FeatureCard index={3} icon="🎟️" title="Treuekarte" sub="8 Stempel sammeln, Gratis-Portion sichern" color={GOLD} textColor={GREEN} onClick={() => go('loyalty')} />
         </div>
-        <p className="text-center text-xs font-semibold mt-6" style={{ color: '#a4906c' }}>🚧 Treuekarte & Gruppenbestellung folgen in Kürze!</p>
         <p className="text-center text-xs font-medium mt-6" style={{ color: '#a4906c' }}>🎡 Tipp: Beim Bestellen wartet vor dem Absenden ein Glücksrad mit Gewinnchance!</p>
       </section>
 
@@ -961,9 +988,11 @@ function HomeView({ go }) {
         </div>
 
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>EIN BLICK IN UNSERE KÜCHE</div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <img src={TERRACE_IMG} onClick={() => setLightbox(TERRACE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
           <img src={DOENER_TELLER_IMG} onClick={() => setLightbox(DOENER_TELLER_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={SCHNITZEL_IMG} onClick={() => setLightbox(SCHNITZEL_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={SPAGHETTI_IMG} onClick={() => setLightbox(SPAGHETTI_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
           <img src={FOOD_G1} onClick={() => setLightbox(FOOD_G1)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
           <img src={FOOD_G2} onClick={() => setLightbox(FOOD_G2)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
           <img src={FOOD_G3} onClick={() => setLightbox(FOOD_G3)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
@@ -1030,6 +1059,7 @@ function HomeView({ go }) {
             <span className="text-white font-black text-xs">BODRUM KEBAP VECHTA</span>
           </div>
           <span className="text-[11px] font-medium" style={{ color: '#6b5a3e' }}>© 2026 Bodrum Kebap Vechta</span>
+          <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: '#6b5a3e' }}><Lock size={10} /> Personal-Bereich</button>
         </div>
       </footer>
     </div>
@@ -1185,19 +1215,49 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
         <div className="fixed inset-0 z-50 flex justify-center">
           <div className="w-full max-w-md h-full flex flex-col" style={{ background: CREAM }}>
             <div style={{ background: GREEN }} className="px-5 py-5 flex items-center gap-3">
-              <button onClick={() => (drawerView === 'wheel' ? setDrawerView('cart') : setCartOpen(false))} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}><ChevronLeft size={18} color="#fff" /></button>
-              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? 'Glücksrad 🎡' : drawerView === 'upsell' ? 'Noch etwas dazu?' : 'Deine Bestellung'}</div>
+              <button onClick={() => (drawerView === 'wheel' || drawerView === 'upsell2' ? setDrawerView(drawerView === 'upsell2' ? 'upsell' : 'cart') : setCartOpen(false))} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}><ChevronLeft size={18} color="#fff" /></button>
+              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? 'Glücksrad 🎡' : drawerView === 'upsell' ? 'Noch etwas dazu?' : drawerView === 'upsell2' ? 'Etwas zu trinken?' : 'Deine Bestellung'}</div>
             </div>
 
             {drawerView === 'upsell' && (
               <div className="flex-1 overflow-y-auto px-5 py-6">
                 <div className="text-center mb-5">
-                  <div className="text-3xl mb-2">🍟🥤</div>
+                  <div className="text-3xl mb-2">🍟🍗</div>
                   <div className="font-black text-lg" style={{ color: GREEN }}>Möchtest du noch etwas dazu?</div>
                   <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>Diese Klassiker passen perfekt zu deiner Bestellung!</p>
                 </div>
                 <div className="flex flex-col gap-2.5">
-                  {UPSELL_ITEMS.map((u) => {
+                  {UPSELL_FOOD.map((u) => {
+                    const key = u.id;
+                    const qty = cart[key]?.qty || 0;
+                    return (
+                      <div key={u.id} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{u.emoji}</span>
+                          <div>
+                            <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
+                            <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
+                          </div>
+                        </div>
+                        <Stepper qty={qty} onAdd={() => addItem(u.id, u.name, u.price)} onRemove={() => removeItem(u.id)} />
+                      </div>
+                    );
+                  })}
+                </div>
+                <button onClick={() => setDrawerView('upsell2')} className="w-full mt-6 py-3.5 rounded-xl font-bold text-base text-white" style={{ background: GREEN }}>Weiter →</button>
+                <button onClick={() => setDrawerView('cart')} className="w-full mt-2 py-2.5 rounded-xl font-semibold text-xs" style={{ color: '#a4906c' }}>Nein danke, überspringen</button>
+              </div>
+            )}
+
+            {drawerView === 'upsell2' && (
+              <div className="flex-1 overflow-y-auto px-5 py-6">
+                <div className="text-center mb-5">
+                  <div className="text-3xl mb-2">🥤</div>
+                  <div className="font-black text-lg" style={{ color: GREEN }}>Etwas zu trinken?</div>
+                  <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>Kalt und erfrischend zu deiner Bestellung!</p>
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  {UPSELL_DRINKS.map((u) => {
                     const key = u.id;
                     const qty = cart[key]?.qty || 0;
                     return (
