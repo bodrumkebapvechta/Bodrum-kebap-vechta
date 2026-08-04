@@ -25,6 +25,18 @@ const TERRACE_IMG = "/terrace.jpg";
 const DOENER_TELLER_IMG = "/doener-teller.jpg";
 const SCHNITZEL_IMG = "/schnitzel.jpg";
 const SPAGHETTI_IMG = "/spaghetti.jpg";
+const CALZONE_IMG = "/calzone.jpg";
+const FALAFEL_IMG = "/falafel.jpg";
+const LAHMACUN_IMG = "/lahmacun.jpg";
+const PIZZABROETCHEN_IMG = "/pizzabroetchen.jpg";
+const PENNE_IMG = "/penne.jpg";
+const PIZZA_KAESE_IMG = "/pizza-kaese.jpg";
+const DOENER_SPIESS_IMG = "/doner-spiess.jpg";
+const SALAT_BUNT_IMG = "/salat-bunt.jpg";
+const NUGGETS_IMG = "/nuggets.jpg";
+const CHICKEN_STRIPS_IMG = "/chicken-strips.jpg";
+const BAUERNSALAT_IMG = "/bauernsalat.jpg";
+const POMMES_IMG = "/pommes.jpg";
 
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl'];
@@ -359,6 +371,7 @@ const MENU_PHRASES = {
   'Tomaten': { en: 'Tomatoes', tr: 'Domates', ro: 'Roșii', nl: 'Tomaten' },
   'Ketchup': { en: 'Ketchup', tr: 'Ketçap', ro: 'Ketchup', nl: 'Ketchup' },
   'Zitrone': { en: 'Lemon', tr: 'Limon', ro: 'Lămâie', nl: 'Citroen' },
+  'Extra Fleisch': { en: 'Extra meat', tr: 'Ekstra Et', ro: 'Carne extra', nl: 'Extra vlees' },
   'Fleisch': { en: 'Meat', tr: 'Et', ro: 'Carne', nl: 'Vlees' },
   '5 Stück': { en: '5 pieces', tr: '5 adet', ro: '5 bucăți', nl: '5 stuks' },
   '7 Stück': { en: '7 pieces', tr: '7 adet', ro: '7 bucăți', nl: '7 stuks' },
@@ -413,7 +426,7 @@ const MENU = [
     { id: 'k8', name: 'Dürüm Kebap', price: 9.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße und Zwiebeln' },
     { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse' },
     { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln' },
-    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
+    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln', img: LAHMACUN_IMG },
     { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes', weekend: true },
     { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes' },
     { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes' },
@@ -421,10 +434,10 @@ const MENU = [
     { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes' },
     { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße' },
     { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße' },
-    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes' },
+    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes', img: FALAFEL_IMG },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
-    { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0 },
+    { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0, img: PIZZA_KAESE_IMG },
     { id: 'p25', name: 'Pizza Salami', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p26', name: 'Pizza Schinken', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p27', name: 'Pizza Kebap', priceSmall: 8.0, priceLarge: 9.0 },
@@ -457,13 +470,13 @@ const MENU = [
     { id: 'p57', name: 'Pizzabrot mit Käse', price: 5.5 },
     { id: 'p58', name: 'Pizzabrot mit Knoblauch', price: 5.5 },
     { id: 'p59', name: 'Pizzabrot mit Kräuterbutter', price: 5.5 },
-    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive' },
+    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive', img: PIZZABROETCHEN_IMG },
     { id: 'p61', name: 'Pizzabrötchen mit Fleisch', price: 8.0, desc: 'Gratis Dip inklusive' },
     { id: 'p62', name: 'Pizzabrötchen mit Salami', price: 8.0, desc: 'Gratis Dip inklusive' },
     { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0, desc: 'Gratis Dip inklusive' },
   ]},
   { key: 'calzone', label: 'Calzone', items: [
-    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true },
+    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true, img: CALZONE_IMG },
     { id: 'c79', name: 'Calzone Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
     { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Zwiebeln, Jalapeños und Weichkäse in Salzlake' },
     { id: 'c81', name: 'Calzone Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
@@ -506,7 +519,7 @@ const MENU = [
     { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse' },
     { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
     { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken' },
-    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat' },
+    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat', img: PENNE_IMG },
     { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n168', name: 'Balkan Spirit', price: 10.0, desc: 'Hähnchenbrust in Paprika-Auberginen-Soße, serviert mit Kurkuma-Penne & Marktsalat' },
@@ -523,8 +536,8 @@ const MENU = [
     { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes' },
   ]},
   { key: 'salat', label: 'Salat', items: [
-    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse' },
-    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse' },
+    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse', img: SALAT_BUNT_IMG },
+    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse', img: BAUERNSALAT_IMG },
     { id: 'sa97', name: 'Thunfisch Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Thunfisch und Zwiebeln' },
     { id: 'sa98', name: 'Mais Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Zwiebeln und Mais' },
     { id: 'sa100', name: 'Mozzarella Salat', price: 8.0, desc: 'Grüner Salat, Tomaten und Mozzarella' },
@@ -533,9 +546,9 @@ const MENU = [
     { id: 'sa104', name: 'Hähnchen Salat', price: 9.0, desc: 'Gebratenes Hähnchen, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl' },
   ]},
   { key: 'finger', label: 'Finger Food', items: [
-    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück' },
-    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück' },
-    { id: 'f203', name: 'Pommes Frites', price: 3.5 },
+    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück', img: CHICKEN_STRIPS_IMG },
+    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück', img: NUGGETS_IMG },
+    { id: 'f203', name: 'Pommes Frites', price: 3.5, img: POMMES_IMG },
     { id: 'f204a', name: 'Portion Knoblauchsauce', price: 2.0 },
     { id: 'f204b', name: 'Portion Cocktailsauce', price: 2.0 },
     { id: 'f204c', name: 'Portion Ketchup', price: 1.0 },
@@ -561,7 +574,7 @@ const MENU = [
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
@@ -652,7 +665,7 @@ function Stepper({ qty, onAdd, onRemove }) {
           <span className="text-sm font-bold w-4 text-center" style={{ color: GREEN }}>{qty}</span>
         </>
       )}
-      <button onClick={onAdd} className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: ORANGE, color: '#fff' }}><Plus size={14} /></button>
+      <button onClick={onAdd} className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Plus size={14} /></button>
     </div>
   );
 }
@@ -795,7 +808,7 @@ function WheelWidget({ onWin, compact }) {
         </div>
       </div>
       {!result && (
-        <button onClick={spin} disabled={spinning} className="mt-7 w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: ORANGE, color: '#fff' }}>
+        <button onClick={spin} disabled={spinning} className="mt-7 w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
           <RotateCw size={17} /> {spinning ? t('spinning') : t('spinNow')}
         </button>
       )}
@@ -1164,7 +1177,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
           <span className="font-black text-lg" style={{ color: GOLD }}>
             {fmt(displayPrice)}{isLunchWindow && <span className="text-[10px] font-bold ml-1" style={{ color: '#d9cdb4' }}>inkl. Getränk</span>}
           </span>
-          <button onClick={goToCategory} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: ORANGE, color: '#fff' }}>Bestellen →</button>
+          <button onClick={goToCategory} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>Bestellen →</button>
         </div>
       </div>
     </div>
@@ -1320,7 +1333,7 @@ function HomeView({ go, installPrompt, onInstall }) {
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
             </a>
-            <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: ORANGE, color: '#fff' }}>{t('orderNow')}</button>
+            <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
@@ -1339,7 +1352,7 @@ function HomeView({ go, installPrompt, onInstall }) {
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
             )}
-            <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: ORANGE, color: '#fff' }}>{t('orderNow')}</button>
+            <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
           </div>
         )}
       </header>
@@ -1347,7 +1360,7 @@ function HomeView({ go, installPrompt, onInstall }) {
       {/* HERO */}
       <section
         className="relative overflow-hidden"
-        style={{ backgroundImage: `linear-gradient(rgba(21,56,38,.88), rgba(21,56,38,.94)), url('${FOOD_HERO}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: `linear-gradient(rgba(21,56,38,.86), rgba(21,56,38,.93)), url('${DOENER_SPIESS_IMG}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         <div className="hero-float absolute text-5xl select-none pointer-events-none opacity-20" style={{ top: '8%', left: '4%' }}>🥙</div>
         <div className="hero-float2 absolute text-5xl select-none pointer-events-none opacity-20" style={{ bottom: '10%', right: '6%' }}>🍕</div>
@@ -1358,7 +1371,7 @@ function HomeView({ go, installPrompt, onInstall }) {
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="flex flex-wrap gap-3 mb-3">
-              <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: ORANGE, color: '#fff' }}>{t('heroCtaWhatsapp')}</button>
+              <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
               <button onClick={() => scrollTo('extras')} className="px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
             </div>
             <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
@@ -1418,6 +1431,18 @@ function HomeView({ go, installPrompt, onInstall }) {
           <img src={FOOD_G2} onClick={() => setLightbox(FOOD_G2)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
           <img src={FOOD_G3} onClick={() => setLightbox(FOOD_G3)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
           <img src={FOOD_G4} onClick={() => setLightbox(FOOD_G4)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={DOENER_SPIESS_IMG} onClick={() => setLightbox(DOENER_SPIESS_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={CALZONE_IMG} onClick={() => setLightbox(CALZONE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={LAHMACUN_IMG} onClick={() => setLightbox(LAHMACUN_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={PIZZABROETCHEN_IMG} onClick={() => setLightbox(PIZZABROETCHEN_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={PENNE_IMG} onClick={() => setLightbox(PENNE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={PIZZA_KAESE_IMG} onClick={() => setLightbox(PIZZA_KAESE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={FALAFEL_IMG} onClick={() => setLightbox(FALAFEL_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={SALAT_BUNT_IMG} onClick={() => setLightbox(SALAT_BUNT_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={BAUERNSALAT_IMG} onClick={() => setLightbox(BAUERNSALAT_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={NUGGETS_IMG} onClick={() => setLightbox(NUGGETS_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={CHICKEN_STRIPS_IMG} onClick={() => setLightbox(CHICKEN_STRIPS_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={POMMES_IMG} onClick={() => setLightbox(POMMES_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
         </div>
       </section>
 
@@ -1446,7 +1471,7 @@ function HomeView({ go, installPrompt, onInstall }) {
                 href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
                 target="_blank" rel="noopener noreferrer"
                 className="cta-pulse inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-sm w-fit"
-                style={{ background: ORANGE, color: '#fff' }}
+                style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
               >
                 {t('contactRoute')}
               </a>
@@ -1603,7 +1628,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
               setOpenExtra(null); setConfigExtras([]); setConfigNote('');
             };
             return (
-              <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+              <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
+                <div className="p-3.5">
                 <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
                 {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
                 <div className="flex gap-2">
@@ -1631,12 +1658,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
                     </div>
                   </div>
                 )}
+                </div>
               </div>
             );
           }
           const qty = cart[item.id]?.qty || 0;
           return (
-            <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+            <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+              {item.img && <img src={item.img} alt={item.name} className="w-full h-32 object-cover" loading="lazy" />}
+              <div className="p-3.5">
               <div className="flex items-center justify-between">
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                 <Stepper qty={qty} onAdd={() => addItem(item.id, mx(item.name, lang), item.price, item.name)} onRemove={() => removeItem(item.id)} />
@@ -1650,13 +1680,14 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
                   style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
                 />
               )}
+              </div>
             </div>
           );
         })}
       </div>
 
       {totalCount > 0 && !cartOpen && (
-        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: ORANGE, color: '#fff' }}>
+        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
           <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} {t('itemsWord')}</span>
           <span className="font-black text-base">{fmt(totalPrice)}</span>
         </button>
@@ -1778,7 +1809,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
                 {lines.length > 0 && (
                   <div className="px-5 py-4" style={{ borderTop: '1px solid #e3d5bd', background: '#fff' }}>
                     <div className="flex justify-between items-center mb-3"><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('gesamt')}</span><span className="text-lg font-black" style={{ color: GREEN }}>{fmt(totalPrice)}</span></div>
-                    <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('waSend')}</a>
+                    <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
                   </div>
                 )}
               </>
@@ -1830,7 +1861,7 @@ const BUILDER_EXTRAS = [
   { id: 'kaese', label: 'Käse', price: 1.0 }, { id: 'peperoni', label: 'Peperoni', price: 1.0 },
   { id: 'zwiebeln', label: 'Zwiebeln', price: 0 }, { id: 'tomaten', label: 'Tomaten', price: 0 },
   { id: 'rotkohl', label: 'Rotkohl', price: 0 }, { id: 'mais', label: 'Mais', price: 1.0 },
-  { id: 'extrafleisch', label: 'Extra Fleisch', price: 2.0 },
+  { id: 'extrafleisch', label: 'Extra Fleisch', price: 1.0 },
 ];
 function OptionCard({ selected, onClick, children }) {
   return (
@@ -1916,7 +1947,7 @@ function DonerBuilderView({ back }) {
               </div>
             )}
 
-            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('waSend')}</a>
+            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
           </div>
         )}
         {step === 4 && sent && (
@@ -1950,7 +1981,7 @@ function DonerBuilderView({ back }) {
       </div>
       {step < 4 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px]">
-          <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl disabled:opacity-40" style={{ background: ORANGE, color: '#fff' }}>{t('continueBtn')} <ArrowRight size={18} /></button>
+          <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueBtn')} <ArrowRight size={18} /></button>
         </div>
       )}
     </div>
@@ -2059,7 +2090,7 @@ function GroupOrderView({ back }) {
 
       {view === 'home' && (
         <div className="px-5 pt-4 flex flex-col gap-3">
-          <button onClick={startGroup} className="w-full flex items-center justify-center gap-2 px-5 py-4 rounded-2xl font-bold text-base" style={{ background: ORANGE, color: '#fff' }}><Plus size={20} /> {t('groupStartBtn')}</button>
+          <button onClick={startGroup} className="w-full flex items-center justify-center gap-2 px-5 py-4 rounded-2xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Plus size={20} /> {t('groupStartBtn')}</button>
           <button onClick={() => setView('join')} className="w-full flex items-center justify-center gap-2 px-5 py-4 rounded-2xl font-bold text-base" style={{ background: '#f0e5cf', color: GREEN }}><Users size={20} /> {t('groupJoin')}</button>
 
           <div className="rounded-2xl p-5 mt-4" style={{ background: '#f7f0e2' }}>
@@ -2089,20 +2120,20 @@ function GroupOrderView({ back }) {
         <div className="px-5 pt-4">
           <input value={codeInput} onChange={(e) => { setCodeInput(e.target.value.toUpperCase()); setErr(''); }} placeholder={t('codePlaceholder')} className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.25em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
           {err && <p className="text-sm font-semibold mb-3" style={{ color: CHILI }}>{err}</p>}
-          <button onClick={joinGroup} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: ORANGE, color: '#fff' }}>{t('joinBtn')}</button>
+          <button onClick={joinGroup} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('joinBtn')}</button>
         </div>
       )}
       {view === 'create' && (
         <div className="px-5 pt-4 text-center">
           <p className="text-sm mb-4" style={{ color: '#7c6d55' }}>{t('shareCodeWithGroup')}</p>
           <div className="rounded-2xl py-6 mb-4" style={{ background: '#f7f0e2' }}><div className="text-4xl font-black tracking-[0.3em]" style={{ color: GREEN }}>{code}</div></div>
-          <button onClick={() => setView('name')} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: ORANGE, color: '#fff' }}>{t('continueToMyOrder')}</button>
+          <button onClick={() => setView('name')} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueToMyOrder')}</button>
         </div>
       )}
       {view === 'name' && (
         <div className="px-5 pt-4">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3.5 rounded-xl text-base font-semibold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-          <button onClick={() => name && setView('order')} disabled={!name} className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-50" style={{ background: ORANGE, color: '#fff' }}>{t('continueToMenu')}</button>
+          <button onClick={() => name && setView('order')} disabled={!name} className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-50" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueToMenu')}</button>
         </div>
       )}
       {view === 'order' && (
@@ -2130,7 +2161,9 @@ function GroupOrderView({ back }) {
                   setOpenExtra(null); setConfigExtras([]); setConfigNote('');
                 };
                 return (
-                  <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                  <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                    {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
+                    <div className="p-3.5">
                     <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
                     {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
                     <div className="flex gap-2">
@@ -2158,12 +2191,15 @@ function GroupOrderView({ back }) {
                         </div>
                       </div>
                     )}
+                    </div>
                   </div>
                 );
               }
               const qty = localCart[item.id]?.qty || 0;
               return (
-                <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                  {item.img && <img src={item.img} alt={item.name} className="w-full h-32 object-cover" loading="lazy" />}
+                  <div className="p-3.5">
                   <div className="flex items-center justify-between">
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                     <Stepper qty={qty} onAdd={() => addLocal(item.id, mx(item.name, lang), item.price, item.name)} onRemove={() => removeLocal(item.id)} />
@@ -2177,13 +2213,14 @@ function GroupOrderView({ back }) {
                       style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
                     />
                   )}
+                  </div>
                 </div>
               );
             })}
           </div>
           {myLines.length > 0 && (
             <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl shadow-xl overflow-hidden">
-              <button onClick={submitMyOrder} className="w-full px-5 py-4 flex items-center justify-between" style={{ background: ORANGE, color: '#fff' }}><span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> Meine Bestellung abschicken</span><span className="font-black text-base">{fmt(myTotal)}</span></button>
+              <button onClick={submitMyOrder} className="w-full px-5 py-4 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> Meine Bestellung abschicken</span><span className="font-black text-base">{fmt(myTotal)}</span></button>
             </div>
           )}
         </div>
@@ -2227,7 +2264,7 @@ function GroupOrderView({ back }) {
                   </div>
                 </div>
               ) : (
-                <a href={waFinalLink} target="_blank" rel="noopener noreferrer" onClick={markSent} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: '#25D366', color: '#fff' }}><MessageCircle size={18} /> {t('groupSendFinal')}</a>
+                <a href={waFinalLink} target="_blank" rel="noopener noreferrer" onClick={markSent} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('groupSendFinal')}</a>
               )}
             </div>
           )}
@@ -2478,7 +2515,7 @@ function StaffPanelView({ back }) {
       {!ok ? (
         <div className="px-5 pt-4">
           <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '1234' && setOk(true)} type="password" inputMode="numeric" placeholder="PIN ••••" className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.3em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-          <button onClick={() => pin === '1234' && setOk(true)} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: ORANGE, color: '#fff' }}>{t('loginBtn')}</button>
+          <button onClick={() => pin === '1234' && setOk(true)} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('loginBtn')}</button>
           <p className="text-[11px] text-center mt-3" style={{ color: '#a4906c' }}>{t('defaultPinNote')}</p>
         </div>
       ) : (
@@ -2492,7 +2529,7 @@ function StaffPanelView({ back }) {
             <div className="px-5">
               <div className="flex gap-2 mb-4">
                 <input value={stampCode} onChange={(e) => setStampCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && stampSearch()} placeholder={t('customerCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                <button onClick={stampSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: ORANGE, color: '#fff' }}>{t('searchBtn')}</button>
+                <button onClick={stampSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
               </div>
               {stampCustomer === null && <p className="text-sm font-semibold text-center" style={{ color: CHILI }}>{t('codeNotFound')}</p>}
               {stampCustomer && (
@@ -2513,7 +2550,7 @@ function StaffPanelView({ back }) {
             <div className="px-5">
               <div className="flex gap-2 mb-4">
                 <input value={wheelCode} onChange={(e) => setWheelCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && wheelSearch()} placeholder={t('prizeCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                <button onClick={wheelSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: ORANGE, color: '#fff' }}>{t('searchBtn')}</button>
+                <button onClick={wheelSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
               </div>
               {wheelResult === null && <p className="text-sm font-semibold text-center" style={{ color: CHILI }}>{t('codeNotFound')}</p>}
               {wheelResult && (
@@ -2584,7 +2621,7 @@ function LoyaltyView({ back }) {
             <button onClick={lookup} className="px-5 rounded-xl font-bold text-sm" style={{ background: GREEN, color: GOLD }}>{t('showBtn')}</button>
           </div>
           <div className="text-center text-xs font-semibold mb-3" style={{ color: '#a4906c' }}>{t('orLabel')}</div>
-          <button onClick={createNew} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: ORANGE, color: '#fff' }}>{t('createNewCardBtn')}</button>
+          <button onClick={createNew} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('createNewCardBtn')}</button>
         </div>
       )}
 
@@ -2652,7 +2689,7 @@ export default function App() {
 
   return (
     <LangContext.Provider value={ctxValue}>
-    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: GREEN, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: `${GREEN} repeating-linear-gradient(135deg, rgba(255,246,234,.035) 0 40px, rgba(255,246,234,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes sideFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-22px) rotate(6deg);} }
         @keyframes sideFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-30px) rotate(-5deg);} }
@@ -2663,11 +2700,22 @@ export default function App() {
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes ringPulse { 0%{ box-shadow:0 0 0 0 rgba(37,211,102,.45);} 100%{ box-shadow:0 0 0 30px rgba(37,211,102,0);} }
         @keyframes slideUpFade { from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+        @keyframes bottomFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-14px) rotate(6deg);} }
+        @keyframes bottomFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-18px) rotate(-5deg);} }
       `}</style>
 
       {/* decorative side stripe */}
       <div className="absolute inset-y-0 left-0 w-2" style={{ background: `repeating-linear-gradient(180deg, ${ORANGE} 0 24px, ${GOLD} 24px 48px, #d62828 48px 72px)` }} />
       <div className="absolute inset-y-0 right-0 w-2" style={{ background: `repeating-linear-gradient(180deg, ${ORANGE} 0 24px, ${GOLD} 24px 48px, #d62828 48px 72px)` }} />
+
+      {/* bottom decoration — visible on every screen size, fills the green space below shorter pages */}
+      <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center gap-8 sm:gap-14 pb-6 opacity-20 pointer-events-none select-none" style={{ zIndex: 0 }}>
+        <span style={{ fontSize: 34, animation: 'bottomFloat1 4.5s ease-in-out infinite' }}>🥙</span>
+        <span style={{ fontSize: 26, animation: 'sideSpin 8s linear infinite', display: 'inline-block' }}>🍕</span>
+        <span style={{ fontSize: 30, animation: 'bottomFloat2 5.2s ease-in-out infinite' }}>🌶️</span>
+        <span style={{ fontSize: 26, animation: 'bottomFloat1 5.8s ease-in-out infinite' }}>🥤</span>
+        <span style={{ fontSize: 30, animation: 'sideSpin 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
+      </div>
 
       {/* floating decorations — only visible when there's real side space */}
       <div className="hidden 2xl:flex flex-col items-center gap-10 fixed left-10 top-1/3 opacity-90 pointer-events-none">
@@ -2687,7 +2735,7 @@ export default function App() {
         FRISCH VOM DREHSPIESS
       </div>
 
-      <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)' }}>
+      <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
