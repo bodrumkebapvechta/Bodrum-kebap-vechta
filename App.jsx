@@ -227,6 +227,8 @@ const UI = {
   chooseToppingsSub: { de: 'So viele du möchtest — je 1,00 €.', en: 'As many as you like — €1.00 each.', tr: 'İstediğin kadar — her biri 1,00 €.', ro: 'Câte dorești — 1,00 € fiecare.', nl: 'Zoveel als je wilt — elk € 1,00.' },
   pizzaReadyTitle: { de: 'Deine Pizza ist fertig! 🎉', en: 'Your Pizza is ready! 🎉', tr: 'Pizzan hazır! 🎉', ro: 'Pizza ta este gata! 🎉', nl: 'Jouw Pizza is klaar! 🎉' },
   choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' },
+  choosePastaTypeTitle: { de: 'Spaghetti oder Makkaroni?', en: 'Spaghetti or Macaroni?', tr: 'Spagetti mi Makarna mı?', ro: 'Spaghete sau macaroane?', nl: 'Spaghetti of macaroni?' },
+  weiterShort: { de: 'Weiter', en: 'Next', tr: 'İleri', ro: 'Continuă', nl: 'Verder' },
   choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' },
   pastaReadyTitle: { de: 'Deine Pasta ist fertig! 🎉', en: 'Your Pasta is ready! 🎉', tr: 'Makarnan hazır! 🎉', ro: 'Pasta ta este gata! 🎉', nl: 'Jouw Pasta is klaar! 🎉' },
   sizeSmall: { de: 'klein', en: 'small', tr: 'küçük', ro: 'mic', nl: 'klein' },
@@ -365,6 +367,8 @@ const MENU_PHRASES = {
   'Baue deine eigene Pasta 🎨': { en: 'Build your own Pasta 🎨', tr: 'Kendi Makarnanı Oluştur 🎨', ro: 'Construiește-ți propria Pasta 🎨', nl: 'Bouw je eigen Pasta 🎨' },
   'Tomatensoße inklusive — wähle deine Beläge': { en: 'Tomato sauce included — choose your toppings', tr: 'Domates sosu dahil — malzemelerini seç', ro: 'Sos de roșii inclus — alege ingredientele', nl: 'Tomatensaus inbegrepen — kies je toppings' },
   'Soße & Extras frei wählbar': { en: 'Sauce & extras of your choice', tr: 'Sos ve ekstralar serbest seçim', ro: 'Sos și extra la alegere', nl: 'Saus & extra’s vrij te kiezen' },
+  'Spaghetti': { en: 'Spaghetti', tr: 'Spagetti', ro: 'Spaghete', nl: 'Spaghetti' },
+  'Makkaroni': { en: 'Macaroni', tr: 'Makarna', ro: 'Macaroane', nl: 'Macaroni' },
   'Soße nach Wahl inklusive — wähle deine Extras': { en: 'Choice of sauce included — choose your extras', tr: 'İstediğin sos dahil — ekstralarını seç', ro: 'Sos la alegere inclus — alege extra-urile', nl: 'Saus naar keuze inbegrepen — kies je extra’s' },
   'Deutschland': { en: 'Germany', tr: 'Almanya', ro: 'Germania', nl: 'Duitsland' },
   'Wiener Art': { en: 'Vienna Style', tr: 'Viyana Usulü', ro: 'Stil Vienez', nl: 'Weense Stijl' },
@@ -377,7 +381,6 @@ const MENU_PHRASES = {
   'Vier Käse': { en: 'Four Cheese', tr: 'Dört Peynirli', ro: 'Patru Brânzeturi', nl: 'Vier Kazen' },
   'Weichkäse': { en: 'Soft cheese', tr: 'Yumuşak peynir', ro: 'Brânză moale', nl: 'Zachte kaas' },
   'Vegetaria': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetariană', nl: 'Vegetarisch' },
-  'Makkaroni': { en: 'Macaroni', tr: 'Makarna', ro: 'Macaroane', nl: 'Macaroni' },
   'Jägersoße': { en: 'Hunter\'s sauce', tr: 'Avcı sosu', ro: 'Sos vânătoresc', nl: 'Jagersaus' },
   'Lavasbrot': { en: 'Lavash bread', tr: 'Lavaş ekmeği', ro: 'Pâine lavash', nl: 'Lavashbrood' },
   'Pizzabrot': { en: 'Pizza bread', tr: 'Pizza ekmeği', ro: 'Pâine pizza', nl: 'Pizzabrood' },
@@ -609,6 +612,9 @@ const MENU = [
 ];
 const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
+const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais'];
+const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
@@ -787,6 +793,42 @@ function EmojiConfetti({ emojis = ['🎉', '🥙', '🍕', '⭐', '🎊'] }) {
         <span key={i} style={{ position: 'absolute', left: `${it.left}%`, top: '-28px', fontSize: it.size, animation: `confettiFall ${it.duration}s cubic-bezier(.25,.1,.4,1) ${it.delay}s forwards`, '--spin': `${it.spin}deg` }}>{it.emoji}</span>
       ))}
     </div>
+  );
+}
+
+function ConfigModal({ onClose, children }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+  return (
+    <div
+      className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-6"
+      style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', zIndex: 150, animation: 'modalBgFade .25s ease' }}
+      onClick={onClose}
+    >
+      <div
+        className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto"
+        style={{ animation: 'modalCardUp .3s cubic-bezier(.22,1,.36,1)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function CartPopEmoji({ trigger }) {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    if (!trigger) return;
+    setShow(true);
+    const t = setTimeout(() => setShow(false), 900);
+    return () => clearTimeout(t);
+  }, [trigger]);
+  if (!show) return null;
+  return (
+    <span className="pointer-events-none fixed" style={{ zIndex: 300, left: '50%', top: '40%', transform: 'translate(-50%,-50%)', fontSize: 54, animation: 'cartPop .85s ease-out forwards' }}>🛒✅</span>
   );
 }
 
@@ -1279,7 +1321,7 @@ function DailySpecial({ go }) {
   );
 }
 
-function HomeView({ go, installPrompt, onInstall }) {
+function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [navOpen, setNavOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
   const now = useLiveClock();
@@ -1375,10 +1417,22 @@ function HomeView({ go, installPrompt, onInstall }) {
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
             </a>
+            {cartCount > 0 && (
+              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-9 h-9 rounded-full flex items-center justify-center" style={{ background: GREEN }}>
+                <ShoppingBag size={16} color={GOLD} />
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white" style={{ background: CHILI }}>{cartCount}</span>
+              </button>
+            )}
             <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
+            {cartCount > 0 && (
+              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-9 h-9 rounded-full flex items-center justify-center" style={{ background: GREEN }}>
+                <ShoppingBag size={16} color={GOLD} />
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white" style={{ background: CHILI }}>{cartCount}</span>
+              </button>
+            )}
             <button onClick={() => setNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
               {navOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
             </button>
@@ -1569,11 +1623,10 @@ function HomeView({ go, installPrompt, onInstall }) {
 }
 
 /* ============ WHATSAPP ORDER ============ */
-function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
+function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart }) {
   const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
-  const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
@@ -1589,13 +1642,21 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
   const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
   const handleSend = () => { setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent'); };
 
-  const addItem = (lineKey, label, price, deLabel) => setCart((c) => ({ ...c, [lineKey]: { name: label, deName: deLabel || label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
+  const [cartPop, setCartPop] = useState(0);
+  const [pastaStep, setPastaStep] = useState(0);
+  const [pastaType, setPastaType] = useState(null);
+  const [pastaSauceSel, setPastaSauceSel] = useState(null);
+  const addItem = (lineKey, label, price, deLabel) => { setCart((c) => ({ ...c, [lineKey]: { name: label, deName: deLabel || label, price, qty: (c[lineKey]?.qty || 0) + 1 } })); setCartPop((x) => x + 1); };
 
   useEffect(() => {
     if (initialAction?.pendingCombo) {
       const key = `combo-${Date.now()}`;
       setCart((c) => ({ ...c, [key]: { name: `🎉 ${initialAction.pendingCombo.title}`, deName: `🎉 ${initialAction.pendingCombo.title}`, price: initialAction.pendingCombo.price, qty: 1 } }));
       setDrawerView('upsell');
+      setCartOpen(true);
+    }
+    if (initialAction?.openCart) {
+      setDrawerView('cart');
       setCartOpen(true);
     }
     onConsumeAction && onConsumeAction();
@@ -1633,6 +1694,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
 
   return (
     <div className="pb-24">
+      <CartPopEmoji trigger={cartPop} />
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleWa')} /></div>
 
       <div className="flex gap-2 overflow-x-auto px-5 pt-4 pb-2">
@@ -1677,11 +1739,13 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
               );
             }
             const isOpen = openExtra?.itemId === item.id;
-            const size = openExtra?.size;
+            const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
-            const configTotal = isOpen ? basePrice + configExtras.length * 1.0 : 0;
-            const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); setConfigNote(''); };
+            const configTotal = basePrice + configExtras.length * 1.0;
+            const openFor = () => { setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
+            const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
+            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
             const confirmAdd = () => {
               const sizeLabel = size === 'klein' ? 'klein' : 'groß';
               const displaySizeLabel = size === 'klein' ? t('sizeSmall') : t('sizeLarge');
@@ -1690,89 +1754,176 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
               if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
               const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
               addItem(lineKey, displayLabel, configTotal, deLabel);
-              setOpenExtra(null); setConfigExtras([]); setConfigNote('');
+              closeModal();
             };
             return (
-              <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-                {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
-                <div className="p-3.5">
-                <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
-                {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
-                <div className="flex gap-2">
-                  <button onClick={() => openFor('klein')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('sizeSmall')} · {fmt(item.priceSmall)}</button>
-                  <button onClick={() => openFor('gross')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'gross' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('sizeLarge')} · {fmt(item.priceLarge)}</button>
-                </div>
-                {isOpen && (
-                  <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #e3d5bd' }}>
-                    <div className="text-[11px] font-bold mb-2" style={{ color: '#8a5a1f' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
-                    <div className="grid grid-cols-3 gap-1.5 mb-3">
-                      {EXTRA_TOPPINGS.map((top) => (
-                        <button key={top} onClick={() => toggleExtra(top)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
-                      ))}
-                    </div>
-                    <input
-                      value={configNote}
-                      onChange={(e) => setConfigNote(e.target.value)}
-                      placeholder={t('noteExampleCheese')}
-                      className="w-full mb-3 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
-                      style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
-                    />
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('abbrechen')}</button>
-                      <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>{t('toCart')} · {fmt(configTotal)}</button>
-                    </div>
+              <React.Fragment key={item.id}>
+                <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                  {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
+                  <div className="p-3.5">
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                    {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
+                    <div className="text-xs font-bold" style={{ color: CHILI }}>{t('sizeSmall')} {fmt(item.priceSmall)} · {t('sizeLarge')} {fmt(item.priceLarge)}</div>
                   </div>
-                )}
-                </div>
-              </div>
-            );
-          }
-          if (item.customPizza || item.customPasta) {
-            const isOpen = openExtra?.itemId === item.id;
-            const toppings = item.customPizza ? EXTRA_TOPPINGS : PASTA_TOPPINGS;
-            const extraCost = (top) => (top === 'Bolognese-Soße' ? 0.5 : (top === 'Tomatensoße' || top === 'Sahnesoße') ? 0 : 1.0);
-            const configTotal = isOpen ? item.price + configExtras.reduce((s, e) => s + extraCost(e), 0) : 0;
-            const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
-            const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
-            const confirmAdd = () => {
-              let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
-              let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
-              if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
-              const lineKey = `${item.id}-${configExtras.slice().sort().join('_') || 'ohne'}`;
-              addItem(lineKey, displayLabel, configTotal, deLabel);
-              setOpenExtra(null); setConfigExtras([]); setConfigNote('');
-            };
-            return (
-              <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${GOLD}` }}>
-                <div className="p-3.5">
-                  <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
-                  {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
-                  <button onClick={openFor} className="w-full px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('chooseArrow')} · {fmt(item.price)}</button>
-                  {isOpen && (
-                    <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #e3d5bd' }}>
-                      <div className="text-[11px] font-bold mb-2" style={{ color: '#8a5a1f' }}>{t('rowExtras')}:</div>
-                      <div className="grid grid-cols-3 gap-1.5 mb-3">
-                        {toppings.map((top) => (
-                          <button key={top} onClick={() => toggleExtra(top)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold flex flex-col items-center gap-0.5" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>
-                            <span>{mx(top, lang)}</span><span className="opacity-70 text-[9px]">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span>
-                          </button>
+                </button>
+                {isOpen && (
+                  <ConfigModal onClose={closeModal}>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                        <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+                      </div>
+                      {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
+                      <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('choosePizzaSize')?.toUpperCase?.() || 'GRÖSSE'}</div>
+                      <div className="flex gap-2 mb-5">
+                        <button onClick={() => setSize('klein')} className="flex-1 py-4 rounded-xl text-center font-bold" style={size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>
+                          <div className="text-base">{t('sizeSmall')}</div><div className="text-sm opacity-80">{fmt(item.priceSmall)}</div>
+                        </button>
+                        <button onClick={() => setSize('gross')} className="flex-1 py-4 rounded-xl text-center font-bold" style={size === 'gross' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>
+                          <div className="text-base">{t('sizeLarge')}</div><div className="text-sm opacity-80">{fmt(item.priceLarge)}</div>
+                        </button>
+                      </div>
+                      <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        {EXTRA_TOPPINGS.map((top) => (
+                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
                         ))}
                       </div>
                       <input
                         value={configNote}
                         onChange={(e) => setConfigNote(e.target.value)}
                         placeholder={t('noteExampleCheese')}
-                        className="w-full mb-3 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                        className="w-full mb-4 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
                         style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
                       />
+                      <button onClick={confirmAdd} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Plus size={16} /> {t('toCart')} · {fmt(configTotal)}</button>
+                    </div>
+                  </ConfigModal>
+                )}
+              </React.Fragment>
+            );
+          }
+          if (item.customPizza) {
+            const isOpen = openExtra?.itemId === item.id;
+            const configTotal = item.price + configExtras.reduce((s) => s + 1.0, 0);
+            const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
+            const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
+            const confirmAdd = () => {
+              let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
+              let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
+              if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
+              const lineKey = `${item.id}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+              addItem(lineKey, displayLabel, configTotal, deLabel);
+              closeModal();
+            };
+            return (
+              <React.Fragment key={item.id}>
+                <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                  <div className="p-3.5">
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
+                    {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
+                    <div className="text-xs font-bold" style={{ color: CHILI }}>{t('chooseArrow')} · {fmt(item.price)}</div>
+                  </div>
+                </button>
+                {isOpen && (
+                  <ConfigModal onClose={closeModal}>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                        <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+                      </div>
+                      {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
+                      <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        {EXTRA_TOPPINGS.map((top) => (
+                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                        ))}
+                      </div>
+                      <input
+                        value={configNote}
+                        onChange={(e) => setConfigNote(e.target.value)}
+                        placeholder={t('noteExampleCheese')}
+                        className="w-full mb-4 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
+                        style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                      />
+                      <button onClick={confirmAdd} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Plus size={16} /> {t('toCart')} · {fmt(configTotal)}</button>
+                    </div>
+                  </ConfigModal>
+                )}
+              </React.Fragment>
+            );
+          }
+          if (item.customPasta) {
+            const isOpen = openExtra?.itemId === item.id;
+            const base = 7.5;
+            const configTotal = base + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
+            const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+            const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+            const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+            const confirmAdd = () => {
+              const base_name = `${pastaType} ${pastaSauceSel}`;
+              let deLabel = `${base_name}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
+              let displayLabel = `${mx(pastaType, lang)} ${mx(pastaSauceSel, lang)}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : ''}`;
+              if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
+              const lineKey = `${item.id}-${pastaType}-${pastaSauceSel}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+              addItem(lineKey, displayLabel, configTotal, deLabel);
+              closeModal();
+            };
+            return (
+              <React.Fragment key={item.id}>
+                <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                  <div className="p-3.5">
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
+                    {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
+                    <div className="text-xs font-bold" style={{ color: CHILI }}>{t('chooseArrow')} · {fmt(base)}</div>
+                  </div>
+                </button>
+                {isOpen && (
+                  <ConfigModal onClose={closeModal}>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-black text-lg" style={{ color: GREEN }}>{pastaStep === 0 ? t('choosePastaTypeTitle') : pastaStep === 1 ? t('chooseSauceTitle') : t('extrasQ')}</h3>
+                        <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+                      </div>
+                      <div className="flex items-center gap-1.5 mb-5">
+                        {[0, 1, 2].map((i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= pastaStep ? ORANGE : '#e3d5bd' }} />)}
+                      </div>
+                      {pastaStep === 0 && (
+                        <div className="flex flex-col gap-2.5 mb-4">
+                          {PASTA_TYPES.map((pt) => (<OptionCard key={pt} selected={pastaType === pt} onClick={() => setPastaType(pt)}><span className="font-bold text-sm">{mx(pt, lang)}</span></OptionCard>))}
+                        </div>
+                      )}
+                      {pastaStep === 1 && (
+                        <div className="flex flex-col gap-2.5 mb-4">
+                          {PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauceSel === s} onClick={() => setPastaSauceSel(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}
+                        </div>
+                      )}
+                      {pastaStep === 2 && (
+                        <div className="mb-4">
+                          <div className="grid grid-cols-2 gap-2 mb-4">
+                            {PASTA_EXTRA_ITEMS.map((top) => (
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} +{fmt(1.0)}</button>
+                            ))}
+                          </div>
+                          <input
+                            value={configNote}
+                            onChange={(e) => setConfigNote(e.target.value)}
+                            placeholder={t('noteExampleCheese')}
+                            className="w-full px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
+                            style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                          />
+                        </div>
+                      )}
                       <div className="flex items-center gap-2">
-                        <button onClick={() => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('abbrechen')}</button>
-                        <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>{t('toCart')} · {fmt(configTotal)}</button>
+                        {pastaStep > 0 && <button onClick={() => setPastaStep((s) => s - 1)} className="px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>}
+                        {pastaStep < 2 && <button onClick={() => setPastaStep((s) => s + 1)} disabled={pastaStep === 0 ? !pastaType : !pastaSauceSel} className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('weiterShort')}</button>}
+                        {pastaStep === 2 && <button onClick={confirmAdd} className="flex-1 py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}><Plus size={16} /> {t('toCart')} · {fmt(configTotal)}</button>}
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </ConfigModal>
+                )}
+              </React.Fragment>
             );
           }
           const qty = cart[item.id]?.qty || 0;
@@ -1969,7 +2120,7 @@ const MEATS = [
 ];
 const SAUCES = [
   { id: 'knoblauch', label: 'Knoblauchsoße' }, { id: 'hollandaise', label: 'Hollandaise' },
-  { id: 'scharf', label: 'Scharfe Soße' }, { id: 'joghurt', label: 'Joghurtsoße' }, { id: 'ohne', label: 'Ohne Soße' },
+  { id: 'scharf', label: 'Scharfe Soße' }, { id: 'ohne', label: 'Ohne Soße' },
 ];
 const BUILDER_EXTRAS = [
   { id: 'kaese', label: 'Käse', price: 1.0 }, { id: 'peperoni', label: 'Peperoni', price: 1.0 },
@@ -2178,7 +2329,11 @@ function GroupOrderView({ back }) {
     if (!data) { setErr('Diesen Code gibt es nicht.'); return; }
     setErr(''); setCode(c); setGroup(data); setView('name');
   };
-  const addLocal = (id, label, price, deLabel) => setLocalCart((c) => ({ ...c, [id]: { name: label, deName: deLabel || label, price, qty: (c[id]?.qty || 0) + 1 } }));
+  const [cartPop, setCartPop] = useState(0);
+  const [pastaStep, setPastaStep] = useState(0);
+  const [pastaType, setPastaType] = useState(null);
+  const [pastaSauceSel, setPastaSauceSel] = useState(null);
+  const addLocal = (id, label, price, deLabel) => { setLocalCart((c) => ({ ...c, [id]: { name: label, deName: deLabel || label, price, qty: (c[id]?.qty || 0) + 1 } })); setCartPop((x) => x + 1); };
   const removeLocal = (id) => setLocalCart((c) => { const ex = c[id]; if (!ex) return c; if (ex.qty <= 1) { const cp = { ...c }; delete cp[id]; return cp; } return { ...c, [id]: { ...ex, qty: ex.qty - 1 } }; });
   const myLines = Object.entries(localCart);
   const myTotal = myLines.reduce((s, [, v]) => s + v.qty * v.price, 0);
@@ -2232,6 +2387,7 @@ function GroupOrderView({ back }) {
     <div className="pb-24 relative">
       {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐']} />}
       {bigBurst && <EmojiConfetti emojis={['🎉', '🎊', '📲', '🥙', '⭐', '🔥']} />}
+      <CartPopEmoji trigger={cartPop} />
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleGroup')} /></div>
 
       {view === 'home' && (
@@ -2301,11 +2457,13 @@ function GroupOrderView({ back }) {
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
                 const isOpen = openExtra?.itemId === item.id;
-                const size = openExtra?.size;
+                const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
-                const configTotal = isOpen ? basePrice + configExtras.length * 1.0 : 0;
-                const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); setConfigNote(''); };
+                const configTotal = basePrice + configExtras.length * 1.0;
+                const openFor = () => { setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
+                const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
+                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
                 const confirmAdd = () => {
                   const sizeLabel = size === 'klein' ? 'klein' : 'groß';
                   const displaySizeLabel = size === 'klein' ? t('sizeSmall') : t('sizeLarge');
@@ -2314,89 +2472,176 @@ function GroupOrderView({ back }) {
                   if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
                   const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
                   addLocal(lineKey, displayLabel, configTotal, deLabel);
-                  setOpenExtra(null); setConfigExtras([]); setConfigNote('');
+                  closeModal();
                 };
                 return (
-                  <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-                    {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
-                    <div className="p-3.5">
-                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
-                    {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
-                    <div className="flex gap-2">
-                      <button onClick={() => openFor('klein')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('sizeSmall')} · {fmt(item.priceSmall)}</button>
-                      <button onClick={() => openFor('gross')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'gross' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('sizeLarge')} · {fmt(item.priceLarge)}</button>
-                    </div>
-                    {isOpen && (
-                      <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #e3d5bd' }}>
-                        <div className="text-[11px] font-bold mb-2" style={{ color: '#8a5a1f' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
-                        <div className="grid grid-cols-3 gap-1.5 mb-3">
-                          {EXTRA_TOPPINGS.map((top) => (
-                            <button key={top} onClick={() => toggleExtra(top)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
-                          ))}
-                        </div>
-                        <input
-                          value={configNote}
-                          onChange={(e) => setConfigNote(e.target.value)}
-                          placeholder={t('noteExampleCheese')}
-                          className="w-full mb-3 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
-                          style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
-                        />
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('abbrechen')}</button>
-                          <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>{t('hinzufuegen')} · {fmt(configTotal)}</button>
-                        </div>
+                  <React.Fragment key={item.id}>
+                    <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                      {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
+                      <div className="p-3.5">
+                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                        {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
+                        <div className="text-xs font-bold" style={{ color: CHILI }}>{t('sizeSmall')} {fmt(item.priceSmall)} · {t('sizeLarge')} {fmt(item.priceLarge)}</div>
                       </div>
-                    )}
-                    </div>
-                  </div>
-                );
-              }
-              if (item.customPizza || item.customPasta) {
-                const isOpen = openExtra?.itemId === item.id;
-                const toppings = item.customPizza ? EXTRA_TOPPINGS : PASTA_TOPPINGS;
-                const extraCost = (top) => (top === 'Bolognese-Soße' ? 0.5 : (top === 'Tomatensoße' || top === 'Sahnesoße') ? 0 : 1.0);
-                const configTotal = isOpen ? item.price + configExtras.reduce((s, e) => s + extraCost(e), 0) : 0;
-                const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
-                const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
-                const confirmAdd = () => {
-                  let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
-                  let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
-                  if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
-                  const lineKey = `${item.id}-${configExtras.slice().sort().join('_') || 'ohne'}`;
-                  addLocal(lineKey, displayLabel, configTotal, deLabel);
-                  setOpenExtra(null); setConfigExtras([]); setConfigNote('');
-                };
-                return (
-                  <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${GOLD}` }}>
-                    <div className="p-3.5">
-                      <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
-                      {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
-                      <button onClick={openFor} className="w-full px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('chooseArrow')} · {fmt(item.price)}</button>
-                      {isOpen && (
-                        <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #e3d5bd' }}>
-                          <div className="text-[11px] font-bold mb-2" style={{ color: '#8a5a1f' }}>{t('rowExtras')}:</div>
-                          <div className="grid grid-cols-3 gap-1.5 mb-3">
-                            {toppings.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold flex flex-col items-center gap-0.5" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>
-                                <span>{mx(top, lang)}</span><span className="opacity-70 text-[9px]">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span>
-                              </button>
+                    </button>
+                    {isOpen && (
+                      <ConfigModal onClose={closeModal}>
+                        <div className="p-5">
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                            <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+                          </div>
+                          {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>GRÖSSE</div>
+                          <div className="flex gap-2 mb-5">
+                            <button onClick={() => setSize('klein')} className="flex-1 py-4 rounded-xl text-center font-bold" style={size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>
+                              <div className="text-base">{t('sizeSmall')}</div><div className="text-sm opacity-80">{fmt(item.priceSmall)}</div>
+                            </button>
+                            <button onClick={() => setSize('gross')} className="flex-1 py-4 rounded-xl text-center font-bold" style={size === 'gross' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>
+                              <div className="text-base">{t('sizeLarge')}</div><div className="text-sm opacity-80">{fmt(item.priceLarge)}</div>
+                            </button>
+                          </div>
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
+                          <div className="grid grid-cols-2 gap-2 mb-4">
+                            {EXTRA_TOPPINGS.map((top) => (
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
                             ))}
                           </div>
                           <input
                             value={configNote}
                             onChange={(e) => setConfigNote(e.target.value)}
                             placeholder={t('noteExampleCheese')}
-                            className="w-full mb-3 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                            className="w-full mb-4 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
                             style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
                           />
+                          <button onClick={confirmAdd} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Plus size={16} /> {t('hinzufuegen')} · {fmt(configTotal)}</button>
+                        </div>
+                      </ConfigModal>
+                    )}
+                  </React.Fragment>
+                );
+              }
+              if (item.customPizza) {
+                const isOpen = openExtra?.itemId === item.id;
+                const configTotal = item.price + configExtras.reduce((s) => s + 1.0, 0);
+                const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
+                const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
+                const confirmAdd = () => {
+                  let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
+                  let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
+                  if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
+                  const lineKey = `${item.id}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+                  addLocal(lineKey, displayLabel, configTotal, deLabel);
+                  closeModal();
+                };
+                return (
+                  <React.Fragment key={item.id}>
+                    <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                      <div className="p-3.5">
+                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
+                        {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
+                        <div className="text-xs font-bold" style={{ color: CHILI }}>{t('chooseArrow')} · {fmt(item.price)}</div>
+                      </div>
+                    </button>
+                    {isOpen && (
+                      <ConfigModal onClose={closeModal}>
+                        <div className="p-5">
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                            <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+                          </div>
+                          {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
+                          <div className="grid grid-cols-2 gap-2 mb-4">
+                            {EXTRA_TOPPINGS.map((top) => (
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                            ))}
+                          </div>
+                          <input
+                            value={configNote}
+                            onChange={(e) => setConfigNote(e.target.value)}
+                            placeholder={t('noteExampleCheese')}
+                            className="w-full mb-4 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
+                            style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                          />
+                          <button onClick={confirmAdd} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Plus size={16} /> {t('hinzufuegen')} · {fmt(configTotal)}</button>
+                        </div>
+                      </ConfigModal>
+                    )}
+                  </React.Fragment>
+                );
+              }
+              if (item.customPasta) {
+                const isOpen = openExtra?.itemId === item.id;
+                const base = 7.5;
+                const configTotal = base + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
+                const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+                const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+                const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+                const confirmAdd = () => {
+                  const base_name = `${pastaType} ${pastaSauceSel}`;
+                  let deLabel = `${base_name}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
+                  let displayLabel = `${mx(pastaType, lang)} ${mx(pastaSauceSel, lang)}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : ''}`;
+                  if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
+                  const lineKey = `${item.id}-${pastaType}-${pastaSauceSel}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+                  addLocal(lineKey, displayLabel, configTotal, deLabel);
+                  closeModal();
+                };
+                return (
+                  <React.Fragment key={item.id}>
+                    <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                      <div className="p-3.5">
+                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
+                        {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
+                        <div className="text-xs font-bold" style={{ color: CHILI }}>{t('chooseArrow')} · {fmt(base)}</div>
+                      </div>
+                    </button>
+                    {isOpen && (
+                      <ConfigModal onClose={closeModal}>
+                        <div className="p-5">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-black text-lg" style={{ color: GREEN }}>{pastaStep === 0 ? t('choosePastaTypeTitle') : pastaStep === 1 ? t('chooseSauceTitle') : t('extrasQ')}</h3>
+                            <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+                          </div>
+                          <div className="flex items-center gap-1.5 mb-5">
+                            {[0, 1, 2].map((i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= pastaStep ? ORANGE : '#e3d5bd' }} />)}
+                          </div>
+                          {pastaStep === 0 && (
+                            <div className="flex flex-col gap-2.5 mb-4">
+                              {PASTA_TYPES.map((pt) => (<OptionCard key={pt} selected={pastaType === pt} onClick={() => setPastaType(pt)}><span className="font-bold text-sm">{mx(pt, lang)}</span></OptionCard>))}
+                            </div>
+                          )}
+                          {pastaStep === 1 && (
+                            <div className="flex flex-col gap-2.5 mb-4">
+                              {PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauceSel === s} onClick={() => setPastaSauceSel(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}
+                            </div>
+                          )}
+                          {pastaStep === 2 && (
+                            <div className="mb-4">
+                              <div className="grid grid-cols-2 gap-2 mb-4">
+                                {PASTA_EXTRA_ITEMS.map((top) => (
+                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} +{fmt(1.0)}</button>
+                                ))}
+                              </div>
+                              <input
+                                value={configNote}
+                                onChange={(e) => setConfigNote(e.target.value)}
+                                placeholder={t('noteExampleCheese')}
+                                className="w-full px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
+                                style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                              />
+                            </div>
+                          )}
                           <div className="flex items-center gap-2">
-                            <button onClick={() => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('abbrechen')}</button>
-                            <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>{t('toCart')} · {fmt(configTotal)}</button>
+                            {pastaStep > 0 && <button onClick={() => setPastaStep((s) => s - 1)} className="px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>}
+                            {pastaStep < 2 && <button onClick={() => setPastaStep((s) => s + 1)} disabled={pastaStep === 0 ? !pastaType : !pastaSauceSel} className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('weiterShort')}</button>}
+                            {pastaStep === 2 && <button onClick={confirmAdd} className="flex-1 py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}><Plus size={16} /> {t('hinzufuegen')} · {fmt(configTotal)}</button>}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
+                      </ConfigModal>
+                    )}
+                  </React.Fragment>
                 );
               }
               const qty = localCart[item.id]?.qty || 0;
@@ -2868,6 +3113,8 @@ export default function App() {
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const langCtx = useLang();
+  const [cart, setCart] = useState({});
+  const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
   const [installPrompt, setInstallPrompt] = useState(null);
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
@@ -2888,7 +3135,7 @@ export default function App() {
   const ctxValue = { ...langCtx, installPrompt, onInstall: triggerInstall };
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} /></LangContext.Provider>;
   }
 
   return (
@@ -2904,6 +3151,9 @@ export default function App() {
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes ringPulse { 0%{ box-shadow:0 0 0 0 rgba(37,211,102,.45);} 100%{ box-shadow:0 0 0 30px rgba(37,211,102,0);} }
         @keyframes slideUpFade { from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+        @keyframes modalBgFade { from{ opacity:0;} to{ opacity:1;} }
+        @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
+        @keyframes cartPop { 0%{ opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(-10deg);} 30%{ opacity:1; transform:translate(-50%,-50%) scale(1.15) rotate(5deg);} 70%{ opacity:1; transform:translate(-50%,-60%) scale(1) rotate(0deg);} 100%{ opacity:0; transform:translate(-50%,-90%) scale(.9) rotate(0deg);} }
         @keyframes bottomFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-14px) rotate(6deg);} }
         @keyframes bottomFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-18px) rotate(-5deg);} }
       `}</style>
@@ -2940,7 +3190,7 @@ export default function App() {
       </div>
 
       <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)', zIndex: 1 }}>
-        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />}
+        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
         {view === 'loyalty' && <LoyaltyView back={() => setView('home')} />}
