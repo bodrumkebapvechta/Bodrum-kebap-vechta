@@ -235,7 +235,7 @@ const DAY_NAMES = {
   nl: ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'],
 };
 
-const LangContext = React.createContext({ lang: 'de', t: (k) => UI[k]?.de ?? k, setLang: () => {} });
+const LangContext = React.createContext({ lang: 'de', t: (k) => UI[k]?.de ?? k, setLang: () => {}, installPrompt: null, onInstall: () => {} });
 
 function useLang() {
   const [lang, setLang] = useState(() => {
@@ -726,17 +726,18 @@ function WheelPromoBanner({ onClick }) {
   );
 }
 function EmojiConfetti({ emojis = ['🎉', '🥙', '🍕', '⭐', '🎊'] }) {
-  const items = useMemo(() => Array.from({ length: 16 }).map((_, i) => ({
+  const items = useMemo(() => Array.from({ length: 30 }).map((_, i) => ({
     emoji: emojis[i % emojis.length],
     left: Math.random() * 100,
-    delay: Math.random() * 0.35,
-    duration: 1.1 + Math.random() * 0.7,
-    size: 15 + Math.random() * 14,
+    delay: Math.random() * 1.3,
+    duration: 2.6 + Math.random() * 1.8,
+    size: 16 + Math.random() * 16,
+    spin: 360 + Math.random() * 360,
   })), []);
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 30 }}>
+    <div className="pointer-events-none fixed inset-0 overflow-hidden" style={{ zIndex: 100 }}>
       {items.map((it, i) => (
-        <span key={i} style={{ position: 'absolute', left: `${it.left}%`, top: '-24px', fontSize: it.size, animation: `confettiFall ${it.duration}s ease-in ${it.delay}s forwards` }}>{it.emoji}</span>
+        <span key={i} style={{ position: 'absolute', left: `${it.left}%`, top: '-28px', fontSize: it.size, animation: `confettiFall ${it.duration}s cubic-bezier(.25,.1,.4,1) ${it.delay}s forwards`, '--spin': `${it.spin}deg` }}>{it.emoji}</span>
       ))}
     </div>
   );
@@ -1247,7 +1248,7 @@ function HomeView({ go, installPrompt, onInstall }) {
     <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .5s cubic-bezier(.22,1,.36,1)' }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
-        @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 100%{ transform:translateY(140px) rotate(360deg); opacity:0;} }
+        @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes popIn { 0%{ opacity:0; transform:scale(.6) rotate(-8deg);} 60%{ opacity:1; transform:scale(1.08) rotate(3deg);} 100%{ opacity:1; transform:scale(1) rotate(0deg);} }
         @keyframes cardIn { from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes floatY { 0%,100%{ transform:translateY(0px) rotate(-3deg);} 50%{ transform:translateY(-10px) rotate(3deg);} }
@@ -1491,7 +1492,7 @@ function HomeView({ go, installPrompt, onInstall }) {
 
 /* ============ WHATSAPP ORDER ============ */
 function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
-  const { lang, t } = React.useContext(LangContext);
+  const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
   const [cart, setCart] = useState({});
@@ -1507,7 +1508,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
   const [itemNotes, setItemNotes] = useState({});
   const [burst, setBurst] = useState(false);
   const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
-  const handleSend = () => { setBurst(true); setTimeout(() => setBurst(false), 1600); setDrawerView('sent'); };
+  const handleSend = () => { setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent'); };
 
   const addItem = (lineKey, label, price, deLabel) => setCart((c) => ({ ...c, [lineKey]: { name: label, deName: deLabel || label, price, qty: (c[lineKey]?.qty || 0) + 1 } }));
 
@@ -1786,12 +1787,17 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction }) {
             {drawerView === 'sent' && (
               <div className="flex-1 overflow-y-auto px-5 py-10 flex flex-col items-center justify-center text-center relative">
                 {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
-                <div className="text-5xl mb-4">✅</div>
-                <div className="font-black text-xl mb-2" style={{ color: GREEN }}>{t('orderSentTitle')}</div>
-                <p className="text-sm mb-8" style={{ color: '#7c6d55' }}>{t('orderSentSub')}</p>
-                <div className="w-full flex flex-col gap-3">
+                <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 84, height: 84, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
+                  <span className="text-5xl">✅</span>
+                </div>
+                <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
+                <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
+                <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
                   <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
                   <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+                  {installPrompt && (
+                    <button onClick={onInstall} className="w-full py-3 rounded-xl font-semibold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>{t('installAppBtn')}</button>
+                  )}
                 </div>
               </div>
             )}
@@ -1834,7 +1840,7 @@ function OptionCard({ selected, onClick, children }) {
   );
 }
 function DonerBuilderView({ back }) {
-  const { t, lang } = React.useContext(LangContext);
+  const { t, lang, installPrompt, onInstall } = React.useContext(LangContext);
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
   const [meat, setMeat] = useState(null);
@@ -1845,7 +1851,7 @@ function DonerBuilderView({ back }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
-  const handleSend = () => { setBurst(true); setSent(true); setTimeout(() => setBurst(false), 1600); };
+  const handleSend = () => { setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200); };
   const resetBuilder = () => { setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
   const toggleExtra = (id) => setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
@@ -1916,12 +1922,17 @@ function DonerBuilderView({ back }) {
         {step === 4 && sent && (
           <div className="flex flex-col items-center justify-center text-center py-10 relative">
             {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
-            <div className="text-5xl mb-4">✅</div>
-            <div className="font-black text-xl mb-2" style={{ color: GREEN }}>{t('orderSentTitle')}</div>
-            <p className="text-sm mb-8" style={{ color: '#7c6d55' }}>{t('orderSentSub')}</p>
-            <div className="w-full flex flex-col gap-3">
+            <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 84, height: 84, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
+              <span className="text-5xl">✅</span>
+            </div>
+            <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
+            <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
+            <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
               <button onClick={resetBuilder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
               <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+              {installPrompt && (
+                <button onClick={onInstall} className="w-full py-3 rounded-xl font-semibold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>{t('installAppBtn')}</button>
+              )}
             </div>
           </div>
         )}
@@ -1956,7 +1967,7 @@ function makeGroupCode() {
   return out;
 }
 function GroupOrderView({ back }) {
-  const { lang, t } = React.useContext(LangContext);
+  const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const [view, setView] = useState('home');
   const [code, setCode] = useState('');
   const [codeInput, setCodeInput] = useState('');
@@ -2001,7 +2012,7 @@ function GroupOrderView({ back }) {
     people.push({ name, items: myLines.map(([key, v]) => ({ name: itemNotes[key] ? `${v.deName || v.name} – ${itemNotes[key]}` : (v.deName || v.name), price: v.price, qty: v.qty })), total: myTotal });
     const updated = { ...fresh, people };
     await safeSet(`grouporder:${code}`, updated); setGroup(updated); setView('summary');
-    setBurst(true); setTimeout(() => setBurst(false), 1600);
+    setBurst(true); setTimeout(() => setBurst(false), 5200);
   };
   const grandTotal = useMemo(() => (group ? group.people.reduce((s, p) => s + p.total, 0) : 0), [group]);
   const waFinalLink = useMemo(() => {
@@ -2023,7 +2034,7 @@ function GroupOrderView({ back }) {
     const updated = { ...fresh, sentBy: name, sentAt: Date.now() };
     await safeSet(`grouporder:${code}`, updated);
     setGroup(updated);
-    setBigBurst(true); setJustSent(true); setTimeout(() => setBigBurst(false), 2200);
+    setBigBurst(true); setJustSent(true); setTimeout(() => setBigBurst(false), 5200);
   };
   const resetGroupOrder = () => {
     setView('home'); setCode(''); setCodeInput(''); setName(''); setLocalCart({}); setGroup(null); setErr('');
@@ -2204,12 +2215,15 @@ function GroupOrderView({ back }) {
               {group.sentBy ? (
                 <div className="relative">
                   {justSent && bigBurst && <EmojiConfetti emojis={['🎉', '🥙', '📲', '⭐', '🎊']} />}
-                  <div className="w-full py-3.5 rounded-xl font-bold text-sm text-center mb-3" style={{ background: '#f0e5cf', color: GREEN }}>
+                  <div className="w-full py-3.5 rounded-xl font-bold text-sm text-center mb-3" style={{ background: '#f0e5cf', color: GREEN, animation: justSent ? 'popIn .55s cubic-bezier(.34,1.56,.64,1) both' : 'none' }}>
                     ✓ {group.sentBy} {t('groupAlreadySent')}
                   </div>
-                  <div className="w-full flex flex-col gap-3">
+                  <div className="w-full flex flex-col gap-3" style={{ animation: justSent ? 'slideUpFade .5s ease .2s both' : 'none' }}>
                     <button onClick={resetGroupOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
                     <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
+                    {justSent && installPrompt && (
+                      <button onClick={onInstall} className="w-full py-3 rounded-xl font-semibold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>{t('installAppBtn')}</button>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -2630,12 +2644,14 @@ export default function App() {
 
   if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
+  const ctxValue = { ...langCtx, installPrompt, onInstall: triggerInstall };
+
   if (view === 'home') {
-    return <LangContext.Provider value={langCtx}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} /></LangContext.Provider>;
   }
 
   return (
-    <LangContext.Provider value={langCtx}>
+    <LangContext.Provider value={ctxValue}>
     <div className="min-h-screen w-full relative overflow-hidden" style={{ background: GREEN, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes sideFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-22px) rotate(6deg);} }
@@ -2644,7 +2660,9 @@ export default function App() {
         @keyframes sideSpin { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
         @keyframes viewFade { from{ opacity:0; transform:translateY(14px) scale(.985);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes popIn { 0%{ opacity:0; transform:scale(.6) rotate(-8deg);} 60%{ opacity:1; transform:scale(1.08) rotate(3deg);} 100%{ opacity:1; transform:scale(1) rotate(0deg);} }
-        @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 100%{ transform:translateY(140px) rotate(360deg); opacity:0;} }
+        @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
+        @keyframes ringPulse { 0%{ box-shadow:0 0 0 0 rgba(37,211,102,.45);} 100%{ box-shadow:0 0 0 30px rgba(37,211,102,0);} }
+        @keyframes slideUpFade { from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
       `}</style>
 
       {/* decorative side stripe */}
