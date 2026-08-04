@@ -835,6 +835,7 @@ function DailySpecial({ go }) {
 
 function HomeView({ go }) {
   const [navOpen, setNavOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
   const now = useLiveClock();
   const status = getOpenStatus(now);
   const scrollTo = (id) => {
@@ -971,14 +972,24 @@ function HomeView({ go }) {
         </div>
 
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>EIN BLICK IN UNSERE KÜCHE</div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <img src={DOENER_TELLER_IMG} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
-          <img src={FOOD_G1} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
-          <img src={FOOD_G2} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
-          <img src={FOOD_G3} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
-          <img src={FOOD_G4} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52" />
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <img src={TERRACE_IMG} onClick={() => setLightbox(TERRACE_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={DOENER_TELLER_IMG} onClick={() => setLightbox(DOENER_TELLER_IMG)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={FOOD_G1} onClick={() => setLightbox(FOOD_G1)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={FOOD_G2} onClick={() => setLightbox(FOOD_G2)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={FOOD_G3} onClick={() => setLightbox(FOOD_G3)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
+          <img src={FOOD_G4} onClick={() => setLightbox(FOOD_G4)} className="gallery-img rounded-xl object-cover w-full h-40 lg:h-52 cursor-pointer" />
         </div>
       </section>
+
+      {lightbox && (
+        <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease' }}>
+          <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}>
+            <X size={20} color="#fff" />
+          </button>
+          <img src={lightbox} className="max-w-full max-h-full rounded-2xl object-contain" style={{ boxShadow: '0 20px 60px rgba(0,0,0,.5)' }} onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
 
       {/* MAP / CONTACT */}
       <section id="kontakt" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
