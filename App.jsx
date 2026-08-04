@@ -882,8 +882,12 @@ function HomeView({ go }) {
         <span style={{ fontSize: 34, animation: 'sideSpinHome 8s linear infinite', display: 'inline-block' }}>🍕</span>
         <span style={{ fontSize: 30, animation: 'sideFloatHome2 4.8s ease-in-out infinite' }}>🍝</span>
       </div>
-      <div className="hidden 2xl:flex flex-col items-center gap-12 fixed right-8 top-1/4 opacity-80 pointer-events-none z-0">
-        <span style={{ fontSize: 38, animation: 'sideFloatHome2 6s ease-in-out infinite' }}>🍗</span>
+      <div className="hidden 2xl:flex flex-col items-center gap-12 fixed right-8 top-1/4 opacity-90 pointer-events-none z-10">
+        <button onClick={() => go('group')} className="pointer-events-auto flex flex-col items-center gap-1.5 px-4 py-4 rounded-2xl text-center" style={{ background: ORANGE, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 10px 26px rgba(255,106,26,.4)' }}>
+          <span style={{ fontSize: 30 }}>👥</span>
+          <span className="text-white font-black text-[11px] leading-tight">Gruppen-<br />bestellung!</span>
+          <span className="text-white font-semibold text-[9px] opacity-90">Jetzt starten →</span>
+        </button>
         <span style={{ fontSize: 30, animation: 'sideFloatHome1 5s ease-in-out infinite' }}>🥤</span>
         <span style={{ fontSize: 34, animation: 'sideSpinHome 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
       </div>
@@ -1059,7 +1063,11 @@ function HomeView({ go }) {
             <span className="text-white font-black text-xs">BODRUM KEBAP VECHTA</span>
           </div>
           <span className="text-[11px] font-medium" style={{ color: '#6b5a3e' }}>© 2026 Bodrum Kebap Vechta</span>
-          <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: '#6b5a3e' }}><Lock size={10} /> Personal-Bereich</button>
+          <div className="flex items-center gap-4">
+            <button onClick={() => go('impressum')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>Impressum</button>
+            <button onClick={() => go('datenschutz')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>Datenschutz</button>
+            <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: '#6b5a3e' }}><Lock size={10} /> Personal-Bereich</button>
+          </div>
         </div>
       </footer>
     </div>
@@ -1486,6 +1494,8 @@ function GroupOrderView({ back }) {
   const [err, setErr] = useState('');
   const [showWheel, setShowWheel] = useState(false);
   const [wheelResult, setWheelResult] = useState(null);
+  const [openExtra, setOpenExtra] = useState(null);
+  const [configExtras, setConfigExtras] = useState([]);
 
   const loadGroup = async (c) => { const data = await safeGet(`grouporder:${c}`); setGroup(data || { code: c, people: [] }); };
   useEffect(() => {
@@ -1565,8 +1575,43 @@ function GroupOrderView({ back }) {
           <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
-                const keyS = `${item.id}-s`, keyL = `${item.id}-l`;
-                return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}><div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="flex gap-2"><QtyRow label={`klein · ${fmt(item.priceSmall)}`} qty={localCart[keyS]?.qty || 0} onAdd={() => addLocal(keyS, `${item.name} (klein)`, item.priceSmall)} onRemove={() => removeLocal(keyS)} /><QtyRow label={`groß · ${fmt(item.priceLarge)}`} qty={localCart[keyL]?.qty || 0} onAdd={() => addLocal(keyL, `${item.name} (groß)`, item.priceLarge)} onRemove={() => removeLocal(keyL)} /></div></div>);
+                const isOpen = openExtra?.itemId === item.id;
+                const size = openExtra?.size;
+                const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
+                const configTotal = isOpen ? basePrice + configExtras.length * 1.0 : 0;
+                const openFor = (sz) => { setOpenExtra({ itemId: item.id, size: sz }); setConfigExtras([]); };
+                const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
+                const confirmAdd = () => {
+                  const sizeLabel = size === 'klein' ? 'klein' : 'groß';
+                  const label = configExtras.length > 0 ? `${item.name} (${sizeLabel}) – ${configExtras.join(', ')}` : `${item.name} (${sizeLabel})`;
+                  const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+                  addLocal(lineKey, label, configTotal);
+                  setOpenExtra(null); setConfigExtras([]);
+                };
+                return (
+                  <div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                    {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{item.desc}</div>}
+                    <div className="flex gap-2">
+                      <button onClick={() => openFor('klein')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>klein · {fmt(item.priceSmall)}</button>
+                      <button onClick={() => openFor('gross')} className="flex-1 px-2.5 py-2.5 rounded-lg text-[11px] font-bold" style={isOpen && size === 'gross' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>groß · {fmt(item.priceLarge)}</button>
+                    </div>
+                    {isOpen && (
+                      <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #e3d5bd' }}>
+                        <div className="text-[11px] font-bold mb-2" style={{ color: '#8a5a1f' }}>Extras (je {fmt(1.0)}):</div>
+                        <div className="grid grid-cols-3 gap-1.5 mb-3">
+                          {EXTRA_TOPPINGS.map((t) => (
+                            <button key={t} onClick={() => toggleExtra(t)} className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold" style={configExtras.includes(t) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{t}</button>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => { setOpenExtra(null); setConfigExtras([]); }} className="px-4 py-2.5 rounded-lg text-xs font-semibold" style={{ background: '#f0e5cf', color: GREEN }}>Abbrechen</button>
+                          <button onClick={confirmAdd} className="flex-1 py-2.5 rounded-lg text-xs font-bold text-white" style={{ background: ORANGE }}>Hinzufügen · {fmt(configTotal)}</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
               }
               const qty = localCart[item.id]?.qty || 0;
               return (<div key={item.id} className="bg-white rounded-xl p-3.5 shadow-sm flex items-center justify-between" style={{ borderLeft: `4px solid ${ORANGE}` }}><div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{item.name}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div><Stepper qty={qty} onAdd={() => addLocal(item.id, item.name, item.price)} onRemove={() => removeLocal(item.id)} /></div>);
@@ -1624,6 +1669,105 @@ function GroupOrderView({ back }) {
 }
 
 /* ============ LUCKY WHEEL (standalone view incl. staff verify) ============ */
+function LegalTextView({ back, title, children }) {
+  return (
+    <div className="pb-16" style={{ background: CREAM, minHeight: '100vh' }}>
+      <div style={{ background: GREEN }}><TopBar onHome={back} title={title} /></div>
+      <div className="max-w-2xl mx-auto px-5 py-6 text-sm leading-relaxed" style={{ color: '#3f3524' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ImpressumView({ back }) {
+  return (
+    <LegalTextView back={back} title="IMPRESSUM">
+      <h2 className="font-black text-lg mb-3" style={{ color: GREEN }}>Angaben gemäß § 5 DDG</h2>
+      <p className="mb-4">
+        Bodrum Kebap Vechta<br />
+        Inhaber: Lütfü Kutluca<br />
+        Oyther Straße 37<br />
+        49377 Vechta<br />
+        Deutschland
+      </p>
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>Kontakt</h3>
+      <p className="mb-4">
+        Telefon: 04441 / 95 16 104<br />
+        E-Mail: bodrumkebapvechta@gmail.com
+      </p>
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+      <p className="mb-4">
+        Lütfü Kutluca<br />
+        Oyther Straße 37, 49377 Vechta
+      </p>
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>EU-Streitschlichtung</h3>
+      <p className="mb-4">
+        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <span style={{ color: ORANGE }}>ec.europa.eu/consumers/odr</span>. Unsere E-Mail-Adresse finden Sie oben. Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+      </p>
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>Haftung für Inhalte</h3>
+      <p className="mb-4">
+        Als Diensteanbieter sind wir für eigene Inhalte auf dieser Website nach den allgemeinen Gesetzen verantwortlich. Wir sind jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt.
+      </p>
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>Haftung für Links</h3>
+      <p className="mb-2">
+        Unsere Website enthält Links zu externen Websites Dritter (z. B. WhatsApp, Instagram, Google Maps), auf deren Inhalte wir keinen Einfluss haben. Für diese fremden Inhalte können wir keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter verantwortlich.
+      </p>
+    </LegalTextView>
+  );
+}
+
+function DatenschutzView({ back }) {
+  return (
+    <LegalTextView back={back} title="DATENSCHUTZ">
+      <h2 className="font-black text-lg mb-3" style={{ color: GREEN }}>Datenschutzerklärung</h2>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>1. Verantwortlicher</h3>
+      <p className="mb-4">
+        Lütfü Kutluca — Bodrum Kebap Vechta<br />
+        Oyther Straße 37, 49377 Vechta<br />
+        Telefon: 04441 / 95 16 104<br />
+        E-Mail: bodrumkebapvechta@gmail.com
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>2. Hosting</h3>
+      <p className="mb-4">
+        Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Website werden automatisch technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite) durch den Hosting-Anbieter verarbeitet. Dies dient der technischen Bereitstellung und Sicherheit der Website.
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>3. Bestellung per WhatsApp</h3>
+      <p className="mb-4">
+        Wenn Sie über unsere Website eine Bestellung per WhatsApp aufgeben, werden Sie zur WhatsApp-Anwendung von Meta Platforms Ireland Ltd. weitergeleitet. Die dort eingegebenen Daten (z. B. Name, Bestellinhalt) unterliegen der Datenschutzerklärung von WhatsApp/Meta. Wir erhalten nur die von Ihnen gesendete Nachricht.
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>4. Treuekarte, Gruppenbestellung & Glücksrad</h3>
+      <p className="mb-4">
+        Für diese Funktionen wird ein zufällig erzeugter Code gespeichert (keine Namen, keine Telefonnummern). Die Daten werden bei Supabase Inc. in einer Datenbank innerhalb der EU gespeichert und dienen ausschließlich der Funktion dieser Angebote (z. B. Stempelzählung).
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>5. Google Maps</h3>
+      <p className="mb-4">
+        Auf unserer Website ist eine Karte von Google Maps eingebunden. Beim Laden der Karte können Daten (z. B. IP-Adresse) an Google Ireland Limited übertragen werden. Weitere Informationen: Google-Datenschutzerklärung.
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>6. Instagram</h3>
+      <p className="mb-4">
+        Wir verlinken auf unser Instagram-Profil. Beim Anklicken werden Sie zu Instagram (Meta Platforms Ireland Ltd.) weitergeleitet, deren eigene Datenschutzbestimmungen gelten.
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>7. Cookies</h3>
+      <p className="mb-4">
+        Diese Website verwendet keine Tracking- oder Marketing-Cookies. Es werden keine Analysewerkzeuge (z. B. Google Analytics) eingesetzt.
+      </p>
+
+      <h3 className="font-bold mb-1.5" style={{ color: GREEN }}>8. Ihre Rechte</h3>
+      <p className="mb-4">
+        Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer Daten sowie ein Recht auf Widerspruch. Wenden Sie sich hierzu an die oben genannte Kontaktadresse. Zudem steht Ihnen ein Beschwerderecht bei einer Datenschutzaufsichtsbehörde zu.
+      </p>
+    </LegalTextView>
+  );
+}
+
 function StaffPanelView({ back }) {
   const [pin, setPin] = useState('');
   const [ok, setOk] = useState(false);
@@ -1740,8 +1884,7 @@ function StampRow({ stamps, goal }) {
   );
 }
 function makeLoyaltyCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let out = ''; for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  let out = ''; for (let i = 0; i < 4; i++) out += Math.floor(Math.random() * 10);
   return out;
 }
 function LoyaltyView({ back }) {
@@ -1866,6 +2009,8 @@ export default function App() {
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
         {view === 'loyalty' && <LoyaltyView back={() => setView('home')} />}
         {view === 'staff' && <StaffPanelView back={() => setView('home')} />}
+        {view === 'impressum' && <ImpressumView back={() => setView('home')} />}
+        {view === 'datenschutz' && <DatenschutzView back={() => setView('home')} />}
       </div>
     </div>
   );
