@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import {
   Flame, ArrowLeft, ArrowRight, Check, MessageCircle, ChevronLeft, Plus, Minus,
   ShoppingBag, Users, Gift, RotateCw, Lock, ShieldCheck, Phone, RefreshCw,
@@ -37,6 +38,11 @@ const NUGGETS_IMG = "/nuggets.jpg";
 const CHICKEN_STRIPS_IMG = "/chicken-strips.jpg";
 const BAUERNSALAT_IMG = "/bauernsalat.jpg";
 const POMMES_IMG = "/pommes.jpg";
+const FRITZ_LIMO_IMG = "/fritz-limo.jpg";
+const FRITZ_SPRITZ_TRAUBE_IMG = "/fritz-spritz-traube.jpg";
+const FRITZ_SPRITZ_APFEL_IMG = "/fritz-spritz-apfel.jpg";
+const FRITZ_KOLA_IMG = "/fritz-kola.jpg";
+const FRITZ_KOLA_SUPERZERO_IMG = "/fritz-kola-superzero.jpg";
 
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl'];
@@ -227,6 +233,11 @@ const UI = {
   chooseToppingsSub: { de: 'So viele du möchtest — je 1,00 €.', en: 'As many as you like — €1.00 each.', tr: 'İstediğin kadar — her biri 1,00 €.', ro: 'Câte dorești — 1,00 € fiecare.', nl: 'Zoveel als je wilt — elk € 1,00.' },
   pizzaReadyTitle: { de: 'Deine Pizza ist fertig! 🎉', en: 'Your Pizza is ready! 🎉', tr: 'Pizzan hazır! 🎉', ro: 'Pizza ta este gata! 🎉', nl: 'Jouw Pizza is klaar! 🎉' },
   choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' },
+  yaprakWeekendOnly: { de: 'Yaprak Döner gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'Yaprak Döner is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Yaprak Döner sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Yaprak Döner este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Yaprak Döner is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' },
+  sizeLabel: { de: 'GRÖSSE', en: 'SIZE', tr: 'BOYUT', ro: 'MĂRIME', nl: 'FORMAAT' },
+  pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' },
+  leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' },
+  itemAddedToast: { de: 'Zum Warenkorb hinzugefügt', en: 'Added to cart', tr: 'Sepete eklendi', ro: 'Adăugat în coș', nl: 'Toegevoegd aan winkelwagen' },
   choosePastaTypeTitle: { de: 'Spaghetti oder Makkaroni?', en: 'Spaghetti or Macaroni?', tr: 'Spagetti mi Makarna mı?', ro: 'Spaghete sau macaroane?', nl: 'Spaghetti of macaroni?' },
   weiterShort: { de: 'Weiter', en: 'Next', tr: 'İleri', ro: 'Continuă', nl: 'Verder' },
   choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' },
@@ -242,19 +253,26 @@ const UI = {
   backToHomeBtn: { de: 'Zurück zur Startseite', en: 'Back to homepage', tr: 'Ana sayfaya dön', ro: 'Înapoi la pagina principală', nl: 'Terug naar startpagina' },
   newOrderBtn: { de: 'Neue Bestellung starten', en: 'Start a new order', tr: 'Yeni sipariş oluştur', ro: 'Începe o comandă nouă', nl: 'Nieuwe bestelling starten' },
   installAppBtn: { de: '📲 App installieren', en: '📲 Install app', tr: '📲 Uygulamayı yükle', ro: '📲 Instalează aplicația', nl: '📲 App installeren' },
+  installHelpTitle: { de: 'Zum Startbildschirm hinzufügen', en: 'Add to Home Screen', tr: 'Ana Ekrana Ekle', ro: 'Adaugă pe ecranul principal', nl: 'Toevoegen aan beginscherm' },
+  installHelpIOS: { de: 'Tippe unten auf Teilen 􀈂 und dann auf „Zum Home-Bildschirm".', en: 'Tap the Share button below, then "Add to Home Screen".', tr: 'Aşağıdaki Paylaş simgesine, ardından "Ana Ekrana Ekle"ye dokun.', ro: 'Atinge butonul Distribuie de mai jos, apoi „Adaugă pe ecranul principal".', nl: 'Tik op Delen hieronder en dan op "Zet op beginscherm".' },
+  installHelpAndroid: { de: 'Tippe oben rechts auf das Menü ⋮ und dann auf „App installieren" oder „Zum Startbildschirm hinzufügen".', en: 'Tap the ⋮ menu top right, then "Install app" or "Add to Home Screen".', tr: 'Sağ üstteki ⋮ menüsüne dokun, sonra "Uygulamayı yükle" veya "Ana Ekrana Ekle" seç.', ro: 'Atinge meniul ⋮ din dreapta sus, apoi „Instalează aplicația".', nl: 'Tik op het ⋮-menu rechtsboven, dan op "App installeren".' },
+  installHelpClose: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen' },
 };
 
 const CATEGORY_IMAGES = {
-  kebap: LAHMACUN_IMG,
-  pizza: PIZZA_KAESE_IMG,
-  calzone: CALZONE_IMG,
-  nudeln: PENNE_IMG,
-  salat: SALAT_BUNT_IMG,
-  finger: CHICKEN_STRIPS_IMG,
+  kebap: [LAHMACUN_IMG, DOENER_SPIESS_IMG, DOENER_TELLER_IMG],
+  pizza: [PIZZA_KAESE_IMG, PIZZA_KAESE_IMG],
+  pizzabrot: [PIZZABROETCHEN_IMG],
+  calzone: [CALZONE_IMG],
+  nudeln: [PENNE_IMG, SPAGHETTI_IMG],
+  salat: [SALAT_BUNT_IMG, BAUERNSALAT_IMG],
+  finger: [CHICKEN_STRIPS_IMG, NUGGETS_IMG, POMMES_IMG],
+  getraenke: [FRITZ_KOLA_IMG, FRITZ_LIMO_IMG, FRITZ_SPRITZ_TRAUBE_IMG, FRITZ_KOLA_SUPERZERO_IMG],
 };
 const CATEGORY_LABELS = {
   kebap: { de: 'Kebap', en: 'Kebap', tr: 'Kebap', ro: 'Kebap', nl: 'Kebap' },
   pizza: { de: 'Pizza', en: 'Pizza', tr: 'Pizza', ro: 'Pizza', nl: 'Pizza' },
+  pizzabrot: { de: 'Pizzabrot & Brötchen', en: 'Pizza Bread & Rolls', tr: 'Pizza Ekmeği & Topları', ro: 'Pâine & Chifle Pizza', nl: 'Pizzabrood & Broodjes' },
   calzone: { de: 'Calzone', en: 'Calzone', tr: 'Calzone', ro: 'Calzone', nl: 'Calzone' },
   baguette: { de: 'Baguette', en: 'Baguette', tr: 'Baget', ro: 'Baghetă', nl: 'Baguette' },
   ueberbacken: { de: 'Kebap überbacken', en: 'Baked Kebap', tr: 'Fırında Kebap', ro: 'Kebap gratinat', nl: 'Kebap gegratineerd' },
@@ -503,6 +521,8 @@ const MENU = [
     { id: 'p52', name: 'Pizza Oythe', priceSmall: 9.5, priceLarge: 10.5, desc: 'Krabben, Putenschinken, Knoblauch' },
     { id: 'p53', name: 'Pizza Italia', priceSmall: 9.5, priceLarge: 10.5, desc: 'Brokkoli, Pilzen, Zwiebeln und Weichkäse in Salzlake' },
     { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni' },
+  ]},
+  { key: 'pizzabrot', label: 'Pizzabrot & Brötchen', items: [
     { id: 'p56', name: 'Pizzabrot', price: 4.5 },
     { id: 'p57', name: 'Pizzabrot mit Käse', price: 5.5 },
     { id: 'p58', name: 'Pizzabrot mit Knoblauch', price: 5.5 },
@@ -548,14 +568,14 @@ const MENU = [
     { id: 'r153', name: 'Rollo Spezial', price: 10.0, desc: 'Rindersalami, Putenschinken und Pilzen' },
   ]},
   { key: 'nudeln', label: 'Nudeln', items: [
-    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Mit Tomatensoße', customPasta: true },
-    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Mit Fleischsoße', customPasta: true },
-    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', customPasta: true },
-    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße', customPasta: true },
-    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Brokkoli, Pilzen, Paprika, Tomatensoße', customPasta: true },
-    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse', customPasta: true },
-    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße', customPasta: true },
-    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken', customPasta: true },
+    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Mit Tomatensoße' },
+    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Mit Fleischsoße' },
+    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße' },
+    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
+    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Brokkoli, Pilzen, Paprika, Tomatensoße' },
+    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse' },
+    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
+    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken' },
     { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
     { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
@@ -604,9 +624,9 @@ const MENU = [
     { id: 'g305', name: 'Ayran', price: 2.0 },
     { id: 'g306', name: 'Wasser (still/spritzig)', price: 2.0 },
     { id: 'g307', name: 'Eistee Pfirsich (Dose)', price: 2.5 },
-    { id: 'g308', name: 'Fritz-Kola', price: 3.0 },
-    { id: 'g309', name: 'Fritz-Limo', price: 3.0, desc: 'Zitrone oder Apfel-Kirsch-Holunder' },
-    { id: 'g310', name: 'Fritz-Spritz', price: 3.0, desc: 'Bio-Rhabarber oder Bio-Traubenschorle' },
+    { id: 'g308', name: 'Fritz-Kola', price: 3.0, img: FRITZ_KOLA_IMG },
+    { id: 'g309', name: 'Fritz-Limo', price: 3.0, desc: 'Zitrone oder Apfel-Kirsch-Holunder', img: FRITZ_LIMO_IMG },
+    { id: 'g310', name: 'Fritz-Spritz', price: 3.0, desc: 'Bio-Rhabarber oder Bio-Traubenschorle', img: FRITZ_SPRITZ_TRAUBE_IMG },
     { id: 'g311', name: 'Vita Malz', price: 3.0 },
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
@@ -619,6 +639,7 @@ const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+function isWeekendDay() { const d = new Date().getDay(); return d === 0 || d === 5 || d === 6; }
 function menuNum(id) { if (/^g\d/.test(id)) return ''; return id.replace(/^[a-z]+/i, ''); }
 function normalizePhone(raw) { return raw.replace(/[^\d+]/g, ''); }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -720,7 +741,7 @@ function QtyRow({ label, qty, onAdd, onRemove }) {
 }
 
 const CATEGORY_ICONS = {
-  kebap: '🥙', pizza: '🍕', calzone: '🥟', baguette: '🥖', ueberbacken: '🧀',
+  kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥟', baguette: '🥖', ueberbacken: '🧀',
   rollo: '🌯', nudeln: '🍝', schnitzel: '🍗', salat: '🥗', finger: '🍟', getraenke: '🥤',
 };
 
@@ -820,16 +841,20 @@ function ConfigModal({ onClose, children }) {
 }
 
 function CartPopEmoji({ trigger }) {
+  const { t } = React.useContext(LangContext);
   const [show, setShow] = useState(false);
   useEffect(() => {
     if (!trigger) return;
     setShow(true);
-    const t = setTimeout(() => setShow(false), 900);
+    const t = setTimeout(() => setShow(false), 1600);
     return () => clearTimeout(t);
   }, [trigger]);
   if (!show) return null;
   return (
-    <span className="pointer-events-none fixed" style={{ zIndex: 300, left: '50%', top: '40%', transform: 'translate(-50%,-50%)', fontSize: 54, animation: 'cartPop .85s ease-out forwards' }}>🛒✅</span>
+    <div className="pointer-events-none fixed left-1/2 top-6 flex items-center gap-2.5 px-4 py-3 rounded-2xl" style={{ zIndex: 300, transform: 'translateX(-50%)', background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', animation: 'toastSlide 1.6s cubic-bezier(.22,1,.36,1) forwards' }}>
+      <span className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#25D366' }}><Check size={15} color="#fff" strokeWidth={3} /></span>
+      <span className="text-sm font-bold text-white whitespace-nowrap">{t('itemAddedToast')}</span>
+    </div>
   );
 }
 
@@ -1371,6 +1396,9 @@ function DailySpecial({ go }) {
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [navOpen, setNavOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
+  useEffect(() => {
+    if (lightbox) { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }
+  }, [lightbox]);
   const now = useLiveClock();
   const status = getOpenStatus(now);
   const { lang, setLang, t } = React.useContext(LangContext);
@@ -1524,14 +1552,14 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="flex flex-wrap gap-3 mb-3">
               <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
-              <button onClick={() => scrollTo('extras')} className="px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
             </div>
             <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
               <span className="text-lg">👥</span> {t('heroCtaGroup')}
             </button>
-            <div className="flex flex-wrap gap-2.5 mt-3">
-              <button onClick={() => go('builder')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>🧩 {t('builderQuickLabel')}</button>
+            <div className="flex flex-wrap gap-2.5 mt-4">
+              <button onClick={() => go('builder')} className="flex items-center gap-2.5 px-5 py-3.5 rounded-2xl font-bold text-sm" style={{ background: 'rgba(255,199,56,.18)', color: GOLD, border: `1.5px solid ${GOLD}`, boxShadow: '0 6px 18px rgba(255,199,56,.15)' }}>🧩 {t('builderQuickLabel')}</button>
               <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
+              <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
@@ -1602,15 +1630,18 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <img src={NUGGETS_IMG} onClick={() => setLightbox(NUGGETS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 200 }} />
           <img src={CHICKEN_STRIPS_IMG} onClick={() => setLightbox(CHICKEN_STRIPS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
           <img src={POMMES_IMG} onClick={() => setLightbox(POMMES_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
+          <img src={FRITZ_KOLA_IMG} onClick={() => setLightbox(FRITZ_KOLA_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 200 }} />
+          <img src={FRITZ_LIMO_IMG} onClick={() => setLightbox(FRITZ_LIMO_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
+          <img src={FRITZ_SPRITZ_TRAUBE_IMG} onClick={() => setLightbox(FRITZ_SPRITZ_TRAUBE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
         </div>
       </section>
 
       {lightbox && (
-        <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease' }}>
+        <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
           <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}>
             <X size={20} color="#fff" />
           </button>
-          <img src={lightbox} className="max-w-full max-h-full rounded-2xl object-contain" style={{ boxShadow: '0 20px 60px rgba(0,0,0,.5)' }} onClick={(e) => e.stopPropagation()} />
+          <img src={lightbox} className="rounded-2xl object-contain" style={{ maxWidth: '100%', maxHeight: '100%', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }} onClick={(e) => e.stopPropagation()} />
         </div>
       )}
 
@@ -1679,6 +1710,14 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
+  const [catImgIdx, setCatImgIdx] = useState(0);
+  useEffect(() => {
+    setCatImgIdx(0);
+    const imgs = CATEGORY_IMAGES[tab];
+    if (!imgs || imgs.length < 2) return;
+    const iv = setInterval(() => setCatImgIdx((i) => (i + 1) % imgs.length), 3500);
+    return () => clearInterval(iv);
+  }, [tab]);
   const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
@@ -1761,15 +1800,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
 
       {pizzaComboActive && tab === 'pizza' && (
         <div className="mx-5 mt-3 mb-1 px-4 py-3 rounded-xl flex items-center justify-between gap-2 flex-wrap" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
-          <span className="text-xs font-black" style={{ color: '#8a5a1f' }}>🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {fmt(PIZZA_COMBO_PRICE)} inkl. Getränk!</span>
-          <button onClick={() => setPizzaComboActive(false)} className="text-[11px] font-bold underline" style={{ color: '#8a5a1f' }}>Angebot verlassen</button>
+          <span className="text-xs font-black" style={{ color: '#8a5a1f' }}>{t('pizzaComboBanner').replace('{price}', fmt(PIZZA_COMBO_PRICE))}</span>
+          <button onClick={() => setPizzaComboActive(false)} className="text-[11px] font-bold underline" style={{ color: '#8a5a1f' }}>{t('leaveOffer')}</button>
         </div>
       )}
 
       {CATEGORY_IMAGES[tab] && (
         <div className="px-5 pt-2">
           <div className="rounded-2xl overflow-hidden relative h-28" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-            <img src={CATEGORY_IMAGES[tab]} className="w-full h-full object-cover" alt={catLabel(tab, lang)} />
+            <img key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
             <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
               <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
             </div>
@@ -1826,7 +1865,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                         <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                       </div>
                       {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
-                      <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('choosePizzaSize')?.toUpperCase?.() || 'GRÖSSE'}</div>
+                      <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('sizeLabel')}</div>
                       <div className="flex gap-2 mb-5">
                         <button onClick={() => setSize('klein')} className="flex-1 py-4 rounded-xl text-center font-bold" style={size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>
                           <div className="text-base">{t('sizeSmall')}</div><div className="text-sm opacity-80">{fmt(item.priceSmall)}</div>
@@ -2000,11 +2039,12 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         })}
       </div>
 
-      {totalCount > 0 && !cartOpen && (
-        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
+      {totalCount > 0 && !cartOpen && ReactDOM.createPortal(
+        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)', zIndex: 90 }}>
           <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} {t('itemsWord')}</span>
           <span className="font-black text-base">{fmt(totalPrice)}</span>
-        </button>
+        </button>,
+        document.body
       )}
 
       {cartOpen && (
@@ -2167,6 +2207,7 @@ const MEATS = [
   { id: 'gemischt', label: 'Gemischt', extra: 0.5, emoji: '🍖' },
   { id: 'steak', label: 'Steakfleisch', extra: 2.0, emoji: '🔥' },
   { id: 'falafel', label: 'Falafel (vegetarisch)', extra: -1.0, emoji: '🧆' },
+  { id: 'yaprak', label: 'Yaprak Döner', extra: 1.0, emoji: '🌿', weekendOnly: true },
 ];
 const SAUCES = [
   { id: 'knoblauch', label: 'Knoblauchsoße' }, { id: 'hollandaise', label: 'Hollandaise' },
@@ -2187,32 +2228,53 @@ function OptionCard({ selected, onClick, children }) {
 }
 function DonerBuilderView({ back, go }) {
   const { t, lang, installPrompt, onInstall } = React.useContext(LangContext);
-  const [started, setStarted] = useState(false);
+  const [kind, setKind] = useState(null); // null | 'doener' | 'pasta'
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
   const [meat, setMeat] = useState(null);
   const [sauce, setSauce] = useState(null);
   const [extras, setExtras] = useState([]);
+  const [pastaType, setPastaType] = useState(null);
+  const [pastaSauce, setPastaSauce] = useState(null);
+  const [pastaExtras, setPastaExtras] = useState([]);
   const [name, setName] = useState('');
   const [showWheel, setShowWheel] = useState(false);
   const [wheelResult, setWheelResult] = useState(null);
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
   const handleSend = () => { setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200); };
-  const resetBuilder = () => { setStarted(false); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
+  const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
   const toggleExtra = (id) => setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+  const togglePastaExtra = (top) => setPastaExtras((e) => (e.includes(top) ? e.filter((x) => x !== top) : [...e, top]));
 
   const total = useMemo(() => {
+    if (kind === 'pasta') {
+      const base_ = pastaType === 'Makkaroni' ? 8.0 : 7.5;
+      return base_ + (pastaSauce === 'Bolognese-Soße' ? 0.5 : 0) + pastaExtras.length * 1.0;
+    }
     let t = (base?.price || 0) + (meat?.extra || 0);
     extras.forEach((id) => { const ex = BUILDER_EXTRAS.find((e) => e.id === id); if (ex) t += ex.price; });
     return Math.max(t, 0);
-  }, [base, meat, extras]);
+  }, [kind, base, meat, extras, pastaType, pastaSauce, pastaExtras]);
 
-  const canNext = [!!base, !!meat, !!sauce, true, false][step];
-  const totalSteps = 4;
+  const canNext = kind === 'pasta'
+    ? [!!pastaType, !!pastaSauce, true, false][step]
+    : [!!base, !!meat, !!sauce, true, false][step];
+  const totalSteps = kind === 'pasta' ? 3 : 4;
 
   const waLink = useMemo(() => {
+    if (kind === 'pasta') {
+      if (!pastaType || !pastaSauce) return null;
+      let msg = `Hallo Bodrum Kebap Vechta, ich möchte mir gerne meine eigene Pasta zusammenstellen:\n\n`;
+      msg += `🍝 ${pastaType}\n🧂 Soße: ${pastaSauce}\n`;
+      if (pastaExtras.length > 0) msg += `➕ Extras: ${pastaExtras.join(', ')}\n`;
+      msg += `\nPreis: ${fmt(total)}\n`;
+      if (name) msg += `\nName: ${name}`;
+      if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+      msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
+      return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    }
     if (!base || !meat || !sauce) return null;
     let msg = `Hallo Bodrum Kebap Vechta, ich möchte mir gerne meinen Döner selbst zusammenstellen:\n\n`;
     msg += `🌯 Basis: ${base.label}\n🍖 Fleisch: ${meat.label}\n🧂 Soße: ${SAUCES.find((s) => s.id === sauce)?.label}\n`;
@@ -2222,17 +2284,17 @@ function DonerBuilderView({ back, go }) {
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [base, meat, sauce, extras, name, total, wheelResult]);
+  }, [kind, base, meat, sauce, extras, pastaType, pastaSauce, pastaExtras, name, total, wheelResult]);
 
   return (
     <div className="pb-10">
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleBuilder')} /></div>
-      {!started && (
+      {!kind && (
         <div className="px-5 pt-4">
           <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseCreationTitle')}</h2>
           <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseCreationSub')}</p>
           <div className="flex flex-col gap-3">
-            <button onClick={() => setStarted(true)} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+            <button onClick={() => setKind('doener')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
               <img src={DOENER_SPIESS_IMG} className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
                 <span className="text-white font-black text-lg">🥙 {t('buildDoener')}</span>
@@ -2244,7 +2306,7 @@ function DonerBuilderView({ back, go }) {
                 <span className="text-white font-black text-lg">🍕 {t('buildPizza')}</span>
               </div>
             </button>
-            <button onClick={() => go('whatsapp', { categoryMode: 'nudeln' })} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+            <button onClick={() => setKind('pasta')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
               <img src={PENNE_IMG} className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
                 <span className="text-white font-black text-lg">🍝 {t('buildPasta')}</span>
@@ -2253,17 +2315,17 @@ function DonerBuilderView({ back, go }) {
           </div>
         </div>
       )}
-      {started && step < totalSteps && (
+      {kind && step < totalSteps && (
         <div className="flex items-center gap-2 px-5 mb-2">
           {Array.from({ length: totalSteps }).map((_, i) => <div key={i} className="h-1.5 rounded-full flex-1" style={{ background: i <= step ? ORANGE : '#e3d5bd' }} />)}
         </div>
       )}
-      {started && (
+      {kind === 'doener' && (
       <div className="px-5 pt-3">
         {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseBase')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseBaseSub')}</p>
           <div className="flex flex-col gap-2.5">{BASES.map((b) => (<OptionCard key={b.id} selected={base?.id === b.id} onClick={() => setBase(b)}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{b.emoji}</span> {mx(b.label, lang)}<span className="text-xs font-medium opacity-80">· {mx(b.desc, lang)}</span></span></OptionCard>))}</div></div>)}
         {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseMeatQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseMeatTitle')}</p>
-          <div className="flex flex-col gap-2.5">{MEATS.map((m) => (<OptionCard key={m.id} selected={meat?.id === m.id} onClick={() => setMeat(m)}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{m.emoji}</span> {mx(m.label, lang)}{m.extra !== 0 && <span className="text-xs font-medium opacity-80">({m.extra > 0 ? '+' : ''}{fmt(m.extra)})</span>}</span></OptionCard>))}</div></div>)}
+          <div className="flex flex-col gap-2.5">{MEATS.map((m) => (<OptionCard key={m.id} selected={meat?.id === m.id} onClick={() => { if (m.weekendOnly && !isWeekendDay()) { alert(t('yaprakWeekendOnly')); return; } setMeat(m); }}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{m.emoji}</span> {mx(m.label, lang)}{m.extra !== 0 && <span className="text-xs font-medium opacity-80">({m.extra > 0 ? '+' : ''}{fmt(m.extra)})</span>}{m.weekendOnly && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>FR·SA·SO</span>}</span></OptionCard>))}</div></div>)}
         {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
           <div className="flex flex-col gap-2.5">{SAUCES.map((s) => (<OptionCard key={s.id} selected={sauce === s.id} onClick={() => setSauce(s.id)}><span className="font-bold text-sm">{mx(s.label, lang)}</span></OptionCard>))}</div></div>)}
         {step === 3 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
@@ -2298,7 +2360,33 @@ function DonerBuilderView({ back, go }) {
         )}
       </div>
       )}
-      {started && step === totalSteps && sent && (
+      {kind === 'pasta' && (
+      <div className="px-5 pt-3">
+        {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('choosePastaTypeTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('choosePastaStyleSub')}</p>
+          <div className="flex flex-col gap-2.5">{PASTA_TYPES.map((pt) => (<OptionCard key={pt} selected={pastaType === pt} onClick={() => setPastaType(pt)}><span className="font-bold text-sm">{mx(pt, lang)}</span></OptionCard>))}</div></div>)}
+        {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
+          <div className="flex flex-col gap-2.5">{PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauce === s} onClick={() => setPastaSauce(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}</div></div>)}
+        {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
+          <div className="grid grid-cols-2 gap-2.5">{PASTA_EXTRA_ITEMS.map((top) => { const sel = pastaExtras.includes(top); return (<button key={top} onClick={() => togglePastaExtra(top)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(top, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">+{fmt(1.0)}</div></button>); })}</div></div>)}
+        {step === totalSteps && !showWheel && !sent && (
+          <div>
+            <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('pastaReadyTitle')}</h2>
+            <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('doenerReadySub')}</p>
+            <div className="bg-white rounded-xl p-5 mb-4" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+              <Row label={t('rowBasis')} value={mx(pastaType, lang)} /><Row label={t('rowSauce')} value={mx(pastaSauce, lang)} />
+              {pastaExtras.length > 0 && <Row label={t('rowExtras')} value={pastaExtras.map((tp) => mx(tp, lang)).join(', ')} />}
+              <div className="flex justify-between items-center pt-3 mt-2" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('rowPrice')}</span><span className="text-xl font-black" style={{ color: GREEN }}>{fmt(total)}</span></div>
+            </div>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none mb-3" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+            {!wheelResult && total >= 30 && (<div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>)}
+            {!wheelResult && total < 30 && (<div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>{t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}</div>)}
+            {wheelResult && wheelResult.code && (<div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN, animation: 'popIn .5s ease' }}><Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>{t('wonPrefix')} {mx(wheelResult.prize, lang)} {t('wonSuffix')}</span></div>)}
+            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
+          </div>
+        )}
+      </div>
+      )}
+      {kind && step === totalSteps && sent && (
         <div className="px-5 flex flex-col items-center justify-center text-center py-10 relative">
           {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
           <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 84, height: 84, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
@@ -2315,7 +2403,7 @@ function DonerBuilderView({ back, go }) {
           </div>
         </div>
       )}
-      {started && step === totalSteps && showWheel && (
+      {kind && step === totalSteps && showWheel && (
         <div className="px-5">
           <button onClick={() => setShowWheel(false)} className="mb-4 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full" style={{ background: '#f0e5cf', color: GREEN }}><ArrowLeft size={13} /> {t('backToOrder')}</button>
           <h2 className="font-black text-xl mb-1 text-center" style={{ color: GREEN }}>{t('wheelTitle')}</h2>
@@ -2326,7 +2414,7 @@ function DonerBuilderView({ back, go }) {
           )}
         </div>
       )}
-      {started && step < totalSteps && (
+      {kind && step < totalSteps && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px]">
           <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueBtn')} <ArrowRight size={18} /></button>
         </div>
@@ -2351,6 +2439,14 @@ function GroupOrderView({ back }) {
   const [codeInput, setCodeInput] = useState('');
   const [name, setName] = useState('');
   const [tab, setTab] = useState(MENU[0].key);
+  const [catImgIdx, setCatImgIdx] = useState(0);
+  useEffect(() => {
+    setCatImgIdx(0);
+    const imgs = CATEGORY_IMAGES[tab];
+    if (!imgs || imgs.length < 2) return;
+    const iv = setInterval(() => setCatImgIdx((i) => (i + 1) % imgs.length), 3500);
+    return () => clearInterval(iv);
+  }, [tab]);
   const [localCart, setLocalCart] = useState({});
   const [group, setGroup] = useState(null);
   const [err, setErr] = useState('');
@@ -2496,7 +2592,7 @@ function GroupOrderView({ back }) {
           {CATEGORY_IMAGES[tab] && (
             <div className="px-5 pt-2">
               <div className="rounded-2xl overflow-hidden relative h-28" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-                <img src={CATEGORY_IMAGES[tab]} className="w-full h-full object-cover" alt={catLabel(tab, lang)} />
+                <img key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
                 <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
                   <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
                 </div>
@@ -2542,7 +2638,7 @@ function GroupOrderView({ back }) {
                             <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                           </div>
                           {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
-                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>GRÖSSE</div>
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('sizeLabel')}</div>
                           <div className="flex gap-2 mb-5">
                             <button onClick={() => setSize('klein')} className="flex-1 py-4 rounded-xl text-center font-bold" style={size === 'klein' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>
                               <div className="text-base">{t('sizeSmall')}</div><div className="text-sm opacity-80">{fmt(item.priceSmall)}</div>
@@ -3163,27 +3259,47 @@ export default function App() {
   const langCtx = useLang();
   const [cart, setCart] = useState({});
   const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
+  const cartTotal = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty * v.price, 0), [cart]);
   const [installPrompt, setInstallPrompt] = useState(null);
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
     const onInstalled = () => setInstallPrompt(null);
     window.addEventListener('appinstalled', onInstalled);
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) setIsStandalone(true);
+    if (window.navigator.standalone) setIsStandalone(true);
     return () => { window.removeEventListener('beforeinstallprompt', handler); window.removeEventListener('appinstalled', onInstalled); };
   }, []);
   const triggerInstall = async () => {
-    if (!installPrompt) return;
-    installPrompt.prompt();
-    await installPrompt.userChoice;
-    setInstallPrompt(null);
+    if (installPrompt) {
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      setInstallPrompt(null);
+      return;
+    }
+    setShowInstallHelp(true);
   };
 
   if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
-  const ctxValue = { ...langCtx, installPrompt, onInstall: triggerInstall };
+  const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall };
+  const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+  const installHelpModal = showInstallHelp && ReactDOM.createPortal(
+    <ConfigModal onClose={() => setShowInstallHelp(false)}>
+      <div className="p-6 text-center">
+        <div className="text-4xl mb-3">📲</div>
+        <h3 className="font-black text-lg mb-3" style={{ color: GREEN }}>{ctxValue.t('installHelpTitle')}</h3>
+        <p className="text-sm mb-6" style={{ color: '#7c6d55' }}>{isIOS ? ctxValue.t('installHelpIOS') : ctxValue.t('installHelpAndroid')}</p>
+        <button onClick={() => setShowInstallHelp(false)} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{ctxValue.t('installHelpClose')}</button>
+      </div>
+    </ConfigModal>,
+    document.body
+  );
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}</LangContext.Provider>;
   }
 
   return (
@@ -3201,7 +3317,7 @@ export default function App() {
         @keyframes slideUpFade { from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
         @keyframes modalBgFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
-        @keyframes cartPop { 0%{ opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(-10deg);} 30%{ opacity:1; transform:translate(-50%,-50%) scale(1.15) rotate(5deg);} 70%{ opacity:1; transform:translate(-50%,-60%) scale(1) rotate(0deg);} 100%{ opacity:0; transform:translate(-50%,-90%) scale(.9) rotate(0deg);} }
+        @keyframes toastSlide { 0%{ opacity:0; transform:translateX(-50%) translateY(-16px); } 12%{ opacity:1; transform:translateX(-50%) translateY(0); } 85%{ opacity:1; transform:translateX(-50%) translateY(0); } 100%{ opacity:0; transform:translateX(-50%) translateY(-10px); } }
         @keyframes bottomFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-14px) rotate(6deg);} }
         @keyframes bottomFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-18px) rotate(-5deg);} }
       `}</style>
@@ -3210,32 +3326,23 @@ export default function App() {
       <div className="absolute inset-y-0 left-0 w-2" style={{ background: `repeating-linear-gradient(180deg, ${ORANGE} 0 24px, ${GOLD} 24px 48px, #d62828 48px 72px)` }} />
       <div className="absolute inset-y-0 right-0 w-2" style={{ background: `repeating-linear-gradient(180deg, ${ORANGE} 0 24px, ${GOLD} 24px 48px, #d62828 48px 72px)` }} />
 
-      {/* bottom decoration — visible on every screen size, fills the green space below shorter pages */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center gap-8 sm:gap-14 pb-6 opacity-20 pointer-events-none select-none" style={{ zIndex: 0 }}>
-        <span style={{ fontSize: 34, animation: 'bottomFloat1 4.5s ease-in-out infinite' }}>🥙</span>
-        <span style={{ fontSize: 26, animation: 'sideSpin 8s linear infinite', display: 'inline-block' }}>🍕</span>
-        <span style={{ fontSize: 30, animation: 'bottomFloat2 5.2s ease-in-out infinite' }}>🌶️</span>
-        <span style={{ fontSize: 26, animation: 'bottomFloat1 5.8s ease-in-out infinite' }}>🥤</span>
-        <span style={{ fontSize: 30, animation: 'sideSpin 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
-      </div>
-
-      {/* floating decorations — only visible when there's real side space */}
-      <div className="hidden 2xl:flex flex-col items-center gap-10 fixed left-10 top-1/3 opacity-90 pointer-events-none">
-        <span style={{ fontSize: 46, animation: 'sideFloat1 5s ease-in-out infinite' }}>🥙</span>
-        <span style={{ fontSize: 34, animation: 'sideSpin 9s linear infinite', display: 'inline-block' }}>🍕</span>
-        <span style={{ fontSize: 30, animation: 'sideFloat3 4.5s ease-in-out infinite' }}>🌶️</span>
-      </div>
-      <div className="hidden 2xl:flex flex-col items-center gap-10 fixed right-10 top-1/4 opacity-90 pointer-events-none">
-        <span style={{ fontSize: 40, animation: 'sideFloat2 6s ease-in-out infinite' }}>🍔</span>
-        <span style={{ fontSize: 30, animation: 'sideFloat1 5.5s ease-in-out infinite' }}>🥤</span>
-        <span style={{ fontSize: 36, animation: 'sideSpin 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
-      </div>
-      <div className="hidden 2xl:block fixed left-10 bottom-16 opacity-80 pointer-events-none" style={{ fontSize: 12, color: GOLD, fontWeight: 700, letterSpacing: 2, writingMode: 'vertical-rl' }}>
+      {/* subtle professional corner accents — replaces the old floating emoji decorations */}
+      <div className="absolute pointer-events-none" style={{ top: -120, left: -120, width: 360, height: 360, borderRadius: '50%', background: `radial-gradient(circle, rgba(255,199,56,.08), transparent 70%)` }} />
+      <div className="absolute pointer-events-none" style={{ bottom: -140, right: -140, width: 420, height: 420, borderRadius: '50%', background: `radial-gradient(circle, rgba(230,90,10,.09), transparent 70%)` }} />
+      <div className="hidden 2xl:block fixed left-8 bottom-10 opacity-60 pointer-events-none" style={{ fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: 3, writingMode: 'vertical-rl' }}>
         100% HALAL
       </div>
-      <div className="hidden 2xl:block fixed right-10 bottom-16 opacity-80 pointer-events-none" style={{ fontSize: 12, color: GOLD, fontWeight: 700, letterSpacing: 2, writingMode: 'vertical-rl' }}>
-        FRISCH VOM DREHSPIESS
+      <div className="hidden 2xl:block fixed right-8 bottom-10 opacity-60 pointer-events-none" style={{ fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: 3, writingMode: 'vertical-rl' }}>
+        BODRUM KEBAP VECHTA
       </div>
+
+      {cartCount > 0 && view !== 'whatsapp' && ReactDOM.createPortal(
+        <button onClick={() => go('whatsapp', { openCart: true })} className="fixed bottom-5 right-5 flex items-center gap-2 pl-4 pr-5 py-3.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+          <span className="relative"><ShoppingBag size={18} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
+          {fmt(cartTotal)}
+        </button>,
+        document.body
+      )}
 
       <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} />}
@@ -3247,6 +3354,7 @@ export default function App() {
         {view === 'datenschutz' && <DatenschutzView back={() => setView('home')} />}
       </div>
     </div>
+    {installHelpModal}
     </LangContext.Provider>
   );
 }
