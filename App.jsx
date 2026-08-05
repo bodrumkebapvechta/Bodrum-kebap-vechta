@@ -254,6 +254,7 @@ const UI = {
   pickupEstimate: { de: 'Fertig in ca. 15–20 Minuten', en: 'Ready in approx. 15–20 minutes', tr: 'Yaklaşık 15-20 dakikada hazır', ro: 'Gata în aprox. 15–20 minute', nl: 'Klaar in ca. 15–20 minuten' },
   allergenInfoBtn: { de: 'ⓘ Allergene & Zusatzstoffe', en: 'ⓘ Allergens & additives', tr: 'ⓘ Alerjen ve katkı maddeleri', ro: 'ⓘ Alergeni și aditivi', nl: 'ⓘ Allergenen & additieven' },
   recommendedForYou: { de: 'PASST GUT DAZU', en: 'GOES WELL WITH THIS', tr: 'BUNA ÇOK YAKIŞIR', ro: 'SE POTRIVEȘTE BINE', nl: 'PAST HIER GOED BIJ' },
+  groupSubmitBtn: { de: 'Meine Bestellung abschicken', en: 'Submit my order', tr: 'Siparişimi gönder', ro: 'Trimite comanda mea', nl: 'Mijn bestelling versturen' },
   allergenLegendTitle: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjen ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & additieven' },
   allergenSectionTitle: { de: 'ALLERGENE', en: 'ALLERGENS', tr: 'ALERJENLER', ro: 'ALERGENI', nl: 'ALLERGENEN' },
   zusatzSectionTitle: { de: 'ZUSATZSTOFFE', en: 'ADDITIVES', tr: 'KATKI MADDELERİ', ro: 'ADITIVI', nl: 'ADDITIEVEN' },
@@ -3120,9 +3121,100 @@ function GroupOrderView({ back }) {
           </div>
           {myLines.length > 0 && (
             <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl shadow-xl overflow-hidden">
-              <button onClick={submitMyOrder} className="w-full px-5 py-4 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> Meine Bestellung abschicken</span><span className="font-black text-base">{fmt(myTotal)}</span></button>
+              <button onClick={() => setView('upsell')} className="w-full px-5 py-4 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><span className="font-black text-base">{t('weiter')}</span></button>
             </div>
           )}
+        </div>
+      )}
+      {view === 'upsell' && (
+        <div className="px-5 pt-2">
+          <div className="text-center mb-5">
+            <div className="text-3xl mb-2">🍟🍗</div>
+            <div className="font-black text-lg" style={{ color: GREEN }}>{t('upsellTitle')}</div>
+            <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>{t('upsellSub')}</p>
+          </div>
+          {lastAddedTab && CATEGORY_UPSELL_RECS[lastAddedTab] && (
+            <div className="mb-5">
+              <div className="text-[11px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: ORANGE }}>✨ {t('recommendedForYou')}</div>
+              <div className="flex flex-col gap-2.5">
+                {CATEGORY_UPSELL_RECS[lastAddedTab].map((id) => {
+                  const u = UPSELL_ITEMS_POOL.find((x) => x.id === id);
+                  if (!u) return null;
+                  const qty = localCart[u.id]?.qty || 0;
+                  return (
+                    <div key={u.id} className="rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ background: '#fdecd4', border: `1.5px solid ${GOLD}` }}>
+                      <div className="flex items-center gap-3">
+                        {u.img ? (
+                          <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#fff' : 'transparent' }}>
+                            <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                          </div>
+                        ) : (
+                          <span className="text-2xl">{u.emoji}</span>
+                        )}
+                        <div>
+                          <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
+                          <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
+                        </div>
+                      </div>
+                      <Stepper qty={qty} onAdd={() => addLocal(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeLocal(u.id)} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          <div className="flex flex-col gap-2.5">
+            {UPSELL_FOOD.map((u) => {
+              const qty = localCart[u.id]?.qty || 0;
+              return (
+                <div key={u.id} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{u.emoji}</span>
+                    <div>
+                      <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
+                      <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
+                    </div>
+                  </div>
+                  <Stepper qty={qty} onAdd={() => addLocal(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeLocal(u.id)} />
+                </div>
+              );
+            })}
+          </div>
+          <button onClick={() => setView('upsell2')} className="w-full mt-6 py-3.5 rounded-xl font-bold text-base text-white" style={{ background: GREEN }}>{t('weiter')}</button>
+          <button onClick={() => setView('upsell2')} className="w-full mt-2 py-2.5 rounded-xl font-semibold text-xs" style={{ color: '#a4906c' }}>{t('skip')}</button>
+        </div>
+      )}
+      {view === 'upsell2' && (
+        <div className="px-5 pt-2">
+          <div className="text-center mb-5">
+            <div className="text-3xl mb-2">🥤</div>
+            <div className="font-black text-lg" style={{ color: GREEN }}>Etwas zu trinken?</div>
+            <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>{t('drinksSub')}</p>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            {UPSELL_DRINKS.map((u) => {
+              const qty = localCart[u.id]?.qty || 0;
+              return (
+                <div key={u.id} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
+                  <div className="flex items-center gap-3">
+                    {u.img ? (
+                      <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#f7f0e2' : 'transparent' }}>
+                        <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                      </div>
+                    ) : (
+                      <span className="text-2xl">{u.emoji}</span>
+                    )}
+                    <div>
+                      <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
+                      <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
+                    </div>
+                  </div>
+                  <Stepper qty={qty} onAdd={() => addLocal(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeLocal(u.id)} />
+                </div>
+              );
+            })}
+          </div>
+          <button onClick={submitMyOrder} className="w-full mt-6 py-3.5 rounded-xl font-bold text-base text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('groupSubmitBtn')}</button>
         </div>
       )}
       {view === 'summary' && !showWheel && (
