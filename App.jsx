@@ -66,6 +66,12 @@ const UI = {
   orderCodeLabel: { de: 'Code', en: 'Code', tr: 'Kod', ro: 'Cod', nl: 'Code' },
   staffOrdersTab: { de: 'Bestellungen', en: 'Orders', tr: 'Siparişler', ro: 'Comenzi', nl: 'Bestellingen' },
   staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' },
+  staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' },
+  visitsToday: { de: 'Besuche heute', en: 'Visits today', tr: 'Bugünkü ziyaret', ro: 'Vizite azi', nl: 'Bezoeken vandaag' },
+  visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' },
+  byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' },
+  byDevice: { de: 'NACH GERÄT', en: 'BY DEVICE', tr: 'CİHAZA GÖRE', ro: 'DUPĂ DISPOZITIV', nl: 'PER APPARAAT' },
+  analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' },
   noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' },
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
@@ -803,6 +809,15 @@ function makeShortCode(len = 5) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let out = ''; for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
   return out;
+}
+function logVisit(lang) {
+  try {
+    if (sessionStorage.getItem('bk_visit_logged')) return;
+    sessionStorage.setItem('bk_visit_logged', '1');
+    const device = window.innerWidth < 768 ? 'mobile' : 'desktop';
+    const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
+    safeSet(key, { ts: Date.now(), lang, device });
+  } catch {}
 }
 
 /* ============ WHEEL DATA ============ */
@@ -1574,6 +1589,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const now = useLiveClock();
   const status = getOpenStatus(now);
   const { lang, setLang, t } = React.useContext(LangContext);
+  useEffect(() => { logVisit(lang); }, []);
   const HERO_IMAGES = [DOENER_SPIESS_IMG, PIZZA_KAESE_IMG, CALZONE_IMG, LAHMACUN_IMG, PENNE_IMG];
   const [heroIdx, setHeroIdx] = useState(0);
   useEffect(() => {
@@ -1731,6 +1747,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </button>
             <div className="flex flex-wrap gap-2.5 mt-3">
               <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
+              <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
@@ -3650,6 +3667,7 @@ function StaffPanelView({ back }) {
   const [ratingScore, setRatingScore] = useState('4.6');
   const [ratingCount, setRatingCount] = useState('293');
   const [ratingMsg, setRatingMsg] = useState('');
+  const [visits, setVisits] = useState([]);
 
   useEffect(() => {
     if (ok && tab === 'orders') {
@@ -3662,6 +3680,11 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'settings') {
       safeGet('siteconfig:rating').then((r) => { if (r) { setRatingScore(String(r.score)); setRatingCount(String(r.count)); } });
+    }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (ok && tab === 'analytics') {
+      safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
     }
   }, [ok, tab]);
   const toggleOrderStatus = async (o) => {
@@ -3725,6 +3748,7 @@ function StaffPanelView({ back }) {
             <button onClick={() => setTab('wheel')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'wheel' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffWheelCodeTitle')}</button>
             <button onClick={() => setTab('orders')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'orders' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffOrdersTab')}</button>
             <button onClick={() => setTab('settings')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'settings' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffSettingsTab')}</button>
+            <button onClick={() => setTab('analytics')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'analytics' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffAnalyticsTab')}</button>
           </div>
 
           {tab === 'stamps' && (
@@ -3794,6 +3818,46 @@ function StaffPanelView({ back }) {
               </div>
             </div>
           )}
+          {tab === 'analytics' && (() => {
+            const now = Date.now();
+            const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+            const total = visits.length;
+            const today = visits.filter((v) => v.value.ts >= todayStart.getTime()).length;
+            const byLang = {};
+            const byDevice = { mobile: 0, desktop: 0 };
+            visits.forEach((v) => {
+              byLang[v.value.lang] = (byLang[v.value.lang] || 0) + 1;
+              byDevice[v.value.device] = (byDevice[v.value.device] || 0) + 1;
+            });
+            const langOrder = Object.entries(byLang).sort((a, b) => b[1] - a[1]);
+            return (
+              <div className="px-5">
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="bg-white rounded-xl p-4 text-center" style={{ boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 text-center" style={{ boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-4 mb-3">
+                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byLanguage')}</div>
+                  {langOrder.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>—</p>}
+                  {langOrder.map(([l, c]) => (
+                    <div key={l} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span className="uppercase">{l}</span><span>{c}</span></div>
+                  ))}
+                </div>
+                <div className="bg-white rounded-xl p-4">
+                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byDevice')}</div>
+                  <div className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></div>
+                  <div className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>💻 Desktop</span><span>{byDevice.desktop || 0}</span></div>
+                </div>
+                <p className="text-[10px] text-center mt-4" style={{ color: '#a4906c' }}>{t('analyticsNote')}</p>
+              </div>
+            );
+          })()}
         </>
       )}
     </div>
