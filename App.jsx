@@ -75,6 +75,7 @@ const UI = {
   trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' },
   surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' },
   surpriseTitle: { de: 'Wie wäre es damit?', en: 'How about this?', tr: 'Buna ne dersin?', ro: 'Ce zici de asta?', nl: 'Wat dacht je hiervan?' },
+  surpriseRolling: { de: 'Wir überlegen...', en: 'Thinking...', tr: 'Düşünüyoruz...', ro: 'Ne gândim...', nl: 'We denken na...' },
   surpriseWantIt: { de: 'Ja, das will ich!', en: 'Yes, I want this!', tr: 'Evet, bunu istiyorum!', ro: 'Da, vreau asta!', nl: 'Ja, dit wil ik!' },
   surpriseAgain: { de: 'Was anderes zeigen', en: 'Show me something else', tr: 'Başka bir şey söyle', ro: 'Arată-mi altceva', nl: 'Toon iets anders' },
   noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' },
@@ -1587,7 +1588,22 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
-  const rollSurprise = () => setSurpriseItem(SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)]);
+  const [surpriseRolling, setSurpriseRolling] = useState(false);
+  const rollSurprise = () => {
+    setSurpriseRolling(true);
+    let count = 0;
+    const maxCount = 16;
+    const spin = () => {
+      setSurpriseItem(SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)]);
+      count++;
+      if (count < maxCount) {
+        setTimeout(spin, 70 + count * 12);
+      } else {
+        setSurpriseRolling(false);
+      }
+    };
+    spin();
+  };
   const [favorites, setFavorites] = useState([]);
   useEffect(() => {
     try {
@@ -1717,7 +1733,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
-            <button onClick={() => go('track')} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Timer size={14} /> {t('navTrackOrder')}</button>
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
             )}
@@ -1862,21 +1877,25 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       </section>
 
       {surpriseItem && (
-        <ConfigModal onClose={() => setSurpriseItem(null)}>
-          <div className="p-6 text-center">
-            <div className="text-4xl mb-2">🎲</div>
-            <h3 className="font-black text-lg mb-4" style={{ color: GREEN }}>{t('surpriseTitle')}</h3>
-            {surpriseItem.img && (
-              <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: surpriseItem.imgContain ? '#f7f0e2' : 'transparent' }}>
-                <img src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
+        <ConfigModal onClose={() => { if (!surpriseRolling) setSurpriseItem(null); }}>
+          <div className="p-6 text-center" style={{ minHeight: 340 }}>
+            <div className="text-4xl mb-2" style={surpriseRolling ? { animation: 'sadBounce .3s ease-in-out infinite' } : {}}>🎲</div>
+            <h3 className="font-black text-lg mb-4" style={{ color: GREEN }}>{surpriseRolling ? t('surpriseRolling') : t('surpriseTitle')}</h3>
+            <div style={{ opacity: surpriseRolling ? 0.55 : 1, filter: surpriseRolling ? 'blur(1px)' : 'none', transition: 'opacity .15s, filter .15s' }}>
+              {surpriseItem.img && (
+                <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: surpriseItem.imgContain ? '#f7f0e2' : 'transparent' }}>
+                  <img src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
+                </div>
+              )}
+              <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}</div>
+              <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(surpriseItem.price)}</div>
+            </div>
+            {!surpriseRolling && (
+              <div className="flex flex-col gap-2.5">
+                <button onClick={() => { go('whatsapp', { pendingCombo: { title: surpriseItem.name, price: surpriseItem.price } }); setSurpriseItem(null); }} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('surpriseWantIt')}</button>
+                <button onClick={rollSurprise} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('surpriseAgain')}</button>
               </div>
             )}
-            <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}</div>
-            <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(surpriseItem.price)}</div>
-            <div className="flex flex-col gap-2.5">
-              <button onClick={() => { go('whatsapp', { pendingCombo: { title: surpriseItem.name, price: surpriseItem.price } }); setSurpriseItem(null); }} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('surpriseWantIt')}</button>
-              <button onClick={rollSurprise} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('surpriseAgain')}</button>
-            </div>
           </div>
         </ConfigModal>
       )}
@@ -4043,7 +4062,7 @@ export default function App() {
     document.body
   );
   const cartBadge = cartCount > 0 && ReactDOM.createPortal(
-    <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+    <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className={`fixed ${view === 'home' ? 'top-[72px] sm:top-4 right-4 sm:right-24' : 'top-4 right-4'} flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white`} style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
       {fmt(cartTotal)}
     </button>,
@@ -4093,7 +4112,7 @@ export default function App() {
 
       {cartBadge}
 
-      <div key={view} className="w-full max-w-5xl mx-auto relative min-h-screen" style={{ background: CREAM, animation: 'viewFade .6s cubic-bezier(.25,.46,.45,.94)', zIndex: 1 }}>
+      <div key={view} className="w-full max-w-5xl mx-auto relative min-h-screen" style={{ background: CREAM, animation: 'viewFade .3s ease-out', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} go={go} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
