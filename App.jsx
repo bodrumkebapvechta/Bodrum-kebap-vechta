@@ -902,12 +902,12 @@ function ConfigModal({ onClose, children }) {
   return (
     <div
       className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-6"
-      style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', zIndex: 150, animation: 'modalBgFade .25s ease' }}
+      style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', zIndex: 150, animation: 'modalBgFade .35s ease' }}
       onClick={onClose}
     >
       <div
         className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto"
-        style={{ animation: 'modalCardUp .3s cubic-bezier(.22,1,.36,1)' }}
+        style={{ animation: 'modalCardUp .4s cubic-bezier(.25,.46,.45,.94)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -1493,7 +1493,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   };
 
   return (
-    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .5s cubic-bezier(.22,1,.36,1)' }}>
+    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)' }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
@@ -1510,6 +1510,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
         @keyframes closedBlink { 0%,100%{ opacity:1;} 50%{ opacity:.25;} }
         @keyframes cartBadgePulse { 0%,100%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 0 rgba(230,90,10,.4);} 50%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 8px rgba(230,90,10,0);} }
+        button, a { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, opacity .18s ease; }
+        button:active { transform: scale(.97); }
         @keyframes shine { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
         .feature-card{ transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease; transform-style: preserve-3d; }
         .feature-card:hover{ transform: perspective(700px) rotateX(4deg) rotateY(-4deg) translateY(-8px) scale(1.02); box-shadow:0 22px 44px rgba(21,56,38,.26); }
@@ -1582,7 +1584,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         </div>
         {navOpen && (
-          <div className="md:hidden px-5 pb-4 flex flex-col gap-3">
+          <div className="md:hidden px-5 pb-4 flex flex-col gap-3" style={{ animation: 'viewFade .35s cubic-bezier(.25,.46,.45,.94)' }}>
             <button onClick={() => go('whatsapp')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
             <button onClick={() => scrollTo('extras')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navExtras')}</button>
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Instagram size={15} /> @BodrumKebapVechta</a>
@@ -1926,7 +1928,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         <button onClick={() => setAllergenLegendOpen(true)} className="text-[11px] font-bold underline" style={{ color: '#a4906c' }}>{t('allergenInfoBtn')}</button>
       </div>
       {allergenLegendOpen && <AllergenLegendModal onClose={() => setAllergenLegendOpen(false)} />}
-      <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
+      <div key={tab} className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start" style={{ animation: 'modalBgFade .35s ease' }}>
         {activeCategory.items.map((item) => {
           if (item.priceSmall !== undefined) {
             if (pizzaComboActive && tab === 'pizza') {
@@ -2822,7 +2824,7 @@ function GroupOrderView({ back }) {
         <button onClick={() => setAllergenLegendOpen(true)} className="text-[11px] font-bold underline" style={{ color: '#a4906c' }}>{t('allergenInfoBtn')}</button>
       </div>
       {allergenLegendOpen && <AllergenLegendModal onClose={() => setAllergenLegendOpen(false)} />}
-      <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
+      <div key={tab} className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start" style={{ animation: 'modalBgFade .35s ease' }}>
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
                 const isOpen = openExtra?.itemId === item.id;
@@ -3572,7 +3574,7 @@ export default function App() {
         @keyframes sideFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-30px) rotate(-5deg);} }
         @keyframes sideFloat3 { 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-16px) rotate(10deg);} }
         @keyframes sideSpin { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
-        @keyframes viewFade { from{ opacity:0;} to{ opacity:1;} }
+        @keyframes viewFade { from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
         @keyframes popIn { 0%{ opacity:0; transform:scale(.6) rotate(-8deg);} 60%{ opacity:1; transform:scale(1.08) rotate(3deg);} 100%{ opacity:1; transform:scale(1) rotate(0deg);} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes ringPulse { 0%{ box-shadow:0 0 0 0 rgba(37,211,102,.45);} 100%{ box-shadow:0 0 0 30px rgba(37,211,102,0);} }
@@ -3580,6 +3582,8 @@ export default function App() {
         @keyframes modalBgFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes toastSlide { 0%{ opacity:0; transform:translateX(-50%) translateY(-16px); } 12%{ opacity:1; transform:translateX(-50%) translateY(0); } 85%{ opacity:1; transform:translateX(-50%) translateY(0); } 100%{ opacity:0; transform:translateX(-50%) translateY(-10px); } }
+        button, a { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, opacity .18s ease; }
+        button:active { transform: scale(.97); }
         @keyframes sadBounce { 0%,100%{ transform:translateY(0) rotate(0deg);} 25%{ transform:translateY(-6px) rotate(-4deg);} 75%{ transform:translateY(-2px) rotate(4deg);} }
         @keyframes bottomFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-14px) rotate(6deg);} }
         @keyframes bottomFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-18px) rotate(-5deg);} }
@@ -3601,7 +3605,7 @@ export default function App() {
 
       {cartBadge}
 
-      <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)', zIndex: 1 }}>
+      <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .6s cubic-bezier(.25,.46,.45,.94)', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
