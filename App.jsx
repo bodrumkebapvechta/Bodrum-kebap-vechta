@@ -240,6 +240,8 @@ const UI = {
   pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' },
   leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' },
   itemAddedToast: { de: 'Zum Warenkorb hinzugefügt', en: 'Added to cart', tr: 'Sepete eklendi', ro: 'Adăugat în coș', nl: 'Toegevoegd aan winkelwagen' },
+  meatTypeLabel: { de: 'FLEISCHART (KOSTENLOS)', en: 'TYPE OF MEAT (FREE)', tr: 'ET TÜRÜ (ÜCRETSİZ)', ro: 'TIP DE CARNE (GRATUIT)', nl: 'SOORT VLEES (GRATIS)' },
+  meatKalb: { de: 'Kalb/Rind', en: 'Veal/Beef', tr: 'Dana/Kalb', ro: 'Vițel/Vită', nl: 'Kalfs-/rundvlees' },
   lunchComboTitle: { de: '🍽️ Mittagsangebot', en: '🍽️ Lunch special', tr: '🍽️ Öğle fırsatı', ro: '🍽️ Ofertă de prânz', nl: '🍽️ Lunchaanbieding' },
   lunchComboSub: { de: 'Wähle dein Getränk dazu — zusammen nur 9,50 €!', en: 'Choose your drink — together only €9.50!', tr: 'Yanına içeceğini seç — birlikte sadece 9,50 €!', ro: 'Alege băutura — împreună doar 9,50 €!', nl: 'Kies je drankje — samen maar € 9,50!' },
   lunchComboConfirm: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' },
@@ -633,23 +635,36 @@ const MENU = [
     { id: 'g305', name: 'Ayran', price: 2.0 },
     { id: 'g306', name: 'Wasser (still/spritzig)', price: 2.0 },
     { id: 'g307', name: 'Eistee Pfirsich (Dose)', price: 2.5 },
-    { id: 'g308', name: 'Fritz-Kola', price: 3.0, img: FRITZ_KOLA_IMG },
-    { id: 'g309', name: 'Fritz-Limo', price: 3.0, desc: 'Zitrone oder Apfel-Kirsch-Holunder', img: FRITZ_LIMO_IMG },
-    { id: 'g310', name: 'Fritz-Spritz', price: 3.0, desc: 'Bio-Rhabarber oder Bio-Traubenschorle', img: FRITZ_SPRITZ_TRAUBE_IMG },
-    { id: 'g310b', name: 'Fritz-Kola Mischmasch', price: 3.0, desc: 'Kola & Orange', img: FRITZ_MISCHMASCH_IMG },
+    { id: 'g308', name: 'Fritz-Kola', price: 3.0, img: FRITZ_KOLA_IMG, imgContain: true },
+    { id: 'g309', name: 'Fritz-Limo', price: 3.0, desc: 'Zitrone oder Apfel-Kirsch-Holunder', img: FRITZ_LIMO_IMG, imgContain: true },
+    { id: 'g310', name: 'Fritz-Spritz', price: 3.0, desc: 'Bio-Rhabarber oder Bio-Traubenschorle', img: FRITZ_SPRITZ_TRAUBE_IMG, imgContain: true },
+    { id: 'g310b', name: 'Fritz-Kola Mischmasch', price: 3.0, desc: 'Kola & Orange', img: FRITZ_MISCHMASCH_IMG, imgContain: true },
     { id: 'g311', name: 'Vita Malz', price: 3.0 },
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Hähnchen-Fleisch', 'Scharf'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Scharf'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
 const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
-const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Hähnchen-Fleisch', 'Peperoni', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
 const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 function isWeekendDay() { const d = new Date().getDay(); return d === 0 || d === 5 || d === 6; }
+function isLunchWindowNow() {
+  const now = new Date();
+  const day = now.getDay();
+  if (![1, 3, 4, 5].includes(day)) return false;
+  const start = new Date(now); start.setHours(11, 30, 0, 0);
+  const end = new Date(now); end.setHours(14, 0, 0, 0);
+  return now >= start && now <= end;
+}
+const LUNCH_CATEGORIES = ['pizza', 'salat', 'schnitzel', 'nudeln'];
+function hasDonerMeat(item) {
+  if (item.name.includes('Steak')) return false;
+  return item.name.includes('Kebap') || (item.desc && item.desc.includes('Fleisch vom Drehspieß'));
+}
 function extraCost(name) {
   if (name === 'Hähnchen-Fleisch') return 0;
   if (name === 'Bolognese-Soße') return 0.5;
@@ -1764,6 +1779,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
+  const [configMeat, setConfigMeat] = useState(null);
   const [configNote, setConfigNote] = useState('');
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
@@ -1777,6 +1793,13 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const handleSend = () => { setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent'); };
 
   const [cartPop, setCartPop] = useState(0);
+  const [lunchPending, setLunchPending] = useState(null);
+  const [lunchDrink, setLunchDrink] = useState(null);
+  const confirmLunchAdd = () => {
+    if (!lunchPending || !lunchDrink) return;
+    addItem(`lunch-${Date.now()}`, `${lunchPending.label} + Dose Getränk (${lunchDrink})`, 9.5, `${lunchPending.deLabel} + Dose Getränk (${lunchDrink})`);
+    setLunchPending(null); setLunchDrink(null);
+  };
   const [pastaStep, setPastaStep] = useState(0);
   const [pastaType, setPastaType] = useState(null);
   const [pastaSauceSel, setPastaSauceSel] = useState(null);
@@ -1829,6 +1852,21 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   return (
     <div className="pb-24">
       <CartPopEmoji trigger={cartPop} />
+      {lunchPending && (
+        <ConfigModal onClose={() => setLunchPending(null)}>
+          <div className="p-5">
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="font-black text-lg" style={{ color: GREEN }}>{t('lunchComboTitle')}</h3>
+              <button onClick={() => setLunchPending(null)} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+            </div>
+            <p className="text-sm mb-4" style={{ color: '#7c6d55' }}>{t('lunchComboSub')}</p>
+            <div className="flex flex-col gap-2 mb-5">
+              {LUNCH_DRINKS.map((d) => (<OptionCard key={d} selected={lunchDrink === d} onClick={() => setLunchDrink(d)}><span className="font-bold text-sm">{mx(d, lang)}</span></OptionCard>))}
+            </div>
+            <button onClick={confirmLunchAdd} disabled={!lunchDrink} className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('lunchComboConfirm')} · {fmt(9.5)}</button>
+          </div>
+        </ConfigModal>
+      )}
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleWa')} /></div>
 
       <div className="flex gap-2 overflow-x-auto px-5 pt-4 pb-2">
@@ -1876,17 +1914,24 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
             const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-            const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
+            const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
-            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
+            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const confirmAdd = () => {
               const sizeLabel = size === 'klein' ? 'klein' : 'groß';
               const displaySizeLabel = size === 'klein' ? t('sizeSmall') : t('sizeLarge');
               let deLabel = configExtras.length > 0 ? `${item.name} (${sizeLabel}) ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name} (${sizeLabel})`;
               let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} (${displaySizeLabel}) ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)} (${displaySizeLabel})`;
+              if (configMeat) { deLabel += ` [${configMeat}]`; displayLabel += ` [${mx(configMeat, lang)}]`; }
               if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
-              const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+              if (isLunchWindowNow() && tab === 'pizza' && size === 'gross') {
+                closeModal();
+                setLunchDrink(null);
+                setLunchPending({ label: displayLabel, deLabel });
+                return;
+              }
+              const lineKey = `${item.id}-${size}-${configMeat || 'x'}-${configExtras.slice().sort().join('_') || 'ohne'}`;
               addItem(lineKey, displayLabel, configTotal, deLabel);
               closeModal();
             };
@@ -1917,6 +1962,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                           <div className="text-base">{t('sizeLarge')}</div><div className="text-sm opacity-80">{fmt(item.priceLarge)}</div>
                         </button>
                       </div>
+                      {hasDonerMeat(item) && (
+                        <>
+                          <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
+                          <div className="flex gap-2 mb-5">
+                            <button onClick={() => setConfigMeat(null)} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={!configMeat ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
+                            <button onClick={() => setConfigMeat('Hähnchen')} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={configMeat === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
+                          </div>
+                        </>
+                      )}
                       <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         {EXTRA_TOPPINGS.map((top) => (
@@ -1954,7 +2008,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             return (
               <React.Fragment key={item.id}>
                 <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
-                  {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
+                  {item.img && <img src={item.img} alt={item.name} className="w-full h-28 object-cover" loading="lazy" />}
                   <div className="p-3.5">
                     <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
                     {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
@@ -2062,11 +2116,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           const qty = cart[item.id]?.qty || 0;
           return (
             <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-              {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
+              {item.img && (
+                <div className="w-full h-32 flex items-center justify-center" style={{ background: item.imgContain ? '#f7f0e2' : 'transparent' }}>
+                  <img src={item.img} alt={item.name} className={item.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} loading="lazy" />
+                </div>
+              )}
               <div className="p-3.5">
               <div className="flex items-center justify-between">
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
               </div>
               {qty > 0 && (
                 <input
@@ -2499,6 +2557,7 @@ function GroupOrderView({ back }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
+  const [configMeat, setConfigMeat] = useState(null);
   const [configNote, setConfigNote] = useState('');
   const [itemNotes, setItemNotes] = useState({});
   const [burst, setBurst] = useState(false);
@@ -2521,6 +2580,13 @@ function GroupOrderView({ back }) {
     setErr(''); setCode(c); setGroup(data); setView('name');
   };
   const [cartPop, setCartPop] = useState(0);
+  const [lunchPending, setLunchPending] = useState(null);
+  const [lunchDrink, setLunchDrink] = useState(null);
+  const confirmLunchAdd = () => {
+    if (!lunchPending || !lunchDrink) return;
+    addLocal(`lunch-${Date.now()}`, `${lunchPending.label} + Dose Getränk (${lunchDrink})`, 9.5, `${lunchPending.deLabel} + Dose Getränk (${lunchDrink})`);
+    setLunchPending(null); setLunchDrink(null);
+  };
   const [pastaStep, setPastaStep] = useState(0);
   const [pastaType, setPastaType] = useState(null);
   const [pastaSauceSel, setPastaSauceSel] = useState(null);
@@ -2579,6 +2645,21 @@ function GroupOrderView({ back }) {
       {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐']} />}
       {bigBurst && <EmojiConfetti emojis={['🎉', '🎊', '📲', '🥙', '⭐', '🔥']} />}
       <CartPopEmoji trigger={cartPop} />
+      {lunchPending && (
+        <ConfigModal onClose={() => setLunchPending(null)}>
+          <div className="p-5">
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="font-black text-lg" style={{ color: GREEN }}>{t('lunchComboTitle')}</h3>
+              <button onClick={() => setLunchPending(null)} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+            </div>
+            <p className="text-sm mb-4" style={{ color: '#7c6d55' }}>{t('lunchComboSub')}</p>
+            <div className="flex flex-col gap-2 mb-5">
+              {LUNCH_DRINKS.map((d) => (<OptionCard key={d} selected={lunchDrink === d} onClick={() => setLunchDrink(d)}><span className="font-bold text-sm">{mx(d, lang)}</span></OptionCard>))}
+            </div>
+            <button onClick={confirmLunchAdd} disabled={!lunchDrink} className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('lunchComboConfirm')} · {fmt(9.5)}</button>
+          </div>
+        </ConfigModal>
+      )}
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleGroup')} /></div>
 
       {view === 'home' && (
@@ -2651,17 +2732,24 @@ function GroupOrderView({ back }) {
                 const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
                 const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-                const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
+                const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
-                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
+                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const confirmAdd = () => {
                   const sizeLabel = size === 'klein' ? 'klein' : 'groß';
                   const displaySizeLabel = size === 'klein' ? t('sizeSmall') : t('sizeLarge');
                   let deLabel = configExtras.length > 0 ? `${item.name} (${sizeLabel}) ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name} (${sizeLabel})`;
                   let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} (${displaySizeLabel}) ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)} (${displaySizeLabel})`;
+                  if (configMeat) { deLabel += ` [${configMeat}]`; displayLabel += ` [${mx(configMeat, lang)}]`; }
                   if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
-                  const lineKey = `${item.id}-${size}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+                  if (isLunchWindowNow() && tab === 'pizza' && size === 'gross') {
+                    closeModal();
+                    setLunchDrink(null);
+                    setLunchPending({ label: displayLabel, deLabel });
+                    return;
+                  }
+                  const lineKey = `${item.id}-${size}-${configMeat || 'x'}-${configExtras.slice().sort().join('_') || 'ohne'}`;
                   addLocal(lineKey, displayLabel, configTotal, deLabel);
                   closeModal();
                 };
@@ -2692,6 +2780,15 @@ function GroupOrderView({ back }) {
                               <div className="text-base">{t('sizeLarge')}</div><div className="text-sm opacity-80">{fmt(item.priceLarge)}</div>
                             </button>
                           </div>
+                          {hasDonerMeat(item) && (
+                            <>
+                              <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
+                              <div className="flex gap-2 mb-5">
+                                <button onClick={() => setConfigMeat(null)} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={!configMeat ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
+                                <button onClick={() => setConfigMeat('Hähnchen')} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={configMeat === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
+                              </div>
+                            </>
+                          )}
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {EXTRA_TOPPINGS.map((top) => (
@@ -2729,7 +2826,7 @@ function GroupOrderView({ back }) {
                 return (
                   <React.Fragment key={item.id}>
                     <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
-                      {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
+                      {item.img && <img src={item.img} alt={item.name} className="w-full h-28 object-cover" loading="lazy" />}
                       <div className="p-3.5">
                         <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
                         {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
@@ -2837,11 +2934,15 @@ function GroupOrderView({ back }) {
               const qty = localCart[item.id]?.qty || 0;
               return (
                 <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-                  {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
+                  {item.img && (
+                    <div className="w-full h-32 flex items-center justify-center" style={{ background: item.imgContain ? '#f7f0e2' : 'transparent' }}>
+                      <img src={item.img} alt={item.name} className={item.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} loading="lazy" />
+                    </div>
+                  )}
                   <div className="p-3.5">
                   <div className="flex items-center justify-between">
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
                   </div>
                   {qty > 0 && (
                     <input
