@@ -4086,7 +4086,7 @@ export default function App() {
     document.body
   );
   const cartBadge = cartCount > 0 && ReactDOM.createPortal(
-    <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className={`fixed ${view === 'home' ? 'top-[72px] sm:top-4 right-4 sm:right-24' : 'top-4 right-4'} flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white`} style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+    <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className={`fixed ${view === 'home' ? 'bottom-5 right-4' : 'top-4 right-4'} flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white`} style={{ background: GREEN, boxShadow: '0 10px 26px rgba(21,56,38,.45)', zIndex: 90, border: view === 'home' ? `2px solid ${GOLD}` : 'none' }}>
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
       {fmt(cartTotal)}
     </button>,
