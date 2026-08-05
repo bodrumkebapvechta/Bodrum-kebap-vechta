@@ -69,6 +69,8 @@ const UI = {
   staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' },
   staffMenuTab: { de: 'Preise', en: 'Prices', tr: 'Fiyatlar', ro: 'Prețuri', nl: 'Prijzen' },
   staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" },
+  staffWelcomeTitle: { de: 'Willkommen zurück!', en: 'Welcome back!', tr: 'Tekrar hoş geldin!', ro: 'Bine ai revenit!', nl: 'Welkom terug!' },
+  staffWelcomeSub: { de: 'Wähle einen Bereich unten aus', en: 'Choose an area below', tr: 'Aşağıdan bir bölüm seç', ro: 'Alege o secțiune mai jos', nl: 'Kies hieronder een gebied' },
   menuSearchPh: { de: 'Gericht suchen...', en: 'Search dish...', tr: 'Ürün ara...', ro: 'Caută fel...', nl: 'Gerecht zoeken...' },
   editedBadge: { de: 'bearbeitet', en: 'edited', tr: 'düzenlendi', ro: 'editat', nl: 'bewerkt' },
   resetBtn: { de: 'Zurücksetzen', en: 'Reset', tr: 'Sıfırla', ro: 'Resetează', nl: 'Resetten' },
@@ -3930,7 +3932,9 @@ function StaffPanelView({ back }) {
     if (!menuSearch.trim()) return [];
     const q = menuSearch.trim().toLowerCase();
     const out = [];
-    MENU.forEach((cat) => cat.items.forEach((item) => { if (item.name.toLowerCase().includes(q)) out.push(item); }));
+    MENU.forEach((cat) => cat.items.forEach((item) => {
+      if (item.name.toLowerCase().includes(q) || menuNum(item.id).toLowerCase().includes(q)) out.push(item);
+    }));
     return out.slice(0, 12);
   }, [menuSearch]);
   const selectMenuItem = (item) => {
@@ -3974,7 +3978,9 @@ function StaffPanelView({ back }) {
     if (!photoSearch.trim()) return [];
     const q = photoSearch.trim().toLowerCase();
     const out = [];
-    MENU.forEach((cat) => cat.items.forEach((item) => { if (item.name.toLowerCase().includes(q)) out.push(item); }));
+    MENU.forEach((cat) => cat.items.forEach((item) => {
+      if (item.name.toLowerCase().includes(q) || menuNum(item.id).toLowerCase().includes(q)) out.push(item);
+    }));
     return out.slice(0, 12);
   }, [photoSearch]);
   const selectPhotoItem = (item) => {
@@ -4020,13 +4026,38 @@ function StaffPanelView({ back }) {
         </div>
       ) : (
         <>
-          <div className="flex gap-2 px-5 pt-2 pb-4 overflow-x-auto">
-            <button onClick={() => setTab('orders')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'orders' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffOrdersTab')}</button>
-            <button onClick={() => setTab('wheel')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'wheel' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffWheelCodeTitle')}</button>
-            <button onClick={() => setTab('settings')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'settings' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffSettingsTab')}</button>
-            <button onClick={() => setTab('analytics')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'analytics' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffAnalyticsTab')}</button>
-            <button onClick={() => setTab('menu')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'menu' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffMenuTab')}</button>
-            <button onClick={() => setTab('photos')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'photos' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffPhotosTab')}</button>
+          <div className="px-5 pt-4 pb-1">
+            <div className="rounded-2xl p-4 mb-1 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
+              <span className="text-2xl">👨‍🍳</span>
+              <div>
+                <div className="font-black text-sm" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
+                <div className="text-[11px] font-medium" style={{ color: '#d9cdb4' }}>{t('staffWelcomeSub')}</div>
+              </div>
+            </div>
+          </div>
+          <div className="px-5 pt-3 pb-2">
+            <div className="grid grid-cols-2 gap-2.5">
+              {[
+                { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
+                { key: 'wheel', icon: '🎡', label: t('staffWheelCodeTitle') },
+                { key: 'menu', icon: '💰', label: t('staffMenuTab') },
+                { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
+                { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
+                { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
+              ].map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => setTab(item.key)}
+                  className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl text-left transition-all"
+                  style={tab === item.key
+                    ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 8px 20px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }
+                    : { background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.08)', border: '1.5px solid transparent' }}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="font-bold text-xs leading-tight">{item.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {tab === 'wheel' && (
@@ -4048,8 +4079,14 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'orders' && (
             <div className="px-5">
+              <div className="flex items-center gap-2 mb-3"><span className="text-lg">📦</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffOrdersTab')}</h3></div>
               {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
-              {orders.length === 0 && <p className="text-sm text-center font-medium" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>}
+              {orders.length === 0 && (
+                <div className="text-center py-14 opacity-70">
+                  <div className="text-5xl mb-3">📭</div>
+                  <p className="text-sm font-semibold" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>
+                </div>
+              )}
               <div className="flex flex-col gap-2.5">
                 {orders.map((o) => {
                   const isStuck = o.value.status !== 'ready' && (Date.now() - o.value.createdAt) > 15 * 60 * 1000;
@@ -4140,10 +4177,11 @@ function StaffPanelView({ back }) {
           })()}
           {tab === 'menu' && (
             <div className="px-5">
+              <div className="flex items-center gap-2 mb-3"><span className="text-lg">💰</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffMenuTab')}</h3></div>
               <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingItem && menuSearchResults.map((item) => (
                 <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
-                  <span className="font-bold text-sm" style={{ color: GREEN }}>{item.name}{priceOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
+                  <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{item.name}{priceOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
                   <span className="text-xs font-semibold" style={{ color: CHILI }}>{item.priceLarge !== undefined ? `${fmt(item.priceSmall)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</span>
                 </button>
               ))}
@@ -4179,11 +4217,12 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'photos' && (
             <div className="px-5">
+              <div className="flex items-center gap-2 mb-3"><span className="text-lg">📷</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffPhotosTab')}</h3></div>
               <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('photoUrlHint')}</p>
               <input value={photoSearch} onChange={(e) => { setPhotoSearch(e.target.value); setEditingPhotoItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingPhotoItem && photoSearchResults.map((item) => (
                 <button key={item.id} onClick={() => selectPhotoItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
-                  <span className="font-bold text-sm" style={{ color: GREEN }}>{item.name}{photoOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
+                  <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{item.name}{photoOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
                 </button>
               ))}
               {editingPhotoItem && (
