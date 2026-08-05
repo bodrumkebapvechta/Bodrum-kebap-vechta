@@ -43,6 +43,7 @@ const FRITZ_SPRITZ_TRAUBE_IMG = "/fritz-spritz-traube.jpg";
 const FRITZ_SPRITZ_APFEL_IMG = "/fritz-spritz-apfel.jpg";
 const FRITZ_KOLA_IMG = "/fritz-kola.jpg";
 const FRITZ_KOLA_SUPERZERO_IMG = "/fritz-kola-superzero.jpg";
+const FRITZ_MISCHMASCH_IMG = "/fritz-mischmasch.jpg";
 
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl'];
@@ -234,6 +235,7 @@ const UI = {
   pizzaReadyTitle: { de: 'Deine Pizza ist fertig! 🎉', en: 'Your Pizza is ready! 🎉', tr: 'Pizzan hazır! 🎉', ro: 'Pizza ta este gata! 🎉', nl: 'Jouw Pizza is klaar! 🎉' },
   choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' },
   yaprakWeekendOnly: { de: 'Yaprak Döner gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'Yaprak Döner is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Yaprak Döner sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Yaprak Döner este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Yaprak Döner is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' },
+  weekendItemOnly: { de: 'Dieses Gericht gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'This dish is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Bu ürün sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Acest fel este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Dit gerecht is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' },
   sizeLabel: { de: 'GRÖSSE', en: 'SIZE', tr: 'BOYUT', ro: 'MĂRIME', nl: 'FORMAAT' },
   pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' },
   leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' },
@@ -267,7 +269,7 @@ const CATEGORY_IMAGES = {
   nudeln: [PENNE_IMG, SPAGHETTI_IMG],
   salat: [SALAT_BUNT_IMG, BAUERNSALAT_IMG],
   finger: [CHICKEN_STRIPS_IMG, NUGGETS_IMG, POMMES_IMG],
-  getraenke: [FRITZ_KOLA_IMG, FRITZ_LIMO_IMG, FRITZ_SPRITZ_TRAUBE_IMG, FRITZ_KOLA_SUPERZERO_IMG],
+  getraenke: [FRITZ_KOLA_IMG, FRITZ_LIMO_IMG, FRITZ_SPRITZ_TRAUBE_IMG, FRITZ_MISCHMASCH_IMG, FRITZ_KOLA_SUPERZERO_IMG],
 };
 const CATEGORY_LABELS = {
   kebap: { de: 'Kebap', en: 'Kebap', tr: 'Kebap', ro: 'Kebap', nl: 'Kebap' },
@@ -459,6 +461,8 @@ const MENU_PHRASES = {
   'Brot': { en: 'Bread', tr: 'Ekmek', ro: 'Pâine', nl: 'Brood' },
   'Dose': { en: 'Can', tr: 'Kutu', ro: 'Doză', nl: 'Blikje' },
   'Ei': { en: 'Egg', tr: 'Yumurta', ro: 'Ou', nl: 'Ei' },
+  'Scharf': { en: 'Spicy', tr: 'Acılı', ro: 'Picant', nl: 'Pittig' },
+  'Kola & Orange': { en: 'Cola & Orange', tr: 'Kola & Portakal', ro: 'Cola & Portocală', nl: 'Cola & Sinaasappel' },
 };
 const MENU_PHRASE_KEYS = Object.keys(MENU_PHRASES);
 const MENU_PHRASE_RE = new RegExp(MENU_PHRASE_KEYS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
@@ -491,7 +495,7 @@ const MENU = [
     { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes' },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
-    { id: 'custom-pizza', name: 'Baue deine eigene Pizza 🎨', price: 8.0, desc: 'Tomatensoße inklusive — wähle deine Beläge', customPizza: true },
+    { id: 'custom-pizza', name: 'Baue deine eigene Pizza 🎨', price: 8.0, desc: 'Tomatensoße inklusive — wähle deine Beläge', customPizza: true, img: PIZZA_KAESE_IMG },
     { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0 },
     { id: 'p25', name: 'Pizza Salami', priceSmall: 8.0, priceLarge: 9.0 },
     { id: 'p26', name: 'Pizza Schinken', priceSmall: 8.0, priceLarge: 9.0 },
@@ -627,14 +631,15 @@ const MENU = [
     { id: 'g308', name: 'Fritz-Kola', price: 3.0, img: FRITZ_KOLA_IMG },
     { id: 'g309', name: 'Fritz-Limo', price: 3.0, desc: 'Zitrone oder Apfel-Kirsch-Holunder', img: FRITZ_LIMO_IMG },
     { id: 'g310', name: 'Fritz-Spritz', price: 3.0, desc: 'Bio-Rhabarber oder Bio-Traubenschorle', img: FRITZ_SPRITZ_TRAUBE_IMG },
+    { id: 'g310b', name: 'Fritz-Kola Mischmasch', price: 3.0, desc: 'Kola & Orange', img: FRITZ_MISCHMASCH_IMG },
     { id: 'g311', name: 'Vita Malz', price: 3.0 },
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Scharf'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
 const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
-const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
 const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
@@ -1307,11 +1312,11 @@ function MittagsBanner() {
 }
 
 function DailySpecialCard({ item, isLunchWindow, go }) {
-  const { lang } = React.useContext(LangContext);
+  const { lang, t } = React.useContext(LangContext);
   const displayPrice = isLunchWindow ? 9.5 : item.price;
 
-  const goToCategory = () => {
-    go('whatsapp', { categoryMode: item.cat });
+  const orderNow = () => {
+    go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
   };
 
   return (
@@ -1325,7 +1330,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
           <span className="font-black text-lg" style={{ color: GOLD }}>
             {fmt(displayPrice)}{isLunchWindow && <span className="text-[10px] font-bold ml-1" style={{ color: '#d9cdb4' }}>inkl. Getränk</span>}
           </span>
-          <button onClick={goToCategory} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>Bestellen →</button>
+          <button onClick={orderNow} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('orderNow')} →</button>
         </div>
       </div>
     </div>
@@ -1556,8 +1561,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
               <span className="text-lg">👥</span> {t('heroCtaGroup')}
             </button>
-            <div className="flex flex-wrap gap-2.5 mt-4">
-              <button onClick={() => go('builder')} className="flex items-center gap-2.5 px-5 py-3.5 rounded-2xl font-bold text-sm" style={{ background: 'rgba(255,199,56,.18)', color: GOLD, border: `1.5px solid ${GOLD}`, boxShadow: '0 6px 18px rgba(255,199,56,.15)' }}>🧩 {t('builderQuickLabel')}</button>
+            <button onClick={() => go('builder')} className="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl font-black text-base mt-4" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdb70)`, color: GREEN, boxShadow: '0 12px 30px rgba(255,199,56,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}>
+              <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
+            </button>
+            <div className="flex flex-wrap gap-2.5 mt-3">
               <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
             </div>
@@ -1633,6 +1640,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <img src={FRITZ_KOLA_IMG} onClick={() => setLightbox(FRITZ_KOLA_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 200 }} />
           <img src={FRITZ_LIMO_IMG} onClick={() => setLightbox(FRITZ_LIMO_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
           <img src={FRITZ_SPRITZ_TRAUBE_IMG} onClick={() => setLightbox(FRITZ_SPRITZ_TRAUBE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
+          <img src={FRITZ_MISCHMASCH_IMG} onClick={() => setLightbox(FRITZ_MISCHMASCH_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
         </div>
       </section>
 
@@ -1833,7 +1841,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
             const configTotal = basePrice + configExtras.length * 1.0;
-            const openFor = () => { setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
+            const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
@@ -1911,6 +1919,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             return (
               <React.Fragment key={item.id}>
                 <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                  {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
                   <div className="p-3.5">
                     <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
                     {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
@@ -2018,11 +2027,11 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           const qty = cart[item.id]?.qty || 0;
           return (
             <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-              {item.img && <img src={item.img} alt={item.name} className="w-full h-32 object-cover" loading="lazy" />}
+              {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
               <div className="p-3.5">
               <div className="flex items-center justify-between">
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                <Stepper qty={qty} onAdd={() => addItem(item.id, mx(item.name, lang), item.price, item.name)} onRemove={() => removeItem(item.id)} />
+                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
               </div>
               {qty > 0 && (
                 <input
@@ -2218,6 +2227,7 @@ const BUILDER_EXTRAS = [
   { id: 'zwiebeln', label: 'Zwiebeln', price: 0 }, { id: 'tomaten', label: 'Tomaten', price: 0 },
   { id: 'rotkohl', label: 'Rotkohl', price: 0 }, { id: 'mais', label: 'Mais', price: 1.0 },
   { id: 'extrafleisch', label: 'Extra Fleisch', price: 1.0 },
+  { id: 'scharf', label: 'Scharf', price: 1.0 },
 ];
 function OptionCard({ selected, onClick, children }) {
   return (
@@ -2606,7 +2616,7 @@ function GroupOrderView({ back }) {
                 const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
                 const configTotal = basePrice + configExtras.length * 1.0;
-                const openFor = () => { setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
+                const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
@@ -2684,6 +2694,7 @@ function GroupOrderView({ back }) {
                 return (
                   <React.Fragment key={item.id}>
                     <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${GOLD}` }}>
+                      {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
                       <div className="p-3.5">
                         <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{mx(item.name, lang)}</div>
                         {item.desc && <div className="text-[11px] font-medium mb-1" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
@@ -2791,11 +2802,11 @@ function GroupOrderView({ back }) {
               const qty = localCart[item.id]?.qty || 0;
               return (
                 <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-                  {item.img && <img src={item.img} alt={item.name} className="w-full h-32 object-cover" loading="lazy" />}
+                  {item.img && <img src={item.img} alt={item.name} className="w-full h-48 object-cover" loading="lazy" />}
                   <div className="p-3.5">
                   <div className="flex items-center justify-between">
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                    <Stepper qty={qty} onAdd={() => addLocal(item.id, mx(item.name, lang), item.price, item.name)} onRemove={() => removeLocal(item.id)} />
+                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
                   </div>
                   {qty > 0 && (
                     <input
