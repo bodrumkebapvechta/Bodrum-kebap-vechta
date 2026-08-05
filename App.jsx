@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
   Flame, ArrowLeft, ArrowRight, Check, MessageCircle, ChevronLeft, Plus, Minus,
   ShoppingBag, Users, Gift, RotateCw, Lock, ShieldCheck, Phone, RefreshCw,
-  Sparkles, User, Copy, Menu as MenuIcon, X, MapPin, Clock3, Instagram, Star, Timer,
+  Sparkles, User, Copy, Menu as MenuIcon, X, MapPin, Clock3, Instagram, Star, Timer, Heart,
 } from 'lucide-react';
 
 /* ============ DESIGN TOKENS ============ */
@@ -57,6 +57,21 @@ const UI = {
   navContact: { de: 'Kontakt', en: 'Contact', tr: 'İletişim', ro: 'Contact', nl: 'Contact' },
   navStaff: { de: 'Personal', en: 'Staff', tr: 'Personel', ro: 'Personal', nl: 'Personeel' },
   navStaffArea: { de: 'Personal-Bereich', en: 'Staff Area', tr: 'Personel Alanı', ro: 'Zonă Personal', nl: 'Personeelsgedeelte' },
+  navTrackOrder: { de: 'Bestellung verfolgen', en: 'Track order', tr: 'Siparişi takip et', ro: 'Urmărește comanda', nl: 'Bestelling volgen' },
+  titleTrack: { de: 'BESTELLUNG VERFOLGEN', en: 'TRACK ORDER', tr: 'SİPARİŞ TAKİBİ', ro: 'URMĂRIRE COMANDĂ', nl: 'BESTELLING VOLGEN' },
+  trackCodePh: { de: 'Bestellcode', en: 'Order code', tr: 'Sipariş kodu', ro: 'Cod comandă', nl: 'Bestelcode' },
+  trackOrderBtn: { de: 'Bestellung verfolgen', en: 'Track order', tr: 'Siparişi takip et', ro: 'Urmărește comanda', nl: 'Bestelling volgen' },
+  orderStatusReady: { de: 'Fertig, komm vorbei! 🎉', en: 'Ready, come pick it up! 🎉', tr: 'Hazır, gelebilirsin! 🎉', ro: 'Gata, poți veni! 🎉', nl: 'Klaar, kom langs! 🎉' },
+  orderStatusPreparing: { de: 'Wird zubereitet', en: 'Being prepared', tr: 'Hazırlanıyor', ro: 'Se pregătește', nl: 'Wordt bereid' },
+  orderCodeLabel: { de: 'Code', en: 'Code', tr: 'Kod', ro: 'Cod', nl: 'Code' },
+  staffOrdersTab: { de: 'Bestellungen', en: 'Orders', tr: 'Siparişler', ro: 'Comenzi', nl: 'Bestellingen' },
+  staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' },
+  noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' },
+  googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
+  saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
+  savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' },
+  welcomeBackMsg: { de: '👋 Wir haben dich vermisst! Schön, dass du wieder da bist.', en: '👋 We missed you! Great to have you back.', tr: '👋 Seni özledik! Tekrar hoş geldin.', ro: '👋 Ne-a fost dor de tine! Bine ai revenit.', nl: '👋 We hebben je gemist! Fijn dat je er weer bent.' },
+  favoritesTitle: { de: 'DEINE FAVORITEN', en: 'YOUR FAVOURITES', tr: 'FAVORİLERİN', ro: 'FAVORITELE TALE', nl: 'JOUW FAVORIETEN' },
   orderNow: { de: 'Jetzt bestellen', en: 'Order now', tr: 'Şimdi sipariş ver', ro: 'Comandă acum', nl: 'Nu bestellen' },
   heroHalal: { de: '100% HALAL', en: '100% HALAL', tr: '%100 HELAL', ro: '100% HALAL', nl: '100% HALAL' },
   heroTitle1: { de: 'Frisch vom', en: 'Fresh from the', tr: 'Taze', ro: 'Proaspăt de la', nl: 'Vers van het' },
@@ -255,6 +270,9 @@ const UI = {
   allergenInfoBtn: { de: 'ⓘ Allergene & Zusatzstoffe', en: 'ⓘ Allergens & additives', tr: 'ⓘ Alerjen ve katkı maddeleri', ro: 'ⓘ Alergeni și aditivi', nl: 'ⓘ Allergenen & additieven' },
   recommendedForYou: { de: 'PASST GUT DAZU', en: 'GOES WELL WITH THIS', tr: 'BUNA ÇOK YAKIŞIR', ro: 'SE POTRIVEȘTE BINE', nl: 'PAST HIER GOED BIJ' },
   groupSubmitBtn: { de: 'Meine Bestellung abschicken', en: 'Submit my order', tr: 'Siparişimi gönder', ro: 'Trimite comanda mea', nl: 'Mijn bestelling versturen' },
+  freeDrinkProgress: { de: 'Noch {amount} bis zum 1L-Getränk gratis!', en: 'Only {amount} more for a free 1L drink!', tr: '1L içecek hediye için {amount} kaldı!', ro: 'Mai sunt {amount} pentru o băutură de 1L gratuită!', nl: 'Nog {amount} tot een gratis 1L drankje!' },
+  freeDrinkUnlocked: { de: '🎉 1L-Getränk gratis freigeschaltet!', en: '🎉 Free 1L drink unlocked!', tr: '🎉 1L içecek hediye kazandın!', ro: '🎉 Băutură de 1L gratuită deblocată!', nl: '🎉 Gratis 1L drankje ontgrendeld!' },
+  noDrinkReminder: { de: 'Durst? Vergiss dein Getränk nicht!', en: 'Thirsty? Don\'t forget a drink!', tr: 'Susadın mı? İçeceğini unutma!', ro: 'Ți-e sete? Nu uita o băutură!', nl: 'Dorst? Vergeet je drankje niet!' },
   allergenLegendTitle: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjen ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & additieven' },
   allergenSectionTitle: { de: 'ALLERGENE', en: 'ALLERGENS', tr: 'ALERJENLER', ro: 'ALERGENI', nl: 'ALLERGENEN' },
   zusatzSectionTitle: { de: 'ZUSATZSTOFFE', en: 'ADDITIVES', tr: 'KATKI MADDELERİ', ro: 'ADITIVI', nl: 'ADDITIEVEN' },
@@ -699,6 +717,29 @@ const ZUSATZ_LEGEND = {
   15: { de: 'Mit Hähnchenseparatorenfleisch', en: 'With mechanically separated chicken meat', tr: 'Mekanik ayrılmış tavuk eti içerir', ro: 'Cu carne de pui separată mecanic', nl: 'Met machinaal ontbeend kippenvlees' },
 };
 function isWeekendDay() { const d = new Date().getDay(); return d === 0 || d === 5 || d === 6; }
+function findMenuItemById(id) {
+  for (const cat of MENU) { const item = cat.items.find((i) => i.id === id); if (item) return item; }
+  return null;
+}
+function getFavorites() { try { return JSON.parse(localStorage.getItem('bk_favorites') || '[]'); } catch { return []; } }
+function toggleFavoriteId(id) {
+  const favs = getFavorites();
+  const next = favs.includes(id) ? favs.filter((x) => x !== id) : [...favs, id];
+  try { localStorage.setItem('bk_favorites', JSON.stringify(next)); } catch {}
+  return next;
+}
+function FavoriteHeart({ id, favorites, setFavorites, size = 16 }) {
+  const isFav = favorites.includes(id);
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); setFavorites(toggleFavoriteId(id)); }}
+      className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+      style={{ background: isFav ? '#fdecd4' : 'rgba(21,56,38,.06)' }}
+    >
+      <Heart size={size} fill={isFav ? CHILI : 'none'} color={isFav ? CHILI : '#a4906c'} strokeWidth={2} />
+    </button>
+  );
+}
 function isLunchWindowNow() {
   const now = new Date();
   const day = now.getDay();
@@ -748,6 +789,20 @@ async function safeSet(key, value) {
     });
     return res.ok;
   } catch { return false; }
+}
+async function safeListPrefix(prefix, limit = 20) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=${limit}`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+function makeShortCode(len = 5) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let out = ''; for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
 }
 
 /* ============ WHEEL DATA ============ */
@@ -1159,8 +1214,10 @@ const REVIEWS = [
 
 function Testimonials() {
   const [idx, setIdx] = useState(0);
+  const [rating, setRating] = useState({ score: 4.6, count: 293 });
   useEffect(() => {
     const t = setInterval(() => setIdx((i) => (i + 1) % REVIEWS.length), 4000);
+    safeGet('siteconfig:rating').then((r) => { if (r && r.score) setRating(r); });
     return () => clearInterval(t);
   }, []);
   return (
@@ -1169,7 +1226,7 @@ function Testimonials() {
         <div className="flex items-center justify-center gap-1 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (<Star key={i} size={19} fill={GOLD} color={GOLD} />))}
         </div>
-        <div className="font-black text-sm mb-6" style={{ color: GREEN }}><CountUp to={4.6} decimals={1} /> · <CountUp to={293} /> Google-Bewertungen</div>
+        <div className="font-black text-sm mb-6" style={{ color: GREEN }}><CountUp to={rating.score} decimals={1} /> · <CountUp to={rating.count} /> Google-Bewertungen</div>
         <p className="text-lg sm:text-xl font-semibold mb-4" style={{ color: '#4a4032', minHeight: 64 }}>„{REVIEWS[idx].text}"</p>
         <div className="text-xs font-bold tracking-wide" style={{ color: '#a4906c' }}>— {REVIEWS[idx].name}</div>
         <div className="flex justify-center gap-2 mt-6">
@@ -1228,11 +1285,20 @@ function useLiveClock() {
 
 function getOpenStatus(now) {
   const day = now.getDay(); // 0 Sun ... 2 Tue
-  if (day === 2) return { open: false, labelKey: 'statusClosedRestDay' };
+  const nextOpenAt = (daysAhead) => { const d = new Date(now); d.setDate(d.getDate() + daysAhead); d.setHours(11, 30, 0, 0); return d; };
+  if (day === 2) return { open: false, labelKey: 'statusClosedRestDay', nextOpen: nextOpenAt(1) };
   const h = now.getHours() + now.getMinutes() / 60;
   if (h >= 11.5 && h < 22) return { open: true, labelKey: 'statusOpenNow' };
-  if (h < 11.5) return { open: false, labelKey: 'statusNotYetOpen' };
-  return { open: false, labelKey: 'statusClosed' };
+  if (h < 11.5) return { open: false, labelKey: 'statusNotYetOpen', nextOpen: nextOpenAt(0) };
+  return { open: false, labelKey: 'statusClosed', nextOpen: nextOpenAt(day === 1 ? 2 : 1) };
+}
+function formatCountdown(ms) {
+  if (ms <= 0) return '0s';
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  if (h > 0) return `${h}h ${m}m`;
+  const s = Math.floor((ms % 60000) / 1000);
+  return `${m}m ${s}s`;
 }
 
 function getGreeting(now) {
@@ -1490,6 +1556,18 @@ function DailySpecial({ go }) {
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [navOpen, setNavOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  useEffect(() => {
+    try {
+      const last = localStorage.getItem('bk_last_visit');
+      const now = Date.now();
+      if (last && now - parseInt(last, 10) > 10 * 24 * 60 * 60 * 1000) setShowWelcomeBack(true);
+      localStorage.setItem('bk_last_visit', String(now));
+      const favs = JSON.parse(localStorage.getItem('bk_favorites') || '[]');
+      setFavorites(favs);
+    } catch {}
+  }, []);
   useEffect(() => {
     if (lightbox) { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }
   }, [lightbox]);
@@ -1574,7 +1652,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
             <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: status.open ? 'rgba(255,246,234,.08)' : 'rgba(214,40,40,.16)' }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#ff4d4d', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
-              <span className="text-[10.5px] font-black" style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}</span>
+              <span className="text-[10.5px] font-black" style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}{!status.open && status.nextOpen && <span className="opacity-80 font-bold"> · {formatCountdown(status.nextOpen - now)}</span>}</span>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
@@ -1607,6 +1685,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+            <button onClick={() => go('track')} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Timer size={14} /> {t('navTrackOrder')}</button>
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
             )}
@@ -1615,6 +1694,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         )}
       </header>
       <MittagsBanner />
+      {showWelcomeBack && (
+        <div className="py-2.5 px-5 text-center text-sm font-bold relative" style={{ background: GOLD, color: GREEN }}>
+          {t('welcomeBackMsg')}
+          <button onClick={() => setShowWelcomeBack(false)} className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.12)' }}><X size={13} color={GREEN} /></button>
+        </div>
+      )}
 
       {/* HERO */}
       <section className="relative overflow-hidden">
@@ -1670,6 +1755,22 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <Testimonials />
 
       {/* EXTRAS */}
+      {favorites.length > 0 && (
+        <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-8">
+          <div className="text-xs font-bold tracking-widest mb-3 flex items-center gap-1.5" style={{ color: '#a4906c' }}><Heart size={13} fill={CHILI} color={CHILI} /> {t('favoritesTitle')}</div>
+          <div className="flex gap-2.5 overflow-x-auto pb-2">
+            {favorites.map((id) => {
+              const item = findMenuItemById(id);
+              if (!item) return null;
+              return (
+                <button key={id} onClick={() => go('whatsapp')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={{ background: '#fff', color: GREEN, border: '1px solid #e3d5bd', boxShadow: '0 4px 12px rgba(21,56,38,.08)' }}>
+                  ❤️ {mx(item.name, lang)}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
       <section id="extras" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <Reveal className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('extrasKicker')}</div>
@@ -1796,7 +1897,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 }
 
 /* ============ WHATSAPP ORDER ============ */
-function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart, cartOpen, setCartOpen }) {
+function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart, cartOpen, setCartOpen, go }) {
   const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
@@ -1821,7 +1922,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [itemNotes, setItemNotes] = useState({});
   const [burst, setBurst] = useState(false);
   const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
-  const handleSend = () => { setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent'); };
+  const handleSend = () => {
+    setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
+    safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null });
+  };
 
   const [cartPop, setCartPop] = useState(0);
   const [lunchPending, setLunchPending] = useState(null);
@@ -1829,6 +1933,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
+  const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
     if (!lunchPending || !lunchDrink) return;
@@ -1869,6 +1974,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const lines = Object.entries(cart);
   const totalCount = lines.reduce((s, [, v]) => s + v.qty, 0);
   const totalPrice = lines.reduce((s, [, v]) => s + v.qty * v.price, 0);
+  const [orderCode] = useState(() => makeShortCode(5));
 
   const waLink = useMemo(() => {
     if (lines.length === 0) return null;
@@ -1879,9 +1985,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     if (pickupTime) msg += `\nGewünschte Abholzeit: ${pickupTime}`;
     if (note) msg += `\nHinweis: ${note}`;
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+    msg += `\n\nBestellcode: ${orderCode}`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [lines, totalPrice, name, note, pickupTime, wheelResult, itemNotes]);
+  }, [lines, totalPrice, name, note, pickupTime, wheelResult, itemNotes, orderCode]);
 
   const activeCategory = MENU.find((m) => m.key === tab);
 
@@ -2179,7 +2286,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               <div className="p-3.5">
               <div className="flex items-center justify-between">
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
                 <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                </div>
               </div>
               {qty > 0 && item.sauceChoice && (
                 <div className="mt-2.5 flex gap-2">
@@ -2345,6 +2455,22 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                       {t('wheelThresholdPrefix')} {fmt(30 - totalPrice)} {t('wheelThresholdSuffix')}
                     </div>
                   )}
+                  {lines.length > 0 && (
+                    <div className="mt-4 rounded-xl p-3.5" style={{ background: '#f7f0e2' }}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-bold" style={{ color: GREEN }}>{totalPrice >= 50 ? t('freeDrinkUnlocked') : t('freeDrinkProgress').replace('{amount}', fmt(50 - totalPrice))}</span>
+                        <span className="text-xs font-bold" style={{ color: ORANGE }}>{Math.min(100, Math.round(totalPrice / 50 * 100))}%</span>
+                      </div>
+                      <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: '#e3d5bd' }}>
+                        <div className="h-full rounded-full" style={{ width: `${Math.min(100, totalPrice / 50 * 100)}%`, background: totalPrice >= 50 ? '#25D366' : `linear-gradient(90deg, ${ORANGE}, ${GOLD})`, transition: 'width .4s ease' }} />
+                      </div>
+                    </div>
+                  )}
+                  {lines.length > 0 && !lines.some(([key]) => key.startsWith('g3')) && (
+                    <div className="mt-3 flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold" style={{ background: '#fdecd4', color: '#8a5a1f' }}>
+                      🥤 {t('noDrinkReminder')}
+                    </div>
+                  )}
                   {wheelResult && wheelResult.code && (
                     <div className="w-full mt-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN, animation: 'popIn .5s ease' }}>
                       <Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>{t('wonPrefix')} {mx(wheelResult.prize, lang)} {t('wonSuffix')}</span>
@@ -2383,6 +2509,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                     <span className="font-black text-lg" style={{ color: GREEN }}>{fmt(totalPrice)}</span>
                   </div>
                 </div>
+                <button onClick={() => go('track', { orderCode })} className="w-full flex items-center justify-center gap-2 mb-6 py-3 rounded-xl font-bold text-sm" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8', animation: 'slideUpFade .5s ease .44s both' }}><Timer size={16} /> {t('trackOrderBtn')} ({orderCode})</button>
                 <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .5s both' }}>
                   <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('newOrderBtn')}</button>
                   <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
@@ -2662,11 +2789,7 @@ function Row({ label, value }) {
 }
 
 /* ============ GROUP ORDER ============ */
-function makeGroupCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let out = ''; for (let i = 0; i < 5; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
+function makeGroupCode() { return makeShortCode(5); }
 function GroupOrderView({ back }) {
   const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const [view, setView] = useState('home');
@@ -2717,6 +2840,7 @@ function GroupOrderView({ back }) {
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
+  const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
     if (!lunchPending || !lunchDrink) return;
@@ -3096,7 +3220,10 @@ function GroupOrderView({ back }) {
                   <div className="p-3.5">
                   <div className="flex items-center justify-between">
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
                     <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    </div>
                   </div>
                   {qty > 0 && item.sauceChoice && (
                     <div className="mt-2.5 flex gap-2">
@@ -3457,6 +3584,54 @@ function DatenschutzView({ back }) {
   );
 }
 
+function OrderTrackView({ back, initialAction, onConsumeAction }) {
+  const { t } = React.useContext(LangContext);
+  const [codeInput, setCodeInput] = useState(initialAction?.orderCode || '');
+  const [order, setOrder] = useState(undefined);
+  const [searched, setSearched] = useState(false);
+
+  useEffect(() => { onConsumeAction && onConsumeAction(); }, []);
+  useEffect(() => {
+    if (initialAction?.orderCode) { search(initialAction.orderCode); }
+  }, []);
+
+  const search = async (c) => {
+    const code = (c || codeInput).trim().toUpperCase();
+    if (!code) return;
+    setSearched(true);
+    setOrder(await safeGet(`order:${code}`));
+  };
+
+  useEffect(() => {
+    if (!order) return;
+    const iv = setInterval(async () => {
+      const c = (order.code || codeInput).trim().toUpperCase();
+      const fresh = await safeGet(`order:${c}`);
+      if (fresh) setOrder(fresh);
+    }, 5000);
+    return () => clearInterval(iv);
+  }, [order?.code]);
+
+  return (
+    <div className="pb-10">
+      <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleTrack')} /></div>
+      <div className="px-5 pt-4">
+        <div className="flex gap-2 mb-5">
+          <input value={codeInput} onChange={(e) => setCodeInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && search()} placeholder={t('trackCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.15em] outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
+          <button onClick={() => search()} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
+        </div>
+        {searched && order === null && <p className="text-sm font-semibold text-center" style={{ color: CHILI }}>{t('codeNotFound')}</p>}
+        {order && (
+          <div className="bg-white rounded-2xl p-6 text-center" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.1)' }}>
+            <div className="text-5xl mb-4">{order.status === 'ready' ? '🎉' : '👨‍🍳'}</div>
+            <div className="font-black text-xl mb-2" style={{ color: GREEN }}>{order.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</div>
+            <p className="text-xs font-semibold" style={{ color: '#a4906c' }}>{t('orderCodeLabel')}: {order.code}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
@@ -3470,6 +3645,39 @@ function StaffPanelView({ back }) {
   const [wheelCode, setWheelCode] = useState('');
   const [wheelResult, setWheelResult] = useState(undefined);
   const [redeemMsg, setRedeemMsg] = useState('');
+
+  const [orders, setOrders] = useState([]);
+  const [ratingScore, setRatingScore] = useState('4.6');
+  const [ratingCount, setRatingCount] = useState('293');
+  const [ratingMsg, setRatingMsg] = useState('');
+
+  useEffect(() => {
+    if (ok && tab === 'orders') {
+      const load = () => safeListPrefix('order:', 25).then((rows) => setOrders(rows));
+      load();
+      const iv = setInterval(load, 6000);
+      return () => clearInterval(iv);
+    }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (ok && tab === 'settings') {
+      safeGet('siteconfig:rating').then((r) => { if (r) { setRatingScore(String(r.score)); setRatingCount(String(r.count)); } });
+    }
+  }, [ok, tab]);
+  const toggleOrderStatus = async (o) => {
+    const next = o.value.status === 'ready' ? 'preparing' : 'ready';
+    const updated = { ...o.value, status: next };
+    await safeSet(o.key, updated);
+    setOrders((list) => list.map((x) => x.key === o.key ? { ...x, value: updated } : x));
+  };
+  const saveRating = async () => {
+    const score = parseFloat(ratingScore.replace(',', '.'));
+    const count = parseInt(ratingCount, 10);
+    if (isNaN(score) || isNaN(count)) return;
+    await safeSet('siteconfig:rating', { score, count });
+    setRatingMsg(t('savedMsg'));
+    setTimeout(() => setRatingMsg(''), 2500);
+  };
 
   const stampSearch = async () => {
     const c = stampCode.trim().toUpperCase(); if (!c) return;
@@ -3512,9 +3720,11 @@ function StaffPanelView({ back }) {
         </div>
       ) : (
         <>
-          <div className="flex gap-2 px-5 pt-2 pb-4">
-            <button onClick={() => setTab('stamps')} className="flex-1 py-2.5 rounded-full text-xs font-bold" style={tab === 'stamps' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('loyaltyTabLabel')}</button>
-            <button onClick={() => setTab('wheel')} className="flex-1 py-2.5 rounded-full text-xs font-bold" style={tab === 'wheel' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffWheelCodeTitle')}</button>
+          <div className="flex gap-2 px-5 pt-2 pb-4 overflow-x-auto">
+            <button onClick={() => setTab('stamps')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'stamps' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('loyaltyTabLabel')}</button>
+            <button onClick={() => setTab('wheel')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'wheel' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffWheelCodeTitle')}</button>
+            <button onClick={() => setTab('orders')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'orders' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffOrdersTab')}</button>
+            <button onClick={() => setTab('settings')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'settings' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffSettingsTab')}</button>
           </div>
 
           {tab === 'stamps' && (
@@ -3553,6 +3763,35 @@ function StaffPanelView({ back }) {
                   {redeemMsg && <p className="text-center text-sm font-bold mt-3" style={{ color: '#8a5a1f' }}>{redeemMsg}</p>}
                 </div>
               )}
+            </div>
+          )}
+          {tab === 'orders' && (
+            <div className="px-5">
+              {orders.length === 0 && <p className="text-sm text-center font-medium" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>}
+              <div className="flex flex-col gap-2.5">
+                {orders.map((o) => (
+                  <div key={o.key} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm">
+                    <div>
+                      <div className="font-black text-sm" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}</div>
+                      <div className="text-xs font-semibold" style={{ color: '#8a7c62' }}>{o.value.itemCount} {t('itemsWord')} · {fmt(o.value.total)}</div>
+                    </div>
+                    <button onClick={() => toggleOrderStatus(o)} className="px-3.5 py-2 rounded-lg text-xs font-bold text-white" style={{ background: o.value.status === 'ready' ? '#25D366' : ORANGE }}>{o.value.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {tab === 'settings' && (
+            <div className="px-5">
+              <div className="bg-white rounded-xl p-5">
+                <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('googleRatingLabel')}</div>
+                <div className="flex gap-2 mb-3">
+                  <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input value={ratingCount} onChange={(e) => setRatingCount(e.target.value)} placeholder="293" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                </div>
+                <button onClick={saveRating} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                {ratingMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{ratingMsg}</p>}
+              </div>
             </div>
           )}
         </>
@@ -3749,13 +3988,14 @@ export default function App() {
       {cartBadge}
 
       <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .6s cubic-bezier(.25,.46,.45,.94)', zIndex: 1 }}>
-        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} />}
+        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} go={go} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
         {view === 'loyalty' && <LoyaltyView back={() => setView('home')} />}
         {view === 'staff' && <StaffPanelView back={() => setView('home')} />}
         {view === 'impressum' && <ImpressumView back={() => setView('home')} />}
         {view === 'datenschutz' && <DatenschutzView back={() => setView('home')} />}
+        {view === 'track' && <OrderTrackView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />}
       </div>
     </div>
     {installHelpModal}
