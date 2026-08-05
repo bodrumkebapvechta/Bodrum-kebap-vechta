@@ -80,6 +80,8 @@ const UI = {
   surpriseAgain: { de: 'Was anderes zeigen', en: 'Show me something else', tr: 'Başka bir şey söyle', ro: 'Arată-mi altceva', nl: 'Toon iets anders' },
   noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' },
   deleteOrderBtn: { de: 'Löschen (z.B. falls nicht per WhatsApp abgeschickt)', en: 'Delete (e.g. if not actually sent via WhatsApp)', tr: 'Sil (örn. WhatsApp\'tan gerçekten gönderilmediyse)', ro: 'Șterge (ex. dacă nu a fost trimis efectiv prin WhatsApp)', nl: 'Verwijderen (bijv. als niet echt via WhatsApp verstuurd)' },
+  deleteFailedMsg: { de: '⚠️ Löschen fehlgeschlagen — Datenbankberechtigung prüfen', en: '⚠️ Delete failed — check database permissions', tr: '⚠️ Silme başarısız — veritabanı izinlerini kontrol edin', ro: '⚠️ Ștergere eșuată — verifică permisiunile bazei de date', nl: '⚠️ Verwijderen mislukt — controleer databaserechten' },
+  ordersTotalLabel: { de: 'GESAMT (angezeigte Bestellungen)', en: 'TOTAL (shown orders)', tr: 'TOPLAM (görüntülenen siparişler)', ro: 'TOTAL (comenzi afișate)', nl: 'TOTAAL (getoonde bestellingen)' },
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
   savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' },
@@ -3808,9 +3810,15 @@ function StaffPanelView({ back }) {
     await safeSet(o.key, updated);
     setOrders((list) => list.map((x) => x.key === o.key ? { ...x, value: updated } : x));
   };
+  const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
   const deleteOrder = async (o) => {
-    await safeDeleteKey(o.key);
-    setOrders((list) => list.filter((x) => x.key !== o.key));
+    const success = await safeDeleteKey(o.key);
+    if (success) {
+      setOrders((list) => list.filter((x) => x.key !== o.key));
+    } else {
+      setDeleteErrorMsg(t('deleteFailedMsg'));
+      setTimeout(() => setDeleteErrorMsg(''), 6000);
+    }
   };
   const saveRating = async () => {
     const score = parseFloat(ratingScore.replace(',', '.'));
@@ -3909,6 +3917,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'orders' && (
             <div className="px-5">
+              {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
               {orders.length === 0 && <p className="text-sm text-center font-medium" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>}
               <div className="flex flex-col gap-2.5">
                 {orders.map((o) => (
@@ -3934,6 +3943,12 @@ function StaffPanelView({ back }) {
                   </div>
                 ))}
               </div>
+              {orders.length > 0 && (
+                <div className="mt-4 rounded-xl p-4 flex items-center justify-between" style={{ background: GREEN }}>
+                  <span className="text-sm font-bold" style={{ color: GOLD }}>{t('ordersTotalLabel')}</span>
+                  <span className="font-black text-lg" style={{ color: GOLD }}>{fmt(orders.reduce((s, o) => s + (o.value.total || 0), 0))}</span>
+                </div>
+              )}
             </div>
           )}
           {tab === 'settings' && (
