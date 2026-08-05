@@ -2181,6 +2181,14 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         })}
       </div>
 
+      {totalCount > 0 && !cartOpen && ReactDOM.createPortal(
+        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)', zIndex: 90 }}>
+          <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} {t('itemsWord')}</span>
+          <span className="font-black text-base flex items-center gap-1.5">{fmt(totalPrice)} <span className="opacity-90 font-bold">{t('weiter')}</span></span>
+        </button>,
+        document.body
+      )}
+
       {cartOpen && (
         <div className="fixed inset-0 z-50 flex justify-center">
           <div className="w-full max-w-md h-full flex flex-col" style={{ background: CREAM }}>
@@ -3548,7 +3556,7 @@ export default function App() {
   const cartBadge = cartCount > 0 && ReactDOM.createPortal(
     <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
-      {fmt(cartTotal)} · {ctxValue.t('weiter')}
+      {fmt(cartTotal)}
     </button>,
     document.body
   );
