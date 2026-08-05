@@ -911,7 +911,8 @@ const UPSELL_FOOD = [
 ];
 const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤', img: d.img, imgContain: d.imgContain }));
 const UPSELL_ITEMS_POOL = [...UPSELL_FOOD, ...UPSELL_DRINKS];
-const SURPRISE_ITEMS = MENU.flatMap((cat) => cat.items
+const SURPRISE_CATEGORIES = ['kebap', 'pizza', 'calzone', 'baguette', 'ueberbacken', 'rollo', 'nudeln', 'schnitzel', 'salat'];
+const SURPRISE_ITEMS = MENU.filter((cat) => SURPRISE_CATEGORIES.includes(cat.key)).flatMap((cat) => cat.items
   .filter((i) => !i.customPizza && !i.customPasta)
   .map((i) => ({
     id: i.id,
@@ -919,6 +920,9 @@ const SURPRISE_ITEMS = MENU.flatMap((cat) => cat.items
     price: i.priceLarge !== undefined ? i.priceLarge : i.price,
     img: i.img,
     imgContain: i.imgContain,
+    weekend: i.weekend || false,
+    cat: cat.key,
+    desc: i.desc || '',
   })));
 const CATEGORY_UPSELL_RECS = {
   kebap: ['g305', 'g301'],
@@ -1591,10 +1595,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [surpriseRolling, setSurpriseRolling] = useState(false);
   const rollSurprise = () => {
     setSurpriseRolling(true);
+    const pool = isWeekendDay() ? SURPRISE_ITEMS : SURPRISE_ITEMS.filter((i) => !i.weekend);
     let count = 0;
     const maxCount = 16;
     const spin = () => {
-      setSurpriseItem(SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)]);
+      setSurpriseItem(pool[Math.floor(Math.random() * pool.length)]);
       count++;
       if (count < maxCount) {
         setTimeout(spin, 70 + count * 12);
@@ -1603,6 +1608,20 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       }
     };
     spin();
+  };
+  const confirmSurprise = () => {
+    const item = surpriseItem;
+    if (!item) return;
+    if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.cat)) {
+      go('whatsapp', { lunchSurprise: { label: mx(item.name, lang), deLabel: item.name } });
+    } else if (new Date().getDay() === 6 && item.cat === 'pizza') {
+      go('whatsapp', { pendingCombo: { title: `${item.name} (28cm Kombo inkl. Getränk)`, price: PIZZA_COMBO_PRICE } });
+    } else if (new Date().getDay() === 6 && item.cat === 'kebap') {
+      go('whatsapp', { pendingCombo: { title: DOENER_COMBO.title, price: DOENER_COMBO.price } });
+    } else {
+      go('whatsapp', { pendingCombo: { title: item.name, price: item.price } });
+    }
+    setSurpriseItem(null);
   };
   const [favorites, setFavorites] = useState([]);
   useEffect(() => {
@@ -1887,12 +1906,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   <img src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
                 </div>
               )}
-              <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}</div>
+              <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}{surpriseItem.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+              {surpriseItem.desc && <p className="text-xs font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(surpriseItem.desc, lang)}</p>}
               <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(surpriseItem.price)}</div>
             </div>
             {!surpriseRolling && (
               <div className="flex flex-col gap-2.5">
-                <button onClick={() => { go('whatsapp', { pendingCombo: { title: surpriseItem.name, price: surpriseItem.price } }); setSurpriseItem(null); }} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('surpriseWantIt')}</button>
+                <button onClick={confirmSurprise} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('surpriseWantIt')}</button>
                 <button onClick={rollSurprise} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('surpriseAgain')}</button>
               </div>
             )}
@@ -2028,6 +2048,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     if (initialAction?.openCart) {
       setDrawerView('cart');
       setCartOpen(true);
+    }
+    if (initialAction?.lunchSurprise) {
+      setLunchDrink(null);
+      setLunchPending(initialAction.lunchSurprise);
     }
     onConsumeAction && onConsumeAction();
   }, []);
