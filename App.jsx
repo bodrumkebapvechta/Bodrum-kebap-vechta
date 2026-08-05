@@ -2016,7 +2016,8 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
   const handleSend = () => {
     setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
-    safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null });
+    const itemsList = lines.map(([, v]) => ({ name: v.deName || v.name, qty: v.qty }));
+    safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList, pickupTime: pickupTime || null });
   };
 
   const [cartPop, setCartPop] = useState(0);
@@ -2700,7 +2701,14 @@ function DonerBuilderView({ back, go }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
-  const handleSend = () => { setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200); };
+  const [orderCode] = useState(() => makeShortCode(5));
+  const handleSend = () => {
+    setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200);
+    const itemName = kind === 'pasta'
+      ? `${pastaType} (${pastaSauce}${pastaExtras.length ? ', ' + pastaExtras.join(', ') : ''})`
+      : `Döner (${base?.label}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
+    safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
+  };
   const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
   const toggleExtra = (id) => setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
@@ -2730,6 +2738,7 @@ function DonerBuilderView({ back, go }) {
       msg += `\nPreis: ${fmt(total)}\n`;
       if (name) msg += `\nName: ${name}`;
       if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+      msg += `\n\nBestellcode: ${orderCode}`;
       msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
       return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     }
@@ -2740,9 +2749,10 @@ function DonerBuilderView({ back, go }) {
     msg += `\nPreis: ${fmt(total)}\n`;
     if (name) msg += `\nName: ${name}`;
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
+    msg += `\n\nBestellcode: ${orderCode}`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [kind, base, meat, sauce, extras, pastaType, pastaSauce, pastaExtras, name, total, wheelResult]);
+  }, [kind, base, meat, sauce, extras, pastaType, pastaSauce, pastaExtras, name, total, wheelResult, orderCode]);
 
   return (
     <div className="pb-10">
@@ -3879,12 +3889,22 @@ function StaffPanelView({ back }) {
               {orders.length === 0 && <p className="text-sm text-center font-medium" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>}
               <div className="flex flex-col gap-2.5">
                 {orders.map((o) => (
-                  <div key={o.key} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm">
-                    <div>
-                      <div className="font-black text-sm" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}</div>
-                      <div className="text-xs font-semibold" style={{ color: '#8a7c62' }}>{o.value.itemCount} {t('itemsWord')} · {fmt(o.value.total)}</div>
+                  <div key={o.key} className="bg-white rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <div className="font-black text-sm" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}</div>
+                        <div className="text-[11px] font-medium" style={{ color: '#a4906c' }}>{new Date(o.value.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}{o.value.pickupTime ? ` · ${t('pickupTimePh')}: ${o.value.pickupTime}` : ''}</div>
+                      </div>
+                      <button onClick={() => toggleOrderStatus(o)} className="px-3.5 py-2 rounded-lg text-xs font-bold text-white flex-shrink-0" style={{ background: o.value.status === 'ready' ? '#25D366' : ORANGE }}>{o.value.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</button>
                     </div>
-                    <button onClick={() => toggleOrderStatus(o)} className="px-3.5 py-2 rounded-lg text-xs font-bold text-white" style={{ background: o.value.status === 'ready' ? '#25D366' : ORANGE }}>{o.value.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</button>
+                    {o.value.items && o.value.items.length > 0 && (
+                      <div className="rounded-lg p-2.5 mb-2" style={{ background: '#f7f0e2' }}>
+                        {o.value.items.map((it, idx) => (
+                          <div key={idx} className="text-xs font-semibold" style={{ color: GREEN }}>{it.qty}x {it.name}</div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="text-xs font-bold text-right" style={{ color: CHILI }}>{o.value.itemCount} {t('itemsWord')} · {fmt(o.value.total)}</div>
                   </div>
                 ))}
               </div>
