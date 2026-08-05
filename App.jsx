@@ -72,6 +72,11 @@ const UI = {
   byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' },
   byDevice: { de: 'NACH GERÄT', en: 'BY DEVICE', tr: 'CİHAZA GÖRE', ro: 'DUPĂ DISPOZITIV', nl: 'PER APPARAAT' },
   analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' },
+  trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' },
+  surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' },
+  surpriseTitle: { de: 'Wie wäre es damit?', en: 'How about this?', tr: 'Buna ne dersin?', ro: 'Ce zici de asta?', nl: 'Wat dacht je hiervan?' },
+  surpriseWantIt: { de: 'Ja, das will ich!', en: 'Yes, I want this!', tr: 'Evet, bunu istiyorum!', ro: 'Da, vreau asta!', nl: 'Ja, dit wil ik!' },
+  surpriseAgain: { de: 'Was anderes zeigen', en: 'Show me something else', tr: 'Başka bir şey söyle', ro: 'Arată-mi altceva', nl: 'Toon iets anders' },
   noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' },
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
@@ -905,6 +910,15 @@ const UPSELL_FOOD = [
 ];
 const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤', img: d.img, imgContain: d.imgContain }));
 const UPSELL_ITEMS_POOL = [...UPSELL_FOOD, ...UPSELL_DRINKS];
+const SURPRISE_ITEMS = MENU.flatMap((cat) => cat.items
+  .filter((i) => !i.customPizza && !i.customPasta)
+  .map((i) => ({
+    id: i.id,
+    name: i.name,
+    price: i.priceLarge !== undefined ? i.priceLarge : i.price,
+    img: i.img,
+    imgContain: i.imgContain,
+  })));
 const CATEGORY_UPSELL_RECS = {
   kebap: ['g305', 'g301'],
   pizza: ['g301', 'f204a'],
@@ -1572,6 +1586,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [navOpen, setNavOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+  const [surpriseItem, setSurpriseItem] = useState(null);
+  const rollSurprise = () => setSurpriseItem(SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)]);
   const [favorites, setFavorites] = useState([]);
   useEffect(() => {
     try {
@@ -1748,6 +1764,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex flex-wrap gap-2.5 mt-3">
               <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
               <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>
+              <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
@@ -1844,6 +1861,25 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
       </section>
 
+      {surpriseItem && (
+        <ConfigModal onClose={() => setSurpriseItem(null)}>
+          <div className="p-6 text-center">
+            <div className="text-4xl mb-2">🎲</div>
+            <h3 className="font-black text-lg mb-4" style={{ color: GREEN }}>{t('surpriseTitle')}</h3>
+            {surpriseItem.img && (
+              <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: surpriseItem.imgContain ? '#f7f0e2' : 'transparent' }}>
+                <img src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
+              </div>
+            )}
+            <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}</div>
+            <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(surpriseItem.price)}</div>
+            <div className="flex flex-col gap-2.5">
+              <button onClick={() => { go('whatsapp', { pendingCombo: { title: surpriseItem.name, price: surpriseItem.price } }); setSurpriseItem(null); }} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('surpriseWantIt')}</button>
+              <button onClick={rollSurprise} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('surpriseAgain')}</button>
+            </div>
+          </div>
+        </ConfigModal>
+      )}
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
           <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}>
@@ -3638,6 +3674,12 @@ function OrderTrackView({ back, initialAction, onConsumeAction }) {
           <button onClick={() => search()} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
         </div>
         {searched && order === null && <p className="text-sm font-semibold text-center" style={{ color: CHILI }}>{t('codeNotFound')}</p>}
+        {!searched && (
+          <div className="text-center py-10 opacity-70">
+            <div className="text-5xl mb-4">📦</div>
+            <p className="text-sm font-semibold" style={{ color: '#8a7c62' }}>{t('trackEmptyHint')}</p>
+          </div>
+        )}
         {order && (
           <div className="bg-white rounded-2xl p-6 text-center" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.1)' }}>
             <div className="text-5xl mb-4">{order.status === 'ready' ? '🎉' : '👨‍🍳'}</div>
@@ -4051,7 +4093,7 @@ export default function App() {
 
       {cartBadge}
 
-      <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .6s cubic-bezier(.25,.46,.45,.94)', zIndex: 1 }}>
+      <div key={view} className="w-full max-w-5xl mx-auto relative min-h-screen" style={{ background: CREAM, animation: 'viewFade .6s cubic-bezier(.25,.46,.45,.94)', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} go={go} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
