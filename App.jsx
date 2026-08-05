@@ -253,6 +253,7 @@ const UI = {
   lunchSmallHint: { de: '💡 Tipp: Bei der großen Pizza bekommst du zwischen 11:30–14:00 Uhr ein Getränk gratis dazu!', en: '💡 Tip: With the large pizza you get a free drink between 11:30 AM–2:00 PM!', tr: '💡 İpucu: Büyük pizzayla 11:30–14:00 arası ücretsiz içecek kazanırsın!', ro: '💡 Sfat: La pizza mare primești o băutură gratuită între 11:30–14:00!', nl: '💡 Tip: Bij de grote pizza krijg je tussen 11:30–14:00 uur een gratis drankje!' },
   pickupEstimate: { de: 'Fertig in ca. 15–20 Minuten', en: 'Ready in approx. 15–20 minutes', tr: 'Yaklaşık 15-20 dakikada hazır', ro: 'Gata în aprox. 15–20 minute', nl: 'Klaar in ca. 15–20 minuten' },
   allergenInfoBtn: { de: 'ⓘ Allergene & Zusatzstoffe', en: 'ⓘ Allergens & additives', tr: 'ⓘ Alerjen ve katkı maddeleri', ro: 'ⓘ Alergeni și aditivi', nl: 'ⓘ Allergenen & additieven' },
+  recommendedForYou: { de: 'PASST GUT DAZU', en: 'GOES WELL WITH THIS', tr: 'BUNA ÇOK YAKIŞIR', ro: 'SE POTRIVEȘTE BINE', nl: 'PAST HIER GOED BIJ' },
   allergenLegendTitle: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjen ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & additieven' },
   allergenSectionTitle: { de: 'ALLERGENE', en: 'ALLERGENS', tr: 'ALERJENLER', ro: 'ALERGENI', nl: 'ALLERGENEN' },
   zusatzSectionTitle: { de: 'ZUSATZSTOFFE', en: 'ADDITIVES', tr: 'KATKI MADDELERİ', ro: 'ADITIVI', nl: 'ADDITIEVEN' },
@@ -832,6 +833,20 @@ const UPSELL_FOOD = [
   { id: 'f204e', name: 'Hollandaise Sauce', price: 2.5, emoji: '🧈' },
 ];
 const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤', img: d.img, imgContain: d.imgContain }));
+const UPSELL_ITEMS_POOL = [...UPSELL_FOOD, ...UPSELL_DRINKS];
+const CATEGORY_UPSELL_RECS = {
+  kebap: ['g305', 'g301'],
+  pizza: ['g301', 'f204a'],
+  pizzabrot: ['f204a', 'g301'],
+  calzone: ['g301', 'f204b'],
+  baguette: ['g306', 'g301'],
+  ueberbacken: ['g301', 'f204a'],
+  rollo: ['g301', 'g305'],
+  nudeln: ['g306', 'g301'],
+  schnitzel: ['g301', 'f204a'],
+  salat: ['g306', 'g301'],
+  finger: ['f204a', 'g301'],
+};
 const UPSELL_ITEMS = [...UPSELL_FOOD, ...UPSELL_DRINKS];
 
 function UpsellStrip({ addItem }) {
@@ -1812,6 +1827,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [weekendWarnOpen, setWeekendWarnOpen] = useState(false);
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
+  const [lastAddedTab, setLastAddedTab] = useState(null);
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
     if (!lunchPending || !lunchDrink) return;
@@ -1827,6 +1843,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     if (initialAction?.pendingCombo) {
       const key = `combo-${Date.now()}`;
       setCart((c) => ({ ...c, [key]: { name: `🎉 ${initialAction.pendingCombo.title}`, deName: `🎉 ${initialAction.pendingCombo.title}`, price: initialAction.pendingCombo.price, qty: 1 } }));
+      setLastAddedTab(initialAction.pendingCombo.title.includes('Pizza') ? 'pizza' : null);
       setDrawerView('upsell');
       setCartOpen(true);
     }
@@ -1964,6 +1981,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 return;
               }
               const lineKey = `${item.id}-${size}-${configMeat || 'x'}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+              setLastAddedTab(tab);
               addItem(lineKey, displayLabel, configTotal, deLabel);
               closeModal();
             };
@@ -2037,6 +2055,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
               if (configNote.trim()) { deLabel += ` [${configNote.trim()}]`; displayLabel += ` [${configNote.trim()}]`; }
               const lineKey = `${item.id}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+              setLastAddedTab('pizza');
               addItem(lineKey, displayLabel, configTotal, deLabel);
               closeModal();
             };
@@ -2159,7 +2178,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               <div className="p-3.5">
               <div className="flex items-center justify-between">
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
               </div>
               {qty > 0 && item.sauceChoice && (
                 <div className="mt-2.5 flex gap-2">
@@ -2205,6 +2224,36 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   <div className="font-black text-lg" style={{ color: GREEN }}>{t('upsellTitle')}</div>
                   <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>{t('upsellSub')}</p>
                 </div>
+                {lastAddedTab && CATEGORY_UPSELL_RECS[lastAddedTab] && (
+                  <div className="mb-5">
+                    <div className="text-[11px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: ORANGE }}>✨ {t('recommendedForYou')}</div>
+                    <div className="flex flex-col gap-2.5">
+                      {CATEGORY_UPSELL_RECS[lastAddedTab].map((id) => {
+                        const u = UPSELL_ITEMS_POOL.find((x) => x.id === id);
+                        if (!u) return null;
+                        const qty = cart[u.id]?.qty || 0;
+                        return (
+                          <div key={u.id} className="rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ background: '#fdecd4', border: `1.5px solid ${GOLD}` }}>
+                            <div className="flex items-center gap-3">
+                              {u.img ? (
+                                <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#fff' : 'transparent' }}>
+                                  <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                                </div>
+                              ) : (
+                                <span className="text-2xl">{u.emoji}</span>
+                              )}
+                              <div>
+                                <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
+                                <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
+                              </div>
+                            </div>
+                            <Stepper qty={qty} onAdd={() => addItem(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeItem(u.id)} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-col gap-2.5">
                   {UPSELL_FOOD.map((u) => {
                     const key = u.id;
@@ -2666,6 +2715,7 @@ function GroupOrderView({ back }) {
   const [weekendWarnOpen, setWeekendWarnOpen] = useState(false);
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
+  const [lastAddedTab, setLastAddedTab] = useState(null);
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
     if (!lunchPending || !lunchDrink) return;
@@ -2849,6 +2899,7 @@ function GroupOrderView({ back }) {
                     return;
                   }
                   const lineKey = `${item.id}-${size}-${configMeat || 'x'}-${configExtras.slice().sort().join('_') || 'ohne'}`;
+                  setLastAddedTab(tab);
                   addLocal(lineKey, displayLabel, configTotal, deLabel);
                   closeModal();
                 };
@@ -3044,7 +3095,7 @@ function GroupOrderView({ back }) {
                   <div className="p-3.5">
                   <div className="flex items-center justify-between">
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
                   </div>
                   {qty > 0 && item.sauceChoice && (
                     <div className="mt-2.5 flex gap-2">
