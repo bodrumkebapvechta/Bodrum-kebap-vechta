@@ -67,6 +67,14 @@ const UI = {
   staffOrdersTab: { de: 'Bestellungen', en: 'Orders', tr: 'Siparişler', ro: 'Comenzi', nl: 'Bestellingen' },
   staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' },
   staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' },
+  staffMenuTab: { de: 'Preise', en: 'Prices', tr: 'Fiyatlar', ro: 'Prețuri', nl: 'Prijzen' },
+  staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" },
+  menuSearchPh: { de: 'Gericht suchen...', en: 'Search dish...', tr: 'Ürün ara...', ro: 'Caută fel...', nl: 'Gerecht zoeken...' },
+  editedBadge: { de: 'bearbeitet', en: 'edited', tr: 'düzenlendi', ro: 'editat', nl: 'bewerkt' },
+  resetBtn: { de: 'Zurücksetzen', en: 'Reset', tr: 'Sıfırla', ro: 'Resetează', nl: 'Resetten' },
+  cancelBtn: { de: 'Abbrechen', en: 'Cancel', tr: 'Vazgeç', ro: 'Anulează', nl: 'Annuleren' },
+  editedPricesCount: { de: 'Preis(e) angepasst', en: 'price(s) adjusted', tr: 'fiyat düzenlendi', ro: 'prețuri ajustate', nl: 'prijzen aangepast' },
+  photoUrlHint: { de: 'Füge einen Bild-Link ein (z.B. von einem Foto-Hosting-Dienst). Direkte Datei-Uploads sind hier noch nicht möglich.', en: 'Paste an image link (e.g. from a photo hosting service). Direct file uploads are not yet possible here.', tr: 'Bir resim linki yapıştır (örn. bir fotoğraf barındırma servisinden). Doğrudan dosya yükleme henüz mümkün değil.', ro: 'Adaugă un link de imagine (de ex. de la un serviciu de găzduire foto). Încărcarea directă a fișierelor nu este încă posibilă aici.', nl: 'Plak een afbeeldingslink (bijv. van een fotohostingdienst). Direct bestanden uploaden kan hier nog niet.' },
   visitsToday: { de: 'Besuche heute', en: 'Visits today', tr: 'Bugünkü ziyaret', ro: 'Vizite azi', nl: 'Bezoeken vandaag' },
   visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' },
   byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' },
@@ -82,6 +90,7 @@ const UI = {
   deleteOrderBtn: { de: 'Löschen (z.B. falls nicht per WhatsApp abgeschickt)', en: 'Delete (e.g. if not actually sent via WhatsApp)', tr: 'Sil (örn. WhatsApp\'tan gerçekten gönderilmediyse)', ro: 'Șterge (ex. dacă nu a fost trimis efectiv prin WhatsApp)', nl: 'Verwijderen (bijv. als niet echt via WhatsApp verstuurd)' },
   deleteFailedMsg: { de: '⚠️ Löschen fehlgeschlagen — Datenbankberechtigung prüfen', en: '⚠️ Delete failed — check database permissions', tr: '⚠️ Silme başarısız — veritabanı izinlerini kontrol edin', ro: '⚠️ Ștergere eșuată — verifică permisiunile bazei de date', nl: '⚠️ Verwijderen mislukt — controleer databaserechten' },
   ordersTotalLabel: { de: 'GESAMT (angezeigte Bestellungen)', en: 'TOTAL (shown orders)', tr: 'TOPLAM (görüntülenen siparişler)', ro: 'TOTAL (comenzi afișate)', nl: 'TOTAAL (getoonde bestellingen)' },
+  stuckOrderBadge: { de: 'ÜBERFÄLLIG', en: 'OVERDUE', tr: 'GECİKTİ', ro: 'ÎNTÂRZIATĂ', nl: 'TE LAAT' },
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
   savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' },
@@ -109,6 +118,7 @@ const UI = {
   featGroupTitle: { de: 'Gruppenbestellung', en: 'Group Order', tr: 'Grup Siparişi', ro: 'Comandă de grup', nl: 'Groepsbestelling' },
   featGroupSub: { de: 'Mit Freunden zusammen bestellen', en: 'Order together with friends', tr: 'Arkadaşlarınla birlikte sipariş ver', ro: 'Comandă împreună cu prietenii', nl: 'Samen bestellen met vrienden' },
   featLoyaltyTitle: { de: 'Treuekarte', en: 'Loyalty Card', tr: 'Sadakat Kartı', ro: 'Card de fidelitate', nl: 'Spaarkaart' },
+  featSurpriseSub: { de: 'Lass dich zufällig inspirieren', en: 'Get a random inspiration', tr: 'Rastgele bir ilham al', ro: 'Inspiră-te aleatoriu', nl: 'Laat je willekeurig inspireren' },
   featLoyaltySub: { de: '8 Stempel sammeln, Gratis-Portion sichern', en: 'Collect 8 stamps, get a free item', tr: '8 damga topla, ücretsiz ürün kazan', ro: 'Colectează 8 ștampile, primești gratuit', nl: '8 stempels sparen, gratis item ontvangen' },
   footerImpressum: { de: 'Impressum', en: 'Legal notice', tr: 'Yasal Bilgiler', ro: 'Date companie', nl: 'Colofon' },
   footerDatenschutz: { de: 'Datenschutz', en: 'Privacy', tr: 'Gizlilik', ro: 'Confidențialitate', nl: 'Privacy' },
@@ -735,6 +745,29 @@ function isWeekendDay() { const d = new Date().getDay(); return d === 0 || d ===
 function findMenuItemById(id) {
   for (const cat of MENU) { const item = cat.items.find((i) => i.id === id); if (item) return item; }
   return null;
+}
+function applyPriceOverrides(overrides, photoOverrides) {
+  const hasPrice = overrides && Object.keys(overrides).length > 0;
+  const hasPhoto = photoOverrides && Object.keys(photoOverrides).length > 0;
+  if (!hasPrice && !hasPhoto) return MENU;
+  return MENU.map((cat) => ({
+    ...cat,
+    items: cat.items.map((item) => {
+      const ov = hasPrice ? overrides[item.id] : null;
+      const photoOv = hasPhoto ? photoOverrides[item.id] : null;
+      if (!ov && !photoOv) return item;
+      let next = item;
+      if (ov) {
+        if (item.priceLarge !== undefined) {
+          next = { ...next, priceSmall: ov.small !== undefined ? ov.small : item.priceSmall, priceLarge: ov.large !== undefined ? ov.large : item.priceLarge };
+        } else {
+          next = { ...next, price: ov.price !== undefined ? ov.price : item.price };
+        }
+      }
+      if (photoOv) next = { ...next, img: photoOv, imgContain: false };
+      return next;
+    }),
+  }));
 }
 function getFavorites() { try { return JSON.parse(localStorage.getItem('bk_favorites') || '[]'); } catch { return []; } }
 function toggleFavoriteId(id) {
@@ -1820,7 +1853,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
             </button>
             <div className="flex flex-wrap gap-2.5 mt-3">
-              <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
               <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>
               <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
@@ -1872,7 +1904,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <FeatureCard index={0} icon="📱" title={t('featWaTitle')} sub={t('featWaSub')} color="#25D366" onClick={() => go('whatsapp')} img={DOENER_SPIESS_IMG} />
           <FeatureCard index={1} icon="🧩" title={t('featBuilderTitle')} sub={t('featBuilderSub')} color={GREEN} onClick={() => go('builder')} img={PIZZA_KAESE_IMG} />
           <FeatureCard index={2} icon="👥" title={t('featGroupTitle')} sub={t('featGroupSub')} color="#2b5c41" onClick={() => go('group')} img={CALZONE_IMG} />
-          <FeatureCard index={3} icon="🎟️" title={t('featLoyaltyTitle')} sub={t('featLoyaltySub')} color={GOLD} textColor={GREEN} onClick={() => go('loyalty')} img={PENNE_IMG} />
+          <FeatureCard index={3} icon="🎲" title={t('surpriseMeBtn')} sub={t('featSurpriseSub')} color={GOLD} textColor={GREEN} onClick={rollSurprise} img={PENNE_IMG} />
         </div>
         <p className="text-center text-xs font-medium mt-6" style={{ color: '#a4906c' }}>{t('extrasTip')}</p>
       </section>
@@ -2050,6 +2082,13 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
+  const [priceOverrides, setPriceOverrides] = useState({});
+  const [photoOverrides, setPhotoOverrides] = useState({});
+  useEffect(() => {
+    safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+  }, []);
+  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides), [priceOverrides, photoOverrides]);
   const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
@@ -2111,7 +2150,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [lines, totalPrice, name, note, pickupTime, wheelResult, itemNotes, orderCode]);
 
-  const activeCategory = MENU.find((m) => m.key === tab);
+  const activeCategory = EFFECTIVE_MENU.find((m) => m.key === tab);
 
   return (
     <div className="pb-32">
@@ -2970,6 +3009,13 @@ function GroupOrderView({ back }) {
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
+  const [priceOverrides, setPriceOverrides] = useState({});
+  const [photoOverrides, setPhotoOverrides] = useState({});
+  useEffect(() => {
+    safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+  }, []);
+  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides), [priceOverrides, photoOverrides]);
   const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
@@ -3028,7 +3074,7 @@ function GroupOrderView({ back }) {
     await safeSet(`grouporder:${code}`, updated);
     setGroup(updated);
   };
-  const activeCategory = MENU.find((m) => m.key === tab);
+  const activeCategory = EFFECTIVE_MENU.find((m) => m.key === tab);
 
   return (
     <div className="pb-32 relative">
@@ -3646,7 +3692,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '1. Verantwortlicher', p: 'Lütfü Kutluca — Bodrum Kebap Vechta\nOyther Straße 37, 49377 Vechta\nTelefon: 04441 / 95 16 104\nE-Mail: bodrumkebapvechta@gmail.com' },
       { h: '2. Hosting', p: 'Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Website werden automatisch technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite) durch den Hosting-Anbieter verarbeitet. Dies dient der technischen Bereitstellung und Sicherheit der Website.' },
       { h: '3. Bestellung per WhatsApp', p: 'Wenn Sie über unsere Website eine Bestellung per WhatsApp aufgeben, werden Sie zur WhatsApp-Anwendung von Meta Platforms Ireland Ltd. weitergeleitet. Die dort eingegebenen Daten (z. B. Name, Bestellinhalt) unterliegen der Datenschutzerklärung von WhatsApp/Meta. Wir erhalten nur die von Ihnen gesendete Nachricht.' },
-      { h: '4. Treuekarte, Gruppenbestellung & Glücksrad', p: 'Für diese Funktionen wird ein zufällig erzeugter Code gespeichert (keine Namen, keine Telefonnummern). Die Daten werden bei Supabase Inc. in einer Datenbank innerhalb der EU gespeichert und dienen ausschließlich der Funktion dieser Angebote (z. B. Stempelzählung).' },
+      { h: '4. Gruppenbestellung & Glücksrad', p: 'Für diese Funktionen wird ein zufällig erzeugter Code gespeichert (keine Namen, keine Telefonnummern). Die Daten werden bei Supabase Inc. in einer Datenbank innerhalb der EU gespeichert und dienen ausschließlich der Funktion dieser Angebote..' },
       { h: '5. Google Maps', p: 'Auf unserer Website ist eine Karte von Google Maps eingebunden. Beim Laden der Karte können Daten (z. B. IP-Adresse) an Google Ireland Limited übertragen werden. Weitere Informationen: Google-Datenschutzerklärung.' },
       { h: '6. Instagram', p: 'Wir verlinken auf unser Instagram-Profil. Beim Anklicken werden Sie zu Instagram (Meta Platforms Ireland Ltd.) weitergeleitet, deren eigene Datenschutzbestimmungen gelten.' },
       { h: '7. Cookies', p: 'Diese Website verwendet keine Tracking- oder Marketing-Cookies. Es werden keine Analysewerkzeuge (z. B. Google Analytics) eingesetzt.' },
@@ -3657,7 +3703,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '1. Controller', p: 'Lütfü Kutluca — Bodrum Kebap Vechta\nOyther Straße 37, 49377 Vechta, Germany\nPhone: 04441 / 95 16 104\nEmail: bodrumkebapvechta@gmail.com' },
       { h: '2. Hosting', p: 'This website is hosted by Vercel Inc. When you visit the website, technical access data (e.g. IP address, date/time, page accessed) is automatically processed by the hosting provider. This serves the technical provision and security of the website.' },
       { h: '3. Ordering via WhatsApp', p: 'If you place an order via WhatsApp through our website, you will be redirected to the WhatsApp application of Meta Platforms Ireland Ltd. Data entered there (e.g. name, order content) is subject to the WhatsApp/Meta privacy policy. We only receive the message you send.' },
-      { h: '4. Loyalty card, group order & lucky wheel', p: 'For these features, a randomly generated code is stored (no names, no phone numbers). The data is stored by Supabase Inc. in a database within the EU and is used exclusively for the operation of these features (e.g. stamp counting).' },
+      { h: '4. Group order & lucky wheel', p: 'For these features, a randomly generated code is stored (no names, no phone numbers). The data is stored by Supabase Inc. in a database within the EU and is used exclusively for the operation of these features.' },
       { h: '5. Google Maps', p: 'A Google Maps map is embedded on our website. When the map loads, data (e.g. IP address) may be transmitted to Google Ireland Limited. More information: Google Privacy Policy.' },
       { h: '6. Instagram', p: 'We link to our Instagram profile. Clicking it will redirect you to Instagram (Meta Platforms Ireland Ltd.), whose own privacy policy applies.' },
       { h: '7. Cookies', p: 'This website does not use tracking or marketing cookies. No analytics tools (e.g. Google Analytics) are used.' },
@@ -3668,7 +3714,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '1. Sorumlu Kişi', p: 'Lütfü Kutluca — Bodrum Kebap Vechta\nOyther Straße 37, 49377 Vechta, Almanya\nTelefon: 04441 / 95 16 104\nE-posta: bodrumkebapvechta@gmail.com' },
       { h: '2. Hosting', p: 'Bu web sitesi Vercel Inc. tarafından barındırılmaktadır. Web sitesine erişildiğinde, teknik erişim verileri (örn. IP adresi, tarih/saat, erişilen sayfa) otomatik olarak hosting sağlayıcısı tarafından işlenir. Bu, web sitesinin teknik olarak sunulması ve güvenliği amacına hizmet eder.' },
       { h: '3. WhatsApp Üzerinden Sipariş', p: 'Web sitemiz üzerinden WhatsApp ile sipariş verdiğinizde, Meta Platforms Ireland Ltd.\'ye ait WhatsApp uygulamasına yönlendirilirsiniz. Orada girilen veriler (örn. isim, sipariş içeriği) WhatsApp/Meta\'nın gizlilik politikasına tabidir. Biz yalnızca sizin gönderdiğiniz mesajı alırız.' },
-      { h: '4. Sadakat Kartı, Grup Siparişi & Şans Çarkı', p: 'Bu özellikler için rastgele oluşturulmuş bir kod saklanır (isim veya telefon numarası saklanmaz). Veriler, Supabase Inc. tarafından AB içindeki bir veritabanında saklanır ve yalnızca bu özelliklerin işlevi için kullanılır (örn. damga sayımı).' },
+      { h: '4. Grup Siparişi & Şans Çarkı', p: 'Bu özellikler için rastgele oluşturulmuş bir kod saklanır (isim veya telefon numarası saklanmaz). Veriler, Supabase Inc. tarafından AB içindeki bir veritabanında saklanır ve yalnızca bu özelliklerin işlevi için kullanılır.' },
       { h: '5. Google Haritalar', p: 'Web sitemizde bir Google Haritalar haritası gömülüdür. Harita yüklendiğinde, veriler (örn. IP adresi) Google Ireland Limited\'e aktarılabilir. Daha fazla bilgi: Google Gizlilik Politikası.' },
       { h: '6. Instagram', p: 'Instagram profilimize bağlantı veriyoruz. Tıkladığınızda kendi gizlilik politikaları geçerli olan Instagram\'a (Meta Platforms Ireland Ltd.) yönlendirilirsiniz.' },
       { h: '7. Çerezler', p: 'Bu web sitesi izleme veya pazarlama çerezleri kullanmamaktadır. Herhangi bir analiz aracı (örn. Google Analytics) kullanılmamaktadır.' },
@@ -3679,7 +3725,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '1. Operator de date', p: 'Lütfü Kutluca — Bodrum Kebap Vechta\nOyther Straße 37, 49377 Vechta, Germania\nTelefon: 04441 / 95 16 104\nE-mail: bodrumkebapvechta@gmail.com' },
       { h: '2. Găzduire', p: 'Acest site este găzduit de Vercel Inc. La accesarea site-ului, datele tehnice de acces (de ex. adresa IP, data/ora, pagina accesată) sunt procesate automat de furnizorul de găzduire. Acest lucru servește furnizării tehnice și securității site-ului.' },
       { h: '3. Comandă prin WhatsApp', p: 'Dacă plasați o comandă prin WhatsApp de pe site-ul nostru, veți fi redirecționat către aplicația WhatsApp a Meta Platforms Ireland Ltd. Datele introduse acolo (de ex. nume, conținutul comenzii) sunt supuse politicii de confidențialitate WhatsApp/Meta. Noi primim doar mesajul trimis de dvs.' },
-      { h: '4. Card de fidelitate, comandă de grup & roata norocului', p: 'Pentru aceste funcții este stocat un cod generat aleatoriu (fără nume, fără numere de telefon). Datele sunt stocate de Supabase Inc. într-o bază de date din UE și sunt utilizate exclusiv pentru funcționarea acestor oferte (de ex. numărarea ștampilelor).' },
+      { h: '4. Comandă de grup & roata norocului', p: 'Pentru aceste funcții este stocat un cod generat aleatoriu (fără nume, fără numere de telefon). Datele sunt stocate de Supabase Inc. într-o bază de date din UE și sunt utilizate exclusiv pentru funcționarea acestor oferte.' },
       { h: '5. Google Maps', p: 'Pe site-ul nostru este integrată o hartă Google Maps. La încărcarea hărții, datele (de ex. adresa IP) pot fi transmise către Google Ireland Limited. Mai multe informații: Politica de confidențialitate Google.' },
       { h: '6. Instagram', p: 'Facem trimitere către profilul nostru de Instagram. La accesare veți fi redirecționat către Instagram (Meta Platforms Ireland Ltd.), unde se aplică propriile politici de confidențialitate.' },
       { h: '7. Cookie-uri', p: 'Acest site nu utilizează cookie-uri de urmărire sau marketing. Nu sunt utilizate instrumente de analiză (de ex. Google Analytics).' },
@@ -3690,7 +3736,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '1. Verwerkingsverantwoordelijke', p: 'Lütfü Kutluca — Bodrum Kebap Vechta\nOyther Straße 37, 49377 Vechta, Duitsland\nTelefoon: 04441 / 95 16 104\nE-mail: bodrumkebapvechta@gmail.com' },
       { h: '2. Hosting', p: 'Deze website wordt gehost door Vercel Inc. Bij het bezoeken van de website worden automatisch technische toegangsgegevens (bijv. IP-adres, datum/tijd, bezochte pagina) verwerkt door de hostingprovider. Dit dient de technische levering en beveiliging van de website.' },
       { h: '3. Bestellen via WhatsApp', p: 'Als u via onze website een bestelling plaatst via WhatsApp, wordt u doorgestuurd naar de WhatsApp-applicatie van Meta Platforms Ireland Ltd. De daar ingevoerde gegevens (bijv. naam, bestelinhoud) vallen onder het privacybeleid van WhatsApp/Meta. Wij ontvangen alleen het door u verzonden bericht.' },
-      { h: '4. Spaarkaart, groepsbestelling & geluksrad', p: 'Voor deze functies wordt een willekeurig gegenereerde code opgeslagen (geen namen, geen telefoonnummers). De gegevens worden door Supabase Inc. opgeslagen in een database binnen de EU en worden uitsluitend gebruikt voor de werking van deze functies (bijv. stempeltelling).' },
+      { h: '4. Groepsbestelling & geluksrad', p: 'Voor deze functies wordt een willekeurig gegenereerde code opgeslagen (geen namen, geen telefoonnummers). De gegevens worden door Supabase Inc. opgeslagen in een database binnen de EU en worden uitsluitend gebruikt voor de werking van deze functies.' },
       { h: '5. Google Maps', p: 'Op onze website is een Google Maps-kaart ingesloten. Bij het laden van de kaart kunnen gegevens (bijv. IP-adres) worden verzonden naar Google Ireland Limited. Meer informatie: Google-privacybeleid.' },
       { h: '6. Instagram', p: 'Wij linken naar ons Instagram-profiel. Als u hierop klikt, wordt u doorgestuurd naar Instagram (Meta Platforms Ireland Ltd.), waar hun eigen privacybeleid van toepassing is.' },
       { h: '7. Cookies', p: 'Deze website gebruikt geen tracking- of marketingcookies. Er worden geen analysetools (bijv. Google Analytics) gebruikt.' },
@@ -3772,11 +3818,7 @@ function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
   const [ok, setOk] = useState(false);
-  const [tab, setTab] = useState('stamps'); // stamps | wheel
-
-  const [stampCode, setStampCode] = useState('');
-  const [stampCustomer, setStampCustomer] = useState(undefined);
-  const [msg, setMsg] = useState('');
+  const [tab, setTab] = useState('orders'); // orders | wheel | settings | analytics
 
   const [wheelCode, setWheelCode] = useState('');
   const [wheelResult, setWheelResult] = useState(undefined);
@@ -3787,13 +3829,34 @@ function StaffPanelView({ back }) {
   const [ratingCount, setRatingCount] = useState('293');
   const [ratingMsg, setRatingMsg] = useState('');
   const [visits, setVisits] = useState([]);
+  const [menuSearch, setMenuSearch] = useState('');
+  const [priceOverrides, setPriceOverrides] = useState({});
+  const [editingItem, setEditingItem] = useState(null);
+  const [editSmall, setEditSmall] = useState('');
+  const [editLarge, setEditLarge] = useState('');
+  const [menuSaveMsg, setMenuSaveMsg] = useState('');
+  const [photoOverrides, setPhotoOverrides] = useState({});
+  const [photoSearch, setPhotoSearch] = useState('');
+  const [editingPhotoItem, setEditingPhotoItem] = useState(null);
+  const [editPhotoUrl, setEditPhotoUrl] = useState('');
+  const [photoSaveMsg, setPhotoSaveMsg] = useState('');
 
   useEffect(() => {
     if (ok && tab === 'orders') {
-      const load = () => safeListPrefix('order:', 25).then((rows) => setOrders(rows));
+      const load = () => safeListPrefix('order:', 25).then((rows) => {
+        const prevKeys = knownOrderKeysRef.current;
+        if (prevKeys !== null) {
+          const isNew = rows.some((r) => !prevKeys.has(r.key));
+          if (isNew) notifyNewOrder();
+        }
+        knownOrderKeysRef.current = new Set(rows.map((r) => r.key));
+        setOrders(rows);
+      });
       load();
       const iv = setInterval(load, 6000);
       return () => clearInterval(iv);
+    } else {
+      knownOrderKeysRef.current = null;
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -3806,6 +3869,16 @@ function StaffPanelView({ back }) {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
     }
   }, [ok, tab]);
+  useEffect(() => {
+    if (ok && tab === 'menu') {
+      safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+    }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (ok && tab === 'photos') {
+      safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+    }
+  }, [ok, tab]);
   const toggleOrderStatus = async (o) => {
     const next = o.value.status === 'ready' ? 'preparing' : 'ready';
     const updated = { ...o.value, status: next };
@@ -3813,6 +3886,28 @@ function StaffPanelView({ back }) {
     setOrders((list) => list.map((x) => x.key === o.key ? { ...x, value: updated } : x));
   };
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
+  const knownOrderKeysRef = useRef(null);
+  const notifyNewOrder = () => {
+    try {
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        [0, 0.15].forEach((delay) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = 880;
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + delay + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + delay);
+          osc.stop(ctx.currentTime + delay + 0.32);
+        });
+      }
+    } catch {}
+  };
   const deleteOrder = async (o) => {
     const success = await safeDeleteKey(o.key);
     if (success) {
@@ -3831,22 +3926,76 @@ function StaffPanelView({ back }) {
     setTimeout(() => setRatingMsg(''), 2500);
   };
 
-  const stampSearch = async () => {
-    const c = stampCode.trim().toUpperCase(); if (!c) return;
-    setStampCustomer(await safeGet(`loyalty:${c}`));
-    setMsg('');
+  const menuSearchResults = useMemo(() => {
+    if (!menuSearch.trim()) return [];
+    const q = menuSearch.trim().toLowerCase();
+    const out = [];
+    MENU.forEach((cat) => cat.items.forEach((item) => { if (item.name.toLowerCase().includes(q)) out.push(item); }));
+    return out.slice(0, 12);
+  }, [menuSearch]);
+  const selectMenuItem = (item) => {
+    setEditingItem(item);
+    const ov = priceOverrides[item.id];
+    if (item.priceLarge !== undefined) {
+      setEditSmall(String(ov?.small !== undefined ? ov.small : item.priceSmall));
+      setEditLarge(String(ov?.large !== undefined ? ov.large : item.priceLarge));
+    } else {
+      setEditSmall(String(ov?.price !== undefined ? ov.price : item.price));
+    }
   };
-  const addStamp = async () => {
-    if (!stampCustomer) return;
-    const c = stampCode.trim().toUpperCase();
-    const updated = { ...stampCustomer, stamps: stampCustomer.stamps + 1 };
-    await safeSet(`loyalty:${c}`, updated); setStampCustomer(updated); setMsg(t('stampAddedMsg'));
+  const saveMenuPrice = async () => {
+    if (!editingItem) return;
+    const next = { ...priceOverrides };
+    if (editingItem.priceLarge !== undefined) {
+      const small = parseFloat(editSmall.replace(',', '.'));
+      const large = parseFloat(editLarge.replace(',', '.'));
+      if (isNaN(small) || isNaN(large)) return;
+      next[editingItem.id] = { small, large };
+    } else {
+      const price = parseFloat(editSmall.replace(',', '.'));
+      if (isNaN(price)) return;
+      next[editingItem.id] = { price };
+    }
+    await safeSet('siteconfig:priceOverrides', next);
+    setPriceOverrides(next);
+    setMenuSaveMsg(t('savedMsg'));
+    setTimeout(() => setMenuSaveMsg(''), 2500);
   };
-  const redeemStamp = async () => {
-    if (!stampCustomer || stampCustomer.stamps < LOYALTY_GOAL) return;
-    const c = stampCode.trim().toUpperCase();
-    const updated = { ...stampCustomer, stamps: stampCustomer.stamps - LOYALTY_GOAL, rewardsRedeemed: (stampCustomer.rewardsRedeemed || 0) + 1 };
-    await safeSet(`loyalty:${c}`, updated); setStampCustomer(updated); setMsg(t('freePortionRedeemedMsg'));
+  const resetMenuPrice = async () => {
+    if (!editingItem) return;
+    const next = { ...priceOverrides };
+    delete next[editingItem.id];
+    await safeSet('siteconfig:priceOverrides', next);
+    setPriceOverrides(next);
+    setEditingItem(null);
+  };
+
+  const photoSearchResults = useMemo(() => {
+    if (!photoSearch.trim()) return [];
+    const q = photoSearch.trim().toLowerCase();
+    const out = [];
+    MENU.forEach((cat) => cat.items.forEach((item) => { if (item.name.toLowerCase().includes(q)) out.push(item); }));
+    return out.slice(0, 12);
+  }, [photoSearch]);
+  const selectPhotoItem = (item) => {
+    setEditingPhotoItem(item);
+    setEditPhotoUrl(photoOverrides[item.id] || item.img || '');
+  };
+  const savePhoto = async () => {
+    if (!editingPhotoItem || !editPhotoUrl.trim()) return;
+    const next = { ...photoOverrides, [editingPhotoItem.id]: editPhotoUrl.trim() };
+    await safeSet('siteconfig:photoOverrides', next);
+    setPhotoOverrides(next);
+    setPhotoSaveMsg(t('savedMsg'));
+    setTimeout(() => setPhotoSaveMsg(''), 2500);
+  };
+  const resetPhoto = async () => {
+    if (!editingPhotoItem) return;
+    const next = { ...photoOverrides };
+    delete next[editingPhotoItem.id];
+    await safeSet('siteconfig:photoOverrides', next);
+    setPhotoOverrides(next);
+    setEditingPhotoItem(null);
   };
 
   const wheelSearch = async () => {
@@ -3872,33 +4021,13 @@ function StaffPanelView({ back }) {
       ) : (
         <>
           <div className="flex gap-2 px-5 pt-2 pb-4 overflow-x-auto">
-            <button onClick={() => setTab('stamps')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'stamps' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('loyaltyTabLabel')}</button>
-            <button onClick={() => setTab('wheel')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'wheel' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffWheelCodeTitle')}</button>
             <button onClick={() => setTab('orders')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'orders' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffOrdersTab')}</button>
+            <button onClick={() => setTab('wheel')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'wheel' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffWheelCodeTitle')}</button>
             <button onClick={() => setTab('settings')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'settings' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffSettingsTab')}</button>
             <button onClick={() => setTab('analytics')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'analytics' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffAnalyticsTab')}</button>
+            <button onClick={() => setTab('menu')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'menu' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffMenuTab')}</button>
+            <button onClick={() => setTab('photos')} className="flex-none px-4 py-2.5 rounded-full text-xs font-bold" style={tab === 'photos' ? { background: GREEN, color: GOLD } : { background: '#f0e5cf', color: GREEN }}>{t('staffPhotosTab')}</button>
           </div>
-
-          {tab === 'stamps' && (
-            <div className="px-5">
-              <div className="flex gap-2 mb-4">
-                <input value={stampCode} onChange={(e) => setStampCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && stampSearch()} placeholder={t('customerCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                <button onClick={stampSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
-              </div>
-              {stampCustomer === null && <p className="text-sm font-semibold text-center" style={{ color: CHILI }}>{t('codeNotFound')}</p>}
-              {stampCustomer && (
-                <div className="bg-white rounded-xl p-5">
-                  <div className="text-lg font-black mb-4" style={{ color: GREEN }}>{stampCustomer.stamps} / {LOYALTY_GOAL} {t('stampsWord')}</div>
-                  <StampRow stamps={stampCustomer.stamps} goal={LOYALTY_GOAL} />
-                  <div className="flex gap-2 mt-5">
-                    <button onClick={addStamp} className="flex-1 py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{t('addStampBtn')}</button>
-                    <button onClick={redeemStamp} disabled={stampCustomer.stamps < LOYALTY_GOAL} className="flex-1 py-3 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: CHILI }}>{t('redeem')}</button>
-                  </div>
-                </div>
-              )}
-              {msg && <p className="text-center text-sm font-bold mt-4" style={{ color: '#8a5a1f' }}>{msg}</p>}
-            </div>
-          )}
 
           {tab === 'wheel' && (
             <div className="px-5">
@@ -3922,11 +4051,13 @@ function StaffPanelView({ back }) {
               {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
               {orders.length === 0 && <p className="text-sm text-center font-medium" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>}
               <div className="flex flex-col gap-2.5">
-                {orders.map((o) => (
-                  <div key={o.key} className="bg-white rounded-xl p-4 shadow-sm">
+                {orders.map((o) => {
+                  const isStuck = o.value.status !== 'ready' && (Date.now() - o.value.createdAt) > 15 * 60 * 1000;
+                  return (
+                  <div key={o.key} className="bg-white rounded-xl p-4 shadow-sm" style={isStuck ? { border: `2px solid ${CHILI}`, background: '#fff5f5' } : {}}>
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <div className="font-black text-sm" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}</div>
+                        <div className="font-black text-sm flex items-center gap-1.5" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}{isStuck && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: CHILI }}>⏰ {t('stuckOrderBadge')}</span>}</div>
                         <div className="text-[11px] font-medium" style={{ color: '#a4906c' }}>{new Date(o.value.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}{o.value.pickupTime ? ` · ${t('pickupTimePh')}: ${o.value.pickupTime}` : ''}</div>
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -3943,7 +4074,8 @@ function StaffPanelView({ back }) {
                     )}
                     <div className="text-xs font-bold text-right" style={{ color: CHILI }}>{o.value.itemCount} {t('itemsWord')} · {fmt(o.value.total)}</div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
               {orders.length > 0 && (
                 <div className="mt-4 rounded-xl p-4 flex items-center justify-between" style={{ background: GREEN }}>
@@ -4006,6 +4138,69 @@ function StaffPanelView({ back }) {
               </div>
             );
           })()}
+          {tab === 'menu' && (
+            <div className="px-5">
+              <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+              {!editingItem && menuSearchResults.map((item) => (
+                <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
+                  <span className="font-bold text-sm" style={{ color: GREEN }}>{item.name}{priceOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
+                  <span className="text-xs font-semibold" style={{ color: CHILI }}>{item.priceLarge !== undefined ? `${fmt(item.priceSmall)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</span>
+                </button>
+              ))}
+              {editingItem && (
+                <div className="bg-white rounded-xl p-5">
+                  <div className="font-black text-base mb-4" style={{ color: GREEN }}>{editingItem.name}</div>
+                  {editingItem.priceLarge !== undefined ? (
+                    <div className="flex gap-2 mb-4">
+                      <div className="flex-1">
+                        <div className="text-[11px] font-bold mb-1" style={{ color: '#a4906c' }}>{t('sizeSmall')}</div>
+                        <input value={editSmall} onChange={(e) => setEditSmall(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-[11px] font-bold mb-1" style={{ color: '#a4906c' }}>{t('sizeLarge')}</div>
+                        <input value={editLarge} onChange={(e) => setEditLarge(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <input value={editSmall} onChange={(e) => setEditSmall(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN }} />
+                  )}
+                  <div className="flex gap-2">
+                    <button onClick={saveMenuPrice} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                    {priceOverrides[editingItem.id] && <button onClick={resetMenuPrice} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>}
+                    <button onClick={() => setEditingItem(null)} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+                  </div>
+                  {menuSaveMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{menuSaveMsg}</p>}
+                </div>
+              )}
+              {Object.keys(priceOverrides).length > 0 && !editingItem && !menuSearch && (
+                <p className="text-[11px] text-center mt-4" style={{ color: '#a4906c' }}>{Object.keys(priceOverrides).length} {t('editedPricesCount')}</p>
+              )}
+            </div>
+          )}
+          {tab === 'photos' && (
+            <div className="px-5">
+              <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('photoUrlHint')}</p>
+              <input value={photoSearch} onChange={(e) => { setPhotoSearch(e.target.value); setEditingPhotoItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+              {!editingPhotoItem && photoSearchResults.map((item) => (
+                <button key={item.id} onClick={() => selectPhotoItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
+                  <span className="font-bold text-sm" style={{ color: GREEN }}>{item.name}{photoOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
+                </button>
+              ))}
+              {editingPhotoItem && (
+                <div className="bg-white rounded-xl p-5">
+                  <div className="font-black text-base mb-3" style={{ color: GREEN }}>{editingPhotoItem.name}</div>
+                  {editPhotoUrl && <img src={editPhotoUrl} alt="" className="w-full h-36 object-cover rounded-lg mb-3" onError={(e) => { e.target.style.display = 'none'; }} />}
+                  <input value={editPhotoUrl} onChange={(e) => setEditPhotoUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <div className="flex gap-2">
+                    <button onClick={savePhoto} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                    {photoOverrides[editingPhotoItem.id] && <button onClick={resetPhoto} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>}
+                    <button onClick={() => setEditingPhotoItem(null)} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+                  </div>
+                  {photoSaveMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{photoSaveMsg}</p>}
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
@@ -4013,93 +4208,6 @@ function StaffPanelView({ back }) {
 }
 
 /* ============ LOYALTY (Treuekarte) ============ */
-const LOYALTY_GOAL = 8;
-function StampRow({ stamps, goal }) {
-  return (
-    <div className="grid grid-cols-4 gap-3">
-      {Array.from({ length: goal }).map((_, i) => {
-        const filled = i < stamps;
-        return (<div key={i} className="aspect-square rounded-full flex items-center justify-center border-2" style={{ background: filled ? ORANGE : 'transparent', borderColor: filled ? ORANGE : '#d8c6a3', borderStyle: filled ? 'solid' : 'dashed' }}>{filled ? <Check size={20} color="#fff" strokeWidth={3} /> : <Flame size={16} color="#d8c6a3" />}</div>);
-      })}
-    </div>
-  );
-}
-function makeLoyaltyCode() {
-  let out = ''; for (let i = 0; i < 4; i++) out += Math.floor(Math.random() * 10);
-  return out;
-}
-function LoyaltyView({ back }) {
-  const { t } = React.useContext(LangContext);
-  const [codeInput, setCodeInput] = useState('');
-  const [customer, setCustomer] = useState(undefined);
-  const [justCreated, setJustCreated] = useState(false);
-
-  const openCard = async (code) => {
-    const data = await safeGet(`loyalty:${code}`);
-    setCustomer(data || null);
-  };
-  const lookup = async () => {
-    const c = codeInput.trim().toUpperCase(); if (!c) return;
-    await openCard(c);
-  };
-  const createNew = async () => {
-    let code = makeLoyaltyCode();
-    while (await safeGet(`loyalty:${code}`)) code = makeLoyaltyCode();
-    const data = { code, stamps: 0, rewardsRedeemed: 0 };
-    await safeSet(`loyalty:${code}`, data);
-    setCustomer(data);
-    setJustCreated(true);
-  };
-
-  return (
-    <div className="pb-10">
-      <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleLoyalty')} /></div>
-
-      {customer === undefined && (
-        <div className="px-5 pt-4">
-          <p className="text-sm mb-5 text-center" style={{ color: '#7c6d55' }}>{t('loyaltyNoPhone')}</p>
-          <label className="block text-xs font-bold mb-2" style={{ color: '#a4906c' }}>{t('haveCodeLabel')}</label>
-          <div className="flex gap-2 mb-6">
-            <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase())} onKeyDown={(e) => e.key === 'Enter' && lookup()} placeholder={t('codeExamplePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.15em] outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-            <button onClick={lookup} className="px-5 rounded-xl font-bold text-sm" style={{ background: GREEN, color: GOLD }}>{t('showBtn')}</button>
-          </div>
-          <div className="text-center text-xs font-semibold mb-3" style={{ color: '#a4906c' }}>{t('orLabel')}</div>
-          <button onClick={createNew} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('createNewCardBtn')}</button>
-        </div>
-      )}
-
-      {customer === null && (
-        <div className="px-5 pt-6 text-center">
-          <p className="text-sm font-semibold mb-4" style={{ color: CHILI }}>{t('codeDoesntExist')}</p>
-          <button onClick={() => setCustomer(undefined)} className="px-5 py-2.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('zurueck')}</button>
-        </div>
-      )}
-
-      {customer && (
-        <div className="px-5 pt-4">
-          {justCreated && (
-            <div className="mb-4 px-4 py-3 rounded-xl text-xs font-semibold" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>
-              {t('screenshotNote')}
-            </div>
-          )}
-          <div className="bg-white rounded-xl p-6" style={{ borderLeft: `5px solid ${ORANGE}` }}>
-            <div className="text-center mb-4">
-              <div className="text-[11px] font-bold tracking-widest mb-1" style={{ color: '#a4906c' }}>{t('yourCodeLabel')}</div>
-              <div className="text-2xl font-black tracking-[0.25em]" style={{ color: GREEN }}>{customer.code}</div>
-            </div>
-            <div className="text-lg font-black mb-5 text-center" style={{ color: GREEN }}>{customer.stamps} / {LOYALTY_GOAL} {t('stampsWord')}</div>
-            <StampRow stamps={customer.stamps} goal={LOYALTY_GOAL} />
-            <div className="mt-6 pt-4 text-center" style={{ borderTop: '1px dashed #e3d5bd' }}>
-              {customer.stamps >= LOYALTY_GOAL ? <div className="font-bold" style={{ color: CHILI, animation: 'popIn .6s ease' }}>{t('freeItemEarned')}</div> : <div className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('stampsUntilFreePrefix')} {LOYALTY_GOAL - customer.stamps} {t('stampsUntilFreeSuffix')}</div>}
-            </div>
-          </div>
-          <p className="text-xs text-center mt-4" style={{ color: '#a4906c' }}>{t('showCodeForStamp')}</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 /* ============ APP ============ */
 export default function App() {
   const [booted, setBooted] = useState(false);
@@ -4204,7 +4312,6 @@ export default function App() {
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} go={go} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
-        {view === 'loyalty' && <LoyaltyView back={() => setView('home')} />}
         {view === 'staff' && <StaffPanelView back={() => setView('home')} />}
         {view === 'impressum' && <ImpressumView back={() => setView('home')} />}
         {view === 'datenschutz' && <DatenschutzView back={() => setView('home')} />}
