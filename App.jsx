@@ -818,9 +818,11 @@ async function safeDeleteKey(key) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}`, {
       method: 'DELETE',
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, Prefer: 'return=representation' },
     });
-    return res.ok;
+    if (!res.ok) return false;
+    const body = await res.json().catch(() => []);
+    return Array.isArray(body) && body.length > 0;
   } catch { return false; }
 }
 async function cleanupOldOrders() {
