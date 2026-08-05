@@ -236,6 +236,11 @@ const UI = {
   choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' },
   yaprakWeekendOnly: { de: 'Yaprak Döner gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'Yaprak Döner is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Yaprak Döner sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Yaprak Döner este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Yaprak Döner is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' },
   weekendItemOnly: { de: 'Dieses Gericht gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'This dish is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Bu ürün sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Acest fel este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Dit gerecht is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' },
+  weekendWarnTitle: { de: 'Nur am Wochenende', en: 'Weekends only', tr: 'Sadece hafta sonu', ro: 'Doar în weekend', nl: 'Alleen in het weekend' },
+  statusOpenNow: { de: 'Jetzt geöffnet', en: 'Open now', tr: 'Şu an açık', ro: 'Acum deschis', nl: 'Nu geopend' },
+  statusClosedRestDay: { de: 'Geschlossen · Ruhetag', en: 'Closed · Rest day', tr: 'Kapalı · Tatil günü', ro: 'Închis · Zi liberă', nl: 'Gesloten · Rustdag' },
+  statusNotYetOpen: { de: 'Noch geschlossen', en: 'Not open yet', tr: 'Henüz açılmadı', ro: 'Încă închis', nl: 'Nog gesloten' },
+  statusClosed: { de: 'Geschlossen', en: 'Closed', tr: 'Kapalı', ro: 'Închis', nl: 'Gesloten' },
   sizeLabel: { de: 'GRÖSSE', en: 'SIZE', tr: 'BOYUT', ro: 'MĂRIME', nl: 'FORMAAT' },
   pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' },
   leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' },
@@ -245,6 +250,12 @@ const UI = {
   lunchComboTitle: { de: '🍽️ Mittagsangebot', en: '🍽️ Lunch special', tr: '🍽️ Öğle fırsatı', ro: '🍽️ Ofertă de prânz', nl: '🍽️ Lunchaanbieding' },
   lunchComboSub: { de: 'Wähle dein Getränk dazu — zusammen nur 9,50 €!', en: 'Choose your drink — together only €9.50!', tr: 'Yanına içeceğini seç — birlikte sadece 9,50 €!', ro: 'Alege băutura — împreună doar 9,50 €!', nl: 'Kies je drankje — samen maar € 9,50!' },
   lunchComboConfirm: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' },
+  lunchSmallHint: { de: '💡 Tipp: Bei der großen Pizza bekommst du zwischen 11:30–14:00 Uhr ein Getränk gratis dazu!', en: '💡 Tip: With the large pizza you get a free drink between 11:30 AM–2:00 PM!', tr: '💡 İpucu: Büyük pizzayla 11:30–14:00 arası ücretsiz içecek kazanırsın!', ro: '💡 Sfat: La pizza mare primești o băutură gratuită între 11:30–14:00!', nl: '💡 Tip: Bij de grote pizza krijg je tussen 11:30–14:00 uur een gratis drankje!' },
+  pickupEstimate: { de: 'Fertig in ca. 15–20 Minuten', en: 'Ready in approx. 15–20 minutes', tr: 'Yaklaşık 15-20 dakikada hazır', ro: 'Gata în aprox. 15–20 minute', nl: 'Klaar in ca. 15–20 minuten' },
+  allergenInfoBtn: { de: 'ⓘ Allergene & Zusatzstoffe', en: 'ⓘ Allergens & additives', tr: 'ⓘ Alerjen ve katkı maddeleri', ro: 'ⓘ Alergeni și aditivi', nl: 'ⓘ Allergenen & additieven' },
+  allergenLegendTitle: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjen ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & additieven' },
+  allergenSectionTitle: { de: 'ALLERGENE', en: 'ALLERGENS', tr: 'ALERJENLER', ro: 'ALERGENI', nl: 'ALLERGENEN' },
+  zusatzSectionTitle: { de: 'ZUSATZSTOFFE', en: 'ADDITIVES', tr: 'KATKI MADDELERİ', ro: 'ADITIVI', nl: 'ADDITIEVEN' },
   choosePastaTypeTitle: { de: 'Spaghetti oder Makkaroni?', en: 'Spaghetti or Macaroni?', tr: 'Spagetti mi Makarna mı?', ro: 'Spaghete sau macaroane?', nl: 'Spaghetti of macaroni?' },
   weiterShort: { de: 'Weiter', en: 'Next', tr: 'İleri', ro: 'Continuă', nl: 'Verder' },
   choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' },
@@ -480,77 +491,77 @@ function mx(text, lang) {
 /* ============ MENU DATA ============ */
 const MENU = [
   { key: 'kebap', label: 'Kebap', items: [
-    { id: 'k0-steak', name: 'Steak Kebap', price: 10.0, desc: 'Steak Fleisch, Knoblauchsoße, Salat und Zwiebeln', weekend: true },
-    { id: 'k1', name: 'Kalb Kebap', price: 8.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
-    { id: 'k2', name: 'Kebap Spezial Weichkäse', price: 8.5, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln, Weichkäse in Salzlake' },
-    { id: 'k3', name: 'Kebap Hollandaise Soße', price: 8.5, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Salat, Zwiebeln' },
-    { id: 'k4', name: 'Bodrum Gemüse Kebap', price: 9.0, desc: 'Fritiertes Gemüse, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln' },
-    { id: 'k5', name: 'Jumbo Kebap', price: 9.0, desc: 'Extra Portion Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln' },
-    { id: 'k6', name: 'Kebap Box', price: 8.0, desc: 'Fleisch vom Drehspieß, Pommes und Knoblauchsoße' },
-    { id: 'k7', name: 'Vegetarische Tasche', price: 7.0, desc: 'Brot mit Salat, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
-    { id: 'k8', name: 'Dürüm Kebap', price: 9.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße und Zwiebeln' },
-    { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse' },
-    { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln' },
-    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
-    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes', weekend: true },
-    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes' },
-    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes' },
-    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes' },
-    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes' },
-    { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße' },
-    { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße' },
-    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes' },
+    { id: 'k0-steak', name: 'Steak Kebap', price: 10.0, desc: 'Steak Fleisch, Knoblauchsoße, Salat und Zwiebeln', weekend: true, alg: 'a,i,e' },
+    { id: 'k1', name: 'Kalb Kebap', price: 8.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln', alg: 'a,i,15' },
+    { id: 'k2', name: 'Kebap Spezial Weichkäse', price: 8.5, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln, Weichkäse in Salzlake', alg: 'a,i,15' },
+    { id: 'k3', name: 'Kebap Hollandaise Soße', price: 8.5, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Salat, Zwiebeln', alg: 'a,i,15' },
+    { id: 'k4', name: 'Bodrum Gemüse Kebap', price: 9.0, desc: 'Fritiertes Gemüse, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln', alg: 'a,e,i,15' },
+    { id: 'k5', name: 'Jumbo Kebap', price: 9.0, desc: 'Extra Portion Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln', alg: 'a,i,15' },
+    { id: 'k6', name: 'Kebap Box', price: 8.0, desc: 'Fleisch vom Drehspieß, Pommes und Knoblauchsoße', alg: 'a,i,15' },
+    { id: 'k7', name: 'Vegetarische Tasche', price: 7.0, desc: 'Brot mit Salat, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake', alg: 'a,i' },
+    { id: 'k8', name: 'Dürüm Kebap', price: 9.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße und Zwiebeln', alg: 'a,i,15' },
+    { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse', alg: 'a,e,i,15' },
+    { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln', alg: 'a,i' },
+    { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln', alg: 'a,i,15' },
+    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes', weekend: true, alg: 'a,i,e' },
+    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes', alg: 'a,i,15' },
+    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes', alg: 'a,i,15' },
+    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes', alg: 'a,e,i,15' },
+    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes', alg: 'a,i,15' },
+    { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße', alg: 'a,c,g,i' },
+    { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße', alg: 'a,c,g,i' },
+    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes', alg: 'a,c,g,i' },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
-    { id: 'custom-pizza', name: 'Baue deine eigene Pizza 🎨', price: 8.0, desc: 'Tomatensoße inklusive — wähle deine Beläge', customPizza: true, img: PIZZA_KAESE_IMG },
-    { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0 },
-    { id: 'p25', name: 'Pizza Salami', priceSmall: 8.0, priceLarge: 9.0 },
-    { id: 'p26', name: 'Pizza Schinken', priceSmall: 8.0, priceLarge: 9.0 },
-    { id: 'p27', name: 'Pizza Kebap', priceSmall: 8.0, priceLarge: 9.0 },
-    { id: 'p28', name: 'Pizza Kebap Hollandaise', priceSmall: 9.0, priceLarge: 10.0 },
-    { id: 'p29', name: 'Pizza Bodrum', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln, Jalapeños und Hollandaise Soße' },
-    { id: 'p30', name: 'Pizza Rastaa', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Mais und Peperoni, Hollandaise Soße' },
-    { id: 'p31', name: 'Pizza Oldenburger Münsterland', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais und Hollandaise Soße' },
-    { id: 'p32', name: 'Pizza Thunfisch', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mit Zwiebeln' },
-    { id: 'p33', name: 'Pizza Steak', priceSmall: 9.0, priceLarge: 10.0, weekend: true },
-    { id: 'p34', name: 'Pizza Hawaii', priceSmall: 9.0, priceLarge: 10.0, desc: 'Putenschinken und Ananas' },
-    { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0, desc: 'Rindersalami, Putenschinken, Pilzen und Ei' },
-    { id: 'p36', name: 'Pizza Sucuk', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit türkischer Knoblauchwurst' },
-    { id: 'p37', name: 'Pizza Spezial', priceSmall: 8.5, priceLarge: 9.5, desc: 'Thunfisch, Putenschinken, Ananas und Pilzen' },
-    { id: 'p38', name: 'Pizza Vechta', priceSmall: 10.5, priceLarge: 11.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Zwiebeln, Paprika, Hollandaise Soße, Weichkäse in Salzlake' },
-    { id: 'p39', name: 'Pizza Deutschland', priceSmall: 9.5, priceLarge: 10.5, desc: 'Fleisch vom Drehspieß und Paprika' },
-    { id: 'p40', name: 'Pizza Spinat', priceSmall: 8.5, priceLarge: 9.5, desc: 'Knoblauch und Weichkäse in Salzlake' },
-    { id: 'p41', name: 'Pizza Vegetarisch', priceSmall: 8.0, priceLarge: 9.0, desc: 'Pilzen, Brokkoli, Paprika und Mais' },
-    { id: 'p42', name: 'Pizza Mozzarella', priceSmall: 8.5, priceLarge: 9.5, desc: 'Frische Tomaten und Mozzarella' },
-    { id: 'p43', name: 'Pizza Taverna', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Ei' },
-    { id: 'p44', name: 'Pizza Krabben', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch' },
-    { id: 'p45', name: 'Pizza Meeresfrüchte', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch' },
-    { id: 'p46', name: 'Pizza QuattroStagioni', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Paprika' },
-    { id: 'p47', name: 'Pizza Vier Käse', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mozzarella, Gorgonzola und Weichkäse' },
-    { id: 'p48', name: 'Pizza Bolognese', priceSmall: 8.0, priceLarge: 9.0, desc: 'Mit Fleischsoße' },
-    { id: 'p49', name: 'Pizza Brokoli', priceSmall: 8.0, priceLarge: 9.0 },
-    { id: 'p52', name: 'Pizza Oythe', priceSmall: 9.5, priceLarge: 10.5, desc: 'Krabben, Putenschinken, Knoblauch' },
-    { id: 'p53', name: 'Pizza Italia', priceSmall: 9.5, priceLarge: 10.5, desc: 'Brokkoli, Pilzen, Zwiebeln und Weichkäse in Salzlake' },
-    { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni' },
+    { id: 'custom-pizza', name: 'Baue deine eigene Pizza 🎨', price: 8.0, desc: 'Tomatensoße inklusive — wähle deine Beläge', customPizza: true },
+    { id: 'p24', name: 'Pizza Margherita', priceSmall: 7.0, priceLarge: 8.0, alg: 'a,i,e' },
+    { id: 'p25', name: 'Pizza Salami', priceSmall: 8.0, priceLarge: 9.0, alg: 'a,i,e,13' },
+    { id: 'p26', name: 'Pizza Schinken', priceSmall: 8.0, priceLarge: 9.0, alg: 'a,i,e,13' },
+    { id: 'p27', name: 'Pizza Kebap', priceSmall: 8.0, priceLarge: 9.0, alg: 'a,i,e,15' },
+    { id: 'p28', name: 'Pizza Kebap Hollandaise', priceSmall: 9.0, priceLarge: 10.0, alg: 'a,i,e,15' },
+    { id: 'p29', name: 'Pizza Bodrum', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln, Jalapeños und Hollandaise Soße', alg: 'a,i,e,15' },
+    { id: 'p30', name: 'Pizza Rastaa', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Mais und Peperoni, Hollandaise Soße', alg: 'a,i,e,15' },
+    { id: 'p31', name: 'Pizza Oldenburger Münsterland', priceSmall: 10.0, priceLarge: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais und Hollandaise Soße', alg: 'a,i,e,15' },
+    { id: 'p32', name: 'Pizza Thunfisch', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mit Zwiebeln', alg: 'a,i,e,j' },
+    { id: 'p33', name: 'Pizza Steak', priceSmall: 9.0, priceLarge: 10.0, weekend: true, alg: 'a,i,e' },
+    { id: 'p34', name: 'Pizza Hawaii', priceSmall: 9.0, priceLarge: 10.0, desc: 'Putenschinken und Ananas', alg: 'a,i,e,13' },
+    { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0, desc: 'Rindersalami, Putenschinken, Pilzen und Ei', alg: 'a,i,e,13' },
+    { id: 'p36', name: 'Pizza Sucuk', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit türkischer Knoblauchwurst', alg: 'a,i,e,13' },
+    { id: 'p37', name: 'Pizza Spezial', priceSmall: 8.5, priceLarge: 9.5, desc: 'Thunfisch, Putenschinken, Ananas und Pilzen', alg: 'a,e,i,j,13' },
+    { id: 'p38', name: 'Pizza Vechta', priceSmall: 10.5, priceLarge: 11.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Zwiebeln, Paprika, Hollandaise Soße, Weichkäse in Salzlake', alg: 'a,i,e,15' },
+    { id: 'p39', name: 'Pizza Deutschland', priceSmall: 9.5, priceLarge: 10.5, desc: 'Fleisch vom Drehspieß und Paprika', alg: 'a,i,e,15' },
+    { id: 'p40', name: 'Pizza Spinat', priceSmall: 8.5, priceLarge: 9.5, desc: 'Knoblauch und Weichkäse in Salzlake', alg: 'a,i,e' },
+    { id: 'p41', name: 'Pizza Vegetarisch', priceSmall: 8.0, priceLarge: 9.0, desc: 'Pilzen, Brokkoli, Paprika und Mais', alg: 'a,i,e' },
+    { id: 'p42', name: 'Pizza Mozzarella', priceSmall: 8.5, priceLarge: 9.5, desc: 'Frische Tomaten und Mozzarella', alg: 'a,i,e,13' },
+    { id: 'p43', name: 'Pizza Taverna', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Ei', alg: 'a,i,e,13' },
+    { id: 'p44', name: 'Pizza Krabben', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch', alg: 'a,i,e,d' },
+    { id: 'p45', name: 'Pizza Meeresfrüchte', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch', alg: 'a,i,e,d,j' },
+    { id: 'p46', name: 'Pizza QuattroStagioni', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Paprika', alg: 'a,i,e,13' },
+    { id: 'p47', name: 'Pizza Vier Käse', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mozzarella, Gorgonzola und Weichkäse', alg: 'a,g,i' },
+    { id: 'p48', name: 'Pizza Bolognese', priceSmall: 8.0, priceLarge: 9.0, desc: 'Mit Fleischsoße', alg: 'a,i,e' },
+    { id: 'p49', name: 'Pizza Brokoli', priceSmall: 8.0, priceLarge: 9.0, alg: 'a,i,e' },
+    { id: 'p52', name: 'Pizza Oythe', priceSmall: 9.5, priceLarge: 10.5, desc: 'Krabben, Putenschinken, Knoblauch', alg: 'a,i,e,d' },
+    { id: 'p53', name: 'Pizza Italia', priceSmall: 9.5, priceLarge: 10.5, desc: 'Brokkoli, Pilzen, Zwiebeln und Weichkäse in Salzlake', alg: 'a,i,e' },
+    { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni', alg: 'a,i,e,13' },
   ]},
   { key: 'pizzabrot', label: 'Pizzabrot & Brötchen', items: [
-    { id: 'p56', name: 'Pizzabrot', price: 4.5 },
-    { id: 'p57', name: 'Pizzabrot mit Käse', price: 5.5 },
-    { id: 'p58', name: 'Pizzabrot mit Knoblauch', price: 5.5 },
-    { id: 'p59', name: 'Pizzabrot mit Kräuterbutter', price: 5.5 },
-    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive' },
-    { id: 'p61', name: 'Pizzabrötchen mit Fleisch', price: 8.0, desc: 'Gratis Dip inklusive' },
-    { id: 'p62', name: 'Pizzabrötchen mit Salami', price: 8.0, desc: 'Gratis Dip inklusive' },
-    { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0, desc: 'Gratis Dip inklusive' },
+    { id: 'p56', name: 'Pizzabrot', price: 4.5, alg: 'a,i,e' },
+    { id: 'p57', name: 'Pizzabrot mit Käse', price: 5.5, alg: 'a,i,e' },
+    { id: 'p58', name: 'Pizzabrot mit Knoblauch', price: 5.5, alg: 'a,i,e' },
+    { id: 'p59', name: 'Pizzabrot mit Kräuterbutter', price: 5.5, alg: 'a,i,e,d' },
+    { id: 'p60', name: 'Pizzabrötchen mit Käse', price: 7.0, desc: 'Gratis Dip inklusive', sauceChoice: true, alg: 'a,i,e' },
+    { id: 'p61', name: 'Pizzabrötchen mit Fleisch', price: 8.0, desc: 'Gratis Dip inklusive', sauceChoice: true, alg: 'a,i,e' },
+    { id: 'p62', name: 'Pizzabrötchen mit Salami', price: 8.0, desc: 'Gratis Dip inklusive', sauceChoice: true, alg: 'a,i,e,13' },
+    { id: 'p63', name: 'Pizzabrötchen mit Thunfisch', price: 8.0, desc: 'Gratis Dip inklusive', sauceChoice: true, alg: 'a,i,e,j' },
   ]},
   { key: 'calzone', label: 'Calzone', items: [
-    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true },
-    { id: 'c79', name: 'Calzone Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake' },
-    { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Zwiebeln, Jalapeños und Weichkäse in Salzlake' },
-    { id: 'c81', name: 'Calzone Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
-    { id: 'c82', name: 'Calzone Vegetarisch', price: 9.5, desc: 'Paprika, Pilzen, Brokoli, Mais und Weichkäse' },
-    { id: 'c83', name: 'Calzone Gourmet', price: 10.0, desc: 'Rindersalami, Schinken und Pilzen' },
-    { id: 'c84', name: 'Calzone Hawaii', price: 9.5, desc: 'Putenschinken und Ananas' },
+    { id: 'c78', name: 'Calzone Steak', price: 12.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse', weekend: true, alg: 'a,i,e' },
+    { id: 'c79', name: 'Calzone Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Zwiebeln und Weichkäse in Salzlake', alg: 'a,i,e,15' },
+    { id: 'c80', name: 'Calzone Bodrum Hollandaise', price: 11.0, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Zwiebeln, Jalapeños und Weichkäse in Salzlake', alg: 'a,i,e,15' },
+    { id: 'c81', name: 'Calzone Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln', alg: 'a,i,e,j' },
+    { id: 'c82', name: 'Calzone Vegetarisch', price: 9.5, desc: 'Paprika, Pilzen, Brokoli, Mais und Weichkäse', alg: 'a,i,e' },
+    { id: 'c83', name: 'Calzone Gourmet', price: 10.0, desc: 'Rindersalami, Schinken und Pilzen', alg: 'a,i,e,13' },
+    { id: 'c84', name: 'Calzone Hawaii', price: 9.5, desc: 'Putenschinken und Ananas', alg: 'a,i,e,13' },
   ]},
   { key: 'baguette', label: 'Baguette', items: [
     { id: 'b114', name: 'Baguette Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Pilzen, Zwiebeln, Käse, Salat, Tomaten, Gurken' },
@@ -562,62 +573,63 @@ const MENU = [
     { id: 'b120', name: 'Baguette Vegetarisch', price: 9.0, desc: 'Pilzen, Paprika, Mais, Käse, Salat, Tomaten und Gurken' },
   ]},
   { key: 'ueberbacken', label: 'Kebap überbacken', items: [
-    { id: 'u130', name: 'Hähnchen überbacken', price: 11.0, desc: 'Gebratenes Hähnchen, Sahnesoße, Paprika und Pilzen' },
-    { id: 'u131', name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße' },
-    { id: 'u132', name: 'Kebap überbacken Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Pilzen und Sahnesoße' },
-    { id: 'u133', name: 'Kebap Hawaii überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße und Ananas' },
-    { id: 'u134', name: 'Kebap Spezial überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, Brokoli, Pilzen und Weichkäse' },
-    { id: 'u135', name: 'Kebap Hollandaise überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomaten, Paprika und Pilzen' },
-    { id: 'u136', name: 'Kebap Vechta überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais, Brokoli und Sahnesoße' },
+    { id: 'u129-steak', name: 'Steak Döner überbacken', price: 14.0, desc: 'Steak Döner, Tomatensoße, mit Knoblauch, Paprika und Zwiebeln', weekend: true, alg: 'a,i,e' },
+    { id: 'u130', name: 'Hähnchen überbacken', price: 11.0, desc: 'Gebratenes Hähnchen, Sahnesoße, Paprika und Pilzen', alg: 'a,i,14' },
+    { id: 'u131', name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße', alg: 'a,i,15' },
+    { id: 'u132', name: 'Kebap überbacken Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Pilzen und Sahnesoße', alg: 'a,i,15' },
+    { id: 'u133', name: 'Kebap Hawaii überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße und Ananas', alg: 'a,e,i,13' },
+    { id: 'u134', name: 'Kebap Spezial überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, Brokoli, Pilzen und Weichkäse', alg: 'a,i,15' },
+    { id: 'u135', name: 'Kebap Hollandaise überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Tomaten, Paprika und Pilzen', alg: 'a,e,i,15' },
+    { id: 'u136', name: 'Kebap Vechta überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Mais, Brokoli und Sahnesoße', alg: 'a,i,15' },
   ]},
   { key: 'rollo', label: 'Rollo überbacken', items: [
-    { id: 'r146', name: 'Rollo Steak', price: 12.0, desc: 'Steak Fleisch, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat', weekend: true },
-    { id: 'r147', name: 'Rollo Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat' },
-    { id: 'r148', name: 'Rollo Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Hollandaise Soße, mit kleinem Beilagensalat' },
-    { id: 'r149', name: 'Rollo Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln' },
-    { id: 'r150', name: 'Rollo Hawaii', price: 10.0, desc: 'Putenschinken und Ananas' },
-    { id: 'r153', name: 'Rollo Spezial', price: 10.0, desc: 'Rindersalami, Putenschinken und Pilzen' },
+    { id: 'r146', name: 'Rollo Steak', price: 12.0, desc: 'Steak Fleisch, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat', weekend: true, alg: 'a,e,i,15' },
+    { id: 'r147', name: 'Rollo Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Knoblauchsoße, mit kleinem Beilagensalat', alg: 'a,e,i,15' },
+    { id: 'r148', name: 'Rollo Bodrum', price: 11.0, desc: 'Fleisch vom Drehspieß, Zwiebeln und Hollandaise Soße, mit kleinem Beilagensalat', alg: 'a,e,i,15' },
+    { id: 'r149', name: 'Rollo Thunfisch', price: 10.0, desc: 'Thunfisch und Zwiebeln', alg: 'a,e,i,j' },
+    { id: 'r150', name: 'Rollo Hawaii', price: 10.0, desc: 'Putenschinken und Ananas', alg: 'a,e,i,13' },
+    { id: 'r153', name: 'Rollo Spezial', price: 10.0, desc: 'Rindersalami, Putenschinken und Pilzen', alg: 'a,e,i,13' },
   ]},
   { key: 'nudeln', label: 'Nudeln', items: [
-    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Mit Tomatensoße' },
-    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Mit Fleischsoße' },
-    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße' },
-    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
-    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Brokkoli, Pilzen, Paprika, Tomatensoße' },
-    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse' },
-    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße' },
-    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken' },
-    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat' },
-    { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
-    { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat' },
-    { id: 'n168', name: 'Balkan Spirit', price: 10.0, desc: 'Hähnchenbrust in Paprika-Auberginen-Soße, serviert mit Kurkuma-Penne & Marktsalat' },
-    { id: 'n169', name: 'Soja Salsa', price: 11.0, desc: 'Hähnchenbrust mit Paprika & Pilzen in Sojasoße, serviert mit Kurkuma-Penne & Marktsalat' },
+    { id: 'n157', name: 'Spaghetti Pomodoro', price: 7.5, desc: 'Mit Tomatensoße', alg: 'a' },
+    { id: 'n158', name: 'Spaghetti Bolognese', price: 8.0, desc: 'Mit Fleischsoße', alg: 'a' },
+    { id: 'n159', name: 'Spaghetti Carbonara', price: 8.5, desc: 'Putenschinken, Ei und Sahnesoße', alg: 'a,c,j,2,3,7' },
+    { id: 'n160', name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße', alg: 'a,j,2,3,4,7' },
+    { id: 'n161', name: 'Makkaroni Vegetaria', price: 8.5, desc: 'Brokkoli, Pilzen, Paprika, Tomatensoße', alg: 'a' },
+    { id: 'n162', name: 'Makkaroni Kebap', price: 9.0, desc: 'Fleisch vom Drehspieß, Tomatensoße, überbacken mit Käse', alg: 'a,j,2,3,4,7' },
+    { id: 'n163', name: 'Makkaroni Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli, Pilzen und Sahnesoße', alg: 'a,j,2,3,4,7' },
+    { id: 'n164', name: 'Makkaroni Al Forno', price: 9.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Mais und Sahnesoße, mit Käse überbacken', alg: 'a,j,2,3,4,7' },
+    { id: 'n165', name: 'Alpine Pesto', price: 10.0, desc: 'Hähnchenbrust in Sahnesoße mit Berg-Thymian, serviert mit Kurkuma-Penne & Marktsalat', alg: 'a,i,1' },
+    { id: 'n166', name: 'Curry-Madras', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Curry-Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat', alg: 'a,i,1,4' },
+    { id: 'n167', name: 'Fungi di Roma', price: 10.0, desc: 'Hähnchenbrust mit Pilzen in Sahnesoße, serviert mit Kurkuma-Penne & Marktsalat', alg: 'a,i,1,4' },
+    { id: 'n168', name: 'Balkan Spirit', price: 10.0, desc: 'Hähnchenbrust in Paprika-Auberginen-Soße, serviert mit Kurkuma-Penne & Marktsalat', alg: 'a,i,1,4' },
+    { id: 'n169', name: 'Soja Salsa', price: 11.0, desc: 'Hähnchenbrust mit Paprika & Pilzen in Sojasoße, serviert mit Kurkuma-Penne & Marktsalat', alg: 'a,i,h,1,4' },
   ]},
   { key: 'schnitzel', label: 'Schnitzel', items: [
-    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes' },
-    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes' },
-    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes' },
-    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes' },
-    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes, überbacken mit Käse' },
-    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes' },
-    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes, überbacken mit Käse und Salat' },
-    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes' },
+    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', alg: 'a,e,i,14' },
+    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes', alg: 'a,e,i,14' },
+    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes', alg: 'a,e,i,14' },
+    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes', alg: 'a,e,i,14' },
+    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes, überbacken mit Käse', alg: 'a,e,i,13,14' },
+    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes', alg: 'a,e,i,14' },
+    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes, überbacken mit Käse und Salat', alg: 'a,e,i,14' },
+    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes', alg: 'a,e,i,14' },
   ]},
   { key: 'salat', label: 'Salat', items: [
-    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse' },
-    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse' },
-    { id: 'sa97', name: 'Thunfisch Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Thunfisch und Zwiebeln' },
-    { id: 'sa98', name: 'Mais Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Zwiebeln und Mais' },
-    { id: 'sa100', name: 'Mozzarella Salat', price: 8.0, desc: 'Grüner Salat, Tomaten und Mozzarella' },
-    { id: 'sa101', name: 'Bodrum Salat', price: 9.5, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Mais, Weißkohl, Thunfisch, Putenschinken, Paprika und Weichkäse in Salzlake' },
-    { id: 'sa102', name: 'Kebap Salat', price: 9.0, desc: 'Fleisch vom Drehspieß, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl' },
-    { id: 'sa104', name: 'Hähnchen Salat', price: 9.0, desc: 'Gebratenes Hähnchen, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl' },
+    { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse', alg: 'a,i,13' },
+    { id: 'sa96', name: 'Bauern Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken und Weichkäse', alg: 'i' },
+    { id: 'sa97', name: 'Thunfisch Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Thunfisch und Zwiebeln', alg: 'i,j' },
+    { id: 'sa98', name: 'Mais Salat', price: 7.0, desc: 'Grüner Salat, Tomaten, Gurken, Weißkohl, Zwiebeln und Mais', alg: 'i' },
+    { id: 'sa100', name: 'Mozzarella Salat', price: 8.0, desc: 'Grüner Salat, Tomaten und Mozzarella', alg: 'i,13' },
+    { id: 'sa101', name: 'Bodrum Salat', price: 9.5, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Mais, Weißkohl, Thunfisch, Putenschinken, Paprika und Weichkäse in Salzlake', alg: 'i,15' },
+    { id: 'sa102', name: 'Kebap Salat', price: 9.0, desc: 'Fleisch vom Drehspieß, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl', alg: 'i,15' },
+    { id: 'sa104', name: 'Hähnchen Salat', price: 9.0, desc: 'Gebratenes Hähnchen, grüner Salat, Tomaten, Gurken, Zwiebeln und Weißkohl', alg: 'i,15' },
   ]},
   { key: 'finger', label: 'Finger Food', items: [
-    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück' },
-    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück' },
-    { id: 'f203', name: 'Pommes Frites', price: 3.5 },
-    { id: 'f204a', name: 'Portion Knoblauchsauce', price: 2.0 },
+    { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, desc: '5 Stück', alg: 'a,b,e,g,i,2,3,4' },
+    { id: 'f202', name: 'Nuggets (7 Stück)', price: 5.0, desc: '7 Stück', alg: 'a,b,e,g,i,2,3,4' },
+    { id: 'f203', name: 'Pommes Frites', price: 3.5, alg: '4' },
+    { id: 'f204a', name: 'Portion Knoblauchsauce', price: 2.0, alg: 'c,e,g,2,3' },
     { id: 'f204b', name: 'Portion Cocktailsauce', price: 2.0 },
     { id: 'f204c', name: 'Portion Ketchup', price: 1.0 },
     { id: 'f204d', name: 'Portion Mayonnaise', price: 1.0 },
@@ -651,6 +663,39 @@ const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+const ALLERGEN_LEGEND = {
+  a: { de: 'Glutenhaltiges Getreide', en: 'Gluten-containing cereals', tr: 'Glüten içeren tahıllar', ro: 'Cereale cu gluten', nl: 'Glutenbevattende granen' },
+  b: { de: 'Sellerie', en: 'Celery', tr: 'Kereviz', ro: 'Țelină', nl: 'Selderij' },
+  c: { de: 'Erdnüsse', en: 'Peanuts', tr: 'Yer fıstığı', ro: 'Arahide', nl: 'Pinda\'s' },
+  d: { de: 'Sesamsamen', en: 'Sesame seeds', tr: 'Susam tohumu', ro: 'Semințe de susan', nl: 'Sesamzaad' },
+  e: { de: 'Eier', en: 'Eggs', tr: 'Yumurta', ro: 'Ouă', nl: 'Eieren' },
+  f: { de: 'Krebstiere', en: 'Crustaceans', tr: 'Kabuklu deniz hayvanları', ro: 'Crustacee', nl: 'Schaaldieren' },
+  g: { de: 'Schalenfrüchte', en: 'Tree nuts', tr: 'Kabuklu yemişler', ro: 'Fructe cu coajă', nl: 'Noten' },
+  h: { de: 'Soja', en: 'Soy', tr: 'Soya', ro: 'Soia', nl: 'Soja' },
+  i: { de: 'Milch', en: 'Milk', tr: 'Süt', ro: 'Lapte', nl: 'Melk' },
+  j: { de: 'Fisch', en: 'Fish', tr: 'Balık', ro: 'Pește', nl: 'Vis' },
+  k: { de: 'Senf', en: 'Mustard', tr: 'Hardal', ro: 'Muștar', nl: 'Mosterd' },
+  l: { de: 'Schwefeldioxid/Sulphite', en: 'Sulphur dioxide/sulphites', tr: 'Kükürt dioksit/sülfit', ro: 'Dioxid de sulf/sulfiți', nl: 'Zwaveldioxide/sulfieten' },
+  m: { de: 'Lupine', en: 'Lupin', tr: 'Acı bakla', ro: 'Lupin', nl: 'Lupine' },
+  n: { de: 'Weichtiere', en: 'Molluscs', tr: 'Yumuşakçalar', ro: 'Moluște', nl: 'Weekdieren' },
+};
+const ZUSATZ_LEGEND = {
+  1: { de: 'Farbstoffe', en: 'Colourings', tr: 'Renklendirici', ro: 'Coloranți', nl: 'Kleurstoffen' },
+  2: { de: 'Konservierungsstoffe', en: 'Preservatives', tr: 'Koruyucu', ro: 'Conservanți', nl: 'Conserveringsmiddelen' },
+  3: { de: 'Antioxidationsmittel', en: 'Antioxidants', tr: 'Antioksidan', ro: 'Antioxidanți', nl: 'Antioxidanten' },
+  4: { de: 'Geschmacksverstärker', en: 'Flavour enhancers', tr: 'Lezzet arttırıcı', ro: 'Amplificatori de aromă', nl: 'Smaakversterkers' },
+  5: { de: 'Geschwefelt', en: 'Sulphured', tr: 'Kükürtlenmiş', ro: 'Sulfurat', nl: 'Gezwaveld' },
+  6: { de: 'Geschwärzt', en: 'Blackened (olives)', tr: 'Karartılmış (zeytin)', ro: 'Înnegrit (măsline)', nl: 'Zwart gemaakt (olijven)' },
+  7: { de: 'Phosphat', en: 'Phosphate', tr: 'Fosfat', ro: 'Fosfat', nl: 'Fosfaat' },
+  8: { de: 'Unter Schutzatmosphäre verpackt', en: 'Packaged under protective atmosphere', tr: 'Koruyucu atmosferde paketlenmiş', ro: 'Ambalat în atmosferă protectoare', nl: 'Verpakt onder beschermende atmosfeer' },
+  9: { de: 'Gewachst', en: 'Waxed', tr: 'Mumlanmış', ro: 'Cerat', nl: 'Gewaxt' },
+  10: { de: 'Mit Süßungsmittel', en: 'With sweetener', tr: 'Tatlandırıcılı', ro: 'Cu îndulcitor', nl: 'Met zoetstof' },
+  11: { de: 'Koffeinhaltig', en: 'Contains caffeine', tr: 'Kafein içerir', ro: 'Conține cofeină', nl: 'Bevat cafeïne' },
+  12: { de: 'Chininhaltig', en: 'Contains quinine', tr: 'Kinin içerir', ro: 'Conține chinină', nl: 'Bevat kinine' },
+  13: { de: 'Rindersalami mit Konservierungs- & Antioxidationsmitteln, Farbstoffen', en: 'Beef salami with preservatives, antioxidants, colourings', tr: 'Koruyucu, antioksidan ve renklendirici içeren dana salam', ro: 'Salam de vită cu conservanți, antioxidanți, coloranți', nl: 'Runderworst met conserverings-, antioxidatie- en kleurstoffen' },
+  14: { de: 'Schnitzel aus Geflügelfleisch (Putenformschnitzel)', en: 'Schnitzel made from poultry (formed turkey schnitzel)', tr: 'Kanatlı etinden şnitzel (hindi form şnitzel)', ro: 'Șnițel din carne de pasăre (curcan presat)', nl: 'Schnitzel van gevogelte (kalkoenvormschnitzel)' },
+  15: { de: 'Mit Hähnchenseparatorenfleisch', en: 'With mechanically separated chicken meat', tr: 'Mekanik ayrılmış tavuk eti içerir', ro: 'Cu carne de pui separată mecanic', nl: 'Met machinaal ontbeend kippenvlees' },
+};
 function isWeekendDay() { const d = new Date().getDay(); return d === 0 || d === 5 || d === 6; }
 function isLunchWindowNow() {
   const now = new Date();
@@ -786,7 +831,7 @@ const UPSELL_FOOD = [
   { id: 'f204d', name: 'Mayonnaise', price: 1.0, emoji: '🥫' },
   { id: 'f204e', name: 'Hollandaise Sauce', price: 2.5, emoji: '🧈' },
 ];
-const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤' }));
+const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤', img: d.img, imgContain: d.imgContain }));
 const UPSELL_ITEMS = [...UPSELL_FOOD, ...UPSELL_DRINKS];
 
 function UpsellStrip({ addItem }) {
@@ -1167,11 +1212,11 @@ function useLiveClock() {
 
 function getOpenStatus(now) {
   const day = now.getDay(); // 0 Sun ... 2 Tue
-  if (day === 2) return { open: false, label: 'Geschlossen · Ruhetag', next: 'Öffnet morgen um 11:30 Uhr' };
+  if (day === 2) return { open: false, labelKey: 'statusClosedRestDay' };
   const h = now.getHours() + now.getMinutes() / 60;
-  if (h >= 11.5 && h < 22) return { open: true, label: 'Jetzt geöffnet', next: `Bis 22:00 Uhr` };
-  if (h < 11.5) return { open: false, label: 'Noch geschlossen', next: 'Öffnet heute um 11:30 Uhr' };
-  return { open: false, label: 'Geschlossen', next: 'Öffnet morgen um 11:30 Uhr' };
+  if (h >= 11.5 && h < 22) return { open: true, labelKey: 'statusOpenNow' };
+  if (h < 11.5) return { open: false, labelKey: 'statusNotYetOpen' };
+  return { open: false, labelKey: 'statusClosed' };
 }
 
 function getGreeting(now) {
@@ -1342,16 +1387,9 @@ const LUNCH_DRINKS = ['Coca-Cola', 'Coca-Cola Zero', 'Fanta', 'Uludağ Gazoz', '
 function DailySpecialCard({ item, isLunchWindow, go }) {
   const { lang, t } = React.useContext(LangContext);
   const displayPrice = isLunchWindow ? 9.5 : item.price;
-  const [showDrinkPicker, setShowDrinkPicker] = useState(false);
-  const [drink, setDrink] = useState(null);
 
   const orderNow = () => {
-    if (isLunchWindow) { setDrink(null); setShowDrinkPicker(true); return; }
     go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
-  };
-  const confirmLunchCombo = () => {
-    setShowDrinkPicker(false);
-    go('whatsapp', { pendingCombo: { title: `${item.name} + Dose Getränk (${drink})`, price: 9.5 } });
   };
 
   return (
@@ -1368,21 +1406,6 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
           <button onClick={orderNow} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('orderNow')} →</button>
         </div>
       </div>
-      {showDrinkPicker && (
-        <ConfigModal onClose={() => setShowDrinkPicker(false)}>
-          <div className="p-5">
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="font-black text-lg" style={{ color: GREEN }}>{t('lunchComboTitle')}</h3>
-              <button onClick={() => setShowDrinkPicker(false)} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
-            </div>
-            <p className="text-sm mb-4" style={{ color: '#7c6d55' }}>{t('lunchComboSub')}</p>
-            <div className="flex flex-col gap-2 mb-5">
-              {LUNCH_DRINKS.map((d) => (<OptionCard key={d} selected={drink === d} onClick={() => setDrink(d)}><span className="font-bold text-sm">{mx(d, lang)}</span></OptionCard>))}
-            </div>
-            <button onClick={confirmLunchCombo} disabled={!drink} className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('lunchComboConfirm')} · {fmt(9.5)}</button>
-          </div>
-        </ConfigModal>
-      )}
     </div>
   );
 }
@@ -1472,7 +1495,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   return (
     <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .5s cubic-bezier(.22,1,.36,1)' }}>
       <style>{`
-        @keyframes pageFade { from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
+        @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes popIn { 0%{ opacity:0; transform:scale(.6) rotate(-8deg);} 60%{ opacity:1; transform:scale(1.08) rotate(3deg);} 100%{ opacity:1; transform:scale(1) rotate(0deg);} }
         @keyframes cardIn { from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
@@ -1533,7 +1556,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
             <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: status.open ? 'rgba(255,246,234,.08)' : 'rgba(214,40,40,.16)' }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#ff4d4d', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
-              <span className="text-[10.5px] font-black" style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{status.label}</span>
+              <span className="text-[10.5px] font-black" style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}</span>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
@@ -1549,22 +1572,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
             </a>
-            {cartCount > 0 && (
-              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-11 h-11 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 4px 14px rgba(21,56,38,.4)', animation: 'cartBadgePulse 1.8s ease-in-out infinite' }}>
-                <ShoppingBag size={20} color="#fff" strokeWidth={2.5} />
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[11px] font-black text-white" style={{ background: CHILI, border: '2px solid ' + CREAM }}>{cartCount}</span>
-              </button>
-            )}
             <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
-            {cartCount > 0 && (
-              <button onClick={() => go('whatsapp', { openCart: true })} className="relative w-11 h-11 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 4px 14px rgba(21,56,38,.4)', animation: 'cartBadgePulse 1.8s ease-in-out infinite' }}>
-                <ShoppingBag size={20} color="#fff" strokeWidth={2.5} />
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[11px] font-black text-white" style={{ background: CHILI, border: '2px solid ' + CREAM }}>{cartCount}</span>
-              </button>
-            )}
             <button onClick={() => setNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
               {navOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
             </button>
@@ -1585,6 +1596,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         )}
       </header>
+      <MittagsBanner />
 
       {/* HERO */}
       <section className="relative overflow-hidden">
@@ -1617,6 +1629,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex flex-wrap gap-2.5 mt-3">
               <button onClick={() => go('loyalty')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎟️ {t('featLoyaltyTitle')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
+              {installPrompt && (
+                <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
+              )}
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
@@ -1632,7 +1647,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
       {/* DAILY SPECIAL */}
       <DailySpecial go={go} />
-      <MittagsBanner />
 
       {/* TESTIMONIALS */}
       <Testimonials />
@@ -1794,6 +1808,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
 
   const [cartPop, setCartPop] = useState(0);
   const [lunchPending, setLunchPending] = useState(null);
+  const [weekendWarnOpen, setWeekendWarnOpen] = useState(false);
+  const [sauceSel, setSauceSel] = useState({});
+  const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
     if (!lunchPending || !lunchDrink) return;
@@ -1850,7 +1867,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const activeCategory = MENU.find((m) => m.key === tab);
 
   return (
-    <div className="pb-24">
+    <div className="pb-32">
       <CartPopEmoji trigger={cartPop} />
       {lunchPending && (
         <ConfigModal onClose={() => setLunchPending(null)}>
@@ -1864,6 +1881,16 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               {LUNCH_DRINKS.map((d) => (<OptionCard key={d} selected={lunchDrink === d} onClick={() => setLunchDrink(d)}><span className="font-bold text-sm">{mx(d, lang)}</span></OptionCard>))}
             </div>
             <button onClick={confirmLunchAdd} disabled={!lunchDrink} className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('lunchComboConfirm')} · {fmt(9.5)}</button>
+          </div>
+        </ConfigModal>
+      )}
+      {weekendWarnOpen && (
+        <ConfigModal onClose={() => setWeekendWarnOpen(false)}>
+          <div className="p-6 text-center">
+            <div className="text-5xl mb-3" style={{ animation: 'sadBounce 1.2s ease-in-out infinite' }}>😔</div>
+            <h3 className="font-black text-lg mb-2" style={{ color: GREEN }}>{t('weekendWarnTitle')}</h3>
+            <p className="text-sm mb-6" style={{ color: '#7c6d55' }}>{t('weekendItemOnly')}</p>
+            <button onClick={() => setWeekendWarnOpen(false)} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('installHelpClose')}</button>
           </div>
         </ConfigModal>
       )}
@@ -1888,7 +1915,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
 
       {CATEGORY_IMAGES[tab] && (
         <div className="px-5 pt-2">
-          <div className="rounded-2xl overflow-hidden relative h-28" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+          <div className="rounded-2xl overflow-hidden relative h-40" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
             <img key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
             <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
               <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
@@ -1896,6 +1923,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           </div>
         </div>
       )}
+      <div className="px-5 pt-2 flex justify-end">
+        <button onClick={() => setAllergenLegendOpen(true)} className="text-[11px] font-bold underline" style={{ color: '#a4906c' }}>{t('allergenInfoBtn')}</button>
+      </div>
+      {allergenLegendOpen && <AllergenLegendModal onClose={() => setAllergenLegendOpen(false)} />}
       <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
         {activeCategory.items.map((item) => {
           if (item.priceSmall !== undefined) {
@@ -1914,7 +1945,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
             const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-            const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+            const openFor = () => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
@@ -1940,7 +1971,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                   {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
                   <div className="p-3.5">
-                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
                     {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
                     <div className="text-xs font-bold" style={{ color: CHILI }}>{t('sizeSmall')} {fmt(item.priceSmall)} · {t('sizeLarge')} {fmt(item.priceLarge)}</div>
                   </div>
@@ -1949,7 +1980,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   <ConfigModal onClose={closeModal}>
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}<AllergenTag alg={item.alg} /></h3>
                         <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                       </div>
                       {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
@@ -1962,6 +1993,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                           <div className="text-base">{t('sizeLarge')}</div><div className="text-sm opacity-80">{fmt(item.priceLarge)}</div>
                         </button>
                       </div>
+                      {tab === 'pizza' && size === 'klein' && isLunchWindowNow() && (
+                        <div className="text-[11px] font-semibold px-3 py-2.5 rounded-lg mb-4" style={{ background: '#fdecd4', color: '#8a5a1f' }}>{t('lunchSmallHint')}</div>
+                      )}
                       {hasDonerMeat(item) && (
                         <>
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
@@ -2019,7 +2053,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   <ConfigModal onClose={closeModal}>
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}<AllergenTag alg={item.alg} /></h3>
                         <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                       </div>
                       {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
@@ -2071,7 +2105,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   <ConfigModal onClose={closeModal}>
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                        <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}<AllergenTag alg={item.alg} /></h3>
                         <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                       </div>
                       <div className="flex items-center gap-1.5 mb-5">
@@ -2123,10 +2157,17 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               )}
               <div className="p-3.5">
               <div className="flex items-center justify-between">
-                <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
               </div>
-              {qty > 0 && (
+              {qty > 0 && item.sauceChoice && (
+                <div className="mt-2.5 flex gap-2">
+                  {['Knoblauchsoße', 'Cocktailsauce'].map((s) => (
+                    <button key={s} onClick={() => setItemNotes((n) => ({ ...n, [item.id]: s }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] font-bold" style={itemNotes[item.id] === s ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(s, lang)} · {t('freeLabel')}</button>
+                  ))}
+                </div>
+              )}
+              {qty > 0 && !item.sauceChoice && (
                 <input
                   value={itemNotes[item.id] || ''}
                   onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
@@ -2201,7 +2242,13 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                     return (
                       <div key={u.id} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{u.emoji}</span>
+                          {u.img ? (
+                            <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#f7f0e2' : 'transparent' }}>
+                              <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                            </div>
+                          ) : (
+                            <span className="text-2xl">{u.emoji}</span>
+                          )}
                           <div>
                             <div className="font-bold text-sm" style={{ color: GREEN }}>{u.name}</div>
                             <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
@@ -2273,15 +2320,24 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             )}
 
             {drawerView === 'sent' && (
-              <div className="flex-1 overflow-y-auto px-5 py-10 flex flex-col items-center justify-center text-center relative">
+              <div className="flex-1 overflow-y-auto px-5 py-10 flex flex-col items-center justify-center text-center relative" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(37,211,102,.08), transparent 60%)' }}>
                 {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
-                <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 84, height: 84, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
+                <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 88, height: 88, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
                   <span className="text-5xl">✅</span>
                 </div>
-                <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
-                <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
-                <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
-                  <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
+                <div className="font-black text-2xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
+                <p className="text-sm mb-6" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
+                <div className="w-full rounded-2xl p-4 mb-6 text-left" style={{ background: '#fff', boxShadow: '0 8px 24px rgba(21,56,38,.1)', animation: 'slideUpFade .5s ease .38s both' }}>
+                  <div className="flex items-center justify-between pb-3 mb-1" style={{ borderBottom: '1px dashed #e3d5bd' }}>
+                    <span className="text-xs font-bold" style={{ color: '#a4906c' }}>{totalCount} {t('itemsWord')}</span>
+                    <span className="font-black text-lg" style={{ color: GREEN }}>{fmt(totalPrice)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 pt-2 text-xs font-semibold" style={{ color: '#7c6d55' }}>
+                    <Clock3 size={14} color={ORANGE} /> {t('pickupEstimate')}
+                  </div>
+                </div>
+                <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .5s both' }}>
+                  <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('newOrderBtn')}</button>
                   <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
                   {installPrompt && (
                     <button onClick={onInstall} className="w-full py-3 rounded-xl font-semibold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>{t('installAppBtn')}</button>
@@ -2322,6 +2378,35 @@ const BUILDER_EXTRAS = [
   { id: 'extrafleisch', label: 'Extra Fleisch', price: 1.0 },
   { id: 'scharf', label: 'Scharf', price: 1.0 },
 ];
+function AllergenTag({ alg }) {
+  if (!alg) return null;
+  return <sup className="font-semibold" style={{ fontSize: '9px', color: '#a4906c', marginLeft: 2 }}>{alg}</sup>;
+}
+function AllergenLegendModal({ onClose }) {
+  const { lang, t } = React.useContext(LangContext);
+  return (
+    <ConfigModal onClose={onClose}>
+      <div className="p-5">
+        <div className="flex items-start justify-between mb-4">
+          <h3 className="font-black text-lg" style={{ color: GREEN }}>{t('allergenLegendTitle')}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+        </div>
+        <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('allergenSectionTitle')}</div>
+        <div className="grid grid-cols-1 gap-1 mb-4">
+          {Object.entries(ALLERGEN_LEGEND).map(([code, label]) => (
+            <div key={code} className="flex gap-2 text-xs" style={{ color: GREEN }}><span className="font-black w-4">{code}</span><span>{label[lang] || label.de}</span></div>
+          ))}
+        </div>
+        <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('zusatzSectionTitle')}</div>
+        <div className="grid grid-cols-1 gap-1">
+          {Object.entries(ZUSATZ_LEGEND).map(([code, label]) => (
+            <div key={code} className="flex gap-2 text-xs" style={{ color: GREEN }}><span className="font-black w-4">{code}</span><span>{label[lang] || label.de}</span></div>
+          ))}
+        </div>
+      </div>
+    </ConfigModal>
+  );
+}
 function OptionCard({ selected, onClick, children }) {
   return (
     <button onClick={onClick} className="w-full text-left px-4 py-3.5 rounded-xl flex items-center justify-between" style={selected ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}>
@@ -2581,6 +2666,9 @@ function GroupOrderView({ back }) {
   };
   const [cartPop, setCartPop] = useState(0);
   const [lunchPending, setLunchPending] = useState(null);
+  const [weekendWarnOpen, setWeekendWarnOpen] = useState(false);
+  const [sauceSel, setSauceSel] = useState({});
+  const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
     if (!lunchPending || !lunchDrink) return;
@@ -2641,7 +2729,7 @@ function GroupOrderView({ back }) {
   const activeCategory = MENU.find((m) => m.key === tab);
 
   return (
-    <div className="pb-24 relative">
+    <div className="pb-32 relative">
       {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐']} />}
       {bigBurst && <EmojiConfetti emojis={['🎉', '🎊', '📲', '🥙', '⭐', '🔥']} />}
       <CartPopEmoji trigger={cartPop} />
@@ -2657,6 +2745,16 @@ function GroupOrderView({ back }) {
               {LUNCH_DRINKS.map((d) => (<OptionCard key={d} selected={lunchDrink === d} onClick={() => setLunchDrink(d)}><span className="font-bold text-sm">{mx(d, lang)}</span></OptionCard>))}
             </div>
             <button onClick={confirmLunchAdd} disabled={!lunchDrink} className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('lunchComboConfirm')} · {fmt(9.5)}</button>
+          </div>
+        </ConfigModal>
+      )}
+      {weekendWarnOpen && (
+        <ConfigModal onClose={() => setWeekendWarnOpen(false)}>
+          <div className="p-6 text-center">
+            <div className="text-5xl mb-3" style={{ animation: 'sadBounce 1.2s ease-in-out infinite' }}>😔</div>
+            <h3 className="font-black text-lg mb-2" style={{ color: GREEN }}>{t('weekendWarnTitle')}</h3>
+            <p className="text-sm mb-6" style={{ color: '#7c6d55' }}>{t('weekendItemOnly')}</p>
+            <button onClick={() => setWeekendWarnOpen(false)} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('installHelpClose')}</button>
           </div>
         </ConfigModal>
       )}
@@ -2717,7 +2815,7 @@ function GroupOrderView({ back }) {
           </div>
           {CATEGORY_IMAGES[tab] && (
             <div className="px-5 pt-2">
-              <div className="rounded-2xl overflow-hidden relative h-28" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
+              <div className="rounded-2xl overflow-hidden relative h-40" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
                 <img key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
                 <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
                   <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
@@ -2725,14 +2823,18 @@ function GroupOrderView({ back }) {
               </div>
             </div>
           )}
-          <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
+          <div className="px-5 pt-2 flex justify-end">
+        <button onClick={() => setAllergenLegendOpen(true)} className="text-[11px] font-bold underline" style={{ color: '#a4906c' }}>{t('allergenInfoBtn')}</button>
+      </div>
+      {allergenLegendOpen && <AllergenLegendModal onClose={() => setAllergenLegendOpen(false)} />}
+      <div className="px-5 pt-2 grid md:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
             {activeCategory.items.map((item) => {
               if (item.priceSmall !== undefined) {
                 const isOpen = openExtra?.itemId === item.id;
                 const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
                 const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-                const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+                const openFor = () => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
@@ -2758,7 +2860,7 @@ function GroupOrderView({ back }) {
                     <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                       {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
                       <div className="p-3.5">
-                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
                         {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
                         <div className="text-xs font-bold" style={{ color: CHILI }}>{t('sizeSmall')} {fmt(item.priceSmall)} · {t('sizeLarge')} {fmt(item.priceLarge)}</div>
                       </div>
@@ -2767,7 +2869,7 @@ function GroupOrderView({ back }) {
                       <ConfigModal onClose={closeModal}>
                         <div className="p-5">
                           <div className="flex items-start justify-between mb-3">
-                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}<AllergenTag alg={item.alg} /></h3>
                             <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                           </div>
                           {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
@@ -2780,6 +2882,9 @@ function GroupOrderView({ back }) {
                               <div className="text-base">{t('sizeLarge')}</div><div className="text-sm opacity-80">{fmt(item.priceLarge)}</div>
                             </button>
                           </div>
+                          {tab === 'pizza' && size === 'klein' && isLunchWindowNow() && (
+                            <div className="text-[11px] font-semibold px-3 py-2.5 rounded-lg mb-4" style={{ background: '#fdecd4', color: '#8a5a1f' }}>{t('lunchSmallHint')}</div>
+                          )}
                           {hasDonerMeat(item) && (
                             <>
                               <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
@@ -2837,7 +2942,7 @@ function GroupOrderView({ back }) {
                       <ConfigModal onClose={closeModal}>
                         <div className="p-5">
                           <div className="flex items-start justify-between mb-3">
-                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}<AllergenTag alg={item.alg} /></h3>
                             <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                           </div>
                           {item.desc && <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</p>}
@@ -2889,7 +2994,7 @@ function GroupOrderView({ back }) {
                       <ConfigModal onClose={closeModal}>
                         <div className="p-5">
                           <div className="flex items-start justify-between mb-3">
-                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}</h3>
+                            <h3 className="font-black text-xl" style={{ color: GREEN }}>{mx(item.name, lang)}<AllergenTag alg={item.alg} /></h3>
                             <button onClick={closeModal} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
                           </div>
                           <div className="flex items-center gap-1.5 mb-5">
@@ -2941,10 +3046,17 @@ function GroupOrderView({ back }) {
                   )}
                   <div className="p-3.5">
                   <div className="flex items-center justify-between">
-                    <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
-                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
                   </div>
-                  {qty > 0 && (
+                  {qty > 0 && item.sauceChoice && (
+                    <div className="mt-2.5 flex gap-2">
+                      {['Knoblauchsoße', 'Cocktailsauce'].map((s) => (
+                        <button key={s} onClick={() => setItemNotes((n) => ({ ...n, [item.id]: s }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] font-bold" style={itemNotes[item.id] === s ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(s, lang)} · {t('freeLabel')}</button>
+                      ))}
+                    </div>
+                  )}
+                  {qty > 0 && !item.sauceChoice && (
                     <input
                       value={itemNotes[item.id] || ''}
                       onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
@@ -3444,20 +3556,27 @@ export default function App() {
     </ConfigModal>,
     document.body
   );
+  const cartBadge = cartCount > 0 && view !== 'whatsapp' && ReactDOM.createPortal(
+    <button onClick={() => go('whatsapp', { openCart: true })} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+      <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
+      {fmt(cartTotal)}
+    </button>,
+    document.body
+  );
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}</LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}</LangContext.Provider>;
   }
 
   return (
     <LangContext.Provider value={ctxValue}>
-    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: `${GREEN} repeating-linear-gradient(135deg, rgba(255,246,234,.035) 0 40px, rgba(255,246,234,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: `${GREEN} radial-gradient(circle at 15% 20%, rgba(255,199,56,.05), transparent 45%), radial-gradient(circle at 85% 75%, rgba(255,106,26,.06), transparent 45%)`, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes sideFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-22px) rotate(6deg);} }
         @keyframes sideFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-30px) rotate(-5deg);} }
         @keyframes sideFloat3 { 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-16px) rotate(10deg);} }
         @keyframes sideSpin { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
-        @keyframes viewFade { from{ opacity:0; transform:translateY(14px) scale(.985);} to{ opacity:1; transform:translateY(0) scale(1);} }
+        @keyframes viewFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes popIn { 0%{ opacity:0; transform:scale(.6) rotate(-8deg);} 60%{ opacity:1; transform:scale(1.08) rotate(3deg);} 100%{ opacity:1; transform:scale(1) rotate(0deg);} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes ringPulse { 0%{ box-shadow:0 0 0 0 rgba(37,211,102,.45);} 100%{ box-shadow:0 0 0 30px rgba(37,211,102,0);} }
@@ -3465,6 +3584,7 @@ export default function App() {
         @keyframes modalBgFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         @keyframes toastSlide { 0%{ opacity:0; transform:translateX(-50%) translateY(-16px); } 12%{ opacity:1; transform:translateX(-50%) translateY(0); } 85%{ opacity:1; transform:translateX(-50%) translateY(0); } 100%{ opacity:0; transform:translateX(-50%) translateY(-10px); } }
+        @keyframes sadBounce { 0%,100%{ transform:translateY(0) rotate(0deg);} 25%{ transform:translateY(-6px) rotate(-4deg);} 75%{ transform:translateY(-2px) rotate(4deg);} }
         @keyframes bottomFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-14px) rotate(6deg);} }
         @keyframes bottomFloat2 { 0%,100%{ transform:translateY(0) rotate(5deg);} 50%{ transform:translateY(-18px) rotate(-5deg);} }
       `}</style>
@@ -3483,13 +3603,7 @@ export default function App() {
         BODRUM KEBAP VECHTA
       </div>
 
-      {cartCount > 0 && view !== 'whatsapp' && ReactDOM.createPortal(
-        <button onClick={() => go('whatsapp', { openCart: true })} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
-          <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
-          {fmt(cartTotal)}
-        </button>,
-        document.body
-      )}
+      {cartBadge}
 
       <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} />}
