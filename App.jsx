@@ -79,6 +79,7 @@ const UI = {
   surpriseWantIt: { de: 'Ja, das will ich!', en: 'Yes, I want this!', tr: 'Evet, bunu istiyorum!', ro: 'Da, vreau asta!', nl: 'Ja, dit wil ik!' },
   surpriseAgain: { de: 'Was anderes zeigen', en: 'Show me something else', tr: 'Başka bir şey söyle', ro: 'Arată-mi altceva', nl: 'Toon iets anders' },
   noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' },
+  deleteOrderBtn: { de: 'Löschen (z.B. falls nicht per WhatsApp abgeschickt)', en: 'Delete (e.g. if not actually sent via WhatsApp)', tr: 'Sil (örn. WhatsApp\'tan gerçekten gönderilmediyse)', ro: 'Șterge (ex. dacă nu a fost trimis efectiv prin WhatsApp)', nl: 'Verwijderen (bijv. als niet echt via WhatsApp verstuurd)' },
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
   savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' },
@@ -810,6 +811,25 @@ async function safeListPrefix(prefix, limit = 20) {
     if (!res.ok) return [];
     return await res.json();
   } catch { return []; }
+}
+async function safeDeleteKey(key) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}`, {
+      method: 'DELETE',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    return res.ok;
+  } catch { return false; }
+}
+async function cleanupOldOrders() {
+  try {
+    if (sessionStorage.getItem('bk_cleanup_done')) return;
+    sessionStorage.setItem('bk_cleanup_done', '1');
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+    const rows = await safeListPrefix('order:', 500);
+    const stale = rows.filter((r) => !r.value?.createdAt || r.value.createdAt < todayStart.getTime());
+    await Promise.all(stale.map((r) => safeDeleteKey(r.key)));
+  } catch {}
 }
 function makeShortCode(len = 5) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -3788,6 +3808,10 @@ function StaffPanelView({ back }) {
     await safeSet(o.key, updated);
     setOrders((list) => list.map((x) => x.key === o.key ? { ...x, value: updated } : x));
   };
+  const deleteOrder = async (o) => {
+    await safeDeleteKey(o.key);
+    setOrders((list) => list.filter((x) => x.key !== o.key));
+  };
   const saveRating = async () => {
     const score = parseFloat(ratingScore.replace(',', '.'));
     const count = parseInt(ratingCount, 10);
@@ -3832,9 +3856,8 @@ function StaffPanelView({ back }) {
 
       {!ok ? (
         <div className="px-5 pt-4">
-          <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '1234' && setOk(true)} type="password" inputMode="numeric" placeholder="PIN ••••" className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.3em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-          <button onClick={() => pin === '1234' && setOk(true)} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('loginBtn')}</button>
-          <p className="text-[11px] text-center mt-3" style={{ color: '#a4906c' }}>{t('defaultPinNote')}</p>
+          <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '0021' && setOk(true)} type="password" inputMode="numeric" placeholder="PIN ••••" className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.3em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+          <button onClick={() => pin === '0021' && setOk(true)} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('loginBtn')}</button>
         </div>
       ) : (
         <>
@@ -3895,7 +3918,10 @@ function StaffPanelView({ back }) {
                         <div className="font-black text-sm" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}</div>
                         <div className="text-[11px] font-medium" style={{ color: '#a4906c' }}>{new Date(o.value.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}{o.value.pickupTime ? ` · ${t('pickupTimePh')}: ${o.value.pickupTime}` : ''}</div>
                       </div>
-                      <button onClick={() => toggleOrderStatus(o)} className="px-3.5 py-2 rounded-lg text-xs font-bold text-white flex-shrink-0" style={{ background: o.value.status === 'ready' ? '#25D366' : ORANGE }}>{o.value.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</button>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button onClick={() => toggleOrderStatus(o)} className="px-3.5 py-2 rounded-lg text-xs font-bold text-white" style={{ background: o.value.status === 'ready' ? '#25D366' : ORANGE }}>{o.value.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</button>
+                        <button onClick={() => deleteOrder(o)} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#f7e2e2' }} title={t('deleteOrderBtn')}><X size={14} color={CHILI} /></button>
+                      </div>
                     </div>
                     {o.value.items && o.value.items.length > 0 && (
                       <div className="rounded-lg p-2.5 mb-2" style={{ background: '#f7f0e2' }}>
@@ -4071,6 +4097,7 @@ export default function App() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallHelp, setShowInstallHelp] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  useEffect(() => { cleanupOldOrders(); }, []);
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
