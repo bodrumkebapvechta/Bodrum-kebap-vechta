@@ -240,6 +240,9 @@ const UI = {
   pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' },
   leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' },
   itemAddedToast: { de: 'Zum Warenkorb hinzugefügt', en: 'Added to cart', tr: 'Sepete eklendi', ro: 'Adăugat în coș', nl: 'Toegevoegd aan winkelwagen' },
+  lunchComboTitle: { de: '🍽️ Mittagsangebot', en: '🍽️ Lunch special', tr: '🍽️ Öğle fırsatı', ro: '🍽️ Ofertă de prânz', nl: '🍽️ Lunchaanbieding' },
+  lunchComboSub: { de: 'Wähle dein Getränk dazu — zusammen nur 9,50 €!', en: 'Choose your drink — together only €9.50!', tr: 'Yanına içeceğini seç — birlikte sadece 9,50 €!', ro: 'Alege băutura — împreună doar 9,50 €!', nl: 'Kies je drankje — samen maar € 9,50!' },
+  lunchComboConfirm: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' },
   choosePastaTypeTitle: { de: 'Spaghetti oder Makkaroni?', en: 'Spaghetti or Macaroni?', tr: 'Spagetti mi Makarna mı?', ro: 'Spaghete sau macaroane?', nl: 'Spaghetti of macaroni?' },
   weiterShort: { de: 'Weiter', en: 'Next', tr: 'İleri', ro: 'Continuă', nl: 'Verder' },
   choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' },
@@ -462,6 +465,7 @@ const MENU_PHRASES = {
   'Dose': { en: 'Can', tr: 'Kutu', ro: 'Doză', nl: 'Blikje' },
   'Ei': { en: 'Egg', tr: 'Yumurta', ro: 'Ou', nl: 'Ei' },
   'Scharf': { en: 'Spicy', tr: 'Acılı', ro: 'Picant', nl: 'Pittig' },
+  'Hähnchen-Fleisch': { en: 'Chicken meat', tr: 'Tavuk eti', ro: 'Carne de pui', nl: 'Kipvlees' },
   'Kola & Orange': { en: 'Cola & Orange', tr: 'Kola & Portakal', ro: 'Cola & Portocală', nl: 'Cola & Sinaasappel' },
 };
 const MENU_PHRASE_KEYS = Object.keys(MENU_PHRASES);
@@ -474,6 +478,7 @@ function mx(text, lang) {
 /* ============ MENU DATA ============ */
 const MENU = [
   { key: 'kebap', label: 'Kebap', items: [
+    { id: 'k0-steak', name: 'Steak Kebap', price: 10.0, desc: 'Steak Fleisch, Knoblauchsoße, Salat und Zwiebeln', weekend: true },
     { id: 'k1', name: 'Kalb Kebap', price: 8.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln' },
     { id: 'k2', name: 'Kebap Spezial Weichkäse', price: 8.5, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln, Weichkäse in Salzlake' },
     { id: 'k3', name: 'Kebap Hollandaise Soße', price: 8.5, desc: 'Fleisch vom Drehspieß, Hollandaise Soße, Salat, Zwiebeln' },
@@ -636,15 +641,21 @@ const MENU = [
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Scharf'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Hähnchen-Fleisch', 'Scharf'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
 const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
-const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Hähnchen-Fleisch', 'Peperoni', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
 const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
 function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 function isWeekendDay() { const d = new Date().getDay(); return d === 0 || d === 5 || d === 6; }
+function extraCost(name) {
+  if (name === 'Hähnchen-Fleisch') return 0;
+  if (name === 'Bolognese-Soße') return 0.5;
+  if (name === 'Tomatensoße' || name === 'Sahnesoße') return 0;
+  return 1.0;
+}
 function menuNum(id) { if (/^g\d/.test(id)) return ''; return id.replace(/^[a-z]+/i, ''); }
 function normalizePhone(raw) { return raw.replace(/[^\d+]/g, ''); }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -1311,12 +1322,21 @@ function MittagsBanner() {
   );
 }
 
+const LUNCH_DRINKS = ['Coca-Cola', 'Coca-Cola Zero', 'Fanta', 'Uludağ Gazoz', 'Ayran', 'Wasser', 'Eistee Pfirsich'];
+
 function DailySpecialCard({ item, isLunchWindow, go }) {
   const { lang, t } = React.useContext(LangContext);
   const displayPrice = isLunchWindow ? 9.5 : item.price;
+  const [showDrinkPicker, setShowDrinkPicker] = useState(false);
+  const [drink, setDrink] = useState(null);
 
   const orderNow = () => {
+    if (isLunchWindow) { setDrink(null); setShowDrinkPicker(true); return; }
     go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
+  };
+  const confirmLunchCombo = () => {
+    setShowDrinkPicker(false);
+    go('whatsapp', { pendingCombo: { title: `${item.name} + Dose Getränk (${drink})`, price: 9.5 } });
   };
 
   return (
@@ -1333,6 +1353,21 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
           <button onClick={orderNow} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('orderNow')} →</button>
         </div>
       </div>
+      {showDrinkPicker && (
+        <ConfigModal onClose={() => setShowDrinkPicker(false)}>
+          <div className="p-5">
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="font-black text-lg" style={{ color: GREEN }}>{t('lunchComboTitle')}</h3>
+              <button onClick={() => setShowDrinkPicker(false)} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={16} color={GREEN} /></button>
+            </div>
+            <p className="text-sm mb-4" style={{ color: '#7c6d55' }}>{t('lunchComboSub')}</p>
+            <div className="flex flex-col gap-2 mb-5">
+              {LUNCH_DRINKS.map((d) => (<OptionCard key={d} selected={drink === d} onClick={() => setDrink(d)}><span className="font-bold text-sm">{mx(d, lang)}</span></OptionCard>))}
+            </div>
+            <button onClick={confirmLunchCombo} disabled={!drink} className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('lunchComboConfirm')} · {fmt(9.5)}</button>
+          </div>
+        </ConfigModal>
+      )}
     </div>
   );
 }
@@ -1840,7 +1875,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const isOpen = openExtra?.itemId === item.id;
             const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
-            const configTotal = basePrice + configExtras.length * 1.0;
+            const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
             const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
@@ -1885,7 +1920,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                       <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         {EXTRA_TOPPINGS.map((top) => (
-                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                         ))}
                       </div>
                       <input
@@ -1904,7 +1939,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           }
           if (item.customPizza) {
             const isOpen = openExtra?.itemId === item.id;
-            const configTotal = item.price + configExtras.reduce((s) => s + 1.0, 0);
+            const configTotal = item.price + configExtras.reduce((s, e) => s + extraCost(e), 0);
             const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
             const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
@@ -1937,7 +1972,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                       <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         {EXTRA_TOPPINGS.map((top) => (
-                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                         ))}
                       </div>
                       <input
@@ -1957,7 +1992,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           if (item.customPasta) {
             const isOpen = openExtra?.itemId === item.id;
             const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
-            const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
+            const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.reduce((s, e) => s + extraCost(e), 0);
             const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
             const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
             const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
@@ -2001,7 +2036,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {PASTA_EXTRA_ITEMS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                             ))}
                           </div>
                           <input
@@ -2261,7 +2296,7 @@ function DonerBuilderView({ back, go }) {
   const total = useMemo(() => {
     if (kind === 'pasta') {
       const base_ = pastaType === 'Makkaroni' ? 8.0 : 7.5;
-      return base_ + (pastaSauce === 'Bolognese-Soße' ? 0.5 : 0) + pastaExtras.length * 1.0;
+      return base_ + (pastaSauce === 'Bolognese-Soße' ? 0.5 : 0) + pastaExtras.reduce((s, e) => s + extraCost(e), 0);
     }
     let t = (base?.price || 0) + (meat?.extra || 0);
     extras.forEach((id) => { const ex = BUILDER_EXTRAS.find((e) => e.id === id); if (ex) t += ex.price; });
@@ -2377,7 +2412,7 @@ function DonerBuilderView({ back, go }) {
         {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
           <div className="flex flex-col gap-2.5">{PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauce === s} onClick={() => setPastaSauce(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}</div></div>)}
         {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
-          <div className="grid grid-cols-2 gap-2.5">{PASTA_EXTRA_ITEMS.map((top) => { const sel = pastaExtras.includes(top); return (<button key={top} onClick={() => togglePastaExtra(top)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(top, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">+{fmt(1.0)}</div></button>); })}</div></div>)}
+          <div className="grid grid-cols-2 gap-2.5">{PASTA_EXTRA_ITEMS.map((top) => { const sel = pastaExtras.includes(top); return (<button key={top} onClick={() => togglePastaExtra(top)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(top, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</div></button>); })}</div></div>)}
         {step === totalSteps && !showWheel && !sent && (
           <div>
             <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('pastaReadyTitle')}</h2>
@@ -2615,7 +2650,7 @@ function GroupOrderView({ back }) {
                 const isOpen = openExtra?.itemId === item.id;
                 const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
-                const configTotal = basePrice + configExtras.length * 1.0;
+                const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
                 const openFor = () => { if (item.weekend && !isWeekendDay()) { alert(t('weekendItemOnly')); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
@@ -2660,7 +2695,7 @@ function GroupOrderView({ back }) {
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {EXTRA_TOPPINGS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                             ))}
                           </div>
                           <input
@@ -2679,7 +2714,7 @@ function GroupOrderView({ back }) {
               }
               if (item.customPizza) {
                 const isOpen = openExtra?.itemId === item.id;
-                const configTotal = item.price + configExtras.reduce((s) => s + 1.0, 0);
+                const configTotal = item.price + configExtras.reduce((s, e) => s + extraCost(e), 0);
                 const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
                 const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
@@ -2712,7 +2747,7 @@ function GroupOrderView({ back }) {
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {EXTRA_TOPPINGS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                             ))}
                           </div>
                           <input
@@ -2732,7 +2767,7 @@ function GroupOrderView({ back }) {
               if (item.customPasta) {
                 const isOpen = openExtra?.itemId === item.id;
                 const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
-                const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.length * 1.0;
+                const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.reduce((s, e) => s + extraCost(e), 0);
                 const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
                 const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
                 const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
@@ -2776,7 +2811,7 @@ function GroupOrderView({ back }) {
                               <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                               <div className="grid grid-cols-2 gap-2 mb-4">
                                 {PASTA_EXTRA_ITEMS.map((top) => (
-                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}</button>
+                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                                 ))}
                               </div>
                               <input
@@ -3348,8 +3383,8 @@ export default function App() {
       </div>
 
       {cartCount > 0 && view !== 'whatsapp' && ReactDOM.createPortal(
-        <button onClick={() => go('whatsapp', { openCart: true })} className="fixed bottom-5 right-5 flex items-center gap-2 pl-4 pr-5 py-3.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
-          <span className="relative"><ShoppingBag size={18} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
+        <button onClick={() => go('whatsapp', { openCart: true })} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+          <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
           {fmt(cartTotal)}
         </button>,
         document.body
