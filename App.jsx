@@ -1778,7 +1778,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 }
 
 /* ============ WHATSAPP ORDER ============ */
-function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart }) {
+function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart, cartOpen, setCartOpen }) {
   const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
@@ -1790,7 +1790,6 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     const iv = setInterval(() => setCatImgIdx((i) => (i + 1) % imgs.length), 3500);
     return () => clearInterval(iv);
   }, [tab]);
-  const [cartOpen, setCartOpen] = useState(false);
   const [openExtra, setOpenExtra] = useState(null);
   const [configExtras, setConfigExtras] = useState([]);
   const [configMeat, setConfigMeat] = useState(null);
@@ -2182,14 +2181,6 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         })}
       </div>
 
-      {totalCount > 0 && !cartOpen && ReactDOM.createPortal(
-        <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)', zIndex: 90 }}>
-          <span className="flex items-center gap-2 font-bold text-sm"><ShoppingBag size={18} /> {totalCount} {t('itemsWord')}</span>
-          <span className="font-black text-base">{fmt(totalPrice)}</span>
-        </button>,
-        document.body
-      )}
-
       {cartOpen && (
         <div className="fixed inset-0 z-50 flex justify-center">
           <div className="w-full max-w-md h-full flex flex-col" style={{ background: CREAM }}>
@@ -2328,12 +2319,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 <div className="font-black text-2xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
                 <p className="text-sm mb-6" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
                 <div className="w-full rounded-2xl p-4 mb-6 text-left" style={{ background: '#fff', boxShadow: '0 8px 24px rgba(21,56,38,.1)', animation: 'slideUpFade .5s ease .38s both' }}>
-                  <div className="flex items-center justify-between pb-3 mb-1" style={{ borderBottom: '1px dashed #e3d5bd' }}>
+                  <div className="flex items-center justify-between">
                     <span className="text-xs font-bold" style={{ color: '#a4906c' }}>{totalCount} {t('itemsWord')}</span>
                     <span className="font-black text-lg" style={{ color: GREEN }}>{fmt(totalPrice)}</span>
-                  </div>
-                  <div className="flex items-center gap-2 pt-2 text-xs font-semibold" style={{ color: '#7c6d55' }}>
-                    <Clock3 size={14} color={ORANGE} /> {t('pickupEstimate')}
                   </div>
                 </div>
                 <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .5s both' }}>
@@ -3517,6 +3505,7 @@ export default function App() {
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const langCtx = useLang();
   const [cart, setCart] = useState({});
+  const [cartOpen, setCartOpen] = useState(false);
   const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
   const cartTotal = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty * v.price, 0), [cart]);
   const [installPrompt, setInstallPrompt] = useState(null);
@@ -3556,10 +3545,10 @@ export default function App() {
     </ConfigModal>,
     document.body
   );
-  const cartBadge = cartCount > 0 && view !== 'whatsapp' && ReactDOM.createPortal(
-    <button onClick={() => go('whatsapp', { openCart: true })} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+  const cartBadge = cartCount > 0 && ReactDOM.createPortal(
+    <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className="fixed top-4 right-4 flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
-      {fmt(cartTotal)}
+      {fmt(cartTotal)} · {ctxValue.t('weiter')}
     </button>,
     document.body
   );
@@ -3606,7 +3595,7 @@ export default function App() {
       {cartBadge}
 
       <div key={view} className="w-full max-w-5xl mx-auto relative" style={{ background: CREAM, animation: 'viewFade .5s cubic-bezier(.22,1,.36,1)', zIndex: 1 }}>
-        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} />}
+        {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} />}
         {view === 'builder' && <DonerBuilderView back={() => setView('home')} go={go} />}
         {view === 'group' && <GroupOrderView back={() => setView('home')} />}
         {view === 'loyalty' && <LoyaltyView back={() => setView('home')} />}
