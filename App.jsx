@@ -4018,32 +4018,48 @@ function StaffPanelView({ back }) {
   const knownOrderKeysRef = useRef(null);
   const [nowTick, setNowTick] = useState(Date.now());
   const audioCtxRef = useRef(null);
-  const unlockAudio = () => {
+  const getAudioCtx = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx && !audioCtxRef.current) audioCtxRef.current = new AudioCtx();
-      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
+      if (!AudioCtx) return null;
+      if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx();
+      return audioCtxRef.current;
+    } catch { return null; }
+  };
+  const playBeeps = (ctx) => {
+    [0, 0.15].forEach((delay) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.001, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + delay + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + 0.32);
+    });
+  };
+  const unlockAudio = () => {
+    try {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const arm = () => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        gain.gain.value = 0.00001;
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.01);
+      };
+      if (ctx.state === 'suspended') { ctx.resume().then(arm).catch(() => {}); } else { arm(); }
     } catch {}
   };
   const notifyNewOrder = () => {
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
     try {
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      const ctx = audioCtxRef.current;
-      if (ctx) {
-        if (ctx.state === 'suspended') ctx.resume();
-        [0, 0.15].forEach((delay) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = 880;
-          gain.gain.setValueAtTime(0.001, ctx.currentTime + delay);
-          gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + delay + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(ctx.currentTime + delay);
-          osc.stop(ctx.currentTime + delay + 0.32);
-        });
-      }
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') { ctx.resume().then(() => playBeeps(ctx)).catch(() => {}); } else { playBeeps(ctx); }
     } catch {}
   };
   const deleteOrder = async (o) => {
