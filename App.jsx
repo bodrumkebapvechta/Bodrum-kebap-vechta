@@ -897,6 +897,7 @@ async function cleanupOldOrders() {
     await Promise.all(stale.map((r) => safeDeleteKey(r.key)));
   } catch {}
 }
+const NOTIFY_BEEP_URI = 'data:audio/wav;base64,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';
 function makeShortCode(len = 5) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let out = ''; for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
@@ -4017,6 +4018,14 @@ function StaffPanelView({ back }) {
   }, [orders, showTestOrders]);
   const knownOrderKeysRef = useRef(null);
   const [nowTick, setNowTick] = useState(Date.now());
+  const beepAudioRef = useRef(null);
+  const getBeepAudio = () => {
+    if (!beepAudioRef.current) {
+      beepAudioRef.current = new Audio(NOTIFY_BEEP_URI);
+      beepAudioRef.current.volume = 1;
+    }
+    return beepAudioRef.current;
+  };
   const audioCtxRef = useRef(null);
   const getAudioCtx = () => {
     try {
@@ -4027,39 +4036,52 @@ function StaffPanelView({ back }) {
     } catch { return null; }
   };
   const playBeeps = (ctx) => {
-    [0, 0.15].forEach((delay) => {
+    const base = ctx.currentTime;
+    [0, 0.18].forEach((delay) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.001, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + delay + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+      osc.type = 'square';
+      osc.frequency.value = 900;
+      gain.gain.setValueAtTime(0.4, base + delay);
+      gain.gain.setValueAtTime(0.4, base + delay + 0.12);
+      gain.gain.linearRampToValueAtTime(0, base + delay + 0.15);
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + delay);
-      osc.stop(ctx.currentTime + delay + 0.32);
+      osc.start(base + delay);
+      osc.stop(base + delay + 0.16);
     });
   };
   const unlockAudio = () => {
     try {
+      const el = getBeepAudio();
+      el.muted = true;
+      const p = el.play();
+      if (p && p.then) p.then(() => { el.pause(); el.currentTime = 0; el.muted = false; }).catch(() => { el.muted = false; });
+    } catch {}
+    try {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      const arm = () => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        gain.gain.value = 0.00001;
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(); osc.stop(ctx.currentTime + 0.01);
-      };
-      if (ctx.state === 'suspended') { ctx.resume().then(arm).catch(() => {}); } else { arm(); }
+      ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.value = 0.0001;
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 0.05);
     } catch {}
   };
   const notifyNewOrder = () => {
     try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
     try {
+      const el = getBeepAudio();
+      el.currentTime = 0;
+      const p = el.play();
+      if (p && p.catch) p.catch(() => {});
+      setTimeout(() => { try { const el2 = getBeepAudio(); el2.currentTime = 0; el2.play().catch(() => {}); } catch {} }, 350);
+    } catch {}
+    try {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      if (ctx.state === 'suspended') { ctx.resume().then(() => playBeeps(ctx)).catch(() => {}); } else { playBeeps(ctx); }
+      ctx.resume();
+      playBeeps(ctx);
     } catch {}
   };
   const deleteOrder = async (o) => {
