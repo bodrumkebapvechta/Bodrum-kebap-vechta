@@ -93,6 +93,9 @@ const UI = {
   deleteFailedMsg: { de: '⚠️ Löschen fehlgeschlagen — Datenbankberechtigung prüfen', en: '⚠️ Delete failed — check database permissions', tr: '⚠️ Silme başarısız — veritabanı izinlerini kontrol edin', ro: '⚠️ Ștergere eșuată — verifică permisiunile bazei de date', nl: '⚠️ Verwijderen mislukt — controleer databaserechten' },
   ordersTotalLabel: { de: 'GESAMT (angezeigte Bestellungen)', en: 'TOTAL (shown orders)', tr: 'TOPLAM (görüntülenen siparişler)', ro: 'TOTAL (comenzi afișate)', nl: 'TOTAAL (getoonde bestellingen)' },
   stuckOrderBadge: { de: 'ÜBERFÄLLIG', en: 'OVERDUE', tr: 'GECİKTİ', ro: 'ÎNTÂRZIATĂ', nl: 'TE LAAT' },
+  elapsedPrefix: { de: 'seit', en: 'since', tr: 'geçen süre', ro: 'de', nl: 'sinds' },
+  inPrefix: { de: 'in', en: 'in', tr: 'kalan', ro: 'în', nl: 'over' },
+  overduePrefix: { de: 'überfällig seit', en: 'overdue by', tr: 'gecikme', ro: 'întârziere', nl: 'te laat met' },
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' },
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' },
   savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' },
@@ -1393,6 +1396,22 @@ function formatCountdown(ms) {
   const s = Math.floor((ms % 60000) / 1000);
   return `${m}m ${s}s`;
 }
+function formatElapsedMMSS(ms) {
+  const totalSec = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+function parsePickupTimeToday(pickupTimeStr) {
+  const match = /^(\d{1,2}):(\d{2})$/.exec((pickupTimeStr || '').trim());
+  if (!match) return null;
+  const h = parseInt(match[1], 10);
+  const m = parseInt(match[2], 10);
+  if (h > 23 || m > 59) return null;
+  const target = new Date();
+  target.setHours(h, m, 0, 0);
+  return target;
+}
 
 function getGreeting(now) {
   const h = now.getHours();
@@ -2076,6 +2095,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
     const itemsList = lines.map(([, v]) => ({ name: v.deName || v.name, qty: v.qty }));
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList, pickupTime: pickupTime || null });
+    setOrderCode(makeShortCode(5));
   };
 
   const [cartPop, setCartPop] = useState(0);
@@ -2136,7 +2156,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const lines = Object.entries(cart);
   const totalCount = lines.reduce((s, [, v]) => s + v.qty, 0);
   const totalPrice = lines.reduce((s, [, v]) => s + v.qty * v.price, 0);
-  const [orderCode] = useState(() => makeShortCode(5));
+  const [orderCode, setOrderCode] = useState(() => makeShortCode(5));
 
   const waLink = useMemo(() => {
     if (lines.length === 0) return null;
@@ -2766,13 +2786,14 @@ function DonerBuilderView({ back, go }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
-  const [orderCode] = useState(() => makeShortCode(5));
+  const [orderCode, setOrderCode] = useState(() => makeShortCode(5));
   const handleSend = () => {
     setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200);
     const itemName = kind === 'pasta'
       ? `${pastaType} (${pastaSauce}${pastaExtras.length ? ', ' + pastaExtras.join(', ') : ''})`
       : `Döner (${base?.label}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
+    setOrderCode(makeShortCode(5));
   };
   const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
@@ -3856,7 +3877,8 @@ function StaffPanelView({ back }) {
       });
       load();
       const iv = setInterval(load, 6000);
-      return () => clearInterval(iv);
+      const tickIv = setInterval(() => setNowTick(Date.now()), 1000);
+      return () => { clearInterval(iv); clearInterval(tickIv); };
     } else {
       knownOrderKeysRef.current = null;
     }
@@ -3889,6 +3911,7 @@ function StaffPanelView({ back }) {
   };
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
   const knownOrderKeysRef = useRef(null);
+  const [nowTick, setNowTick] = useState(Date.now());
   const notifyNewOrder = () => {
     try {
       if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
@@ -4089,13 +4112,21 @@ function StaffPanelView({ back }) {
               )}
               <div className="flex flex-col gap-2.5">
                 {orders.map((o) => {
-                  const isStuck = o.value.status !== 'ready' && (Date.now() - o.value.createdAt) > 15 * 60 * 1000;
+                  const elapsedMs = nowTick - o.value.createdAt;
+                  const isStuck = o.value.status !== 'ready' && elapsedMs > 15 * 60 * 1000;
+                  const pickupTarget = o.value.pickupTime ? parsePickupTimeToday(o.value.pickupTime) : null;
+                  const pickupDiffMs = pickupTarget ? pickupTarget.getTime() - nowTick : null;
                   return (
                   <div key={o.key} className="bg-white rounded-xl p-4 shadow-sm" style={isStuck ? { border: `2px solid ${CHILI}`, background: '#fff5f5' } : {}}>
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <div className="font-black text-sm flex items-center gap-1.5" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}{isStuck && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: CHILI }}>⏰ {t('stuckOrderBadge')}</span>}</div>
-                        <div className="text-[11px] font-medium" style={{ color: '#a4906c' }}>{new Date(o.value.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}{o.value.pickupTime ? ` · ${t('pickupTimePh')}: ${o.value.pickupTime}` : ''}</div>
+                        <div className="text-[11px] font-bold mt-0.5" style={{ color: isStuck ? CHILI : ORANGE }}>⏱ {t('elapsedPrefix')} {formatElapsedMMSS(elapsedMs)}</div>
+                        {pickupTarget && (
+                          <div className="text-[11px] font-bold mt-0.5" style={{ color: pickupDiffMs > 0 ? GREEN : CHILI }}>
+                            🕐 {t('pickupTimePh')}: {o.value.pickupTime} · {pickupDiffMs > 0 ? `${t('inPrefix')} ${formatElapsedMMSS(pickupDiffMs)}` : `${t('overduePrefix')} ${formatElapsedMMSS(-pickupDiffMs)}`}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         <button onClick={() => toggleOrderStatus(o)} className="px-3.5 py-2 rounded-lg text-xs font-bold text-white" style={{ background: o.value.status === 'ready' ? '#25D366' : ORANGE }}>{o.value.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</button>
