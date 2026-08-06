@@ -93,6 +93,26 @@ const UI = {
   deleteFailedMsg: { de: '⚠️ Löschen fehlgeschlagen — Datenbankberechtigung prüfen', en: '⚠️ Delete failed — check database permissions', tr: '⚠️ Silme başarısız — veritabanı izinlerini kontrol edin', ro: '⚠️ Ștergere eșuată — verifică permisiunile bazei de date', nl: '⚠️ Verwijderen mislukt — controleer databaserechten' },
   ordersTotalLabel: { de: 'GESAMT (angezeigte Bestellungen)', en: 'TOTAL (shown orders)', tr: 'TOPLAM (görüntülenen siparişler)', ro: 'TOTAL (comenzi afișate)', nl: 'TOTAAL (getoonde bestellingen)' },
   stuckOrderBadge: { de: 'ÜBERFÄLLIG', en: 'OVERDUE', tr: 'GECİKTİ', ro: 'ÎNTÂRZIATĂ', nl: 'TE LAAT' },
+  soldOutBadge: { de: 'AUSVERKAUFT', en: 'SOLD OUT', tr: 'TÜKENDİ', ro: 'EPUIZAT', nl: 'UITVERKOCHT' },
+  notifTestLabel: { de: 'Benachrichtigung testen', en: 'Test notification', tr: 'Bildirimi test et', ro: 'Testează notificarea', nl: 'Melding testen' },
+  dailyBannerLabel: { de: 'Ankündigung des Tages', en: "Today's announcement", tr: 'Günün duyurusu', ro: 'Anunțul zilei', nl: 'Aankondiging van vandaag' },
+  dailyBannerPh: { de: 'z.B. Heute frischer Sucuk geliefert 🎉', en: 'e.g. Fresh sucuk delivered today 🎉', tr: 'örn. Bugün taze sucuk geldi 🎉', ro: 'ex. Astăzi a sosit sucuk proaspăt 🎉', nl: 'bijv. Vandaag verse sucuk geleverd 🎉' },
+  waTemplateLabel: { de: 'Persönliche Nachricht (WhatsApp)', en: 'Personal message (WhatsApp)', tr: 'Kişisel mesaj (WhatsApp)', ro: 'Mesaj personal (WhatsApp)', nl: 'Persoonlijk bericht (WhatsApp)' },
+  waTemplateHint: { de: 'Wird am Ende jeder Bestellnachricht angehängt (optional).', en: 'Added to the end of every order message (optional).', tr: 'Her sipariş mesajının sonuna eklenir (opsiyonel).', ro: 'Adăugat la sfârșitul fiecărui mesaj de comandă (opțional).', nl: 'Wordt toegevoegd aan het einde van elk bestelbericht (optioneel).' },
+  waTemplatePh: { de: 'z.B. Frohe Weihnachten! 🎄', en: 'e.g. Merry Christmas! 🎄', tr: 'örn. İyi bayramlar! 🎄', ro: 'ex. Crăciun fericit! 🎄', nl: 'bijv. Fijne kerst! 🎄' },
+  testOrderLabel: { de: 'Testbestellung', en: 'Test order', tr: 'Test siparişi', ro: 'Comandă de test', nl: 'Testbestelling' },
+  testOrderHint: { de: 'Erstellt eine Test-Bestellung, um Ton, Vibration und die Bestellungen-Ansicht zu prüfen, ohne echte Daten zu vermischen.', en: 'Creates a test order to check sound, vibration and the orders view, without mixing with real data.', tr: 'Ses, titreşim ve sipariş görünümünü gerçek veriyle karışmadan test etmek için bir test siparişi oluşturur.', ro: 'Creează o comandă de test pentru a verifica sunetul, vibrația și afișarea comenzilor, fără a amesteca date reale.', nl: 'Maakt een testbestelling om geluid, trilling en het bestellingenoverzicht te controleren, zonder echte data te mengen.' },
+  testOrderBtn: { de: 'Testbestellung erstellen', en: 'Create test order', tr: 'Test siparişi oluştur', ro: 'Creează comandă de test', nl: 'Testbestelling aanmaken' },
+  showTestOrdersLabel: { de: 'Testbestellungen in der Liste anzeigen', en: 'Show test orders in the list', tr: 'Test siparişlerini listede göster', ro: 'Arată comenzile de test în listă', nl: 'Testbestellingen tonen in de lijst' },
+  testOrderCreatedMsg: { de: '✓ Testbestellung erstellt', en: '✓ Test order created', tr: '✓ Test siparişi oluşturuldu', ro: '✓ Comandă de test creată', nl: '✓ Testbestelling aangemaakt' },
+  notifTestBtn: { de: 'Testton abspielen', en: 'Play test sound', tr: 'Test sesini çal', ro: 'Redă sunetul de test', nl: 'Testgeluid afspelen' },
+  markSoldOutOn: { de: 'Als „Ausverkauft" markiert', en: 'Marked as "Sold out"', tr: '"Tükendi" olarak işaretlendi', ro: 'Marcat ca „Epuizat"', nl: 'Gemarkeerd als "Uitverkocht"' },
+  markSoldOutOff: { de: 'Als „Ausverkauft" markieren', en: 'Mark as "Sold out"', tr: '"Tükendi" olarak işaretle', ro: 'Marchează ca „Epuizat"', nl: 'Markeren als "Uitverkocht"' },
+  groupShareBtn: { de: 'Per WhatsApp einladen', en: 'Invite via WhatsApp', tr: 'WhatsApp ile davet et', ro: 'Invită prin WhatsApp', nl: 'Uitnodigen via WhatsApp' },
+  groupShareMsg: { de: 'Hey! Lass uns zusammen bei Bodrum Kebap Vechta bestellen 🥙 Tritt mit dem Code {code} bei: https://bodrumkebapvechta.de', en: 'Hey! Let\'s order together from Bodrum Kebap Vechta 🥙 Join with code {code}: https://bodrumkebapvechta.de', tr: 'Selam! Bodrum Kebap Vechta\'dan birlikte sipariş verelim 🥙 {code} koduyla katıl: https://bodrumkebapvechta.de', ro: 'Hei! Hai să comandăm împreună de la Bodrum Kebap Vechta 🥙 Alătură-te cu codul {code}: https://bodrumkebapvechta.de', nl: 'Hé! Laten we samen bestellen bij Bodrum Kebap Vechta 🥙 Doe mee met code {code}: https://bodrumkebapvechta.de' },
+  pendingParticipantsPrefix: { de: 'Noch nicht fertig:', en: 'Not finished yet:', tr: 'Henüz bitirmedi:', ro: 'Încă nu au terminat:', nl: 'Nog niet klaar:' },
+  pendingParticipantsSuffix: { de: '', en: '', tr: '', ro: '', nl: '' },
+  sendAnywayConfirm: { de: 'Manche Personen wählen noch aus. Trotzdem senden?', en: 'Some people are still selecting. Send anyway?', tr: 'Bazı kişiler hâlâ seçim yapıyor. Yine de gönderilsin mi?', ro: 'Unele persoane încă aleg. Trimiți oricum?', nl: 'Sommige mensen zijn nog aan het kiezen. Toch versturen?' },
   elapsedPrefix: { de: 'seit', en: 'since', tr: 'geçen süre', ro: 'de', nl: 'sinds' },
   inPrefix: { de: 'in', en: 'in', tr: 'kalan', ro: 'în', nl: 'over' },
   overduePrefix: { de: 'überfällig seit', en: 'overdue by', tr: 'gecikme', ro: 'întârziere', nl: 'te laat met' },
@@ -751,16 +771,19 @@ function findMenuItemById(id) {
   for (const cat of MENU) { const item = cat.items.find((i) => i.id === id); if (item) return item; }
   return null;
 }
-function applyPriceOverrides(overrides, photoOverrides) {
+function applyPriceOverrides(overrides, photoOverrides, soldOutIds) {
   const hasPrice = overrides && Object.keys(overrides).length > 0;
   const hasPhoto = photoOverrides && Object.keys(photoOverrides).length > 0;
-  if (!hasPrice && !hasPhoto) return MENU;
+  const hasSoldOut = soldOutIds && soldOutIds.length > 0;
+  if (!hasPrice && !hasPhoto && !hasSoldOut) return MENU;
+  const soldOutSet = hasSoldOut ? new Set(soldOutIds) : null;
   return MENU.map((cat) => ({
     ...cat,
     items: cat.items.map((item) => {
       const ov = hasPrice ? overrides[item.id] : null;
       const photoOv = hasPhoto ? photoOverrides[item.id] : null;
-      if (!ov && !photoOv) return item;
+      const isSoldOut = soldOutSet ? soldOutSet.has(item.id) : false;
+      if (!ov && !photoOv && !isSoldOut) return item;
       let next = item;
       if (ov) {
         if (item.priceLarge !== undefined) {
@@ -770,6 +793,7 @@ function applyPriceOverrides(overrides, photoOverrides) {
         }
       }
       if (photoOv) next = { ...next, img: photoOv, imgContain: false };
+      if (isSoldOut) next = { ...next, soldOut: true };
       return next;
     }),
   }));
@@ -876,6 +900,10 @@ async function cleanupOldOrders() {
 function makeShortCode(len = 5) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let out = ''; for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+function makeNumericCode(len = 4) {
+  let out = ''; for (let i = 0; i < len; i++) out += Math.floor(Math.random() * 10);
   return out;
 }
 function logVisit(lang) {
@@ -1670,10 +1698,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
+  const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
+  useEffect(() => { safeGet('siteconfig:soldOut').then((r) => { if (r) setHomeSoldOutIds(r); }); }, []);
+  const [dailyBanner, setDailyBanner] = useState('');
+  useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
   const [surpriseRolling, setSurpriseRolling] = useState(false);
   const rollSurprise = () => {
     setSurpriseRolling(true);
-    const pool = isWeekendDay() ? SURPRISE_ITEMS : SURPRISE_ITEMS.filter((i) => !i.weekend);
+    let pool = isWeekendDay() ? SURPRISE_ITEMS : SURPRISE_ITEMS.filter((i) => !i.weekend);
+    if (homeSoldOutIds.length > 0) pool = pool.filter((i) => !homeSoldOutIds.includes(i.id));
     let count = 0;
     const maxCount = 16;
     const spin = () => {
@@ -1838,6 +1871,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         )}
       </header>
       <MittagsBanner />
+      {dailyBanner && (
+        <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
+          📣 {dailyBanner}
+        </div>
+      )}
       {showWelcomeBack && (
         <div className="py-2.5 px-5 text-center text-sm font-bold relative" style={{ background: GOLD, color: GREEN }}>
           {t('welcomeBackMsg')}
@@ -2095,7 +2133,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
     const itemsList = lines.map(([, v]) => ({ name: v.deName || v.name, qty: v.qty }));
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList, pickupTime: pickupTime || null });
-    setOrderCode(makeShortCode(5));
+    setOrderCode(makeNumericCode(4));
   };
 
   const [cartPop, setCartPop] = useState(0);
@@ -2105,12 +2143,16 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
   const [priceOverrides, setPriceOverrides] = useState({});
+  const [waExtraText, setWaExtraText] = useState('');
   const [photoOverrides, setPhotoOverrides] = useState({});
+  const [soldOutIds, setSoldOutIds] = useState([]);
   useEffect(() => {
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+    safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+    safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
-  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides), [priceOverrides, photoOverrides]);
+  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
   const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
@@ -2156,7 +2198,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const lines = Object.entries(cart);
   const totalCount = lines.reduce((s, [, v]) => s + v.qty, 0);
   const totalPrice = lines.reduce((s, [, v]) => s + v.qty * v.price, 0);
-  const [orderCode, setOrderCode] = useState(() => makeShortCode(5));
+  const [orderCode, setOrderCode] = useState(() => makeNumericCode(4));
 
   const waLink = useMemo(() => {
     if (lines.length === 0) return null;
@@ -2169,6 +2211,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\nBestellcode: ${orderCode}`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
+    if (waExtraText) msg += `\n\n${waExtraText}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [lines, totalPrice, name, note, pickupTime, wheelResult, itemNotes, orderCode]);
 
@@ -2253,7 +2296,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
             const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-            const openFor = () => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+            const openFor = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
@@ -2280,7 +2323,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                   {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
                   <div className="p-3.5">
-                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                    <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
                     {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
                     <div className="text-xs font-bold" style={{ color: CHILI }}>{t('sizeSmall')} {fmt(item.priceSmall)} · {t('sizeLarge')} {fmt(item.priceLarge)}</div>
                   </div>
@@ -2467,10 +2510,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               )}
               <div className="p-3.5">
               <div className="flex items-center justify-between">
-                <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                 <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
-                <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
                 </div>
               </div>
               {qty > 0 && item.sauceChoice && (
@@ -2773,6 +2816,8 @@ function OptionCard({ selected, onClick, children }) {
 function DonerBuilderView({ back, go }) {
   const { t, lang, installPrompt, onInstall } = React.useContext(LangContext);
   const [kind, setKind] = useState(null); // null | 'doener' | 'pasta'
+  const [waExtraText, setWaExtraText] = useState('');
+  useEffect(() => { safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); }); }, []);
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
   const [meat, setMeat] = useState(null);
@@ -2786,14 +2831,14 @@ function DonerBuilderView({ back, go }) {
   const [wheelResult, setWheelResult] = useState(null);
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
-  const [orderCode, setOrderCode] = useState(() => makeShortCode(5));
+  const [orderCode, setOrderCode] = useState(() => makeNumericCode(4));
   const handleSend = () => {
     setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200);
     const itemName = kind === 'pasta'
       ? `${pastaType} (${pastaSauce}${pastaExtras.length ? ', ' + pastaExtras.join(', ') : ''})`
       : `Döner (${base?.label}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
-    setOrderCode(makeShortCode(5));
+    setOrderCode(makeNumericCode(4));
   };
   const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
@@ -2826,6 +2871,7 @@ function DonerBuilderView({ back, go }) {
       if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
       msg += `\n\nBestellcode: ${orderCode}`;
       msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
+    if (waExtraText) msg += `\n\n${waExtraText}`;
       return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     }
     if (!base || !meat || !sauce) return null;
@@ -2837,6 +2883,7 @@ function DonerBuilderView({ back, go }) {
     if (wheelResult && wheelResult.code) msg += `\n\n🎁 Glücksrad-Gewinn: ${wheelResult.prize} (Code: ${wheelResult.code})`;
     msg += `\n\nBestellcode: ${orderCode}`;
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
+    if (waExtraText) msg += `\n\n${waExtraText}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [kind, base, meat, sauce, extras, pastaType, pastaSauce, pastaExtras, name, total, wheelResult, orderCode]);
 
@@ -3033,12 +3080,16 @@ function GroupOrderView({ back }) {
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
   const [priceOverrides, setPriceOverrides] = useState({});
+  const [waExtraText, setWaExtraText] = useState('');
   const [photoOverrides, setPhotoOverrides] = useState({});
+  const [soldOutIds, setSoldOutIds] = useState([]);
   useEffect(() => {
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+    safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+    safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
-  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides), [priceOverrides, photoOverrides]);
+  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
   const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
@@ -3058,7 +3109,8 @@ function GroupOrderView({ back }) {
     const fresh = (await safeGet(`grouporder:${code}`)) || { code, people: [] };
     const people = fresh.people.filter((p) => p.name !== name);
     people.push({ name, items: myLines.map(([key, v]) => ({ name: itemNotes[key] ? `${v.deName || v.name} – ${itemNotes[key]}` : (v.deName || v.name), price: v.price, qty: v.qty })), total: myTotal });
-    const updated = { ...fresh, people };
+    const pending = (fresh.pending || []).filter((p) => p !== name);
+    const updated = { ...fresh, people, pending };
     await safeSet(`grouporder:${code}`, updated); setGroup(updated); setView('summary');
     setBurst(true); setTimeout(() => setBurst(false), 5200);
   };
@@ -3170,13 +3222,27 @@ function GroupOrderView({ back }) {
         <div className="px-5 pt-4 text-center">
           <p className="text-sm mb-4" style={{ color: '#7c6d55' }}>{t('shareCodeWithGroup')}</p>
           <div className="rounded-2xl py-6 mb-4" style={{ background: '#f7f0e2' }}><div className="text-4xl font-black tracking-[0.3em]" style={{ color: GREEN }}>{code}</div></div>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(t('groupShareMsg').replace('{code}', code))}`}
+            target="_blank" rel="noopener noreferrer"
+            className="w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 mb-3"
+            style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 20px rgba(37,211,102,.35)' }}
+          ><MessageCircle size={18} /> {t('groupShareBtn')}</a>
           <button onClick={() => setView('name')} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueToMyOrder')}</button>
         </div>
       )}
       {view === 'name' && (
         <div className="px-5 pt-4">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3.5 rounded-xl text-base font-semibold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-          <button onClick={() => name && setView('order')} disabled={!name} className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-50" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueToMenu')}</button>
+          <button onClick={async () => {
+            if (!name) return;
+            setView('order');
+            const fresh = (await safeGet(`grouporder:${code}`)) || { code, people: [] };
+            const pending = (fresh.pending || []).filter((p) => p !== name);
+            if (!(fresh.people || []).some((p) => p.name === name)) pending.push(name);
+            const updated = { ...fresh, pending };
+            await safeSet(`grouporder:${code}`, updated); setGroup(updated);
+          }} disabled={!name} className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-50" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueToMenu')}</button>
         </div>
       )}
       {view === 'order' && (
@@ -3205,7 +3271,7 @@ function GroupOrderView({ back }) {
                 const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
                 const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-                const openFor = () => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+                const openFor = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
@@ -3232,7 +3298,7 @@ function GroupOrderView({ back }) {
                     <button onClick={openFor} className="text-left bg-white rounded-xl overflow-hidden shadow-sm w-full" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                       {item.img && <img src={item.img} alt={item.name} className="w-full h-36 object-cover" loading="lazy" />}
                       <div className="p-3.5">
-                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+                        <div className="font-bold text-sm mb-1" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
                         {item.desc && <div className="text-[11px] font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}
                         <div className="text-xs font-bold" style={{ color: CHILI }}>{t('sizeSmall')} {fmt(item.priceSmall)} · {t('sizeLarge')} {fmt(item.priceLarge)}</div>
                       </div>
@@ -3418,10 +3484,10 @@ function GroupOrderView({ back }) {
                   )}
                   <div className="p-3.5">
                   <div className="flex items-center justify-between">
-                    <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
+                    <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                     <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
-                    <Stepper qty={qty} onAdd={() => { if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
                     </div>
                   </div>
                   {qty > 0 && item.sauceChoice && (
@@ -3582,7 +3648,22 @@ function GroupOrderView({ back }) {
                   </div>
                 </div>
               ) : (
-                <a href={waFinalLink} target="_blank" rel="noopener noreferrer" onClick={markSent} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('groupSendFinal')}</a>
+                <>
+                  {group.pending && group.pending.length > 0 && (
+                    <div className="mb-3 px-4 py-3 rounded-xl text-xs font-bold text-center" style={{ background: '#fdecd4', color: '#8a5a1f' }}>
+                      ⏳ {t('pendingParticipantsPrefix')} {group.pending.join(', ')} {t('pendingParticipantsSuffix')}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (group.pending && group.pending.length > 0 && !window.confirm(t('sendAnywayConfirm'))) return;
+                      markSent();
+                      window.open(waFinalLink, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                    style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}
+                  ><MessageCircle size={18} /> {t('groupSendFinal')}</button>
+                </>
               )}
             </div>
           )}
@@ -3851,6 +3932,12 @@ function StaffPanelView({ back }) {
   const [ratingScore, setRatingScore] = useState('4.6');
   const [ratingCount, setRatingCount] = useState('293');
   const [ratingMsg, setRatingMsg] = useState('');
+  const [dailyBannerText, setDailyBannerText] = useState('');
+  const [dailyBannerMsg, setDailyBannerMsg] = useState('');
+  const [waTemplateText, setWaTemplateText] = useState('');
+  const [waTemplateMsg, setWaTemplateMsg] = useState('');
+  const [showTestOrders, setShowTestOrders] = useState(false);
+  const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
   const [menuSearch, setMenuSearch] = useState('');
   const [priceOverrides, setPriceOverrides] = useState({});
@@ -3858,6 +3945,7 @@ function StaffPanelView({ back }) {
   const [editSmall, setEditSmall] = useState('');
   const [editLarge, setEditLarge] = useState('');
   const [menuSaveMsg, setMenuSaveMsg] = useState('');
+  const [soldOutIds, setSoldOutIdsStaff] = useState([]);
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [photoSearch, setPhotoSearch] = useState('');
   const [editingPhotoItem, setEditingPhotoItem] = useState(null);
@@ -3886,6 +3974,8 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'settings') {
       safeGet('siteconfig:rating').then((r) => { if (r) { setRatingScore(String(r.score)); setRatingCount(String(r.count)); } });
+      safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBannerText(r.text); });
+      safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaTemplateText(r.text); });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -3896,6 +3986,7 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'menu') {
       safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+      safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIdsStaff(r); });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -3910,14 +4001,36 @@ function StaffPanelView({ back }) {
     setOrders((list) => list.map((x) => x.key === o.key ? { ...x, value: updated } : x));
   };
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
+  const sortedOrders = useMemo(() => {
+    const visible = showTestOrders ? orders : orders.filter((o) => !o.value.test);
+    return visible.slice().sort((a, b) => {
+      const aReady = a.value.status === 'ready';
+      const bReady = b.value.status === 'ready';
+      if (aReady !== bReady) return aReady ? 1 : -1; // unready first
+      const aPickup = parsePickupTimeToday(a.value.pickupTime);
+      const bPickup = parsePickupTimeToday(b.value.pickupTime);
+      if (aPickup && bPickup) return aPickup.getTime() - bPickup.getTime();
+      if (aPickup) return -1;
+      if (bPickup) return 1;
+      return a.value.createdAt - b.value.createdAt; // oldest (most overdue) first
+    });
+  }, [orders, showTestOrders]);
   const knownOrderKeysRef = useRef(null);
   const [nowTick, setNowTick] = useState(Date.now());
+  const audioCtxRef = useRef(null);
+  const unlockAudio = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx && !audioCtxRef.current) audioCtxRef.current = new AudioCtx();
+      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
+    } catch {}
+  };
   const notifyNewOrder = () => {
     try {
       if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        const ctx = new AudioCtx();
+      const ctx = audioCtxRef.current;
+      if (ctx) {
+        if (ctx.state === 'suspended') ctx.resume();
         [0, 0.15].forEach((delay) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -3949,6 +4062,31 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:rating', { score, count });
     setRatingMsg(t('savedMsg'));
     setTimeout(() => setRatingMsg(''), 2500);
+  };
+  const saveDailyBanner = async () => {
+    await safeSet('siteconfig:dailyBanner', { text: dailyBannerText.trim(), updatedAt: Date.now() });
+    setDailyBannerMsg(t('savedMsg'));
+    setTimeout(() => setDailyBannerMsg(''), 2500);
+  };
+  const clearDailyBanner = async () => {
+    setDailyBannerText('');
+    await safeSet('siteconfig:dailyBanner', { text: '', updatedAt: Date.now() });
+  };
+  const saveWaTemplate = async () => {
+    await safeSet('siteconfig:waTemplate', { text: waTemplateText.trim() });
+    setWaTemplateMsg(t('savedMsg'));
+    setTimeout(() => setWaTemplateMsg(''), 2500);
+  };
+  const createTestOrder = async () => {
+    const testCode = `TEST-${makeNumericCode(4)}`;
+    await safeSet(`order:${testCode}`, {
+      code: testCode, status: 'preparing', createdAt: Date.now(), test: true,
+      itemCount: 2, total: 12.5, name: 'Test',
+      items: [{ name: '1x Kalb Kebap', qty: 1 }, { name: '1x Fritz-Kola', qty: 1 }],
+      pickupTime: null,
+    });
+    setTestOrderMsg(t('testOrderCreatedMsg'));
+    setTimeout(() => setTestOrderMsg(''), 3000);
   };
 
   const menuSearchResults = useMemo(() => {
@@ -3995,6 +4133,13 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:priceOverrides', next);
     setPriceOverrides(next);
     setEditingItem(null);
+  };
+  const toggleSoldOut = async () => {
+    if (!editingItem) return;
+    const isOut = soldOutIds.includes(editingItem.id);
+    const next = isOut ? soldOutIds.filter((id) => id !== editingItem.id) : [...soldOutIds, editingItem.id];
+    await safeSet('siteconfig:soldOut', next);
+    setSoldOutIdsStaff(next);
   };
 
   const photoSearchResults = useMemo(() => {
@@ -4044,8 +4189,8 @@ function StaffPanelView({ back }) {
 
       {!ok ? (
         <div className="px-5 pt-4">
-          <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '0021' && setOk(true)} type="password" inputMode="numeric" placeholder="PIN ••••" className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.3em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-          <button onClick={() => pin === '0021' && setOk(true)} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('loginBtn')}</button>
+          <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '0021' && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="PIN ••••" className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.3em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+          <button onClick={() => { if (pin === '0021') { setOk(true); unlockAudio(); } }} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('loginBtn')}</button>
         </div>
       ) : (
         <>
@@ -4104,14 +4249,14 @@ function StaffPanelView({ back }) {
             <div className="px-5">
               <div className="flex items-center gap-2 mb-3"><span className="text-lg">📦</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffOrdersTab')}</h3></div>
               {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
-              {orders.length === 0 && (
+              {sortedOrders.length === 0 && (
                 <div className="text-center py-14 opacity-70">
                   <div className="text-5xl mb-3">📭</div>
                   <p className="text-sm font-semibold" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>
                 </div>
               )}
               <div className="flex flex-col gap-2.5">
-                {orders.map((o) => {
+                {sortedOrders.map((o) => {
                   const elapsedMs = nowTick - o.value.createdAt;
                   const isStuck = o.value.status !== 'ready' && elapsedMs > 15 * 60 * 1000;
                   const pickupTarget = o.value.pickupTime ? parsePickupTimeToday(o.value.pickupTime) : null;
@@ -4120,7 +4265,7 @@ function StaffPanelView({ back }) {
                   <div key={o.key} className="bg-white rounded-xl p-4 shadow-sm" style={isStuck ? { border: `2px solid ${CHILI}`, background: '#fff5f5' } : {}}>
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <div className="font-black text-sm flex items-center gap-1.5" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}{isStuck && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: CHILI }}>⏰ {t('stuckOrderBadge')}</span>}</div>
+                        <div className="font-black text-sm flex items-center gap-1.5" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}{o.value.test && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: '#8a7c62' }}>🧪 TEST</span>}{isStuck && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: CHILI }}>⏰ {t('stuckOrderBadge')}</span>}</div>
                         <div className="text-[11px] font-bold mt-0.5" style={{ color: isStuck ? CHILI : ORANGE }}>⏱ {t('elapsedPrefix')} {formatElapsedMMSS(elapsedMs)}</div>
                         {pickupTarget && (
                           <div className="text-[11px] font-bold mt-0.5" style={{ color: pickupDiffMs > 0 ? GREEN : CHILI }}>
@@ -4145,16 +4290,46 @@ function StaffPanelView({ back }) {
                   );
                 })}
               </div>
-              {orders.length > 0 && (
+              {sortedOrders.length > 0 && (
                 <div className="mt-4 rounded-xl p-4 flex items-center justify-between" style={{ background: GREEN }}>
                   <span className="text-sm font-bold" style={{ color: GOLD }}>{t('ordersTotalLabel')}</span>
-                  <span className="font-black text-lg" style={{ color: GOLD }}>{fmt(orders.reduce((s, o) => s + (o.value.total || 0), 0))}</span>
+                  <span className="font-black text-lg" style={{ color: GOLD }}>{fmt(sortedOrders.reduce((s, o) => s + (o.value.total || 0), 0))}</span>
                 </div>
               )}
             </div>
           )}
           {tab === 'settings' && (
             <div className="px-5">
+              <div className="bg-white rounded-xl p-5 mb-3">
+                <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('dailyBannerLabel')}</div>
+                <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+                <div className="flex gap-2">
+                  <button onClick={saveDailyBanner} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                  <button onClick={clearDailyBanner} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>
+                </div>
+                {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
+              </div>
+              <div className="bg-white rounded-xl p-5 mb-3">
+                <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>{t('waTemplateLabel')}</div>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
+                <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+                <button onClick={saveWaTemplate} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                {waTemplateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{waTemplateMsg}</p>}
+              </div>
+              <div className="bg-white rounded-xl p-5 mb-3">
+                <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>{t('testOrderLabel')}</div>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
+                <button onClick={createTestOrder} className="w-full py-2.5 rounded-lg font-bold text-sm text-white mb-2" style={{ background: ORANGE }}>🧪 {t('testOrderBtn')}</button>
+                <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
+                  <input type="checkbox" checked={showTestOrders} onChange={(e) => setShowTestOrders(e.target.checked)} />
+                  {t('showTestOrdersLabel')}
+                </label>
+                {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
+              </div>
+              <div className="bg-white rounded-xl p-5 mb-3">
+                <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('notifTestLabel')}</div>
+                <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: ORANGE }}>🔔 {t('notifTestBtn')}</button>
+              </div>
               <div className="bg-white rounded-xl p-5">
                 <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('googleRatingLabel')}</div>
                 <div className="flex gap-2 mb-3">
@@ -4233,6 +4408,11 @@ function StaffPanelView({ back }) {
                   ) : (
                     <input value={editSmall} onChange={(e) => setEditSmall(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN }} />
                   )}
+                  <div className="flex gap-2 mb-3">
+                    <button onClick={toggleSoldOut} className="flex-1 py-2.5 rounded-lg font-bold text-sm" style={soldOutIds.includes(editingItem.id) ? { background: CHILI, color: '#fff' } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>
+                      {soldOutIds.includes(editingItem.id) ? `✓ ${t('markSoldOutOn')}` : t('markSoldOutOff')}
+                    </button>
+                  </div>
                   <div className="flex gap-2">
                     <button onClick={saveMenuPrice} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                     {priceOverrides[editingItem.id] && <button onClick={resetMenuPrice} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>}
