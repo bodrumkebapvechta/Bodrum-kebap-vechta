@@ -346,8 +346,8 @@ const UI = {
   installHelpIOS: { de: 'Tippe unten auf Teilen 􀈂 und dann auf „Zum Home-Bildschirm".', en: 'Tap the Share button below, then "Add to Home Screen".', tr: 'Aşağıdaki Paylaş simgesine, ardından "Ana Ekrana Ekle"ye dokun.', ro: 'Atinge butonul Distribuie de mai jos, apoi „Adaugă pe ecranul principal".', nl: 'Tik op Delen hieronder en dan op "Zet op beginscherm".' , sq: 'Prek butonin Ndaj poshtë, pastaj \\"Shto në ekranin kryesor\\".', ku: 'Li jêr bişkoja Parve bike bitikîne, paşê \\"Li Ekrana Destpêkê Zêde bike\\".'},
   installHelpAndroid: { de: 'Tippe oben rechts auf das Menü ⋮ und dann auf „App installieren" oder „Zum Startbildschirm hinzufügen".', en: 'Tap the ⋮ menu top right, then "Install app" or "Add to Home Screen".', tr: 'Sağ üstteki ⋮ menüsüne dokun, sonra "Uygulamayı yükle" veya "Ana Ekrana Ekle" seç.', ro: 'Atinge meniul ⋮ din dreapta sus, apoi „Instalează aplicația".', nl: 'Tik op het ⋮-menu rechtsboven, dan op "App installeren".' , sq: 'Prek menynë ⋮ lart djathtas, pastaj \\"Instalo aplikacionin\\" ose \\"Shto te ekrani kryesor\\".', ku: 'Li jor rastê menûya ⋮ bitikîne, paşê \\"Sepan saz bike\\" an \\"Li Ekrana Destpêkê Zêde bike\\".'},
   installHelpClose: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen' , sq: 'E kuptova', ku: 'Fêm kir'},
-  downloadReceiptBtn: { de: 'Fiş als Bild speichern', en: 'Save receipt as image', tr: 'Fişi görsel olarak kaydet', ro: 'Salvează bonul ca imagine', nl: 'Bon opslaan als afbeelding', sq: 'Ruaj faturën si imazh' , ku: 'Fîşê wek wêne tomar bike'},
-  showReceiptBtn: { de: 'Fiş anzeigen', en: 'Show receipt', tr: 'Fişi göster', ro: 'Arată bonul', nl: 'Bon tonen', sq: 'Shfaq faturën' , ku: 'Fîşê nîşan bide'},
+  downloadReceiptBtn: { de: 'Beleg als Bild speichern', en: 'Save receipt as image', tr: 'Fişi görsel olarak kaydet', ro: 'Salvează bonul ca imagine', nl: 'Bon opslaan als afbeelding', sq: 'Ruaj faturën si imazh' , ku: 'Fîşê wek wêne tomar bike'},
+  showReceiptBtn: { de: 'Beleg anzeigen', en: 'Show receipt', tr: 'Fişi göster', ro: 'Arată bonul', nl: 'Bon tonen', sq: 'Shfaq faturën' , ku: 'Fîşê nîşan bide'},
 };
 
 const CATEGORY_IMAGES = {
