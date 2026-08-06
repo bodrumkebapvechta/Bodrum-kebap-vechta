@@ -345,6 +345,7 @@ const UI = {
   installHelpIOS: { de: 'Tippe unten auf Teilen 􀈂 und dann auf „Zum Home-Bildschirm".', en: 'Tap the Share button below, then "Add to Home Screen".', tr: 'Aşağıdaki Paylaş simgesine, ardından "Ana Ekrana Ekle"ye dokun.', ro: 'Atinge butonul Distribuie de mai jos, apoi „Adaugă pe ecranul principal".', nl: 'Tik op Delen hieronder en dan op "Zet op beginscherm".' , sq: 'Prek butonin Ndaj poshtë, pastaj \\"Shto në ekranin kryesor\\".'},
   installHelpAndroid: { de: 'Tippe oben rechts auf das Menü ⋮ und dann auf „App installieren" oder „Zum Startbildschirm hinzufügen".', en: 'Tap the ⋮ menu top right, then "Install app" or "Add to Home Screen".', tr: 'Sağ üstteki ⋮ menüsüne dokun, sonra "Uygulamayı yükle" veya "Ana Ekrana Ekle" seç.', ro: 'Atinge meniul ⋮ din dreapta sus, apoi „Instalează aplicația".', nl: 'Tik op het ⋮-menu rechtsboven, dan op "App installeren".' , sq: 'Prek menynë ⋮ lart djathtas, pastaj \\"Instalo aplikacionin\\" ose \\"Shto te ekrani kryesor\\".'},
   installHelpClose: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen' , sq: 'E kuptova'},
+  downloadReceiptBtn: { de: 'Fiş als Bild speichern', en: 'Save receipt as image', tr: 'Fişi görsel olarak kaydet', ro: 'Salvează bonul ca imagine', nl: 'Bon opslaan als afbeelding', sq: 'Ruaj faturën si imazh' },
 };
 
 const CATEGORY_IMAGES = {
@@ -916,6 +917,174 @@ function makeShortCode(len = 5) {
 function makeNumericCode(len = 4) {
   let out = ''; for (let i = 0; i < len; i++) out += Math.floor(Math.random() * 10);
   return out;
+}
+function wrapCanvasText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  words.forEach((w) => {
+    const test = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && cur) {
+      lines.push(cur);
+      cur = w;
+    } else {
+      cur = test;
+    }
+  });
+  if (cur) lines.push(cur);
+  return lines;
+}
+async function generateReceiptImage({ items, total, code, name, pickupTime, note, t }) {
+  const W = 640;
+  const PAD = 36;
+  const scale = 2;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // measure height first with a dry run
+  const measure = () => {
+    let y = 0;
+    y += 150; // header
+    y += 70; // code box
+    y += 36; // items title
+    items.forEach((it) => {
+      ctx.font = '600 20px -apple-system, Segoe UI, Arial';
+      const nameLines = wrapCanvasText(ctx, `${it.qty}x ${it.name}`, W - PAD * 2 - 90);
+      y += nameLines.length * 26 + 10;
+    });
+    y += 30; // dashed line
+    y += 50; // total row
+    if (pickupTime) y += 34;
+    if (name) y += 30;
+    if (note) y += 30 + 20;
+    y += 60; // footer
+    return y;
+  };
+  ctx.font = '600 20px -apple-system, Segoe UI, Arial';
+  const H = Math.max(500, measure());
+
+  canvas.width = W * scale;
+  canvas.height = H * scale;
+  ctx.scale(scale, scale);
+
+  // background
+  ctx.fillStyle = '#FFF6EA';
+  ctx.fillRect(0, 0, W, H);
+
+  // header band
+  ctx.fillStyle = '#153826';
+  ctx.fillRect(0, 0, W, 130);
+  ctx.fillStyle = '#FFC738';
+  ctx.font = '900 26px -apple-system, Segoe UI, Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('🥙 BODRUM KEBAP', W / 2, 55);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 15px -apple-system, Segoe UI, Arial';
+  ctx.fillText('VECHTA · Oyther Straße 37', W / 2, 82);
+  ctx.font = '600 13px -apple-system, Segoe UI, Arial';
+  ctx.fillStyle = '#d9cdb4';
+  const now = new Date();
+  ctx.fillText(now.toLocaleDateString('de-DE') + '  ·  ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }), W / 2, 105);
+
+  let y = 150;
+
+  // code box
+  ctx.fillStyle = '#153826';
+  const boxH = 56;
+  const r = 14;
+  ctx.beginPath();
+  ctx.moveTo(PAD + r, y);
+  ctx.arcTo(W - PAD, y, W - PAD, y + boxH, r);
+  ctx.arcTo(W - PAD, y + boxH, PAD, y + boxH, r);
+  ctx.arcTo(PAD, y + boxH, PAD, y, r);
+  ctx.arcTo(PAD, y, W - PAD, y, r);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#a4906c';
+  ctx.textAlign = 'left';
+  ctx.font = '700 11px -apple-system, Segoe UI, Arial';
+  ctx.fillStyle = '#FFC738';
+  ctx.fillText('BESTELLCODE', PAD + 18, y + 24);
+  ctx.font = '900 24px -apple-system, Segoe UI, Arial';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(code, PAD + 18, y + 46);
+  y += boxH + 30;
+
+  // items title
+  ctx.fillStyle = '#153826';
+  ctx.font = '800 14px -apple-system, Segoe UI, Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('BESTELLUNG', PAD, y);
+  y += 22;
+  ctx.strokeStyle = '#e3d5bd';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y); ctx.stroke();
+  y += 20;
+
+  items.forEach((it) => {
+    ctx.font = '600 15px -apple-system, Segoe UI, Arial';
+    ctx.fillStyle = '#153826';
+    ctx.textAlign = 'left';
+    const nameLines = wrapCanvasText(ctx, `${it.qty}x ${it.name}`, W - PAD * 2 - 90);
+    nameLines.forEach((ln, i) => {
+      ctx.fillText(ln, PAD, y + i * 22);
+    });
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#E65A0A';
+    ctx.font = '700 15px -apple-system, Segoe UI, Arial';
+    ctx.fillText(fmt(it.price), W - PAD, y);
+    y += nameLines.length * 22 + 12;
+  });
+
+  y += 6;
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = '#c9b896';
+  ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y); ctx.stroke();
+  ctx.setLineDash([]);
+  y += 32;
+
+  ctx.textAlign = 'left';
+  ctx.font = '800 17px -apple-system, Segoe UI, Arial';
+  ctx.fillStyle = '#153826';
+  ctx.fillText('GESAMT', PAD, y);
+  ctx.textAlign = 'right';
+  ctx.font = '900 22px -apple-system, Segoe UI, Arial';
+  ctx.fillStyle = '#153826';
+  ctx.fillText(fmt(total), W - PAD, y);
+  y += 28;
+
+  if (pickupTime) {
+    ctx.textAlign = 'left';
+    ctx.font = '600 14px -apple-system, Segoe UI, Arial';
+    ctx.fillStyle = '#7c6d55';
+    ctx.fillText(`🕐 Abholzeit: ${pickupTime}`, PAD, y);
+    y += 26;
+  }
+  if (name) {
+    ctx.textAlign = 'left';
+    ctx.font = '600 14px -apple-system, Segoe UI, Arial';
+    ctx.fillStyle = '#7c6d55';
+    ctx.fillText(`👤 ${name}`, PAD, y);
+    y += 22;
+  }
+  if (note) {
+    ctx.textAlign = 'left';
+    ctx.font = '600 13px -apple-system, Segoe UI, Arial';
+    ctx.fillStyle = '#7c6d55';
+    const noteLines = wrapCanvasText(ctx, `📝 ${note}`, W - PAD * 2);
+    noteLines.forEach((ln, i) => ctx.fillText(ln, PAD, y + i * 18));
+    y += noteLines.length * 18 + 16;
+  }
+
+  y += 20;
+  ctx.textAlign = 'center';
+  ctx.font = '700 13px -apple-system, Segoe UI, Arial';
+  ctx.fillStyle = '#a4906c';
+  ctx.fillText('Vielen Dank für deine Bestellung! 🙏', W / 2, y);
+  ctx.font = '600 11px -apple-system, Segoe UI, Arial';
+  ctx.fillText('bodrumkebapvechta.de', W / 2, y + 20);
+
+  return canvas.toDataURL('image/png');
 }
 function logVisit(lang) {
   try {
@@ -2139,12 +2308,34 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
   const [itemNotes, setItemNotes] = useState({});
   const [burst, setBurst] = useState(false);
+  const [sentSnapshot, setSentSnapshot] = useState(null);
+  const [receiptBusy, setReceiptBusy] = useState(false);
   const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
   const handleSend = () => {
     setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
-    const itemsList = lines.map(([, v]) => ({ name: v.deName || v.name, qty: v.qty }));
-    safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList, pickupTime: pickupTime || null });
+    const itemsList = lines.map(([, v]) => ({ name: v.deName || v.name, qty: v.qty, price: v.qty * v.price }));
+    safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList.map(({ name, qty }) => ({ name, qty })), pickupTime: pickupTime || null });
+    setSentSnapshot({ code: orderCode, items: itemsList, total: totalPrice, name, pickupTime, note });
     setOrderCode(makeNumericCode(4));
+  };
+  const downloadReceipt = async () => {
+    if (!sentSnapshot) return;
+    setReceiptBusy(true);
+    try {
+      const dataUrl = await generateReceiptImage(sentSnapshot);
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `bestellung-${sentSnapshot.code}.png`, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Bestellung', text: `Bodrum Kebap Vechta · ${sentSnapshot.code}` });
+      } else {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `bestellung-${sentSnapshot.code}.png`;
+        a.click();
+      }
+    } catch {}
+    setReceiptBusy(false);
   };
 
   const [cartPop, setCartPop] = useState(0);
@@ -2780,7 +2971,8 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                     <span className="font-black text-lg" style={{ color: GREEN }}>{fmt(totalPrice)}</span>
                   </div>
                 </div>
-                <button onClick={() => go('track', { orderCode })} className="w-full flex items-center justify-center gap-2 mb-6 py-3 rounded-xl font-bold text-sm" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8', animation: 'slideUpFade .5s ease .44s both' }}><Timer size={16} /> {t('trackOrderBtn')} ({orderCode})</button>
+                <button onClick={() => go('track', { orderCode: sentSnapshot?.code || orderCode })} className="w-full flex items-center justify-center gap-2 mb-3 py-3 rounded-xl font-bold text-sm" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8', animation: 'slideUpFade .5s ease .44s both' }}><Timer size={16} /> {t('trackOrderBtn')} ({sentSnapshot?.code || orderCode})</button>
+                <button onClick={downloadReceipt} disabled={receiptBusy} className="w-full flex items-center justify-center gap-2 mb-6 py-3 rounded-xl font-bold text-sm disabled:opacity-50" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd`, animation: 'slideUpFade .5s ease .47s both' }}><span className="text-base">🧾</span> {receiptBusy ? '…' : t('downloadReceiptBtn')}</button>
                 <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .5s both' }}>
                   <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('newOrderBtn')}</button>
                   <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
@@ -2878,13 +3070,35 @@ function DonerBuilderView({ back, go }) {
   const [sent, setSent] = useState(false);
   const [burst, setBurst] = useState(false);
   const [orderCode, setOrderCode] = useState(() => makeNumericCode(4));
+  const [sentSnapshot, setSentSnapshot] = useState(null);
+  const [receiptBusy, setReceiptBusy] = useState(false);
   const handleSend = () => {
     setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200);
     const itemName = kind === 'pasta'
       ? `${pastaType} (${pastaSauce}${pastaExtras.length ? ', ' + pastaExtras.join(', ') : ''})`
       : `Döner (${base?.label}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
+    setSentSnapshot({ code: orderCode, items: [{ name: itemName, qty: 1, price: total }], total, name, pickupTime: null, note: '' });
     setOrderCode(makeNumericCode(4));
+  };
+  const downloadReceipt = async () => {
+    if (!sentSnapshot) return;
+    setReceiptBusy(true);
+    try {
+      const dataUrl = await generateReceiptImage(sentSnapshot);
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `bestellung-${sentSnapshot.code}.png`, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Bestellung', text: `Bodrum Kebap Vechta · ${sentSnapshot.code}` });
+      } else {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `bestellung-${sentSnapshot.code}.png`;
+        a.click();
+      }
+    } catch {}
+    setReceiptBusy(false);
   };
   const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
@@ -3041,6 +3255,7 @@ function DonerBuilderView({ back, go }) {
           </div>
           <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
           <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
+          <button onClick={downloadReceipt} disabled={receiptBusy} className="w-full flex items-center justify-center gap-2 mb-3 py-3 rounded-xl font-bold text-sm disabled:opacity-50" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd` }}><span className="text-base">🧾</span> {receiptBusy ? '…' : t('downloadReceiptBtn')}</button>
           <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
             <button onClick={resetBuilder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
             <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
