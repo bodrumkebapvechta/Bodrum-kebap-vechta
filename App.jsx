@@ -46,306 +46,307 @@ const FRITZ_KOLA_SUPERZERO_IMG = "/fritz-kola-superzero.jpg";
 const FRITZ_MISCHMASCH_IMG = "/fritz-mischmasch.jpg";
 
 /* ============ I18N ============ */
-const LANGS = ['de', 'en', 'tr', 'ro', 'nl', 'sq'];
-const LANG_NAMES = { de: 'Deutsch', en: 'English', tr: 'Türkçe', ro: 'Română', nl: 'Nederlands', sq: 'Shqip' };
-const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧', tr: '🇹🇷', ro: '🇷🇴', nl: '🇳🇱', sq: '🇦🇱' };
+const LANGS = ['de', 'en', 'tr', 'ro', 'nl', 'sq', 'ku'];
+const LANG_NAMES = { de: 'Deutsch', en: 'English', tr: 'Türkçe', ro: 'Română', nl: 'Nederlands', sq: 'Shqip', ku: 'Kurdî' };
+const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧', tr: '🇹🇷', ro: '🇷🇴', nl: '🇳🇱', sq: '🇦🇱', ku: '☀️' };
 
 const UI = {
-  navExtras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: 'Extra’s' , sq: 'Ekstra'},
-  navMenu: { de: 'Speisekarte', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menukaart' , sq: 'Menuja'},
-  navGallery: { de: 'Galerie', en: 'Gallery', tr: 'Galeri', ro: 'Galerie', nl: 'Galerij' , sq: 'Galeria'},
-  navContact: { de: 'Kontakt', en: 'Contact', tr: 'İletişim', ro: 'Contact', nl: 'Contact' , sq: 'Kontakt'},
-  navStaff: { de: 'Personal', en: 'Staff', tr: 'Personel', ro: 'Personal', nl: 'Personeel' , sq: 'Stafi'},
-  navStaffArea: { de: 'Personal-Bereich', en: 'Staff Area', tr: 'Personel Alanı', ro: 'Zonă Personal', nl: 'Personeelsgedeelte' , sq: 'Zona e Stafit'},
-  navTrackOrder: { de: 'Bestellung verfolgen', en: 'Track order', tr: 'Siparişi takip et', ro: 'Urmărește comanda', nl: 'Bestelling volgen' , sq: 'Ndiq porosinë'},
-  titleTrack: { de: 'BESTELLUNG VERFOLGEN', en: 'TRACK ORDER', tr: 'SİPARİŞ TAKİBİ', ro: 'URMĂRIRE COMANDĂ', nl: 'BESTELLING VOLGEN' , sq: 'NDIQ POROSINË'},
-  trackCodePh: { de: 'Bestellcode', en: 'Order code', tr: 'Sipariş kodu', ro: 'Cod comandă', nl: 'Bestelcode' , sq: 'Kodi i porosisë'},
-  trackOrderBtn: { de: 'Bestellung verfolgen', en: 'Track order', tr: 'Siparişi takip et', ro: 'Urmărește comanda', nl: 'Bestelling volgen' , sq: 'Ndiq porosinë'},
-  orderStatusReady: { de: 'Fertig, komm vorbei! 🎉', en: 'Ready, come pick it up! 🎉', tr: 'Hazır, gelebilirsin! 🎉', ro: 'Gata, poți veni! 🎉', nl: 'Klaar, kom langs! 🎉' , sq: 'Gati, eja merre! 🎉'},
-  orderStatusPreparing: { de: 'Wird zubereitet', en: 'Being prepared', tr: 'Hazırlanıyor', ro: 'Se pregătește', nl: 'Wordt bereid' , sq: 'Po përgatitet'},
-  orderCodeLabel: { de: 'Code', en: 'Code', tr: 'Kod', ro: 'Cod', nl: 'Code' , sq: 'Kodi'},
-  staffOrdersTab: { de: 'Bestellungen', en: 'Orders', tr: 'Siparişler', ro: 'Comenzi', nl: 'Bestellingen' , sq: 'Porositë'},
-  staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' , sq: 'Cilësimet'},
-  staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' , sq: 'Statistikat'},
-  staffMenuTab: { de: 'Preise', en: 'Prices', tr: 'Fiyatlar', ro: 'Prețuri', nl: 'Prijzen' , sq: 'Çmimet'},
-  staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" , sq: 'Fotot'},
-  staffWelcomeTitle: { de: 'Willkommen zurück!', en: 'Welcome back!', tr: 'Tekrar hoş geldin!', ro: 'Bine ai revenit!', nl: 'Welkom terug!' , sq: 'Mirë se erdhe përsëri!'},
-  staffWelcomeSub: { de: 'Wähle einen Bereich unten aus', en: 'Choose an area below', tr: 'Aşağıdan bir bölüm seç', ro: 'Alege o secțiune mai jos', nl: 'Kies hieronder een gebied' , sq: 'Zgjidh një seksion më poshtë'},
-  menuSearchPh: { de: 'Gericht suchen...', en: 'Search dish...', tr: 'Ürün ara...', ro: 'Caută fel...', nl: 'Gerecht zoeken...' , sq: 'Kërko një gjellë...'},
-  editedBadge: { de: 'bearbeitet', en: 'edited', tr: 'düzenlendi', ro: 'editat', nl: 'bewerkt' , sq: 'ndryshuar'},
-  resetBtn: { de: 'Zurücksetzen', en: 'Reset', tr: 'Sıfırla', ro: 'Resetează', nl: 'Resetten' , sq: 'Rivendos'},
-  cancelBtn: { de: 'Abbrechen', en: 'Cancel', tr: 'Vazgeç', ro: 'Anulează', nl: 'Annuleren' , sq: 'Anulo'},
-  editedPricesCount: { de: 'Preis(e) angepasst', en: 'price(s) adjusted', tr: 'fiyat düzenlendi', ro: 'prețuri ajustate', nl: 'prijzen aangepast' , sq: 'çmim(e) të ndryshuar'},
-  photoUrlHint: { de: 'Füge einen Bild-Link ein (z.B. von einem Foto-Hosting-Dienst). Direkte Datei-Uploads sind hier noch nicht möglich.', en: 'Paste an image link (e.g. from a photo hosting service). Direct file uploads are not yet possible here.', tr: 'Bir resim linki yapıştır (örn. bir fotoğraf barındırma servisinden). Doğrudan dosya yükleme henüz mümkün değil.', ro: 'Adaugă un link de imagine (de ex. de la un serviciu de găzduire foto). Încărcarea directă a fișierelor nu este încă posibilă aici.', nl: 'Plak een afbeeldingslink (bijv. van een fotohostingdienst). Direct bestanden uploaden kan hier nog niet.' , sq: 'Ngjit një lidhje foto (p.sh. nga një shërbim hostimi fotosh). Ngarkimi direkt i skedarëve nuk është ende i mundur këtu.'},
-  visitsToday: { de: 'Besuche heute', en: 'Visits today', tr: 'Bugünkü ziyaret', ro: 'Vizite azi', nl: 'Bezoeken vandaag' , sq: 'Vizita sot'},
-  visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' , sq: 'Vizitat e fundit'},
-  byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' , sq: 'SIPAS GJUHËS'},
-  byDevice: { de: 'NACH GERÄT', en: 'BY DEVICE', tr: 'CİHAZA GÖRE', ro: 'DUPĂ DISPOZITIV', nl: 'PER APPARAAT' , sq: 'SIPAS PAJISJES'},
-  analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.'},
-  trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.'},
-  surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!'},
-  surpriseTitle: { de: 'Wie wäre es damit?', en: 'How about this?', tr: 'Buna ne dersin?', ro: 'Ce zici de asta?', nl: 'Wat dacht je hiervan?' , sq: 'Si të duket kjo?'},
-  surpriseRolling: { de: 'Wir überlegen...', en: 'Thinking...', tr: 'Düşünüyoruz...', ro: 'Ne gândim...', nl: 'We denken na...' , sq: 'Po mendojmë...'},
-  surpriseWantIt: { de: 'Ja, das will ich!', en: 'Yes, I want this!', tr: 'Evet, bunu istiyorum!', ro: 'Da, vreau asta!', nl: 'Ja, dit wil ik!' , sq: 'Po, e dua këtë!'},
-  surpriseAgain: { de: 'Was anderes zeigen', en: 'Show me something else', tr: 'Başka bir şey söyle', ro: 'Arată-mi altceva', nl: 'Toon iets anders' , sq: 'Trego diçka tjetër'},
-  noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' , sq: 'Ende pa porosi'},
-  deleteOrderBtn: { de: 'Löschen (z.B. falls nicht per WhatsApp abgeschickt)', en: 'Delete (e.g. if not actually sent via WhatsApp)', tr: 'Sil (örn. WhatsApp\'tan gerçekten gönderilmediyse)', ro: 'Șterge (ex. dacă nu a fost trimis efectiv prin WhatsApp)', nl: 'Verwijderen (bijv. als niet echt via WhatsApp verstuurd)' , sq: 'Fshi (p.sh. nëse nuk u dërgua nga WhatsApp)'},
-  deleteFailedMsg: { de: '⚠️ Löschen fehlgeschlagen — Datenbankberechtigung prüfen', en: '⚠️ Delete failed — check database permissions', tr: '⚠️ Silme başarısız — veritabanı izinlerini kontrol edin', ro: '⚠️ Ștergere eșuată — verifică permisiunile bazei de date', nl: '⚠️ Verwijderen mislukt — controleer databaserechten' , sq: '⚠️ Fshirja dështoi — kontrollo lejet e bazës së të dhënave'},
-  ordersTotalLabel: { de: 'GESAMT (angezeigte Bestellungen)', en: 'TOTAL (shown orders)', tr: 'TOPLAM (görüntülenen siparişler)', ro: 'TOTAL (comenzi afișate)', nl: 'TOTAAL (getoonde bestellingen)' , sq: 'GJITHSEJ (porositë e shfaqura)'},
-  stuckOrderBadge: { de: 'ÜBERFÄLLIG', en: 'OVERDUE', tr: 'GECİKTİ', ro: 'ÎNTÂRZIATĂ', nl: 'TE LAAT' , sq: 'VONESË'},
-  soldOutBadge: { de: 'AUSVERKAUFT', en: 'SOLD OUT', tr: 'TÜKENDİ', ro: 'EPUIZAT', nl: 'UITVERKOCHT' , sq: 'I SHITUR'},
-  notifTestLabel: { de: 'Benachrichtigung testen', en: 'Test notification', tr: 'Bildirimi test et', ro: 'Testează notificarea', nl: 'Melding testen' , sq: 'Testo njoftimin'},
-  dailyBannerLabel: { de: 'Ankündigung des Tages', en: "Today's announcement", tr: 'Günün duyurusu', ro: 'Anunțul zilei', nl: 'Aankondiging van vandaag' , sq: 'Njoftimi i ditës'},
-  dailyBannerPh: { de: 'z.B. Heute frischer Sucuk geliefert 🎉', en: 'e.g. Fresh sucuk delivered today 🎉', tr: 'örn. Bugün taze sucuk geldi 🎉', ro: 'ex. Astăzi a sosit sucuk proaspăt 🎉', nl: 'bijv. Vandaag verse sucuk geleverd 🎉' , sq: 'p.sh. Sot erdhi sallam i freskët 🎉'},
-  waTemplateLabel: { de: 'Persönliche Nachricht (WhatsApp)', en: 'Personal message (WhatsApp)', tr: 'Kişisel mesaj (WhatsApp)', ro: 'Mesaj personal (WhatsApp)', nl: 'Persoonlijk bericht (WhatsApp)' , sq: 'Mesazh personal (WhatsApp)'},
-  waTemplateHint: { de: 'Wird am Ende jeder Bestellnachricht angehängt (optional).', en: 'Added to the end of every order message (optional).', tr: 'Her sipariş mesajının sonuna eklenir (opsiyonel).', ro: 'Adăugat la sfârșitul fiecărui mesaj de comandă (opțional).', nl: 'Wordt toegevoegd aan het einde van elk bestelbericht (optioneel).' , sq: 'Shtohet në fund të çdo mesazhi porosie (opsionale).'},
-  waTemplatePh: { de: 'z.B. Frohe Weihnachten! 🎄', en: 'e.g. Merry Christmas! 🎄', tr: 'örn. İyi bayramlar! 🎄', ro: 'ex. Crăciun fericit! 🎄', nl: 'bijv. Fijne kerst! 🎄' , sq: 'p.sh. Gëzuar Krishtlindjet! 🎄'},
-  testOrderLabel: { de: 'Testbestellung', en: 'Test order', tr: 'Test siparişi', ro: 'Comandă de test', nl: 'Testbestelling' , sq: 'Porosi provë'},
-  testOrderHint: { de: 'Erstellt eine Test-Bestellung, um Ton, Vibration und die Bestellungen-Ansicht zu prüfen, ohne echte Daten zu vermischen.', en: 'Creates a test order to check sound, vibration and the orders view, without mixing with real data.', tr: 'Ses, titreşim ve sipariş görünümünü gerçek veriyle karışmadan test etmek için bir test siparişi oluşturur.', ro: 'Creează o comandă de test pentru a verifica sunetul, vibrația și afișarea comenzilor, fără a amesteca date reale.', nl: 'Maakt een testbestelling om geluid, trilling en het bestellingenoverzicht te controleren, zonder echte data te mengen.' , sq: 'Krijon një porosi provë për të testuar zërin, dridhjen dhe pamjen e porosive, pa përzier të dhëna reale.'},
-  testOrderBtn: { de: 'Testbestellung erstellen', en: 'Create test order', tr: 'Test siparişi oluştur', ro: 'Creează comandă de test', nl: 'Testbestelling aanmaken' , sq: 'Krijo porosi provë'},
-  showTestOrdersLabel: { de: 'Testbestellungen in der Liste anzeigen', en: 'Show test orders in the list', tr: 'Test siparişlerini listede göster', ro: 'Arată comenzile de test în listă', nl: 'Testbestellingen tonen in de lijst' , sq: 'Trego porositë provë në listë'},
-  testOrderCreatedMsg: { de: '✓ Testbestellung erstellt', en: '✓ Test order created', tr: '✓ Test siparişi oluşturuldu', ro: '✓ Comandă de test creată', nl: '✓ Testbestelling aangemaakt' , sq: '✓ Porosia provë u krijua'},
-  notifTestBtn: { de: 'Testton abspielen', en: 'Play test sound', tr: 'Test sesini çal', ro: 'Redă sunetul de test', nl: 'Testgeluid afspelen' , sq: 'Luaj tingullin provë'},
-  markSoldOutOn: { de: 'Als „Ausverkauft" markiert', en: 'Marked as "Sold out"', tr: '"Tükendi" olarak işaretlendi', ro: 'Marcat ca „Epuizat"', nl: 'Gemarkeerd als "Uitverkocht"' , sq: 'Shënuar si \\"I shitur\\"'},
-  markSoldOutOff: { de: 'Als „Ausverkauft" markieren', en: 'Mark as "Sold out"', tr: '"Tükendi" olarak işaretle', ro: 'Marchează ca „Epuizat"', nl: 'Markeren als "Uitverkocht"' , sq: 'Shëno si \\"I shitur\\"'},
-  groupShareBtn: { de: 'Per WhatsApp einladen', en: 'Invite via WhatsApp', tr: 'WhatsApp ile davet et', ro: 'Invită prin WhatsApp', nl: 'Uitnodigen via WhatsApp' , sq: 'Fto përmes WhatsApp'},
-  groupShareMsg: { de: 'Hey! Lass uns zusammen bei Bodrum Kebap Vechta bestellen 🥙 Tritt mit dem Code {code} bei: https://bodrumkebapvechta.de', en: 'Hey! Let\'s order together from Bodrum Kebap Vechta 🥙 Join with code {code}: https://bodrumkebapvechta.de', tr: 'Selam! Bodrum Kebap Vechta\'dan birlikte sipariş verelim 🥙 {code} koduyla katıl: https://bodrumkebapvechta.de', ro: 'Hei! Hai să comandăm împreună de la Bodrum Kebap Vechta 🥙 Alătură-te cu codul {code}: https://bodrumkebapvechta.de', nl: 'Hé! Laten we samen bestellen bij Bodrum Kebap Vechta 🥙 Doe mee met code {code}: https://bodrumkebapvechta.de' , sq: 'Hej! Le të porosisim së bashku nga Bodrum Kebap Vechta 🥙 Bashkohu me kodin {code}: https://bodrumkebapvechta.de'},
-  pendingParticipantsPrefix: { de: 'Noch nicht fertig:', en: 'Not finished yet:', tr: 'Henüz bitirmedi:', ro: 'Încă nu au terminat:', nl: 'Nog niet klaar:' , sq: 'Ende pa mbaruar:'},
-  pendingParticipantsSuffix: { de: '', en: '', tr: '', ro: '', nl: '' , sq: ''},
-  sendAnywayConfirm: { de: 'Manche Personen wählen noch aus. Trotzdem senden?', en: 'Some people are still selecting. Send anyway?', tr: 'Bazı kişiler hâlâ seçim yapıyor. Yine de gönderilsin mi?', ro: 'Unele persoane încă aleg. Trimiți oricum?', nl: 'Sommige mensen zijn nog aan het kiezen. Toch versturen?' , sq: 'Disa persona ende po zgjedhin. Të dërgohet gjithsesi?'},
-  elapsedPrefix: { de: 'seit', en: 'since', tr: 'geçen süre', ro: 'de', nl: 'sinds' , sq: 'prej'},
-  inPrefix: { de: 'in', en: 'in', tr: 'kalan', ro: 'în', nl: 'over' , sq: 'pas'},
-  overduePrefix: { de: 'überfällig seit', en: 'overdue by', tr: 'gecikme', ro: 'întârziere', nl: 'te laat met' , sq: 'me vonesë prej'},
-  googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' , sq: 'Vlerësimi Google (pikë, numër)'},
-  saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' , sq: 'Ruaj'},
-  savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' , sq: '✓ U ruajt'},
-  welcomeBackMsg: { de: '👋 Wir haben dich vermisst! Schön, dass du wieder da bist.', en: '👋 We missed you! Great to have you back.', tr: '👋 Seni özledik! Tekrar hoş geldin.', ro: '👋 Ne-a fost dor de tine! Bine ai revenit.', nl: '👋 We hebben je gemist! Fijn dat je er weer bent.' , sq: '👋 Na ka munguar! Mirë se erdhe përsëri.'},
-  favoritesTitle: { de: 'DEINE FAVORITEN', en: 'YOUR FAVOURITES', tr: 'FAVORİLERİN', ro: 'FAVORITELE TALE', nl: 'JOUW FAVORIETEN' , sq: 'FAVORITET E TUA'},
-  orderNow: { de: 'Jetzt bestellen', en: 'Order now', tr: 'Şimdi sipariş ver', ro: 'Comandă acum', nl: 'Nu bestellen' , sq: 'Porosit tani'},
-  heroHalal: { de: '100% HALAL', en: '100% HALAL', tr: '%100 HELAL', ro: '100% HALAL', nl: '100% HALAL' , sq: '100% HALLALL'},
-  heroTitle1: { de: 'Frisch vom', en: 'Fresh from the', tr: 'Taze', ro: 'Proaspăt de la', nl: 'Vers van het' , sq: 'E freskët nga'},
-  heroTitle2: { de: 'Drehspieß', en: 'rotisserie', tr: 'Döner', ro: 'rotisor', nl: 'draaispit' , sq: 'Rrotisi'},
-  heroSubtitle: { de: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salat — täglich frisch zubereitet in Vechta.', en: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salad — freshly made every day in Vechta.', tr: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salata — Vechta\'da her gün taze hazırlanır.', ro: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salată — preparate proaspăt zilnic în Vechta.', nl: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salade — dagelijks vers bereid in Vechta.' , sq: 'Kebap · Picë · Rollo · Kalcone · Shnicel · Sallatë — përgatitur fresk çdo ditë në Vechta.'},
-  heroCtaWhatsapp: { de: '📱 Per WhatsApp bestellen', en: '📱 Order via WhatsApp', tr: '📱 WhatsApp ile sipariş ver', ro: '📱 Comandă prin WhatsApp', nl: '📱 Bestellen via WhatsApp' , sq: '📱 Porosit përmes WhatsApp'},
-  heroCtaMore: { de: 'Mehr entdecken', en: 'Discover more', tr: 'Daha fazlasını keşfet', ro: 'Descoperă mai mult', nl: 'Meer ontdekken' , sq: 'Zbulo më shumë'},
-  heroCtaGroup: { de: 'Gruppenbestellung starten — mit Freunden zusammen bestellen! →', en: 'Start a group order — order together with friends! →', tr: 'Grup siparişi başlat — arkadaşlarınla birlikte sipariş ver! →', ro: 'Începe o comandă de grup — comandă împreună cu prietenii! →', nl: 'Start een groepsbestelling — samen bestellen met vrienden! →' , sq: 'Fillo porosi në grup — porosit së bashku me shokët! →'},
-  heroOpeningHours: { de: 'Öffnungszeiten', en: 'Opening hours', tr: 'Çalışma saatleri', ro: 'Program', nl: 'Openingstijden' , sq: 'Orari i hapjes'},
-  heroClosedDay: { de: 'Ruhetag', en: 'Closed on', tr: 'Kapalı gün', ro: 'Zi de închidere', nl: 'Gesloten dag' , sq: 'Mbyllur'},
-  heroAddress: { de: 'Adresse', en: 'Address', tr: 'Adres', ro: 'Adresă', nl: 'Adres' , sq: 'Adresa'},
-  extrasKicker: { de: 'UNSERE DIGITALEN EXTRAS', en: 'OUR DIGITAL EXTRAS', tr: 'DİJİTAL EKSTRALARIMIZ', ro: 'EXTRELE NOASTRE DIGITALE', nl: 'ONZE DIGITALE EXTRA’S' , sq: 'EKSTRAT TONA DIGJITALE'},
-  extrasTitle: { de: 'Mehr als nur bestellen', en: 'More than just ordering', tr: 'Sadece sipariş vermekten fazlası', ro: 'Mai mult decât o simplă comandă', nl: 'Meer dan alleen bestellen' , sq: 'Më shumë se thjesht porosi'},
-  extrasTip: { de: '🎡 Tipp: Beim Bestellen wartet vor dem Absenden ein Glücksrad mit Gewinnchance!', en: '🎡 Tip: A lucky wheel with a chance to win is waiting before you send your order!', tr: '🎡 İpucu: Sipariş göndermeden önce kazanma şansı olan bir çark seni bekliyor!', ro: '🎡 Sfat: O roată norocoasă cu șansă de câștig te așteaptă înainte de a trimite comanda!', nl: '🎡 Tip: Voor je bestelling verstuurt, wacht een geluksrad met winkans!' , sq: '🎡 Këshillë: Para se të dërgosh porosinë, të pret rrota e fatit me shans fitoreje!'},
-  featWaTitle: { de: 'WhatsApp Bestellung', en: 'WhatsApp Order', tr: 'WhatsApp Sipariş', ro: 'Comandă WhatsApp', nl: 'WhatsApp Bestelling' , sq: 'Porosi me WhatsApp'},
-  featWaSub: { de: 'Menü wählen, direkt zur Abholung senden', en: 'Choose from the menu, send straight for pickup', tr: 'Menüden seç, direkt teslim alma için gönder', ro: 'Alege din meniu, trimite direct pentru ridicare', nl: 'Kies uit het menu, direct versturen om af te halen' , sq: 'Zgjidh nga menuja, dërgo direkt për marrje'},
-  featBuilderTitle: { de: 'Baue Döner, Pizza oder Pasta', en: 'Build a Döner, Pizza or Pasta', tr: 'Döner, Pizza veya Pasta Oluştur', ro: 'Construiește Kebap, Pizza sau Pasta', nl: 'Bouw een Döner, Pizza of Pasta' , sq: 'Krijo Döner, Picë ose Pastë'},
-  featBuilderSub: { de: 'Ganz nach deinem Geschmack — Schritt für Schritt selbst zusammenstellen', en: 'Exactly to your taste — build it step by step yourself', tr: 'Tamamen kendi zevkine göre — adım adım kendin oluştur', ro: 'Exact după gustul tău — construiește-l pas cu pas', nl: 'Precies naar jouw smaak — stap voor stap zelf samenstellen' , sq: 'Sipas shijes tënde — krijoje vetë hap pas hapi'},
-  builderQuickLabel: { de: 'Döner, Pizza & Pasta selbst bauen', en: 'Build your Döner, Pizza & Pasta', tr: 'Döner, Pizza & Pasta Oluştur', ro: 'Construiește Kebap, Pizza & Pasta', nl: 'Bouw je Döner, Pizza & Pasta' , sq: 'Krijo vetë Döner, Picë & Pastë'},
-  featGroupTitle: { de: 'Gruppenbestellung', en: 'Group Order', tr: 'Grup Siparişi', ro: 'Comandă de grup', nl: 'Groepsbestelling' , sq: 'Porosi në grup'},
-  featGroupSub: { de: 'Mit Freunden zusammen bestellen', en: 'Order together with friends', tr: 'Arkadaşlarınla birlikte sipariş ver', ro: 'Comandă împreună cu prietenii', nl: 'Samen bestellen met vrienden' , sq: 'Porosit së bashku me shokët'},
-  featLoyaltyTitle: { de: 'Treuekarte', en: 'Loyalty Card', tr: 'Sadakat Kartı', ro: 'Card de fidelitate', nl: 'Spaarkaart' , sq: 'Karta e besnikërisë'},
-  featSurpriseSub: { de: 'Lass dich zufällig inspirieren', en: 'Get a random inspiration', tr: 'Rastgele bir ilham al', ro: 'Inspiră-te aleatoriu', nl: 'Laat je willekeurig inspireren' , sq: 'Lëre veten të frymëzohesh rastësisht'},
-  featLoyaltySub: { de: '8 Stempel sammeln, Gratis-Portion sichern', en: 'Collect 8 stamps, get a free item', tr: '8 damga topla, ücretsiz ürün kazan', ro: 'Colectează 8 ștampile, primești gratuit', nl: '8 stempels sparen, gratis item ontvangen' , sq: 'Mblidh 8 vula, siguro një racion falas'},
-  footerImpressum: { de: 'Impressum', en: 'Legal notice', tr: 'Yasal Bilgiler', ro: 'Date companie', nl: 'Colofon' , sq: 'Të dhëna ligjore'},
-  footerDatenschutz: { de: 'Datenschutz', en: 'Privacy', tr: 'Gizlilik', ro: 'Confidențialitate', nl: 'Privacy' , sq: 'Privatësia'},
-  galleryTerrace: { de: 'UNSERE TERRASSE', en: 'OUR TERRACE', tr: 'TERASIMIZ', ro: 'TERASA NOASTRĂ', nl: 'ONS TERRAS' , sq: 'TARACA JONË'},
-  galleryTerraceTitle: { de: 'Ein Stück Bodrum in Deutschland', en: 'A piece of Bodrum in Germany', tr: 'Almanya\'da bir parça Bodrum', ro: 'O bucată din Bodrum în Germania', nl: 'Een stukje Bodrum in Duitsland' , sq: 'Një copë Bodrum në Gjermani'},
-  galleryTerraceSub: { de: 'Gemütlich draußen sitzen & genießen — direkt bei uns in Vechta.', en: 'Sit outside and enjoy — right here in Vechta.', tr: 'Dışarıda rahatça oturup keyif çıkar — Vechta\'da bizde.', ro: 'Stai afară și bucură-te — direct la noi în Vechta.', nl: 'Gezellig buiten zitten & genieten — bij ons in Vechta.' , sq: 'Ulu rehat jashtë & shijo — pikërisht te ne në Vechta.'},
-  galleryKitchen: { de: 'EIN BLICK IN UNSERE KÜCHE', en: 'A LOOK INTO OUR KITCHEN', tr: 'MUTFAĞIMIZDAN BİR BAKIŞ', ro: 'O PRIVIRE ÎN BUCĂTĂRIA NOASTRĂ', nl: 'EEN KIJKJE IN ONZE KEUKEN' , sq: 'NJË VËSHTRIM NË KUZHINËN TONË'},
-  contactKicker: { de: 'BESUCH UNS', en: 'VISIT US', tr: 'BİZİ ZİYARET ET', ro: 'VIZITEAZĂ-NE', nl: 'BEZOEK ONS' , sq: 'NA VIZITO'},
-  contactTitle: { de: 'So findest du uns', en: 'How to find us', tr: 'Bizi nasıl bulursun', ro: 'Cum ne găsești', nl: 'Zo vind je ons' , sq: 'Kështu na gjen'},
-  contactRoute: { de: '📍 Route planen', en: '📍 Get directions', tr: '📍 Yol tarifi al', ro: '📍 Planifică traseul', nl: '📍 Route plannen' , sq: '📍 Planifiko itinerarin'},
-  weiter: { de: 'Weiter →', en: 'Next →', tr: 'İleri →', ro: 'Continuă →', nl: 'Verder →' , sq: 'Vazhdo →'},
-  zurueck: { de: 'Zurück', en: 'Back', tr: 'Geri', ro: 'Înapoi', nl: 'Terug' , sq: 'Prapa'},
-  abbrechen: { de: 'Abbrechen', en: 'Cancel', tr: 'İptal', ro: 'Anulează', nl: 'Annuleren' , sq: 'Anulo'},
-  hinzufuegen: { de: 'Hinzufügen', en: 'Add', tr: 'Ekle', ro: 'Adaugă', nl: 'Toevoegen' , sq: 'Shto'},
-  toCart: { de: 'Zum Warenkorb', en: 'Add to cart', tr: 'Sepete ekle', ro: 'Adaugă în coș', nl: 'In winkelwagen' , sq: 'Në shportë'},
-  gesamt: { de: 'Gesamt', en: 'Total', tr: 'Toplam', ro: 'Total', nl: 'Totaal' , sq: 'Gjithsej'},
-  waSend: { de: 'Per WhatsApp senden', en: 'Send via WhatsApp', tr: 'WhatsApp ile gönder', ro: 'Trimite prin WhatsApp', nl: 'Versturen via WhatsApp' , sq: 'Dërgo përmes WhatsApp'},
-  cartEmpty: { de: 'Dein Warenkorb ist leer.', en: 'Your cart is empty.', tr: 'Sepetin boş.', ro: 'Coșul tău este gol.', nl: 'Je winkelwagen is leeg.' , sq: 'Shporta jote është bosh.'},
-  skip: { de: 'Nein danke, überspringen', en: 'No thanks, skip', tr: 'Hayır teşekkürler, geç', ro: 'Nu, mulțumesc, sari peste', nl: 'Nee bedankt, overslaan' , sq: 'Jo faleminderit, kalo'},
-  yourName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam' , sq: 'Emri yt'},
-  groupStart: { de: 'Neue Gruppenbestellung starten', en: 'Start a new group order', tr: 'Yeni grup siparişi başlat', ro: 'Începe o comandă de grup nouă', nl: 'Nieuwe groepsbestelling starten' , sq: 'Fillo porosi të re në grup'},
-  groupJoin: { de: 'Mit Code beitreten', en: 'Join with code', tr: 'Kod ile katıl', ro: 'Alătură-te cu cod', nl: 'Deelnemen met code' , sq: 'Bashkohu me kod'},
-  groupSubmit: { de: 'Meine Bestellung abschicken', en: 'Submit my order', tr: 'Siparişimi gönder', ro: 'Trimite comanda mea', nl: 'Mijn bestelling versturen' , sq: 'Dërgo porosinë time'},
-  groupSendFinal: { de: 'Gesamtbestellung an WhatsApp senden', en: 'Send full order via WhatsApp', tr: 'Toplam siparişi WhatsApp\'a gönder', ro: 'Trimite comanda totală prin WhatsApp', nl: 'Volledige bestelling versturen via WhatsApp' , sq: 'Dërgo porosinë e plotë në WhatsApp'},
-  groupAlreadySent: { de: 'hat die Bestellung bereits gesendet. Du musst nichts weiter tun.', en: 'has already sent the order. You don\'t need to do anything else.', tr: 'siparişi zaten gönderdi. Senin bir şey yapmana gerek yok.', ro: 'a trimis deja comanda. Nu mai trebuie să faci nimic.', nl: 'heeft de bestelling al verstuurd. Je hoeft verder niets te doen.' , sq: 'e ka dërguar tashmë porosinë. Nuk duhet të bësh asgjë tjetër.'},
-  titleWa: { de: 'WHATSAPP BESTELLUNG', en: 'WHATSAPP ORDER', tr: 'WHATSAPP SİPARİŞ', ro: 'COMANDĂ WHATSAPP', nl: 'WHATSAPP BESTELLING' , sq: 'POROSI ME WHATSAPP'},
-  titleBuilder: { de: 'DEIN DÖNER', en: 'YOUR DÖNER', tr: 'SENİN DÖNERİN', ro: 'KEBAP-UL TĂU', nl: 'JOUW DÖNER' , sq: 'DÖNERI YT'},
-  titleGroup: { de: 'GRUPPENBESTELLUNG', en: 'GROUP ORDER', tr: 'GRUP SİPARİŞİ', ro: 'COMANDĂ DE GRUP', nl: 'GROEPSBESTELLING' , sq: 'POROSI NË GRUP'},
-  titleStaff: { de: 'PERSONAL-BEREICH', en: 'STAFF AREA', tr: 'PERSONEL ALANI', ro: 'ZONĂ PERSONAL', nl: 'PERSONEELSGEDEELTE' , sq: 'ZONA E STAFIT'},
-  titleLoyalty: { de: 'TREUEKARTE', en: 'LOYALTY CARD', tr: 'SADAKAT KARTI', ro: 'CARD DE FIDELITATE', nl: 'SPAARKAART' , sq: 'KARTA E BESNIKËRISË'},
-  weekendOnlyToday: { de: '🎉 NUR HEUTE — SAMSTAG', en: '🎉 TODAY ONLY — SATURDAY', tr: '🎉 SADECE BUGÜN — CUMARTESİ', ro: '🎉 DOAR ASTĂZI — SÂMBĂTĂ', nl: '🎉 ALLEEN VANDAAG — ZATERDAG' , sq: '🎉 VETËM SOT — E SHTUNË'},
-  weekendOfferTitle: { de: 'Wochenende-Angebot!', en: 'Weekend Special!', tr: 'Hafta Sonu Fırsatı!', ro: 'Ofertă de Weekend!', nl: 'Weekendaanbieding!' , sq: 'Oferta e fundjavës!'},
-  weekendPizzaTitle: { de: '🍕 28cm Pizza + Dose Getränk', en: '🍕 28cm Pizza + Canned Drink', tr: '🍕 28cm Pizza + Kutu İçecek', ro: '🍕 Pizza 28cm + Băutură la doză', nl: '🍕 28cm Pizza + Blikje drinken' , sq: '🍕 Picë 28cm + Pije kanaçe'},
-  weekendPizzaSub: { de: 'Wähle deine Wunschpizza aus unserer ganzen Pizzakarte!', en: 'Choose your favorite pizza from our whole pizza menu!', tr: 'Tüm pizza menümüzden istediğin pizzayı seç!', ro: 'Alege pizza preferată din întreg meniul nostru de pizza!', nl: 'Kies je favoriete pizza uit onze hele pizzakaart!' , sq: 'Zgjidh picën tënde të preferuar nga e gjithë menuja jonë e picave!'},
-  choosePizza: { de: 'Pizza auswählen →', en: 'Choose pizza →', tr: 'Pizza seç →', ro: 'Alege pizza →', nl: 'Kies pizza →' , sq: 'Zgjidh picën →'},
-  chooseMeat: { de: 'FLEISCH WÄHLEN:', en: 'CHOOSE MEAT:', tr: 'ET SEÇ:', ro: 'ALEGE CARNEA:', nl: 'KIES VLEES:' , sq: 'ZGJIDH MISHIN:'},
-  included: { de: 'inklusive', en: 'included', tr: 'dahil', ro: 'inclus', nl: 'inbegrepen' , sq: 'e përfshirë'},
-  addToOrder: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' , sq: 'Shto te porosia'},
-  chooseArrow: { de: 'Auswählen →', en: 'Choose →', tr: 'Seç →', ro: 'Alege →', nl: 'Kies →' , sq: 'Zgjidh →'},
-  weekendTeaserOnly: { de: '🎉 Nur Samstag:', en: '🎉 Saturday only:', tr: '🎉 Sadece Cumartesi:', ro: '🎉 Doar sâmbătă:', nl: '🎉 Alleen zaterdag:' , sq: '🎉 Vetëm të shtunën:'},
-  lunchOffer: { de: 'MITTAGSANGEBOT · 9,50 €', en: 'LUNCH SPECIAL · €9.50', tr: 'ÖĞLE FIRSATI · 9,50 €', ro: 'OFERTĂ DE PRÂNZ · 9,50 €', nl: 'LUNCHAANBIEDING · € 9,50' , sq: 'OFERTA E DREKËS · 9,50 €'},
-  lunchOfferInactive: { de: 'Mo.–Fr. 11:30–14:00 Uhr · inkl. Getränk', en: 'Mon–Fri 11:30 AM–2:00 PM · incl. drink', tr: 'Pzt–Cuma 11:30–14:00 · içecek dahil', ro: 'Lun–Vin 11:30–14:00 · include băutură', nl: 'Ma–vr 11:30–14:00 uur · incl. drankje' , sq: 'Hën–Pre 11:30–14:00 · me pije të përfshirë'},
-  lunchOfferItems: { de: '28cm Pizza · Salat · Schnitzel · Nudelgericht', en: '28cm Pizza · Salad · Schnitzel · Pasta dish', tr: '28cm Pizza · Salata · Şnitzel · Makarna', ro: 'Pizza 28cm · Salată · Șnițel · Paste', nl: '28cm Pizza · Salade · Schnitzel · Pastagerecht' , sq: 'Picë 28cm · Sallatë · Shnicel · Gjellë makaronash'},
-  wheelPrompt: { de: 'Dreh am Glücksrad, bevor du bestellst!', en: 'Spin the lucky wheel before you order!', tr: 'Sipariş vermeden önce şans çarkını çevir!', ro: 'Învârte roata norocului înainte de a comanda!', nl: 'Draai aan het geluksrad voordat je bestelt!' , sq: 'Rrotullo rrotën e fatit para se të porositësh!'},
-  wheelSub: { de: 'Gewinne z. B. 10% Rabatt, ein Gratis-Getränk, Gratis-Pommes oder Chicken Nuggets 🎁', en: 'Win e.g. 10% off, a free drink, free fries or chicken nuggets 🎁', tr: 'Örneğin %10 indirim, ücretsiz içecek, ücretsiz patates veya nugget kazan 🎁', ro: 'Câștigă de ex. 10% reducere, o băutură gratuită, cartofi prăjiți gratuiți sau nuggets 🎁', nl: 'Win bijv. 10% korting, een gratis drankje, gratis friet of chicken nuggets 🎁' , sq: 'Fito p.sh. 10% zbritje, një pije falas, patate falas ose nagets pule 🎁'},
-  showCodeAtCounter: { de: 'Zeig diesen Code an der Kasse:', en: 'Show this code at the counter:', tr: 'Bu kodu kasada göster:', ro: 'Arată acest cod la casă:', nl: 'Toon deze code bij de kassa:' , sq: 'Trego këtë kod te arka:'},
-  noExtraWin: { de: 'Diesmal kein Extra-Gewinn', en: 'No extra win this time', tr: 'Bu sefer ekstra kazanç yok', ro: 'De data aceasta fără premiu suplimentar', nl: 'Deze keer geen extra prijs' , sq: 'Këtë herë pa fitore shtesë'},
-  thanksPlaying: { de: 'Aber danke fürs Mitspielen — beim nächsten Mal mehr Glück!', en: 'But thanks for playing — more luck next time!', tr: 'Ama katıldığın için teşekkürler — bir dahaki sefere daha çok şans!', ro: 'Dar îți mulțumim că ai jucat — mai mult noroc data viitoare!', nl: 'Maar bedankt voor het meedoen — volgende keer meer geluk!' , sq: 'Por faleminderit që luajte — më shumë fat herën tjetër!'},
-  spinning: { de: 'Dreht sich…', en: 'Spinning…', tr: 'Dönüyor…', ro: 'Se învârte…', nl: 'Draait…' , sq: 'Po rrotullohet…'},
-  spinNow: { de: 'Jetzt drehen!', en: 'Spin now!', tr: 'Şimdi çevir!', ro: 'Învârte acum!', nl: 'Draai nu!' , sq: 'Rrotullo tani!'},
-  closedTodayTitle: { de: 'Heute Ruhetag', en: 'Closed today', tr: 'Bugün kapalı', ro: 'Astăzi închis', nl: 'Vandaag gesloten' , sq: 'Sot mbyllur'},
-  closedTodaySub: { de: 'Wir haben dienstags geschlossen — ab morgen wieder ab 11:30 Uhr für dich da!', en: "We're closed on Tuesdays — back for you tomorrow from 11:30 AM!", tr: 'Salı günleri kapalıyız — yarından itibaren 11:30\'dan itibaren yine buradayız!', ro: 'Suntem închiși marțea — revenim mâine de la ora 11:30!', nl: 'Wij zijn dinsdag gesloten — morgen weer open vanaf 11:30 uur!' , sq: 'Ne jemi mbyllur të martave — nesër jemi përsëri për ty nga ora 11:30!'},
-  upsellTitle: { de: 'Möchtest du noch etwas dazu?', en: 'Would you like anything else?', tr: 'Yanında bir şey ister misin?', ro: 'Mai dorești ceva pe lângă?', nl: 'Wil je er nog iets bij?' , sq: 'Do të doje diçka tjetër?'},
-  upsellSub: { de: 'Diese Klassiker passen perfekt zu deiner Bestellung!', en: 'These classics go perfectly with your order!', tr: 'Bu klasikler siparişine mükemmel uyar!', ro: 'Aceste clasice se potrivesc perfect cu comanda ta!', nl: 'Deze klassiekers passen perfect bij je bestelling!' , sq: 'Këto klasikë shkojnë përsosur me porosinë tënde!'},
-  drinksSub: { de: 'Kalt und erfrischend zu deiner Bestellung!', en: 'Cold and refreshing with your order!', tr: 'Siparişine soğuk ve ferahlatıcı bir ek!', ro: 'Rece și răcoritor alături de comanda ta!', nl: 'Lekker fris en koud bij je bestelling!' , sq: 'E ftohtë dhe freskuese me porosinë tënde!'},
-  continueToOrder: { de: 'Weiter zur Bestellung', en: 'Continue to order', tr: 'Siparişe devam et', ro: 'Continuă spre comandă', nl: 'Verder naar bestelling' , sq: 'Vazhdo te porosia'},
-  wheelSpinOnceMsg: { de: 'Dreh einmal — dein Gewinn wird automatisch zur Bestellung hinzugefügt!', en: 'Spin once — your prize will be added to the order automatically!', tr: 'Bir kez çevir — kazandığın ödül otomatik olarak siparişe eklenir!', ro: 'Învârte o dată — premiul tău va fi adăugat automat la comandă!', nl: 'Draai één keer — je prijs wordt automatisch aan de bestelling toegevoegd!' , sq: 'Rrotullo një herë — fitorja jote shtohet automatikisht te porosia!'},
-  confirmPickupNote: { de: 'Die Abholzeit bestätigen wir euch direkt per WhatsApp-Antwort.', en: "We'll confirm the pickup time directly via WhatsApp reply.", tr: 'Teslim alma saatini WhatsApp üzerinden doğrudan onaylayacağız.', ro: 'Vă confirmăm ora de ridicare direct prin răspuns pe WhatsApp.', nl: 'We bevestigen de ophaaltijd rechtstreeks via WhatsApp.' , sq: 'Orën e marrjes do ta konfirmojmë direkt me përgjigje në WhatsApp.'},
-  chooseBase: { de: 'Wähle deine Basis', en: 'Choose your base', tr: 'Bazını seç', ro: 'Alege baza', nl: 'Kies je basis' , sq: 'Zgjidh bazën tënde'},
-  chooseBaseSub: { de: 'Wie soll dein Döner serviert werden?', en: 'How would you like your Döner served?', tr: 'Dönerin nasıl servis edilsin?', ro: 'Cum dorești să fie servit kebap-ul tău?', nl: 'Hoe wil je je Döner geserveerd hebben?' , sq: 'Si dëshiron ta shërbejmë Dönerin tënd?'},
-  chooseMeatTitle: { de: 'Wähle dein Lieblingsfleisch.', en: 'Choose your favorite meat.', tr: 'Favori etini seç.', ro: 'Alege carnea preferată.', nl: 'Kies je favoriete vlees.' , sq: 'Zgjidh mishin tënd të preferuar.'},
-  chooseSauceTitle: { de: 'Welche Soße?', en: 'Which sauce?', tr: 'Hangi sos?', ro: 'Ce sos?', nl: 'Welke saus?' , sq: 'Cila salcë?'},
-  chooseSauceSub: { de: 'Eine Soße aussuchen.', en: 'Pick one sauce.', tr: 'Bir sos seç.', ro: 'Alege un sos.', nl: 'Kies één saus.' , sq: 'Zgjidh një salcë.'},
-  chooseExtrasSub: { de: 'So viele du möchtest — optional.', en: 'As many as you like — optional.', tr: 'İstediğin kadar — isteğe bağlı.', ro: 'Câte dorești — opțional.', nl: 'Zoveel als je wilt — optioneel.' , sq: 'Sa shumë të duash — opsionale.'},
-  doenerReadyTitle: { de: 'Dein Döner ist fertig! 🎉', en: 'Your Döner is ready! 🎉', tr: 'Dönerin hazır! 🎉', ro: 'Kebap-ul tău este gata! 🎉', nl: 'Jouw Döner is klaar! 🎉' , sq: 'Döneri yt është gati! 🎉'},
-  doenerReadySub: { de: 'Kurz prüfen und abschicken.', en: 'Quickly check and send.', tr: 'Kısaca kontrol et ve gönder.', ro: 'Verifică rapid și trimite.', nl: 'Snel controleren en versturen.' , sq: 'Kontrollo shkurt dhe dërgo.'},
-  backToOrder: { de: 'Zurück zur Bestellung', en: 'Back to order', tr: 'Siparişe geri dön', ro: 'Înapoi la comandă', nl: 'Terug naar bestelling' , sq: 'Kthehu te porosia'},
-  wheelTitle: { de: 'Glücksrad 🎡', en: 'Lucky Wheel 🎡', tr: 'Şans Çarkı 🎡', ro: 'Roata Norocului 🎡', nl: 'Geluksrad 🎡' , sq: 'Rrota e Fatit 🎡'},
-  groupStep1End: { de: 'und erhält einen Code.', en: 'and gets a code.', tr: 've bir kod alır.', ro: 'și primește un cod.', nl: 'en krijgt een code.' , sq: 'dhe merr një kod.'},
-  groupStep2: { de: 'Diesen Code per WhatsApp mit Freunden teilen.', en: 'Share this code with friends via WhatsApp.', tr: 'Bu kodu WhatsApp üzerinden arkadaşlarınla paylaş.', ro: 'Distribuie acest cod prietenilor prin WhatsApp.', nl: 'Deel deze code met vrienden via WhatsApp.' , sq: 'Ndaj këtë kod me shokët përmes WhatsApp.'},
-  groupStep3Mid: { de: '„Mit Code beitreten"', en: '"Join with code"', tr: '"Kod ile katıl"', ro: '„Alătură-te cu cod"', nl: '"Deelnemen met code"' , sq: '\\"Bashkohu me kod\\"'},
-  groupStep3End: { de: ', gibt den Code ein und wählt seine eigenen Speisen aus.', en: ', enters the code and chooses their own food.', tr: ', kodu girer ve kendi yemeklerini seçer.', ro: ', introduce codul și își alege propriile mâncăruri.', nl: ', voert de code in en kiest zijn eigen gerechten.' , sq: ', fut kodin dhe zgjedh gjellët e veta.'},
-  groupStep4: { de: 'Am Ende wird alles zu einer gemeinsamen Bestellung zusammengefasst und per WhatsApp an uns geschickt.', en: 'At the end, everything is combined into one shared order and sent to us via WhatsApp.', tr: 'Sonunda her şey ortak bir siparişte birleştirilir ve bize WhatsApp üzerinden gönderilir.', ro: 'La final, totul este combinat într-o singură comandă și ne este trimis prin WhatsApp.', nl: 'Aan het einde wordt alles samengevoegd tot één gezamenlijke bestelling en naar ons verstuurd via WhatsApp.' , sq: 'Në fund gjithçka bashkohet në një porosi të përbashkët dhe dërgohet te ne përmes WhatsApp.'},
-  shareCodeWithGroup: { de: 'Teile diesen Code mit deiner Gruppe:', en: 'Share this code with your group:', tr: 'Bu kodu grubunla paylaş:', ro: 'Distribuie acest cod grupului tău:', nl: 'Deel deze code met je groep:' , sq: 'Ndaje këtë kod me grupin tënd:'},
-  continueToMyOrder: { de: 'Weiter zu meiner Bestellung', en: 'Continue to my order', tr: 'Siparişime devam et', ro: 'Continuă la comanda mea', nl: 'Verder naar mijn bestelling' , sq: 'Vazhdo te porosia ime'},
-  continueToMenu: { de: 'Weiter zur Speisekarte', en: 'Continue to the menu', tr: 'Menüye devam et', ro: 'Continuă la meniu', nl: 'Verder naar het menu' , sq: 'Vazhdo te menuja'},
-  orderAdded: { de: '✓ Deine Bestellung wurde hinzugefügt', en: '✓ Your order has been added', tr: '✓ Siparişin eklendi', ro: '✓ Comanda ta a fost adăugată', nl: '✓ Je bestelling is toegevoegd' , sq: '✓ Porosia jote u shtua'},
-  editMyOrder: { de: '+ Meine Bestellung ändern', en: '+ Edit my order', tr: '+ Siparişimi değiştir', ro: '+ Modifică-mi comanda', nl: '+ Mijn bestelling wijzigen' , sq: '+ Ndrysho porosinë time'},
-  backToOverview: { de: 'Zurück zur Übersicht', en: 'Back to overview', tr: 'Genel bakışa dön', ro: 'Înapoi la prezentare generală', nl: 'Terug naar overzicht' , sq: 'Kthehu te përmbledhja'},
-  wheelGrandMsg: { de: 'Dein Gewinn wird automatisch zur Gesamtbestellung hinzugefügt!', en: 'Your prize will be added to the group order automatically!', tr: 'Kazandığın ödül otomatik olarak toplam siparişe eklenir!', ro: 'Premiul tău va fi adăugat automat la comanda totală!', nl: 'Je prijs wordt automatisch toegevoegd aan de totale bestelling!' , sq: 'Fitorja jote shtohet automatikisht te porosia e përgjithshme!'},
-  continueToOverview: { de: 'Weiter zur Übersicht', en: 'Continue to overview', tr: 'Genel bakışa devam et', ro: 'Continuă la prezentarea generală', nl: 'Verder naar overzicht' , sq: 'Vazhdo te përmbledhja'},
-  staffWheelCodeTitle: { de: '🎡 Glücksrad-Code', en: '🎡 Wheel code', tr: '🎡 Çark kodu', ro: '🎡 Cod roată', nl: '🎡 Radcode' , sq: '🎡 Kodi i Rrotës së Fatit'},
-  codeNotFound: { de: 'Code nicht gefunden.', en: 'Code not found.', tr: 'Kod bulunamadı.', ro: 'Cod negăsit.', nl: 'Code niet gevonden.' , sq: 'Kodi nuk u gjet.'},
-  redeem: { de: 'Einlösen', en: 'Redeem', tr: 'Kullan', ro: 'Utilizează', nl: 'Inwisselen' , sq: 'Përdor'},
-  confirmRedeem: { de: 'Einlösen bestätigen', en: 'Confirm redemption', tr: 'Kullanımı onayla', ro: 'Confirmă utilizarea', nl: 'Inwisselen bevestigen' , sq: 'Konfirmo përdorimin'},
-  loyaltyNoPhone: { de: 'Keine Telefonnummer nötig — deine Karte läuft über einen persönlichen Code.', en: 'No phone number needed — your card works via a personal code.', tr: 'Telefon numarası gerekmez — kartın kişisel bir kodla çalışır.', ro: 'Nu este nevoie de număr de telefon — cardul tău funcționează printr-un cod personal.', nl: 'Geen telefoonnummer nodig — je kaart werkt via een persoonlijke code.' , sq: 'Nuk nevojitet numër telefoni — karta jote funksionon me një kod personal.'},
-  codeDoesntExist: { de: 'Diesen Code gibt es nicht.', en: "This code doesn't exist.", tr: 'Bu kod mevcut değil.', ro: 'Acest cod nu există.', nl: 'Deze code bestaat niet.' , sq: 'Ky kod nuk ekziston.'},
-  showCodeForStamp: { de: 'Zeig deinen Code an der Kasse, damit wir einen Stempel hinzufügen können.', en: 'Show your code at the counter so we can add a stamp.', tr: 'Damga ekleyebilmemiz için kodunu kasada göster.', ro: 'Arată-ți codul la casă pentru a adăuga o ștampilă.', nl: 'Toon je code bij de kassa zodat we een stempel kunnen toevoegen.' , sq: 'Trego kodin tënd te arka që të shtojmë një vulë.'},
-  dailyRecommendation: { de: 'TAGESEMPFEHLUNG', en: "TODAY'S PICKS", tr: 'GÜNÜN ÖNERİSİ', ro: 'RECOMANDAREA ZILEI', nl: 'AANBEVELING VAN DE DAG' , sq: 'REKOMANDIMI I DITËS'},
-  onlyLeft: { de: 'Nur noch', en: 'Only', tr: 'Sadece', ro: 'Doar', nl: 'Nog maar' , sq: 'Vetëm edhe'},
-  minutesLeft: { de: 'Minuten!', en: 'minutes left!', tr: 'dakika kaldı!', ro: 'minute rămase!', nl: 'minuten over!' , sq: 'minuta!'},
-  chooseMeatQ: { de: 'Welches Fleisch?', en: 'Which meat?', tr: 'Hangi et?', ro: 'Ce carne?', nl: 'Welk vlees?' , sq: 'Cili mish?'},
-  extrasQ: { de: 'Extras dazu?', en: 'Extras?', tr: 'Ekstra ister misin?', ro: 'Extra?', nl: 'Extra’s erbij?' , sq: 'Ekstra?'},
-  rowBasis: { de: 'Basis', en: 'Base', tr: 'Baz', ro: 'Bază', nl: 'Basis' , sq: 'Baza'},
-  rowMeat: { de: 'Fleisch', en: 'Meat', tr: 'Et', ro: 'Carne', nl: 'Vlees' , sq: 'Mishi'},
-  rowSauce: { de: 'Soße', en: 'Sauce', tr: 'Sos', ro: 'Sos', nl: 'Saus' , sq: 'Salca'},
-  rowExtras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: 'Extra’s' , sq: 'Ekstrat'},
-  rowPrice: { de: 'Preis', en: 'Price', tr: 'Fiyat', ro: 'Preț', nl: 'Prijs' , sq: 'Çmimi'},
-  freeLabel: { de: 'gratis', en: 'free', tr: 'ücretsiz', ro: 'gratuit', nl: 'gratis' , sq: 'falas'},
-  continueBtn: { de: 'Weiter', en: 'Continue', tr: 'İleri', ro: 'Continuă', nl: 'Verder' , sq: 'Vazhdo'},
-  wheelThresholdPrefix: { de: '🎡 Noch', en: '🎡 Only', tr: '🎡 Sadece', ro: '🎡 Doar', nl: '🎡 Nog maar' , sq: '🎡 Edhe'},
-  wheelThresholdSuffix: { de: 'bis zum Glücksrad — ab 30,00 € Bestellwert!', en: 'until the lucky wheel — from €30.00 order value!', tr: 'şans çarkına kadar — 30,00 € üzeri siparişte!', ro: 'până la roata norocului — de la o comandă de 30,00 €!', nl: 'tot het geluksrad — vanaf € 30,00 bestelwaarde!' , sq: 'deri te rrota e fatit — nga 30,00 € vlerë porosie!'},
-  wonPrefix: { de: 'Gewonnen:', en: 'Won:', tr: 'Kazandın:', ro: 'Câștigat:', nl: 'Gewonnen:' , sq: 'Fituar:'},
-  wonSuffix: { de: '— wird mitgeschickt', en: '— will be included', tr: '— siparişe eklenecek', ro: '— va fi inclus', nl: '— wordt meegestuurd' , sq: '— do të dërgohet bashkë'},
-  groupStartBtn: { de: 'Neue Gruppenbestellung starten', en: 'Start a new group order', tr: 'Yeni grup siparişi başlat', ro: 'Începe o comandă de grup nouă', nl: 'Nieuwe groepsbestelling starten' , sq: 'Fillo porosi të re në grup'},
-  howItWorks: { de: "👥 So funktioniert's:", en: '👥 How it works:', tr: '👥 Nasıl çalışır:', ro: '👥 Cum funcționează:', nl: '👥 Zo werkt het:' , sq: '👥 Si funksionon:'},
-  groupStep1Start: { de: 'Eine Person tippt auf', en: 'One person taps', tr: 'Bir kişi', ro: 'O persoană apasă pe', nl: 'Eén persoon tikt op' , sq: 'Një person prek'},
-  groupStep3Start: { de: 'Jede/r tippt auf', en: 'Everyone taps', tr: 'Herkes', ro: 'Fiecare apasă pe', nl: 'Iedereen tikt op' , sq: 'Secili/a prek'},
-  groupStep3Btn: { de: '„Mit Code beitreten"', en: '"Join with code"', tr: '"Kod ile katıl"', ro: '„Alătură-te cu cod"', nl: '"Deelnemen met code"' , sq: '\\"Bashkohu me kod\\"'},
-  codePlaceholder: { de: 'Code z. B. K7XQ2', en: 'Code e.g. K7XQ2', tr: 'Kod örn. K7XQ2', ro: 'Cod ex. K7XQ2', nl: 'Code bijv. K7XQ2' , sq: 'Kodi p.sh. K7XQ2'},
-  joinBtn: { de: 'Beitreten', en: 'Join', tr: 'Katıl', ro: 'Alătură-te', nl: 'Deelnemen' , sq: 'Bashkohu'},
-  peopleOrderedSuffix: { de: 'Personen bestellt', en: 'people ordered', tr: 'kişi sipariş verdi', ro: 'persoane au comandat', nl: 'personen besteld' , sq: 'persona porositën'},
-  refreshBtn: { de: 'Aktualisieren', en: 'Refresh', tr: 'Yenile', ro: 'Reîmprospătează', nl: 'Vernieuwen' , sq: 'Rifresko'},
-  grandTotalAll: { de: 'Gesamt (alle)', en: 'Total (all)', tr: 'Toplam (hepsi)', ro: 'Total (toți)', nl: 'Totaal (allemaal)' , sq: 'Gjithsej (të gjithë)'},
-  wheelPrizesCountSuffix: { de: 'x Glücksrad-Gewinn wird mitgeschickt', en: 'x wheel prize will be included', tr: 'x çark ödülü siparişe eklenecek', ro: 'x premii de la roată vor fi incluse', nl: 'x radprijs wordt meegestuurd' , sq: 'x fitore nga rrota e fatit do të dërgohet'},
-  loginBtn: { de: 'Anmelden', en: 'Log in', tr: 'Giriş yap', ro: 'Autentificare', nl: 'Inloggen' , sq: 'Hyr'},
-  defaultPinNote: { de: 'Standard-PIN: 1234', en: 'Default PIN: 1234', tr: 'Varsayılan PIN: 1234', ro: 'PIN implicit: 1234', nl: 'Standaard-pincode: 1234' , sq: 'PIN standarde: 1234'},
-  loyaltyTabLabel: { de: '🎟️ Treuekarte', en: '🎟️ Loyalty card', tr: '🎟️ Sadakat kartı', ro: '🎟️ Card de fidelitate', nl: '🎟️ Spaarkaart' , sq: '🎟️ Karta e besnikërisë'},
-  customerCodePh: { de: 'Kunden-Code', en: 'Customer code', tr: 'Müşteri kodu', ro: 'Cod client', nl: 'Klantcode' , sq: 'Kodi i klientit'},
-  searchBtn: { de: 'Suchen', en: 'Search', tr: 'Ara', ro: 'Caută', nl: 'Zoeken' , sq: 'Kërko'},
-  addStampBtn: { de: '+1 Stempel', en: '+1 stamp', tr: '+1 damga', ro: '+1 ștampilă', nl: '+1 stempel' , sq: '+1 vulë'},
-  prizeCodePh: { de: 'Gewinn-Code', en: 'Prize code', tr: 'Ödül kodu', ro: 'Cod premiu', nl: 'Prijscode' , sq: 'Kodi i fitores'},
-  alreadyRedeemed: { de: 'Bereits eingelöst', en: 'Already redeemed', tr: 'Zaten kullanıldı', ro: 'Deja utilizat', nl: 'Al ingewisseld' , sq: 'Përdorur tashmë'},
-  validLabel: { de: 'Gültig', en: 'Valid', tr: 'Geçerli', ro: 'Valid', nl: 'Geldig' , sq: 'I vlefshëm'},
-  stampAddedMsg: { de: 'Stempel hinzugefügt ✓', en: 'Stamp added ✓', tr: 'Damga eklendi ✓', ro: 'Ștampilă adăugată ✓', nl: 'Stempel toegevoegd ✓' , sq: 'Vula u shtua ✓'},
-  freePortionRedeemedMsg: { de: 'Gratis-Portion eingelöst ✓', en: 'Free item redeemed ✓', tr: 'Ücretsiz ürün kullanıldı ✓', ro: 'Produs gratuit utilizat ✓', nl: 'Gratis item ingewisseld ✓' , sq: 'Racioni falas u përdor ✓'},
-  redeemedMsg: { de: '✓ Eingelöst', en: '✓ Redeemed', tr: '✓ Kullanıldı', ro: '✓ Utilizat', nl: '✓ Ingewisseld' , sq: '✓ U përdor'},
-  stampsWord: { de: 'Stempel', en: 'stamps', tr: 'damga', ro: 'ștampile', nl: 'stempels' , sq: 'vula'},
-  haveCodeLabel: { de: 'ICH HABE SCHON EINEN CODE', en: 'I ALREADY HAVE A CODE', tr: 'ZATEN BİR KODUM VAR', ro: 'AM DEJA UN COD', nl: 'IK HEB AL EEN CODE' , sq: 'UNË KAM TASHMË NJË KOD'},
-  codeExamplePh: { de: 'Z. B. K7XQ2M', en: 'e.g. K7XQ2M', tr: 'Örn. K7XQ2M', ro: 'ex. K7XQ2M', nl: 'bijv. K7XQ2M' , sq: 'P.sh. K7XQ2M'},
-  showBtn: { de: 'Anzeigen', en: 'Show', tr: 'Göster', ro: 'Afișează', nl: 'Tonen' , sq: 'Trego'},
-  orLabel: { de: '— oder —', en: '— or —', tr: '— veya —', ro: '— sau —', nl: '— of —' , sq: '— ose —'},
-  createNewCardBtn: { de: 'Neue Treuekarte erstellen', en: 'Create new loyalty card', tr: 'Yeni sadakat kartı oluştur', ro: 'Creează un card nou de fidelitate', nl: 'Nieuwe spaarkaart aanmaken' , sq: 'Krijo kartë të re besnikërie'},
-  screenshotNote: { de: '📸 Bitte den Code notieren oder einen Screenshot machen — er ist dein einziger Zugang zur Karte!', en: '📸 Please note the code or take a screenshot — it\'s your only access to the card!', tr: '📸 Lütfen kodu not al veya ekran görüntüsü al — karta tek erişimin bu!', ro: '📸 Notează codul sau fă o captură de ecran — este singurul tău acces la card!', nl: '📸 Noteer de code of maak een screenshot — het is je enige toegang tot de kaart!' , sq: '📸 Ju lutem shënoni kodin ose bëni një pamje ekrani — është aksesi juaj i vetëm te karta!'},
-  yourCodeLabel: { de: 'DEIN CODE', en: 'YOUR CODE', tr: 'KODUN', ro: 'CODUL TĂU', nl: 'JOUW CODE' , sq: 'KODI YT'},
-  freeItemEarned: { de: '🎉 Gratis-Portion verdient!', en: '🎉 Free item earned!', tr: '🎉 Ücretsiz ürün kazandın!', ro: '🎉 Produs gratuit câștigat!', nl: '🎉 Gratis item verdiend!' , sq: '🎉 Fitove një racion falas!'},
-  stampsUntilFreePrefix: { de: 'Noch', en: 'Only', tr: 'Sadece', ro: 'Mai', nl: 'Nog' , sq: 'Edhe'},
-  stampsUntilFreeSuffix: { de: 'Stempel bis zur Gratis-Portion', en: 'stamps until your free item', tr: 'damga kaldı, ücretsiz ürün kazanacaksın', ro: 'ștampile până la produsul gratuit', nl: 'stempels tot je gratis item' , sq: 'vula deri te racioni falas'},
-  noteExampleCheese: { de: 'Anmerkung, z.B. ohne Käse', en: 'Note, e.g. no cheese', tr: 'Not, örn. peynirsiz', ro: 'Observație, ex. fără brânză', nl: 'Opmerking, bijv. zonder kaas' , sq: 'Shënim, p.sh. pa djathë'},
-  noteExampleOnions: { de: 'Anmerkung, z.B. ohne Zwiebeln', en: 'Note, e.g. no onions', tr: 'Not, örn. soğansız', ro: 'Observație, ex. fără ceapă', nl: 'Opmerking, bijv. zonder uien' , sq: 'Shënim, p.sh. pa qepë'},
-  noteOptional: { de: 'Anmerkung (optional)', en: 'Note (optional)', tr: 'Not (isteğe bağlı)', ro: 'Observație (opțional)', nl: 'Opmerking (optioneel)' , sq: 'Shënim (opsionale)'},
-  pickupTimePh: { de: 'Gewünschte Abholzeit (optional)', en: 'Desired pickup time (optional)', tr: 'İstenen teslim alma saati (isteğe bağlı)', ro: 'Ora de ridicare dorită (opțional)', nl: 'Gewenste ophaaltijd (optioneel)' , sq: 'Ora e dëshiruar e marrjes (opsionale)'},
-  pickupTimeLabel: { de: 'Abholzeit', en: 'Pickup time', tr: 'Teslim alma saati', ro: 'Ora de ridicare', nl: 'Ophaaltijd' , sq: 'Ora e marrjes'},
-  titlePizzaBuilder: { de: 'DEINE PIZZA', en: 'YOUR PIZZA', tr: 'SENİN PİZZAN', ro: 'PIZZA TA', nl: 'JOUW PIZZA' , sq: 'PICA JOTE'},
-  titlePastaBuilder: { de: 'DEINE PASTA', en: 'YOUR PASTA', tr: 'SENİN MAKARNAN', ro: 'PASTA TA', nl: 'JOUW PASTA' , sq: 'PASTA JOTE'},
-  chooseCreationTitle: { de: 'Was möchtest du zusammenstellen?', en: 'What would you like to build?', tr: 'Ne oluşturmak istersin?', ro: 'Ce dorești să creezi?', nl: 'Wat wil je samenstellen?' , sq: 'Çfarë dëshiron të krijosh?'},
-  chooseCreationSub: { de: 'Wähle deine Basis — Schritt für Schritt zu deinem Wunschgericht.', en: 'Choose your base — step by step to your dream dish.', tr: 'Bazını seç — adım adım hayalindeki yemeğe ulaş.', ro: 'Alege baza — pas cu pas spre felul tău preferat.', nl: 'Kies je basis — stap voor stap naar jouw droomgerecht.' , sq: 'Zgjidh bazën tënde — hap pas hapi drejt gjellës që dëshiron.'},
-  buildDoener: { de: 'Baue deinen Döner', en: 'Build your Döner', tr: 'Dönerini Oluştur', ro: 'Construiește-ți Kebap-ul', nl: 'Bouw je Döner' , sq: 'Krijo Dönerin tënd'},
-  buildPizza: { de: 'Baue deine Pizza', en: 'Build your Pizza', tr: 'Pizzanı Oluştur', ro: 'Construiește-ți Pizza', nl: 'Bouw je Pizza' , sq: 'Krijo picën tënde'},
-  buildPasta: { de: 'Baue deine Pasta', en: 'Build your Pasta', tr: 'Makarnanı Oluştur', ro: 'Construiește-ți Pasta', nl: 'Bouw je Pasta' , sq: 'Krijo pastën tënde'},
-  choosePizzaSize: { de: 'Wähle deine Größe', en: 'Choose your size', tr: 'Boyutunu seç', ro: 'Alege dimensiunea', nl: 'Kies je formaat' , sq: 'Zgjidh madhësinë tënde'},
-  choosePizzaSizeSub: { de: 'Klein oder groß?', en: 'Small or large?', tr: 'Küçük mü büyük mü?', ro: 'Mică sau mare?', nl: 'Klein of groot?' , sq: 'E vogël apo e madhe?'},
-  chooseToppingsSub: { de: 'So viele du möchtest — je 1,00 €.', en: 'As many as you like — €1.00 each.', tr: 'İstediğin kadar — her biri 1,00 €.', ro: 'Câte dorești — 1,00 € fiecare.', nl: 'Zoveel als je wilt — elk € 1,00.' , sq: 'Sa shumë të duash — nga 1,00 € secila.'},
-  pizzaReadyTitle: { de: 'Deine Pizza ist fertig! 🎉', en: 'Your Pizza is ready! 🎉', tr: 'Pizzan hazır! 🎉', ro: 'Pizza ta este gata! 🎉', nl: 'Jouw Pizza is klaar! 🎉' , sq: 'Pica jote është gati! 🎉'},
-  choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' , sq: 'Zgjidh stilin tënd'},
-  yaprakWeekendOnly: { de: 'Yaprak Döner gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'Yaprak Döner is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Yaprak Döner sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Yaprak Döner este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Yaprak Döner is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' , sq: 'Yaprak Döner ofrohet vetëm të premten, të shtunën dhe të dielën. Në ditët e tjera fatkeqësisht nuk ofrohet.'},
-  weekendItemOnly: { de: 'Dieses Gericht gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'This dish is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Bu ürün sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Acest fel este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Dit gerecht is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' , sq: 'Kjo gjellë ofrohet vetëm të premten, të shtunën dhe të dielën. Në ditët e tjera fatkeqësisht nuk ofrohet.'},
-  weekendWarnTitle: { de: 'Nur am Wochenende', en: 'Weekends only', tr: 'Sadece hafta sonu', ro: 'Doar în weekend', nl: 'Alleen in het weekend' , sq: 'Vetëm në fundjavë'},
-  statusOpenNow: { de: 'Jetzt geöffnet', en: 'Open now', tr: 'Şu an açık', ro: 'Acum deschis', nl: 'Nu geopend' , sq: 'Hapur tani'},
-  statusClosedRestDay: { de: 'Geschlossen · Ruhetag', en: 'Closed · Rest day', tr: 'Kapalı · Tatil günü', ro: 'Închis · Zi liberă', nl: 'Gesloten · Rustdag' , sq: 'Mbyllur · Ditë pushimi'},
-  statusNotYetOpen: { de: 'Noch geschlossen', en: 'Not open yet', tr: 'Henüz açılmadı', ro: 'Încă închis', nl: 'Nog gesloten' , sq: 'Ende mbyllur'},
-  statusClosed: { de: 'Geschlossen', en: 'Closed', tr: 'Kapalı', ro: 'Închis', nl: 'Gesloten' , sq: 'Mbyllur'},
-  sizeLabel: { de: 'GRÖSSE', en: 'SIZE', tr: 'BOYUT', ro: 'MĂRIME', nl: 'FORMAAT' , sq: 'MADHËSIA'},
-  pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' , sq: '🎉 Oferta e fundjavës: Zgjidh picën tënde 28cm për {price} me pije të përfshirë!'},
-  leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' , sq: 'Largohu nga oferta'},
-  itemAddedToast: { de: 'Zum Warenkorb hinzugefügt', en: 'Added to cart', tr: 'Sepete eklendi', ro: 'Adăugat în coș', nl: 'Toegevoegd aan winkelwagen' , sq: 'U shtua në shportë'},
-  meatTypeLabel: { de: 'FLEISCHART (KOSTENLOS)', en: 'TYPE OF MEAT (FREE)', tr: 'ET TÜRÜ (ÜCRETSİZ)', ro: 'TIP DE CARNE (GRATUIT)', nl: 'SOORT VLEES (GRATIS)' , sq: 'LLOJI I MISHIT (FALAS)'},
-  meatKalb: { de: 'Kalb/Rind', en: 'Veal/Beef', tr: 'Dana/Kalb', ro: 'Vițel/Vită', nl: 'Kalfs-/rundvlees' , sq: 'Viç/Lopë'},
-  lunchComboTitle: { de: '🍽️ Mittagsangebot', en: '🍽️ Lunch special', tr: '🍽️ Öğle fırsatı', ro: '🍽️ Ofertă de prânz', nl: '🍽️ Lunchaanbieding' , sq: '🍽️ Oferta e drekës'},
-  lunchComboSub: { de: 'Wähle dein Getränk dazu — zusammen nur 9,50 €!', en: 'Choose your drink — together only €9.50!', tr: 'Yanına içeceğini seç — birlikte sadece 9,50 €!', ro: 'Alege băutura — împreună doar 9,50 €!', nl: 'Kies je drankje — samen maar € 9,50!' , sq: 'Zgjidh pijen tënde shtesë — së bashku vetëm 9,50 €!'},
-  lunchComboConfirm: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' , sq: 'Shto te porosia'},
-  lunchSmallHint: { de: '💡 Tipp: Bei der großen Pizza bekommst du zwischen 11:30–14:00 Uhr ein Getränk gratis dazu!', en: '💡 Tip: With the large pizza you get a free drink between 11:30 AM–2:00 PM!', tr: '💡 İpucu: Büyük pizzayla 11:30–14:00 arası ücretsiz içecek kazanırsın!', ro: '💡 Sfat: La pizza mare primești o băutură gratuită între 11:30–14:00!', nl: '💡 Tip: Bij de grote pizza krijg je tussen 11:30–14:00 uur een gratis drankje!' , sq: '💡 Këshillë: Me picën e madhe merr një pije falas midis orës 11:30–14:00!'},
-  pickupEstimate: { de: 'Fertig in ca. 15–20 Minuten', en: 'Ready in approx. 15–20 minutes', tr: 'Yaklaşık 15-20 dakikada hazır', ro: 'Gata în aprox. 15–20 minute', nl: 'Klaar in ca. 15–20 minuten' , sq: 'Gati për rreth 15–20 minuta'},
-  allergenInfoBtn: { de: 'ⓘ Allergene & Zusatzstoffe', en: 'ⓘ Allergens & additives', tr: 'ⓘ Alerjen ve katkı maddeleri', ro: 'ⓘ Alergeni și aditivi', nl: 'ⓘ Allergenen & additieven' , sq: 'ⓘ Alergjenët & Aditivët'},
-  recommendedForYou: { de: 'PASST GUT DAZU', en: 'GOES WELL WITH THIS', tr: 'BUNA ÇOK YAKIŞIR', ro: 'SE POTRIVEȘTE BINE', nl: 'PAST HIER GOED BIJ' , sq: 'SHKON MIRË ME KËTË'},
-  groupSubmitBtn: { de: 'Meine Bestellung abschicken', en: 'Submit my order', tr: 'Siparişimi gönder', ro: 'Trimite comanda mea', nl: 'Mijn bestelling versturen' , sq: 'Dërgo porosinë time'},
-  freeDrinkProgress: { de: 'Noch {amount} bis zum 1L-Getränk gratis!', en: 'Only {amount} more for a free 1L drink!', tr: '1L içecek hediye için {amount} kaldı!', ro: 'Mai sunt {amount} pentru o băutură de 1L gratuită!', nl: 'Nog {amount} tot een gratis 1L drankje!' , sq: 'Edhe {amount} deri te pija falas 1L!'},
-  freeDrinkUnlocked: { de: '🎉 1L-Getränk gratis freigeschaltet!', en: '🎉 Free 1L drink unlocked!', tr: '🎉 1L içecek hediye kazandın!', ro: '🎉 Băutură de 1L gratuită deblocată!', nl: '🎉 Gratis 1L drankje ontgrendeld!' , sq: '🎉 Pija falas 1L u aktivizua!'},
-  noDrinkReminder: { de: 'Durst? Vergiss dein Getränk nicht!', en: 'Thirsty? Don\'t forget a drink!', tr: 'Susadın mı? İçeceğini unutma!', ro: 'Ți-e sete? Nu uita o băutură!', nl: 'Dorst? Vergeet je drankje niet!' , sq: 'Etje? Mos harro pijen tënde!'},
-  allergenLegendTitle: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjen ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & additieven' , sq: 'Alergjenët & Aditivët'},
-  allergenSectionTitle: { de: 'ALLERGENE', en: 'ALLERGENS', tr: 'ALERJENLER', ro: 'ALERGENI', nl: 'ALLERGENEN' , sq: 'ALERGJENËT'},
-  zusatzSectionTitle: { de: 'ZUSATZSTOFFE', en: 'ADDITIVES', tr: 'KATKI MADDELERİ', ro: 'ADITIVI', nl: 'ADDITIEVEN' , sq: 'ADITIVËT'},
-  choosePastaTypeTitle: { de: 'Spaghetti oder Makkaroni?', en: 'Spaghetti or Macaroni?', tr: 'Spagetti mi Makarna mı?', ro: 'Spaghete sau macaroane?', nl: 'Spaghetti of macaroni?' , sq: 'Spageti apo Makarona?'},
-  weiterShort: { de: 'Weiter', en: 'Next', tr: 'İleri', ro: 'Continuă', nl: 'Verder' , sq: 'Vazhdo'},
-  choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' , sq: 'Çdo pastë shërbehet me penne kurkumë & sallatë tregu.'},
-  pastaReadyTitle: { de: 'Deine Pasta ist fertig! 🎉', en: 'Your Pasta is ready! 🎉', tr: 'Makarnan hazır! 🎉', ro: 'Pasta ta este gata! 🎉', nl: 'Jouw Pasta is klaar! 🎉' , sq: 'Pasta jote është gati! 🎉'},
-  sizeSmall: { de: 'klein', en: 'small', tr: 'küçük', ro: 'mic', nl: 'klein' , sq: 'e vogël'},
-  sizeLarge: { de: 'groß', en: 'large', tr: 'büyük', ro: 'mare', nl: 'groot' , sq: 'e madhe'},
-  extrasPricePrefix: { de: 'Extras (je', en: 'Extras (each', tr: 'Ekstralar (her biri', ro: 'Extra (fiecare', nl: 'Extra’s (elk' , sq: 'Ekstra (nga'},
-  cartTitle: { de: 'Deine Bestellung', en: 'Your order', tr: 'Siparişin', ro: 'Comanda ta', nl: 'Jouw bestelling' , sq: 'Porosia jote'},
-  drinksTitle: { de: 'Etwas zu trinken?', en: 'Something to drink?', tr: 'İçecek ister misin?', ro: 'Ceva de băut?', nl: 'Iets te drinken?' , sq: 'Diçka për të pirë?'},
-  itemsWord: { de: 'Artikel', en: 'items', tr: 'ürün', ro: 'articole', nl: 'items' , sq: 'artikuj'},
-  orderSentTitle: { de: '✓ Bestellung gesendet!', en: '✓ Order sent!', tr: '✓ Sipariş gönderildi!', ro: '✓ Comandă trimisă!', nl: '✓ Bestelling verstuurd!' , sq: '✓ Porosia u dërgua!'},
-  orderSentSub: { de: 'Vielen Dank! Wir bereiten deine Bestellung vor.', en: "Thank you! We're preparing your order.", tr: 'Teşekkürler! Siparişini hazırlıyoruz.', ro: 'Mulțumim! Îți pregătim comanda.', nl: 'Bedankt! We bereiden je bestelling voor.' , sq: 'Faleminderit shumë! Po përgatisim porosinë tënde.'},
-  backToHomeBtn: { de: 'Zurück zur Startseite', en: 'Back to homepage', tr: 'Ana sayfaya dön', ro: 'Înapoi la pagina principală', nl: 'Terug naar startpagina' , sq: 'Kthehu te faqja kryesore'},
-  newOrderBtn: { de: 'Neue Bestellung starten', en: 'Start a new order', tr: 'Yeni sipariş oluştur', ro: 'Începe o comandă nouă', nl: 'Nieuwe bestelling starten' , sq: 'Fillo porosi të re'},
-  installAppBtn: { de: '📲 App installieren', en: '📲 Install app', tr: '📲 Uygulamayı yükle', ro: '📲 Instalează aplicația', nl: '📲 App installeren' , sq: '📲 Instalo aplikacionin'},
-  installHelpTitle: { de: 'Zum Startbildschirm hinzufügen', en: 'Add to Home Screen', tr: 'Ana Ekrana Ekle', ro: 'Adaugă pe ecranul principal', nl: 'Toevoegen aan beginscherm' , sq: 'Shto te ekrani kryesor'},
-  installHelpIOS: { de: 'Tippe unten auf Teilen 􀈂 und dann auf „Zum Home-Bildschirm".', en: 'Tap the Share button below, then "Add to Home Screen".', tr: 'Aşağıdaki Paylaş simgesine, ardından "Ana Ekrana Ekle"ye dokun.', ro: 'Atinge butonul Distribuie de mai jos, apoi „Adaugă pe ecranul principal".', nl: 'Tik op Delen hieronder en dan op "Zet op beginscherm".' , sq: 'Prek butonin Ndaj poshtë, pastaj \\"Shto në ekranin kryesor\\".'},
-  installHelpAndroid: { de: 'Tippe oben rechts auf das Menü ⋮ und dann auf „App installieren" oder „Zum Startbildschirm hinzufügen".', en: 'Tap the ⋮ menu top right, then "Install app" or "Add to Home Screen".', tr: 'Sağ üstteki ⋮ menüsüne dokun, sonra "Uygulamayı yükle" veya "Ana Ekrana Ekle" seç.', ro: 'Atinge meniul ⋮ din dreapta sus, apoi „Instalează aplicația".', nl: 'Tik op het ⋮-menu rechtsboven, dan op "App installeren".' , sq: 'Prek menynë ⋮ lart djathtas, pastaj \\"Instalo aplikacionin\\" ose \\"Shto te ekrani kryesor\\".'},
-  installHelpClose: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen' , sq: 'E kuptova'},
-  downloadReceiptBtn: { de: 'Fiş als Bild speichern', en: 'Save receipt as image', tr: 'Fişi görsel olarak kaydet', ro: 'Salvează bonul ca imagine', nl: 'Bon opslaan als afbeelding', sq: 'Ruaj faturën si imazh' },
+  navExtras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: 'Extra’s' , sq: 'Ekstra', ku: 'Zêde'},
+  navMenu: { de: 'Speisekarte', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menukaart' , sq: 'Menuja', ku: 'Menû'},
+  navGallery: { de: 'Galerie', en: 'Gallery', tr: 'Galeri', ro: 'Galerie', nl: 'Galerij' , sq: 'Galeria', ku: 'Galerî'},
+  navContact: { de: 'Kontakt', en: 'Contact', tr: 'İletişim', ro: 'Contact', nl: 'Contact' , sq: 'Kontakt', ku: 'Têkilî'},
+  navStaff: { de: 'Personal', en: 'Staff', tr: 'Personel', ro: 'Personal', nl: 'Personeel' , sq: 'Stafi', ku: 'Karmend'},
+  navStaffArea: { de: 'Personal-Bereich', en: 'Staff Area', tr: 'Personel Alanı', ro: 'Zonă Personal', nl: 'Personeelsgedeelte' , sq: 'Zona e Stafit', ku: 'Qada Karmendan'},
+  navTrackOrder: { de: 'Bestellung verfolgen', en: 'Track order', tr: 'Siparişi takip et', ro: 'Urmărește comanda', nl: 'Bestelling volgen' , sq: 'Ndiq porosinë', ku: 'Sifarişê bişopîne'},
+  titleTrack: { de: 'BESTELLUNG VERFOLGEN', en: 'TRACK ORDER', tr: 'SİPARİŞ TAKİBİ', ro: 'URMĂRIRE COMANDĂ', nl: 'BESTELLING VOLGEN' , sq: 'NDIQ POROSINË', ku: 'SIFARIŞÊ BIŞOPÎNE'},
+  trackCodePh: { de: 'Bestellcode', en: 'Order code', tr: 'Sipariş kodu', ro: 'Cod comandă', nl: 'Bestelcode' , sq: 'Kodi i porosisë', ku: 'Koda sifarişê'},
+  trackOrderBtn: { de: 'Bestellung verfolgen', en: 'Track order', tr: 'Siparişi takip et', ro: 'Urmărește comanda', nl: 'Bestelling volgen' , sq: 'Ndiq porosinë', ku: 'Sifarişê bişopîne'},
+  orderStatusReady: { de: 'Fertig, komm vorbei! 🎉', en: 'Ready, come pick it up! 🎉', tr: 'Hazır, gelebilirsin! 🎉', ro: 'Gata, poți veni! 🎉', nl: 'Klaar, kom langs! 🎉' , sq: 'Gati, eja merre! 🎉', ku: 'Amade ye, were bigire! 🎉'},
+  orderStatusPreparing: { de: 'Wird zubereitet', en: 'Being prepared', tr: 'Hazırlanıyor', ro: 'Se pregătește', nl: 'Wordt bereid' , sq: 'Po përgatitet', ku: 'Tê amadekirin'},
+  orderCodeLabel: { de: 'Code', en: 'Code', tr: 'Kod', ro: 'Cod', nl: 'Code' , sq: 'Kodi', ku: 'Kod'},
+  staffOrdersTab: { de: 'Bestellungen', en: 'Orders', tr: 'Siparişler', ro: 'Comenzi', nl: 'Bestellingen' , sq: 'Porositë', ku: 'Sifariş'},
+  staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' , sq: 'Cilësimet', ku: 'Mîheng'},
+  staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' , sq: 'Statistikat', ku: 'Statîstîk'},
+  staffMenuTab: { de: 'Preise', en: 'Prices', tr: 'Fiyatlar', ro: 'Prețuri', nl: 'Prijzen' , sq: 'Çmimet', ku: 'Biha'},
+  staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" , sq: 'Fotot', ku: 'Wêne'},
+  staffWelcomeTitle: { de: 'Willkommen zurück!', en: 'Welcome back!', tr: 'Tekrar hoş geldin!', ro: 'Bine ai revenit!', nl: 'Welkom terug!' , sq: 'Mirë se erdhe përsëri!', ku: 'Bi xêr hatî!'},
+  staffWelcomeSub: { de: 'Wähle einen Bereich unten aus', en: 'Choose an area below', tr: 'Aşağıdan bir bölüm seç', ro: 'Alege o secțiune mai jos', nl: 'Kies hieronder een gebied' , sq: 'Zgjidh një seksion më poshtë', ku: 'Ji jêr beşekê hilbijêre'},
+  menuSearchPh: { de: 'Gericht suchen...', en: 'Search dish...', tr: 'Ürün ara...', ro: 'Caută fel...', nl: 'Gerecht zoeken...' , sq: 'Kërko një gjellë...', ku: 'Xwarinê bigere...'},
+  editedBadge: { de: 'bearbeitet', en: 'edited', tr: 'düzenlendi', ro: 'editat', nl: 'bewerkt' , sq: 'ndryshuar', ku: 'hate guherandin'},
+  resetBtn: { de: 'Zurücksetzen', en: 'Reset', tr: 'Sıfırla', ro: 'Resetează', nl: 'Resetten' , sq: 'Rivendos', ku: 'Ji nû ve saz bike'},
+  cancelBtn: { de: 'Abbrechen', en: 'Cancel', tr: 'Vazgeç', ro: 'Anulează', nl: 'Annuleren' , sq: 'Anulo', ku: 'Betal bike'},
+  editedPricesCount: { de: 'Preis(e) angepasst', en: 'price(s) adjusted', tr: 'fiyat düzenlendi', ro: 'prețuri ajustate', nl: 'prijzen aangepast' , sq: 'çmim(e) të ndryshuar', ku: 'biha(yên) hatin guherandin'},
+  photoUrlHint: { de: 'Füge einen Bild-Link ein (z.B. von einem Foto-Hosting-Dienst). Direkte Datei-Uploads sind hier noch nicht möglich.', en: 'Paste an image link (e.g. from a photo hosting service). Direct file uploads are not yet possible here.', tr: 'Bir resim linki yapıştır (örn. bir fotoğraf barındırma servisinden). Doğrudan dosya yükleme henüz mümkün değil.', ro: 'Adaugă un link de imagine (de ex. de la un serviciu de găzduire foto). Încărcarea directă a fișierelor nu este încă posibilă aici.', nl: 'Plak een afbeeldingslink (bijv. van een fotohostingdienst). Direct bestanden uploaden kan hier nog niet.' , sq: 'Ngjit një lidhje foto (p.sh. nga një shërbim hostimi fotosh). Ngarkimi direkt i skedarëve nuk është ende i mundur këtu.', ku: 'Girêdana wêneyekî lê zêde bike (mînak ji xizmeteke hostkirina wêneyan). Barkirina rasterast a pelan hê ne gengaz e li vir.'},
+  visitsToday: { de: 'Besuche heute', en: 'Visits today', tr: 'Bugünkü ziyaret', ro: 'Vizite azi', nl: 'Bezoeken vandaag' , sq: 'Vizita sot', ku: 'Serdanên îro'},
+  visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' , sq: 'Vizitat e fundit', ku: 'Serdanên dawî'},
+  byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' , sq: 'SIPAS GJUHËS', ku: 'LI GORÎ ZIMAN'},
+  byDevice: { de: 'NACH GERÄT', en: 'BY DEVICE', tr: 'CİHAZA GÖRE', ro: 'DUPĂ DISPOZITIV', nl: 'PER APPARAAT' , sq: 'SIPAS PAJISJES', ku: 'LI GORÎ AMÎR'},
+  analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.', ku: '500 serdanên dawî nîşan dide. Tu daneyên kesane tune, tenê ziman & cureyê amîr.'},
+  trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.', ku: 'Ji bo dîtina rewşê koda sifarişê binivîse.'},
+  surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!', ku: 'Min ecêbmayî bihêle!'},
+  surpriseTitle: { de: 'Wie wäre es damit?', en: 'How about this?', tr: 'Buna ne dersin?', ro: 'Ce zici de asta?', nl: 'Wat dacht je hiervan?' , sq: 'Si të duket kjo?', ku: 'Ev çawa ye?'},
+  surpriseRolling: { de: 'Wir überlegen...', en: 'Thinking...', tr: 'Düşünüyoruz...', ro: 'Ne gândim...', nl: 'We denken na...' , sq: 'Po mendojmë...', ku: 'Em difikirin...'},
+  surpriseWantIt: { de: 'Ja, das will ich!', en: 'Yes, I want this!', tr: 'Evet, bunu istiyorum!', ro: 'Da, vreau asta!', nl: 'Ja, dit wil ik!' , sq: 'Po, e dua këtë!', ku: 'Erê, ez vê dixwazim!'},
+  surpriseAgain: { de: 'Was anderes zeigen', en: 'Show me something else', tr: 'Başka bir şey söyle', ro: 'Arată-mi altceva', nl: 'Toon iets anders' , sq: 'Trego diçka tjetër', ku: 'Tiştekî din nîşan bide'},
+  noOrdersYet: { de: 'Noch keine Bestellungen', en: 'No orders yet', tr: 'Henüz sipariş yok', ro: 'Încă nicio comandă', nl: 'Nog geen bestellingen' , sq: 'Ende pa porosi', ku: 'Hê tu sifariş tune'},
+  deleteOrderBtn: { de: 'Löschen (z.B. falls nicht per WhatsApp abgeschickt)', en: 'Delete (e.g. if not actually sent via WhatsApp)', tr: 'Sil (örn. WhatsApp\'tan gerçekten gönderilmediyse)', ro: 'Șterge (ex. dacă nu a fost trimis efectiv prin WhatsApp)', nl: 'Verwijderen (bijv. als niet echt via WhatsApp verstuurd)' , sq: 'Fshi (p.sh. nëse nuk u dërgua nga WhatsApp)', ku: 'Jê bibe (mînak heke bi WhatsApp neşandibe)'},
+  deleteFailedMsg: { de: '⚠️ Löschen fehlgeschlagen — Datenbankberechtigung prüfen', en: '⚠️ Delete failed — check database permissions', tr: '⚠️ Silme başarısız — veritabanı izinlerini kontrol edin', ro: '⚠️ Ștergere eșuată — verifică permisiunile bazei de date', nl: '⚠️ Verwijderen mislukt — controleer databaserechten' , sq: '⚠️ Fshirja dështoi — kontrollo lejet e bazës së të dhënave', ku: '⚠️ Jêbirin serneket — destûrên danegehê kontrol bike'},
+  ordersTotalLabel: { de: 'GESAMT (angezeigte Bestellungen)', en: 'TOTAL (shown orders)', tr: 'TOPLAM (görüntülenen siparişler)', ro: 'TOTAL (comenzi afișate)', nl: 'TOTAAL (getoonde bestellingen)' , sq: 'GJITHSEJ (porositë e shfaqura)', ku: 'BI TEVAYÎ (sifarişên xuyakirî)'},
+  stuckOrderBadge: { de: 'ÜBERFÄLLIG', en: 'OVERDUE', tr: 'GECİKTİ', ro: 'ÎNTÂRZIATĂ', nl: 'TE LAAT' , sq: 'VONESË', ku: 'DEREN MABÛYE'},
+  soldOutBadge: { de: 'AUSVERKAUFT', en: 'SOLD OUT', tr: 'TÜKENDİ', ro: 'EPUIZAT', nl: 'UITVERKOCHT' , sq: 'I SHITUR', ku: 'TIŞTEK NEMA'},
+  notifTestLabel: { de: 'Benachrichtigung testen', en: 'Test notification', tr: 'Bildirimi test et', ro: 'Testează notificarea', nl: 'Melding testen' , sq: 'Testo njoftimin', ku: 'Danezanê biceribîne'},
+  dailyBannerLabel: { de: 'Ankündigung des Tages', en: "Today's announcement", tr: 'Günün duyurusu', ro: 'Anunțul zilei', nl: 'Aankondiging van vandaag' , sq: 'Njoftimi i ditës', ku: 'Ragihandina Rojê'},
+  dailyBannerPh: { de: 'z.B. Heute frischer Sucuk geliefert 🎉', en: 'e.g. Fresh sucuk delivered today 🎉', tr: 'örn. Bugün taze sucuk geldi 🎉', ro: 'ex. Astăzi a sosit sucuk proaspăt 🎉', nl: 'bijv. Vandaag verse sucuk geleverd 🎉' , sq: 'p.sh. Sot erdhi sallam i freskët 🎉', ku: 'mînak Îro sucuqê taze hat 🎉'},
+  waTemplateLabel: { de: 'Persönliche Nachricht (WhatsApp)', en: 'Personal message (WhatsApp)', tr: 'Kişisel mesaj (WhatsApp)', ro: 'Mesaj personal (WhatsApp)', nl: 'Persoonlijk bericht (WhatsApp)' , sq: 'Mesazh personal (WhatsApp)', ku: 'Peyama şexsî (WhatsApp)'},
+  waTemplateHint: { de: 'Wird am Ende jeder Bestellnachricht angehängt (optional).', en: 'Added to the end of every order message (optional).', tr: 'Her sipariş mesajının sonuna eklenir (opsiyonel).', ro: 'Adăugat la sfârșitul fiecărui mesaj de comandă (opțional).', nl: 'Wordt toegevoegd aan het einde van elk bestelbericht (optioneel).' , sq: 'Shtohet në fund të çdo mesazhi porosie (opsionale).', ku: 'Di dawiya her peyama sifarişê de tê zêdekirin (vebijarkî).'},
+  waTemplatePh: { de: 'z.B. Frohe Weihnachten! 🎄', en: 'e.g. Merry Christmas! 🎄', tr: 'örn. İyi bayramlar! 🎄', ro: 'ex. Crăciun fericit! 🎄', nl: 'bijv. Fijne kerst! 🎄' , sq: 'p.sh. Gëzuar Krishtlindjet! 🎄', ku: 'mînak Cejna we pîroz be! 🎄'},
+  testOrderLabel: { de: 'Testbestellung', en: 'Test order', tr: 'Test siparişi', ro: 'Comandă de test', nl: 'Testbestelling' , sq: 'Porosi provë', ku: 'Sifarişa ceribandinê'},
+  testOrderHint: { de: 'Erstellt eine Test-Bestellung, um Ton, Vibration und die Bestellungen-Ansicht zu prüfen, ohne echte Daten zu vermischen.', en: 'Creates a test order to check sound, vibration and the orders view, without mixing with real data.', tr: 'Ses, titreşim ve sipariş görünümünü gerçek veriyle karışmadan test etmek için bir test siparişi oluşturur.', ro: 'Creează o comandă de test pentru a verifica sunetul, vibrația și afișarea comenzilor, fără a amesteca date reale.', nl: 'Maakt een testbestelling om geluid, trilling en het bestellingenoverzicht te controleren, zonder echte data te mengen.' , sq: 'Krijon një porosi provë për të testuar zërin, dridhjen dhe pamjen e porosive, pa përzier të dhëna reale.', ku: 'Sifarişeke ceribandinê çêdike da ku deng, lerizîn û dîtbariya sifarişan biceribîne, bêyî ku bi daneyên rastîn re tevlihev bibe.'},
+  testOrderBtn: { de: 'Testbestellung erstellen', en: 'Create test order', tr: 'Test siparişi oluştur', ro: 'Creează comandă de test', nl: 'Testbestelling aanmaken' , sq: 'Krijo porosi provë', ku: 'Sifarişa ceribandinê çêke'},
+  showTestOrdersLabel: { de: 'Testbestellungen in der Liste anzeigen', en: 'Show test orders in the list', tr: 'Test siparişlerini listede göster', ro: 'Arată comenzile de test în listă', nl: 'Testbestellingen tonen in de lijst' , sq: 'Trego porositë provë në listë', ku: 'Sifarişên ceribandinê di lîsteyê de nîşan bide'},
+  testOrderCreatedMsg: { de: '✓ Testbestellung erstellt', en: '✓ Test order created', tr: '✓ Test siparişi oluşturuldu', ro: '✓ Comandă de test creată', nl: '✓ Testbestelling aangemaakt' , sq: '✓ Porosia provë u krijua', ku: '✓ Sifarişa ceribandinê hat çêkirin'},
+  notifTestBtn: { de: 'Testton abspielen', en: 'Play test sound', tr: 'Test sesini çal', ro: 'Redă sunetul de test', nl: 'Testgeluid afspelen' , sq: 'Luaj tingullin provë', ku: 'Dengê ceribandinê lêxe'},
+  markSoldOutOn: { de: 'Als „Ausverkauft" markiert', en: 'Marked as "Sold out"', tr: '"Tükendi" olarak işaretlendi', ro: 'Marcat ca „Epuizat"', nl: 'Gemarkeerd als "Uitverkocht"' , sq: 'Shënuar si \\"I shitur\\"', ku: 'Wek \\"Tune\\" hate nîşankirin'},
+  markSoldOutOff: { de: 'Als „Ausverkauft" markieren', en: 'Mark as "Sold out"', tr: '"Tükendi" olarak işaretle', ro: 'Marchează ca „Epuizat"', nl: 'Markeren als "Uitverkocht"' , sq: 'Shëno si \\"I shitur\\"', ku: 'Wek \\"Tune\\" nîşan bike'},
+  groupShareBtn: { de: 'Per WhatsApp einladen', en: 'Invite via WhatsApp', tr: 'WhatsApp ile davet et', ro: 'Invită prin WhatsApp', nl: 'Uitnodigen via WhatsApp' , sq: 'Fto përmes WhatsApp', ku: 'Bi WhatsApp vexwîne'},
+  groupShareMsg: { de: 'Hey! Lass uns zusammen bei Bodrum Kebap Vechta bestellen 🥙 Tritt mit dem Code {code} bei: https://bodrumkebapvechta.de', en: 'Hey! Let\'s order together from Bodrum Kebap Vechta 🥙 Join with code {code}: https://bodrumkebapvechta.de', tr: 'Selam! Bodrum Kebap Vechta\'dan birlikte sipariş verelim 🥙 {code} koduyla katıl: https://bodrumkebapvechta.de', ro: 'Hei! Hai să comandăm împreună de la Bodrum Kebap Vechta 🥙 Alătură-te cu codul {code}: https://bodrumkebapvechta.de', nl: 'Hé! Laten we samen bestellen bij Bodrum Kebap Vechta 🥙 Doe mee met code {code}: https://bodrumkebapvechta.de' , sq: 'Hej! Le të porosisim së bashku nga Bodrum Kebap Vechta 🥙 Bashkohu me kodin {code}: https://bodrumkebapvechta.de', ku: 'Silav! Werin em bi hev re ji Bodrum Kebap Vechta sifariş bidin 🥙 Bi koda {code} tevlî bibe: https://bodrumkebapvechta.de'},
+  pendingParticipantsPrefix: { de: 'Noch nicht fertig:', en: 'Not finished yet:', tr: 'Henüz bitirmedi:', ro: 'Încă nu au terminat:', nl: 'Nog niet klaar:' , sq: 'Ende pa mbaruar:', ku: 'Hê ne temam:'},
+  pendingParticipantsSuffix: { de: '', en: '', tr: '', ro: '', nl: '' , sq: '', ku: ''},
+  sendAnywayConfirm: { de: 'Manche Personen wählen noch aus. Trotzdem senden?', en: 'Some people are still selecting. Send anyway?', tr: 'Bazı kişiler hâlâ seçim yapıyor. Yine de gönderilsin mi?', ro: 'Unele persoane încă aleg. Trimiți oricum?', nl: 'Sommige mensen zijn nog aan het kiezen. Toch versturen?' , sq: 'Disa persona ende po zgjedhin. Të dërgohet gjithsesi?', ku: 'Hin kes hê hildibijêrin. Dîsa jî bişînim?'},
+  elapsedPrefix: { de: 'seit', en: 'since', tr: 'geçen süre', ro: 'de', nl: 'sinds' , sq: 'prej', ku: 'ji'},
+  inPrefix: { de: 'in', en: 'in', tr: 'kalan', ro: 'în', nl: 'over' , sq: 'pas', ku: 'di nav'},
+  overduePrefix: { de: 'überfällig seit', en: 'overdue by', tr: 'gecikme', ro: 'întârziere', nl: 'te laat met' , sq: 'me vonesë prej', ku: 'deren maye ji'},
+  googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' , sq: 'Vlerësimi Google (pikë, numër)', ku: 'Nirxandina Google (xal, hejmar)'},
+  saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' , sq: 'Ruaj', ku: 'Tomar bike'},
+  savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' , sq: '✓ U ruajt', ku: '✓ Hat tomarkirin'},
+  welcomeBackMsg: { de: '👋 Wir haben dich vermisst! Schön, dass du wieder da bist.', en: '👋 We missed you! Great to have you back.', tr: '👋 Seni özledik! Tekrar hoş geldin.', ro: '👋 Ne-a fost dor de tine! Bine ai revenit.', nl: '👋 We hebben je gemist! Fijn dat je er weer bent.' , sq: '👋 Na ka munguar! Mirë se erdhe përsëri.', ku: '👋 Me bêriya te kir! Xweş e ku tu vegeriyayî.'},
+  favoritesTitle: { de: 'DEINE FAVORITEN', en: 'YOUR FAVOURITES', tr: 'FAVORİLERİN', ro: 'FAVORITELE TALE', nl: 'JOUW FAVORIETEN' , sq: 'FAVORITET E TUA', ku: 'BIJARTEYÊN TE'},
+  orderNow: { de: 'Jetzt bestellen', en: 'Order now', tr: 'Şimdi sipariş ver', ro: 'Comandă acum', nl: 'Nu bestellen' , sq: 'Porosit tani', ku: 'Niha sifariş bide'},
+  heroHalal: { de: '100% HALAL', en: '100% HALAL', tr: '%100 HELAL', ro: '100% HALAL', nl: '100% HALAL' , sq: '100% HALLALL', ku: '100% HELAL'},
+  heroTitle1: { de: 'Frisch vom', en: 'Fresh from the', tr: 'Taze', ro: 'Proaspăt de la', nl: 'Vers van het' , sq: 'E freskët nga', ku: 'Taze ji'},
+  heroTitle2: { de: 'Drehspieß', en: 'rotisserie', tr: 'Döner', ro: 'rotisor', nl: 'draaispit' , sq: 'Rrotisi', ku: 'Şîşê zivirî'},
+  heroSubtitle: { de: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salat — täglich frisch zubereitet in Vechta.', en: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salad — freshly made every day in Vechta.', tr: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salata — Vechta\'da her gün taze hazırlanır.', ro: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salată — preparate proaspăt zilnic în Vechta.', nl: 'Kebap · Pizza · Rollo · Calzone · Schnitzel · Salade — dagelijks vers bereid in Vechta.' , sq: 'Kebap · Picë · Rollo · Kalcone · Shnicel · Sallatë — përgatitur fresk çdo ditë në Vechta.', ku: 'Kebap · Pizza · Rollo · Kalzone · Şnîtzel · Salate — her roj li Vechta taze tê amadekirin.'},
+  heroCtaWhatsapp: { de: '📱 Per WhatsApp bestellen', en: '📱 Order via WhatsApp', tr: '📱 WhatsApp ile sipariş ver', ro: '📱 Comandă prin WhatsApp', nl: '📱 Bestellen via WhatsApp' , sq: '📱 Porosit përmes WhatsApp', ku: '📱 Bi WhatsApp sifariş bide'},
+  heroCtaMore: { de: 'Mehr entdecken', en: 'Discover more', tr: 'Daha fazlasını keşfet', ro: 'Descoperă mai mult', nl: 'Meer ontdekken' , sq: 'Zbulo më shumë', ku: 'Bêtir keşf bike'},
+  heroCtaGroup: { de: 'Gruppenbestellung starten — mit Freunden zusammen bestellen! →', en: 'Start a group order — order together with friends! →', tr: 'Grup siparişi başlat — arkadaşlarınla birlikte sipariş ver! →', ro: 'Începe o comandă de grup — comandă împreună cu prietenii! →', nl: 'Start een groepsbestelling — samen bestellen met vrienden! →' , sq: 'Fillo porosi në grup — porosit së bashku me shokët! →', ku: 'Sifarişa komê dest pê bike — bi hevalan re sifariş bide! →'},
+  heroOpeningHours: { de: 'Öffnungszeiten', en: 'Opening hours', tr: 'Çalışma saatleri', ro: 'Program', nl: 'Openingstijden' , sq: 'Orari i hapjes', ku: 'Demên vekirî'},
+  heroClosedDay: { de: 'Ruhetag', en: 'Closed on', tr: 'Kapalı gün', ro: 'Zi de închidere', nl: 'Gesloten dag' , sq: 'Mbyllur', ku: 'Girtî'},
+  heroAddress: { de: 'Adresse', en: 'Address', tr: 'Adres', ro: 'Adresă', nl: 'Adres' , sq: 'Adresa', ku: 'Navnîşan'},
+  extrasKicker: { de: 'UNSERE DIGITALEN EXTRAS', en: 'OUR DIGITAL EXTRAS', tr: 'DİJİTAL EKSTRALARIMIZ', ro: 'EXTRELE NOASTRE DIGITALE', nl: 'ONZE DIGITALE EXTRA’S' , sq: 'EKSTRAT TONA DIGJITALE', ku: 'ZÊDEYÊN ME YÊN DIJÎTAL'},
+  extrasTitle: { de: 'Mehr als nur bestellen', en: 'More than just ordering', tr: 'Sadece sipariş vermekten fazlası', ro: 'Mai mult decât o simplă comandă', nl: 'Meer dan alleen bestellen' , sq: 'Më shumë se thjesht porosi', ku: 'Ji sifarişkirinê zêdetir'},
+  extrasTip: { de: '🎡 Tipp: Beim Bestellen wartet vor dem Absenden ein Glücksrad mit Gewinnchance!', en: '🎡 Tip: A lucky wheel with a chance to win is waiting before you send your order!', tr: '🎡 İpucu: Sipariş göndermeden önce kazanma şansı olan bir çark seni bekliyor!', ro: '🎡 Sfat: O roată norocoasă cu șansă de câștig te așteaptă înainte de a trimite comanda!', nl: '🎡 Tip: Voor je bestelling verstuurt, wacht een geluksrad met winkans!' , sq: '🎡 Këshillë: Para se të dërgosh porosinë, të pret rrota e fatit me shans fitoreje!', ku: '🎡 Şîret: Berî şandina sifarişê çerxa bextê ya bi şansê ya biserketinê li benda te ye!'},
+  featWaTitle: { de: 'WhatsApp Bestellung', en: 'WhatsApp Order', tr: 'WhatsApp Sipariş', ro: 'Comandă WhatsApp', nl: 'WhatsApp Bestelling' , sq: 'Porosi me WhatsApp', ku: 'Sifarişa WhatsApp'},
+  featWaSub: { de: 'Menü wählen, direkt zur Abholung senden', en: 'Choose from the menu, send straight for pickup', tr: 'Menüden seç, direkt teslim alma için gönder', ro: 'Alege din meniu, trimite direct pentru ridicare', nl: 'Kies uit het menu, direct versturen om af te halen' , sq: 'Zgjidh nga menuja, dërgo direkt për marrje', ku: 'Ji menûyê hilbijêre, rasterast ji bo standinê bişîne'},
+  featBuilderTitle: { de: 'Baue Döner, Pizza oder Pasta', en: 'Build a Döner, Pizza or Pasta', tr: 'Döner, Pizza veya Pasta Oluştur', ro: 'Construiește Kebap, Pizza sau Pasta', nl: 'Bouw een Döner, Pizza of Pasta' , sq: 'Krijo Döner, Picë ose Pastë', ku: 'Dönerê, Pizzayê an Pastayê çêke'},
+  featBuilderSub: { de: 'Ganz nach deinem Geschmack — Schritt für Schritt selbst zusammenstellen', en: 'Exactly to your taste — build it step by step yourself', tr: 'Tamamen kendi zevkine göre — adım adım kendin oluştur', ro: 'Exact după gustul tău — construiește-l pas cu pas', nl: 'Precies naar jouw smaak — stap voor stap zelf samenstellen' , sq: 'Sipas shijes tënde — krijoje vetë hap pas hapi', ku: 'Bi tam ya te — gav bi gav bi xwe çêke'},
+  builderQuickLabel: { de: 'Döner, Pizza & Pasta selbst bauen', en: 'Build your Döner, Pizza & Pasta', tr: 'Döner, Pizza & Pasta Oluştur', ro: 'Construiește Kebap, Pizza & Pasta', nl: 'Bouw je Döner, Pizza & Pasta' , sq: 'Krijo vetë Döner, Picë & Pastë', ku: 'Dönerê, Pizzayê & Pastayê bi xwe çêke'},
+  featGroupTitle: { de: 'Gruppenbestellung', en: 'Group Order', tr: 'Grup Siparişi', ro: 'Comandă de grup', nl: 'Groepsbestelling' , sq: 'Porosi në grup', ku: 'Sifarişa Komê'},
+  featGroupSub: { de: 'Mit Freunden zusammen bestellen', en: 'Order together with friends', tr: 'Arkadaşlarınla birlikte sipariş ver', ro: 'Comandă împreună cu prietenii', nl: 'Samen bestellen met vrienden' , sq: 'Porosit së bashku me shokët', ku: 'Bi hevalan re sifariş bide'},
+  featLoyaltyTitle: { de: 'Treuekarte', en: 'Loyalty Card', tr: 'Sadakat Kartı', ro: 'Card de fidelitate', nl: 'Spaarkaart' , sq: 'Karta e besnikërisë', ku: 'Karta Dilsozîyê'},
+  featSurpriseSub: { de: 'Lass dich zufällig inspirieren', en: 'Get a random inspiration', tr: 'Rastgele bir ilham al', ro: 'Inspiră-te aleatoriu', nl: 'Laat je willekeurig inspireren' , sq: 'Lëre veten të frymëzohesh rastësisht', ku: 'Bihêle bi rengekî tesadufî îlham bigirî'},
+  featLoyaltySub: { de: '8 Stempel sammeln, Gratis-Portion sichern', en: 'Collect 8 stamps, get a free item', tr: '8 damga topla, ücretsiz ürün kazan', ro: 'Colectează 8 ștampile, primești gratuit', nl: '8 stempels sparen, gratis item ontvangen' , sq: 'Mblidh 8 vula, siguro një racion falas', ku: '8 mor berhev bike, portîyoneke belaş bistîne'},
+  footerImpressum: { de: 'Impressum', en: 'Legal notice', tr: 'Yasal Bilgiler', ro: 'Date companie', nl: 'Colofon' , sq: 'Të dhëna ligjore', ku: 'Agahiyên Hiqûqî'},
+  footerDatenschutz: { de: 'Datenschutz', en: 'Privacy', tr: 'Gizlilik', ro: 'Confidențialitate', nl: 'Privacy' , sq: 'Privatësia', ku: 'Nihêniya Daneyan'},
+  galleryTerrace: { de: 'UNSERE TERRASSE', en: 'OUR TERRACE', tr: 'TERASIMIZ', ro: 'TERASA NOASTRĂ', nl: 'ONS TERRAS' , sq: 'TARACA JONË', ku: 'TERASA ME'},
+  galleryTerraceTitle: { de: 'Ein Stück Bodrum in Deutschland', en: 'A piece of Bodrum in Germany', tr: 'Almanya\'da bir parça Bodrum', ro: 'O bucată din Bodrum în Germania', nl: 'Een stukje Bodrum in Duitsland' , sq: 'Një copë Bodrum në Gjermani', ku: 'Perçeyek Bodrumê li Almanyayê'},
+  galleryTerraceSub: { de: 'Gemütlich draußen sitzen & genießen — direkt bei uns in Vechta.', en: 'Sit outside and enjoy — right here in Vechta.', tr: 'Dışarıda rahatça oturup keyif çıkar — Vechta\'da bizde.', ro: 'Stai afară și bucură-te — direct la noi în Vechta.', nl: 'Gezellig buiten zitten & genieten — bij ons in Vechta.' , sq: 'Ulu rehat jashtë & shijo — pikërisht te ne në Vechta.', ku: 'Li derve bi rihetî rûnê û kêfê bike — li vir li Vechta li cem me.'},
+  galleryKitchen: { de: 'EIN BLICK IN UNSERE KÜCHE', en: 'A LOOK INTO OUR KITCHEN', tr: 'MUTFAĞIMIZDAN BİR BAKIŞ', ro: 'O PRIVIRE ÎN BUCĂTĂRIA NOASTRĂ', nl: 'EEN KIJKJE IN ONZE KEUKEN' , sq: 'NJË VËSHTRIM NË KUZHINËN TONË', ku: 'LI MATBAXA ME BINÊRE'},
+  contactKicker: { de: 'BESUCH UNS', en: 'VISIT US', tr: 'BİZİ ZİYARET ET', ro: 'VIZITEAZĂ-NE', nl: 'BEZOEK ONS' , sq: 'NA VIZITO', ku: 'SERDANA ME BIKE'},
+  contactTitle: { de: 'So findest du uns', en: 'How to find us', tr: 'Bizi nasıl bulursun', ro: 'Cum ne găsești', nl: 'Zo vind je ons' , sq: 'Kështu na gjen', ku: 'Bi vî rengî tu me dibînî'},
+  contactRoute: { de: '📍 Route planen', en: '📍 Get directions', tr: '📍 Yol tarifi al', ro: '📍 Planifică traseul', nl: '📍 Route plannen' , sq: '📍 Planifiko itinerarin', ku: '📍 Rêyê plansaz bike'},
+  weiter: { de: 'Weiter →', en: 'Next →', tr: 'İleri →', ro: 'Continuă →', nl: 'Verder →' , sq: 'Vazhdo →', ku: 'Bidomîne →'},
+  zurueck: { de: 'Zurück', en: 'Back', tr: 'Geri', ro: 'Înapoi', nl: 'Terug' , sq: 'Prapa', ku: 'Vegere'},
+  abbrechen: { de: 'Abbrechen', en: 'Cancel', tr: 'İptal', ro: 'Anulează', nl: 'Annuleren' , sq: 'Anulo', ku: 'Betal bike'},
+  hinzufuegen: { de: 'Hinzufügen', en: 'Add', tr: 'Ekle', ro: 'Adaugă', nl: 'Toevoegen' , sq: 'Shto', ku: 'Zêde bike'},
+  toCart: { de: 'Zum Warenkorb', en: 'Add to cart', tr: 'Sepete ekle', ro: 'Adaugă în coș', nl: 'In winkelwagen' , sq: 'Në shportë', ku: 'Bo selikê'},
+  gesamt: { de: 'Gesamt', en: 'Total', tr: 'Toplam', ro: 'Total', nl: 'Totaal' , sq: 'Gjithsej', ku: 'Bi Tevayî'},
+  waSend: { de: 'Per WhatsApp senden', en: 'Send via WhatsApp', tr: 'WhatsApp ile gönder', ro: 'Trimite prin WhatsApp', nl: 'Versturen via WhatsApp' , sq: 'Dërgo përmes WhatsApp', ku: 'Bi WhatsApp bişîne'},
+  cartEmpty: { de: 'Dein Warenkorb ist leer.', en: 'Your cart is empty.', tr: 'Sepetin boş.', ro: 'Coșul tău este gol.', nl: 'Je winkelwagen is leeg.' , sq: 'Shporta jote është bosh.', ku: 'Selika te vala ye.'},
+  skip: { de: 'Nein danke, überspringen', en: 'No thanks, skip', tr: 'Hayır teşekkürler, geç', ro: 'Nu, mulțumesc, sari peste', nl: 'Nee bedankt, overslaan' , sq: 'Jo faleminderit, kalo', ku: 'Na spas, derbas bike'},
+  yourName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam' , sq: 'Emri yt', ku: 'Navê te'},
+  groupStart: { de: 'Neue Gruppenbestellung starten', en: 'Start a new group order', tr: 'Yeni grup siparişi başlat', ro: 'Începe o comandă de grup nouă', nl: 'Nieuwe groepsbestelling starten' , sq: 'Fillo porosi të re në grup', ku: 'Sifarişeke nû ya komê dest pê bike'},
+  groupJoin: { de: 'Mit Code beitreten', en: 'Join with code', tr: 'Kod ile katıl', ro: 'Alătură-te cu cod', nl: 'Deelnemen met code' , sq: 'Bashkohu me kod', ku: 'Bi kodê tevlî bibe'},
+  groupSubmit: { de: 'Meine Bestellung abschicken', en: 'Submit my order', tr: 'Siparişimi gönder', ro: 'Trimite comanda mea', nl: 'Mijn bestelling versturen' , sq: 'Dërgo porosinë time', ku: 'Sifarişa xwe bişîne'},
+  groupSendFinal: { de: 'Gesamtbestellung an WhatsApp senden', en: 'Send full order via WhatsApp', tr: 'Toplam siparişi WhatsApp\'a gönder', ro: 'Trimite comanda totală prin WhatsApp', nl: 'Volledige bestelling versturen via WhatsApp' , sq: 'Dërgo porosinë e plotë në WhatsApp', ku: 'Sifarişa giştî bi WhatsApp bişîne'},
+  groupAlreadySent: { de: 'hat die Bestellung bereits gesendet. Du musst nichts weiter tun.', en: 'has already sent the order. You don\'t need to do anything else.', tr: 'siparişi zaten gönderdi. Senin bir şey yapmana gerek yok.', ro: 'a trimis deja comanda. Nu mai trebuie să faci nimic.', nl: 'heeft de bestelling al verstuurd. Je hoeft verder niets te doen.' , sq: 'e ka dërguar tashmë porosinë. Nuk duhet të bësh asgjë tjetër.', ku: 'sifariş jixwe şandiye. Tu ne hewce yî tiştekî din bikî.'},
+  titleWa: { de: 'WHATSAPP BESTELLUNG', en: 'WHATSAPP ORDER', tr: 'WHATSAPP SİPARİŞ', ro: 'COMANDĂ WHATSAPP', nl: 'WHATSAPP BESTELLING' , sq: 'POROSI ME WHATSAPP', ku: 'SIFARIŞA WHATSAPP'},
+  titleBuilder: { de: 'DEIN DÖNER', en: 'YOUR DÖNER', tr: 'SENİN DÖNERİN', ro: 'KEBAP-UL TĂU', nl: 'JOUW DÖNER' , sq: 'DÖNERI YT', ku: 'DÖNERÊ TE'},
+  titleGroup: { de: 'GRUPPENBESTELLUNG', en: 'GROUP ORDER', tr: 'GRUP SİPARİŞİ', ro: 'COMANDĂ DE GRUP', nl: 'GROEPSBESTELLING' , sq: 'POROSI NË GRUP', ku: 'SIFARIŞA KOMÊ'},
+  titleStaff: { de: 'PERSONAL-BEREICH', en: 'STAFF AREA', tr: 'PERSONEL ALANI', ro: 'ZONĂ PERSONAL', nl: 'PERSONEELSGEDEELTE' , sq: 'ZONA E STAFIT', ku: 'QADA KARMENDAN'},
+  titleLoyalty: { de: 'TREUEKARTE', en: 'LOYALTY CARD', tr: 'SADAKAT KARTI', ro: 'CARD DE FIDELITATE', nl: 'SPAARKAART' , sq: 'KARTA E BESNIKËRISË', ku: 'KARTA DILSOZÎYÊ'},
+  weekendOnlyToday: { de: '🎉 NUR HEUTE — SAMSTAG', en: '🎉 TODAY ONLY — SATURDAY', tr: '🎉 SADECE BUGÜN — CUMARTESİ', ro: '🎉 DOAR ASTĂZI — SÂMBĂTĂ', nl: '🎉 ALLEEN VANDAAG — ZATERDAG' , sq: '🎉 VETËM SOT — E SHTUNË', ku: '🎉 TENÊ ÎRO — ŞEMÎ'},
+  weekendOfferTitle: { de: 'Wochenende-Angebot!', en: 'Weekend Special!', tr: 'Hafta Sonu Fırsatı!', ro: 'Ofertă de Weekend!', nl: 'Weekendaanbieding!' , sq: 'Oferta e fundjavës!', ku: 'Pêşniyara Dawiya Hefteyê!'},
+  weekendPizzaTitle: { de: '🍕 28cm Pizza + Dose Getränk', en: '🍕 28cm Pizza + Canned Drink', tr: '🍕 28cm Pizza + Kutu İçecek', ro: '🍕 Pizza 28cm + Băutură la doză', nl: '🍕 28cm Pizza + Blikje drinken' , sq: '🍕 Picë 28cm + Pije kanaçe', ku: '🍕 Pizza 28cm + Vexwarina qutîkirî'},
+  weekendPizzaSub: { de: 'Wähle deine Wunschpizza aus unserer ganzen Pizzakarte!', en: 'Choose your favorite pizza from our whole pizza menu!', tr: 'Tüm pizza menümüzden istediğin pizzayı seç!', ro: 'Alege pizza preferată din întreg meniul nostru de pizza!', nl: 'Kies je favoriete pizza uit onze hele pizzakaart!' , sq: 'Zgjidh picën tënde të preferuar nga e gjithë menuja jonë e picave!', ku: 'Ji tevahiya menûya me ya pizzayan pizzaya xwe hilbijêre!'},
+  choosePizza: { de: 'Pizza auswählen →', en: 'Choose pizza →', tr: 'Pizza seç →', ro: 'Alege pizza →', nl: 'Kies pizza →' , sq: 'Zgjidh picën →', ku: 'Pizzayê hilbijêre →'},
+  chooseMeat: { de: 'FLEISCH WÄHLEN:', en: 'CHOOSE MEAT:', tr: 'ET SEÇ:', ro: 'ALEGE CARNEA:', nl: 'KIES VLEES:' , sq: 'ZGJIDH MISHIN:', ku: 'GOŞTÊ HILBIJÊRE:'},
+  included: { de: 'inklusive', en: 'included', tr: 'dahil', ro: 'inclus', nl: 'inbegrepen' , sq: 'e përfshirë', ku: 'tê de'},
+  addToOrder: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' , sq: 'Shto te porosia', ku: 'Li sifarişê zêde bike'},
+  chooseArrow: { de: 'Auswählen →', en: 'Choose →', tr: 'Seç →', ro: 'Alege →', nl: 'Kies →' , sq: 'Zgjidh →', ku: 'Hilbijêre →'},
+  weekendTeaserOnly: { de: '🎉 Nur Samstag:', en: '🎉 Saturday only:', tr: '🎉 Sadece Cumartesi:', ro: '🎉 Doar sâmbătă:', nl: '🎉 Alleen zaterdag:' , sq: '🎉 Vetëm të shtunën:', ku: '🎉 Tenê Şemî:'},
+  lunchOffer: { de: 'MITTAGSANGEBOT · 9,50 €', en: 'LUNCH SPECIAL · €9.50', tr: 'ÖĞLE FIRSATI · 9,50 €', ro: 'OFERTĂ DE PRÂNZ · 9,50 €', nl: 'LUNCHAANBIEDING · € 9,50' , sq: 'OFERTA E DREKËS · 9,50 €', ku: 'PÊŞNIYARA NAVROJÊ · 9,50 €'},
+  lunchOfferInactive: { de: 'Mo.–Fr. 11:30–14:00 Uhr · inkl. Getränk', en: 'Mon–Fri 11:30 AM–2:00 PM · incl. drink', tr: 'Pzt–Cuma 11:30–14:00 · içecek dahil', ro: 'Lun–Vin 11:30–14:00 · include băutură', nl: 'Ma–vr 11:30–14:00 uur · incl. drankje' , sq: 'Hën–Pre 11:30–14:00 · me pije të përfshirë', ku: 'Duş–În 11:30–14:00 · bi vexwarinê ve'},
+  lunchOfferItems: { de: '28cm Pizza · Salat · Schnitzel · Nudelgericht', en: '28cm Pizza · Salad · Schnitzel · Pasta dish', tr: '28cm Pizza · Salata · Şnitzel · Makarna', ro: 'Pizza 28cm · Salată · Șnițel · Paste', nl: '28cm Pizza · Salade · Schnitzel · Pastagerecht' , sq: 'Picë 28cm · Sallatë · Shnicel · Gjellë makaronash', ku: 'Pizza 28cm · Salate · Şnîtzel · Xwarina makarnayê'},
+  wheelPrompt: { de: 'Dreh am Glücksrad, bevor du bestellst!', en: 'Spin the lucky wheel before you order!', tr: 'Sipariş vermeden önce şans çarkını çevir!', ro: 'Învârte roata norocului înainte de a comanda!', nl: 'Draai aan het geluksrad voordat je bestelt!' , sq: 'Rrotullo rrotën e fatit para se të porositësh!', ku: 'Berî sifariş bidî çerxa bextê bizivirîne!'},
+  wheelSub: { de: 'Gewinne z. B. 10% Rabatt, ein Gratis-Getränk, Gratis-Pommes oder Chicken Nuggets 🎁', en: 'Win e.g. 10% off, a free drink, free fries or chicken nuggets 🎁', tr: 'Örneğin %10 indirim, ücretsiz içecek, ücretsiz patates veya nugget kazan 🎁', ro: 'Câștigă de ex. 10% reducere, o băutură gratuită, cartofi prăjiți gratuiți sau nuggets 🎁', nl: 'Win bijv. 10% korting, een gratis drankje, gratis friet of chicken nuggets 🎁' , sq: 'Fito p.sh. 10% zbritje, një pije falas, patate falas ose nagets pule 🎁', ku: 'Mînak 10% daxistin, vexwarineke belaş, çîpsên belaş an nagetsên mirîşkê bi dest bixe 🎁'},
+  showCodeAtCounter: { de: 'Zeig diesen Code an der Kasse:', en: 'Show this code at the counter:', tr: 'Bu kodu kasada göster:', ro: 'Arată acest cod la casă:', nl: 'Toon deze code bij de kassa:' , sq: 'Trego këtë kod te arka:', ku: 'Vê kodê li kasayê nîşan bide:'},
+  noExtraWin: { de: 'Diesmal kein Extra-Gewinn', en: 'No extra win this time', tr: 'Bu sefer ekstra kazanç yok', ro: 'De data aceasta fără premiu suplimentar', nl: 'Deze keer geen extra prijs' , sq: 'Këtë herë pa fitore shtesë', ku: 'Vê carê xelateke din tune'},
+  thanksPlaying: { de: 'Aber danke fürs Mitspielen — beim nächsten Mal mehr Glück!', en: 'But thanks for playing — more luck next time!', tr: 'Ama katıldığın için teşekkürler — bir dahaki sefere daha çok şans!', ro: 'Dar îți mulțumim că ai jucat — mai mult noroc data viitoare!', nl: 'Maar bedankt voor het meedoen — volgende keer meer geluk!' , sq: 'Por faleminderit që luajte — më shumë fat herën tjetër!', ku: 'Lê spas ji bo lîstinê — cara din bextê zêdetir!'},
+  spinning: { de: 'Dreht sich…', en: 'Spinning…', tr: 'Dönüyor…', ro: 'Se învârte…', nl: 'Draait…' , sq: 'Po rrotullohet…', ku: 'Dizivire…'},
+  spinNow: { de: 'Jetzt drehen!', en: 'Spin now!', tr: 'Şimdi çevir!', ro: 'Învârte acum!', nl: 'Draai nu!' , sq: 'Rrotullo tani!', ku: 'Niha bizivirîne!'},
+  closedTodayTitle: { de: 'Heute Ruhetag', en: 'Closed today', tr: 'Bugün kapalı', ro: 'Astăzi închis', nl: 'Vandaag gesloten' , sq: 'Sot mbyllur', ku: 'Îro girtî'},
+  closedTodaySub: { de: 'Wir haben dienstags geschlossen — ab morgen wieder ab 11:30 Uhr für dich da!', en: "We're closed on Tuesdays — back for you tomorrow from 11:30 AM!", tr: 'Salı günleri kapalıyız — yarından itibaren 11:30\'dan itibaren yine buradayız!', ro: 'Suntem închiși marțea — revenim mâine de la ora 11:30!', nl: 'Wij zijn dinsdag gesloten — morgen weer open vanaf 11:30 uur!' , sq: 'Ne jemi mbyllur të martave — nesër jemi përsëri për ty nga ora 11:30!', ku: 'Em Sêşeman girtî ne — sibê ji saet 11:30 ve dîsa ji bo te vekirî ne!'},
+  upsellTitle: { de: 'Möchtest du noch etwas dazu?', en: 'Would you like anything else?', tr: 'Yanında bir şey ister misin?', ro: 'Mai dorești ceva pe lângă?', nl: 'Wil je er nog iets bij?' , sq: 'Do të doje diçka tjetër?', ku: 'Tu tiştekî din jî dixwazî?'},
+  upsellSub: { de: 'Diese Klassiker passen perfekt zu deiner Bestellung!', en: 'These classics go perfectly with your order!', tr: 'Bu klasikler siparişine mükemmel uyar!', ro: 'Aceste clasice se potrivesc perfect cu comanda ta!', nl: 'Deze klassiekers passen perfect bij je bestelling!' , sq: 'Këto klasikë shkojnë përsosur me porosinë tënde!', ku: 'Van klasîkan bi sifarişa te re baş têkildar in!'},
+  drinksSub: { de: 'Kalt und erfrischend zu deiner Bestellung!', en: 'Cold and refreshing with your order!', tr: 'Siparişine soğuk ve ferahlatıcı bir ek!', ro: 'Rece și răcoritor alături de comanda ta!', nl: 'Lekker fris en koud bij je bestelling!' , sq: 'E ftohtë dhe freskuese me porosinë tënde!', ku: 'Sar û vejîner bi sifarişa te re!'},
+  continueToOrder: { de: 'Weiter zur Bestellung', en: 'Continue to order', tr: 'Siparişe devam et', ro: 'Continuă spre comandă', nl: 'Verder naar bestelling' , sq: 'Vazhdo te porosia', ku: 'Here ser sifarişê'},
+  wheelSpinOnceMsg: { de: 'Dreh einmal — dein Gewinn wird automatisch zur Bestellung hinzugefügt!', en: 'Spin once — your prize will be added to the order automatically!', tr: 'Bir kez çevir — kazandığın ödül otomatik olarak siparişe eklenir!', ro: 'Învârte o dată — premiul tău va fi adăugat automat la comandă!', nl: 'Draai één keer — je prijs wordt automatisch aan de bestelling toegevoegd!' , sq: 'Rrotullo një herë — fitorja jote shtohet automatikisht te porosia!', ku: 'Carekê bizivirîne — xelata te bixweber li sifarişê tê zêdekirin!'},
+  confirmPickupNote: { de: 'Die Abholzeit bestätigen wir euch direkt per WhatsApp-Antwort.', en: "We'll confirm the pickup time directly via WhatsApp reply.", tr: 'Teslim alma saatini WhatsApp üzerinden doğrudan onaylayacağız.', ro: 'Vă confirmăm ora de ridicare direct prin răspuns pe WhatsApp.', nl: 'We bevestigen de ophaaltijd rechtstreeks via WhatsApp.' , sq: 'Orën e marrjes do ta konfirmojmë direkt me përgjigje në WhatsApp.', ku: 'Em ê dema standinê rasterast bi bersiveke WhatsApp piştrast bikin.'},
+  chooseBase: { de: 'Wähle deine Basis', en: 'Choose your base', tr: 'Bazını seç', ro: 'Alege baza', nl: 'Kies je basis' , sq: 'Zgjidh bazën tënde', ku: 'Bingeha xwe hilbijêre'},
+  chooseBaseSub: { de: 'Wie soll dein Döner serviert werden?', en: 'How would you like your Döner served?', tr: 'Dönerin nasıl servis edilsin?', ro: 'Cum dorești să fie servit kebap-ul tău?', nl: 'Hoe wil je je Döner geserveerd hebben?' , sq: 'Si dëshiron ta shërbejmë Dönerin tënd?', ku: 'Döner çawa were pêşkêşkirin?'},
+  chooseMeatTitle: { de: 'Wähle dein Lieblingsfleisch.', en: 'Choose your favorite meat.', tr: 'Favori etini seç.', ro: 'Alege carnea preferată.', nl: 'Kies je favoriete vlees.' , sq: 'Zgjidh mishin tënd të preferuar.', ku: 'Goştê xwe yê hezkirî hilbijêre.'},
+  chooseSauceTitle: { de: 'Welche Soße?', en: 'Which sauce?', tr: 'Hangi sos?', ro: 'Ce sos?', nl: 'Welke saus?' , sq: 'Cila salcë?', ku: 'Kîjan soz?'},
+  chooseSauceSub: { de: 'Eine Soße aussuchen.', en: 'Pick one sauce.', tr: 'Bir sos seç.', ro: 'Alege un sos.', nl: 'Kies één saus.' , sq: 'Zgjidh një salcë.', ku: 'Sozekê hilbijêre.'},
+  chooseExtrasSub: { de: 'So viele du möchtest — optional.', en: 'As many as you like — optional.', tr: 'İstediğin kadar — isteğe bağlı.', ro: 'Câte dorești — opțional.', nl: 'Zoveel als je wilt — optioneel.' , sq: 'Sa shumë të duash — opsionale.', ku: 'Çend ku tu bixwazî — vebijarkî.'},
+  doenerReadyTitle: { de: 'Dein Döner ist fertig! 🎉', en: 'Your Döner is ready! 🎉', tr: 'Dönerin hazır! 🎉', ro: 'Kebap-ul tău este gata! 🎉', nl: 'Jouw Döner is klaar! 🎉' , sq: 'Döneri yt është gati! 🎉', ku: 'Dönerê te amade ye! 🎉'},
+  doenerReadySub: { de: 'Kurz prüfen und abschicken.', en: 'Quickly check and send.', tr: 'Kısaca kontrol et ve gönder.', ro: 'Verifică rapid și trimite.', nl: 'Snel controleren en versturen.' , sq: 'Kontrollo shkurt dhe dërgo.', ku: 'Kurt kontrol bike û bişîne.'},
+  backToOrder: { de: 'Zurück zur Bestellung', en: 'Back to order', tr: 'Siparişe geri dön', ro: 'Înapoi la comandă', nl: 'Terug naar bestelling' , sq: 'Kthehu te porosia', ku: 'Vegere ser sifarişê'},
+  wheelTitle: { de: 'Glücksrad 🎡', en: 'Lucky Wheel 🎡', tr: 'Şans Çarkı 🎡', ro: 'Roata Norocului 🎡', nl: 'Geluksrad 🎡' , sq: 'Rrota e Fatit 🎡', ku: 'Çerxa Bextê 🎡'},
+  groupStep1End: { de: 'und erhält einen Code.', en: 'and gets a code.', tr: 've bir kod alır.', ro: 'și primește un cod.', nl: 'en krijgt een code.' , sq: 'dhe merr një kod.', ku: 'û kodekê digire.'},
+  groupStep2: { de: 'Diesen Code per WhatsApp mit Freunden teilen.', en: 'Share this code with friends via WhatsApp.', tr: 'Bu kodu WhatsApp üzerinden arkadaşlarınla paylaş.', ro: 'Distribuie acest cod prietenilor prin WhatsApp.', nl: 'Deel deze code met vrienden via WhatsApp.' , sq: 'Ndaj këtë kod me shokët përmes WhatsApp.', ku: 'Vê kodê bi WhatsApp bi hevalan re parve bike.'},
+  groupStep3Mid: { de: '„Mit Code beitreten"', en: '"Join with code"', tr: '"Kod ile katıl"', ro: '„Alătură-te cu cod"', nl: '"Deelnemen met code"' , sq: '\\"Bashkohu me kod\\"', ku: '\\"Bi kodê tevlî bibe\\"'},
+  groupStep3End: { de: ', gibt den Code ein und wählt seine eigenen Speisen aus.', en: ', enters the code and chooses their own food.', tr: ', kodu girer ve kendi yemeklerini seçer.', ro: ', introduce codul și își alege propriile mâncăruri.', nl: ', voert de code in en kiest zijn eigen gerechten.' , sq: ', fut kodin dhe zgjedh gjellët e veta.', ku: ', kodê dinivîse û xwarinên xwe hilbijêre.'},
+  groupStep4: { de: 'Am Ende wird alles zu einer gemeinsamen Bestellung zusammengefasst und per WhatsApp an uns geschickt.', en: 'At the end, everything is combined into one shared order and sent to us via WhatsApp.', tr: 'Sonunda her şey ortak bir siparişte birleştirilir ve bize WhatsApp üzerinden gönderilir.', ro: 'La final, totul este combinat într-o singură comandă și ne este trimis prin WhatsApp.', nl: 'Aan het einde wordt alles samengevoegd tot één gezamenlijke bestelling en naar ons verstuurd via WhatsApp.' , sq: 'Në fund gjithçka bashkohet në një porosi të përbashkët dhe dërgohet te ne përmes WhatsApp.', ku: 'Di dawiyê de her tişt dibe sifarişeke hevpar û bi WhatsApp ji me re tê şandin.'},
+  shareCodeWithGroup: { de: 'Teile diesen Code mit deiner Gruppe:', en: 'Share this code with your group:', tr: 'Bu kodu grubunla paylaş:', ro: 'Distribuie acest cod grupului tău:', nl: 'Deel deze code met je groep:' , sq: 'Ndaje këtë kod me grupin tënd:', ku: 'Vê kodê bi koma xwe re parve bike:'},
+  continueToMyOrder: { de: 'Weiter zu meiner Bestellung', en: 'Continue to my order', tr: 'Siparişime devam et', ro: 'Continuă la comanda mea', nl: 'Verder naar mijn bestelling' , sq: 'Vazhdo te porosia ime', ku: 'Here ser sifarişa xwe'},
+  continueToMenu: { de: 'Weiter zur Speisekarte', en: 'Continue to the menu', tr: 'Menüye devam et', ro: 'Continuă la meniu', nl: 'Verder naar het menu' , sq: 'Vazhdo te menuja', ku: 'Here ser menûyê'},
+  orderAdded: { de: '✓ Deine Bestellung wurde hinzugefügt', en: '✓ Your order has been added', tr: '✓ Siparişin eklendi', ro: '✓ Comanda ta a fost adăugată', nl: '✓ Je bestelling is toegevoegd' , sq: '✓ Porosia jote u shtua', ku: '✓ Sifarişa te hate zêdekirin'},
+  editMyOrder: { de: '+ Meine Bestellung ändern', en: '+ Edit my order', tr: '+ Siparişimi değiştir', ro: '+ Modifică-mi comanda', nl: '+ Mijn bestelling wijzigen' , sq: '+ Ndrysho porosinë time', ku: '+ Sifarişa xwe biguherîne'},
+  backToOverview: { de: 'Zurück zur Übersicht', en: 'Back to overview', tr: 'Genel bakışa dön', ro: 'Înapoi la prezentare generală', nl: 'Terug naar overzicht' , sq: 'Kthehu te përmbledhja', ku: 'Vegere ser pêşdîtinê'},
+  wheelGrandMsg: { de: 'Dein Gewinn wird automatisch zur Gesamtbestellung hinzugefügt!', en: 'Your prize will be added to the group order automatically!', tr: 'Kazandığın ödül otomatik olarak toplam siparişe eklenir!', ro: 'Premiul tău va fi adăugat automat la comanda totală!', nl: 'Je prijs wordt automatisch toegevoegd aan de totale bestelling!' , sq: 'Fitorja jote shtohet automatikisht te porosia e përgjithshme!', ku: 'Xelata te bixweber li sifarişa giştî tê zêdekirin!'},
+  continueToOverview: { de: 'Weiter zur Übersicht', en: 'Continue to overview', tr: 'Genel bakışa devam et', ro: 'Continuă la prezentarea generală', nl: 'Verder naar overzicht' , sq: 'Vazhdo te përmbledhja', ku: 'Here ser pêşdîtinê'},
+  staffWheelCodeTitle: { de: '🎡 Glücksrad-Code', en: '🎡 Wheel code', tr: '🎡 Çark kodu', ro: '🎡 Cod roată', nl: '🎡 Radcode' , sq: '🎡 Kodi i Rrotës së Fatit', ku: '🎡 Koda Çerxa Bextê'},
+  codeNotFound: { de: 'Code nicht gefunden.', en: 'Code not found.', tr: 'Kod bulunamadı.', ro: 'Cod negăsit.', nl: 'Code niet gevonden.' , sq: 'Kodi nuk u gjet.', ku: 'Kod nehat dîtin.'},
+  redeem: { de: 'Einlösen', en: 'Redeem', tr: 'Kullan', ro: 'Utilizează', nl: 'Inwisselen' , sq: 'Përdor', ku: 'Bikar bîne'},
+  confirmRedeem: { de: 'Einlösen bestätigen', en: 'Confirm redemption', tr: 'Kullanımı onayla', ro: 'Confirmă utilizarea', nl: 'Inwisselen bevestigen' , sq: 'Konfirmo përdorimin', ku: 'Bikaranînê piştrast bike'},
+  loyaltyNoPhone: { de: 'Keine Telefonnummer nötig — deine Karte läuft über einen persönlichen Code.', en: 'No phone number needed — your card works via a personal code.', tr: 'Telefon numarası gerekmez — kartın kişisel bir kodla çalışır.', ro: 'Nu este nevoie de număr de telefon — cardul tău funcționează printr-un cod personal.', nl: 'Geen telefoonnummer nodig — je kaart werkt via een persoonlijke code.' , sq: 'Nuk nevojitet numër telefoni — karta jote funksionon me një kod personal.', ku: 'Ne hewceyî hejmara têlefonê ye — karta te bi koda şexsî dixebite.'},
+  codeDoesntExist: { de: 'Diesen Code gibt es nicht.', en: "This code doesn't exist.", tr: 'Bu kod mevcut değil.', ro: 'Acest cod nu există.', nl: 'Deze code bestaat niet.' , sq: 'Ky kod nuk ekziston.', ku: 'Ev kod nîne.'},
+  showCodeForStamp: { de: 'Zeig deinen Code an der Kasse, damit wir einen Stempel hinzufügen können.', en: 'Show your code at the counter so we can add a stamp.', tr: 'Damga ekleyebilmemiz için kodunu kasada göster.', ro: 'Arată-ți codul la casă pentru a adăuga o ștampilă.', nl: 'Toon je code bij de kassa zodat we een stempel kunnen toevoegen.' , sq: 'Trego kodin tënd te arka që të shtojmë një vulë.', ku: 'Koda xwe li kasayê nîşan bide da ku em morekê zêde bikin.'},
+  dailyRecommendation: { de: 'TAGESEMPFEHLUNG', en: "TODAY'S PICKS", tr: 'GÜNÜN ÖNERİSİ', ro: 'RECOMANDAREA ZILEI', nl: 'AANBEVELING VAN DE DAG' , sq: 'REKOMANDIMI I DITËS', ku: 'PÊŞNIYARA ROJÊ'},
+  onlyLeft: { de: 'Nur noch', en: 'Only', tr: 'Sadece', ro: 'Doar', nl: 'Nog maar' , sq: 'Vetëm edhe', ku: 'Tenê hîn'},
+  minutesLeft: { de: 'Minuten!', en: 'minutes left!', tr: 'dakika kaldı!', ro: 'minute rămase!', nl: 'minuten over!' , sq: 'minuta!', ku: 'deqîqe!'},
+  chooseMeatQ: { de: 'Welches Fleisch?', en: 'Which meat?', tr: 'Hangi et?', ro: 'Ce carne?', nl: 'Welk vlees?' , sq: 'Cili mish?', ku: 'Kîjan goşt?'},
+  extrasQ: { de: 'Extras dazu?', en: 'Extras?', tr: 'Ekstra ister misin?', ro: 'Extra?', nl: 'Extra’s erbij?' , sq: 'Ekstra?', ku: 'Zêde?'},
+  rowBasis: { de: 'Basis', en: 'Base', tr: 'Baz', ro: 'Bază', nl: 'Basis' , sq: 'Baza', ku: 'Bingeh'},
+  rowMeat: { de: 'Fleisch', en: 'Meat', tr: 'Et', ro: 'Carne', nl: 'Vlees' , sq: 'Mishi', ku: 'Goşt'},
+  rowSauce: { de: 'Soße', en: 'Sauce', tr: 'Sos', ro: 'Sos', nl: 'Saus' , sq: 'Salca', ku: 'Soz'},
+  rowExtras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: 'Extra’s' , sq: 'Ekstrat', ku: 'Zêde'},
+  rowPrice: { de: 'Preis', en: 'Price', tr: 'Fiyat', ro: 'Preț', nl: 'Prijs' , sq: 'Çmimi', ku: 'Biha'},
+  freeLabel: { de: 'gratis', en: 'free', tr: 'ücretsiz', ro: 'gratuit', nl: 'gratis' , sq: 'falas', ku: 'belaş'},
+  continueBtn: { de: 'Weiter', en: 'Continue', tr: 'İleri', ro: 'Continuă', nl: 'Verder' , sq: 'Vazhdo', ku: 'Bidomîne'},
+  wheelThresholdPrefix: { de: '🎡 Noch', en: '🎡 Only', tr: '🎡 Sadece', ro: '🎡 Doar', nl: '🎡 Nog maar' , sq: '🎡 Edhe', ku: '🎡 Hîn'},
+  wheelThresholdSuffix: { de: 'bis zum Glücksrad — ab 30,00 € Bestellwert!', en: 'until the lucky wheel — from €30.00 order value!', tr: 'şans çarkına kadar — 30,00 € üzeri siparişte!', ro: 'până la roata norocului — de la o comandă de 30,00 €!', nl: 'tot het geluksrad — vanaf € 30,00 bestelwaarde!' , sq: 'deri te rrota e fatit — nga 30,00 € vlerë porosie!', ku: 'heta çerxa bextê — ji nirxa sifarişê 30,00 € pê ve!'},
+  wonPrefix: { de: 'Gewonnen:', en: 'Won:', tr: 'Kazandın:', ro: 'Câștigat:', nl: 'Gewonnen:' , sq: 'Fituar:', ku: 'Hate bidestxistin:'},
+  wonSuffix: { de: '— wird mitgeschickt', en: '— will be included', tr: '— siparişe eklenecek', ro: '— va fi inclus', nl: '— wordt meegestuurd' , sq: '— do të dërgohet bashkë', ku: '— dê were şandin'},
+  groupStartBtn: { de: 'Neue Gruppenbestellung starten', en: 'Start a new group order', tr: 'Yeni grup siparişi başlat', ro: 'Începe o comandă de grup nouă', nl: 'Nieuwe groepsbestelling starten' , sq: 'Fillo porosi të re në grup', ku: 'Sifarişeke nû ya komê dest pê bike'},
+  howItWorks: { de: "👥 So funktioniert's:", en: '👥 How it works:', tr: '👥 Nasıl çalışır:', ro: '👥 Cum funcționează:', nl: '👥 Zo werkt het:' , sq: '👥 Si funksionon:', ku: '👥 Bi vî rengî dixebite:'},
+  groupStep1Start: { de: 'Eine Person tippt auf', en: 'One person taps', tr: 'Bir kişi', ro: 'O persoană apasă pe', nl: 'Eén persoon tikt op' , sq: 'Një person prek', ku: 'Kesek li ser dide'},
+  groupStep3Start: { de: 'Jede/r tippt auf', en: 'Everyone taps', tr: 'Herkes', ro: 'Fiecare apasă pe', nl: 'Iedereen tikt op' , sq: 'Secili/a prek', ku: 'Her kes li ser dide'},
+  groupStep3Btn: { de: '„Mit Code beitreten"', en: '"Join with code"', tr: '"Kod ile katıl"', ro: '„Alătură-te cu cod"', nl: '"Deelnemen met code"' , sq: '\\"Bashkohu me kod\\"', ku: '\\"Bi kodê tevlî bibe\\"'},
+  codePlaceholder: { de: 'Code z. B. K7XQ2', en: 'Code e.g. K7XQ2', tr: 'Kod örn. K7XQ2', ro: 'Cod ex. K7XQ2', nl: 'Code bijv. K7XQ2' , sq: 'Kodi p.sh. K7XQ2', ku: 'Kod mînak K7XQ2'},
+  joinBtn: { de: 'Beitreten', en: 'Join', tr: 'Katıl', ro: 'Alătură-te', nl: 'Deelnemen' , sq: 'Bashkohu', ku: 'Tevlî bibe'},
+  peopleOrderedSuffix: { de: 'Personen bestellt', en: 'people ordered', tr: 'kişi sipariş verdi', ro: 'persoane au comandat', nl: 'personen besteld' , sq: 'persona porositën', ku: 'kes sifariş dan'},
+  refreshBtn: { de: 'Aktualisieren', en: 'Refresh', tr: 'Yenile', ro: 'Reîmprospătează', nl: 'Vernieuwen' , sq: 'Rifresko', ku: 'Nû bike'},
+  grandTotalAll: { de: 'Gesamt (alle)', en: 'Total (all)', tr: 'Toplam (hepsi)', ro: 'Total (toți)', nl: 'Totaal (allemaal)' , sq: 'Gjithsej (të gjithë)', ku: 'Bi Tevayî (hemû)'},
+  wheelPrizesCountSuffix: { de: 'x Glücksrad-Gewinn wird mitgeschickt', en: 'x wheel prize will be included', tr: 'x çark ödülü siparişe eklenecek', ro: 'x premii de la roată vor fi incluse', nl: 'x radprijs wordt meegestuurd' , sq: 'x fitore nga rrota e fatit do të dërgohet', ku: 'x xelata çerxa bextê dê were şandin'},
+  loginBtn: { de: 'Anmelden', en: 'Log in', tr: 'Giriş yap', ro: 'Autentificare', nl: 'Inloggen' , sq: 'Hyr', ku: 'Têkeve'},
+  defaultPinNote: { de: 'Standard-PIN: 1234', en: 'Default PIN: 1234', tr: 'Varsayılan PIN: 1234', ro: 'PIN implicit: 1234', nl: 'Standaard-pincode: 1234' , sq: 'PIN standarde: 1234', ku: 'PIN standard: 1234'},
+  loyaltyTabLabel: { de: '🎟️ Treuekarte', en: '🎟️ Loyalty card', tr: '🎟️ Sadakat kartı', ro: '🎟️ Card de fidelitate', nl: '🎟️ Spaarkaart' , sq: '🎟️ Karta e besnikërisë', ku: '🎟️ Karta Dilsozîyê'},
+  customerCodePh: { de: 'Kunden-Code', en: 'Customer code', tr: 'Müşteri kodu', ro: 'Cod client', nl: 'Klantcode' , sq: 'Kodi i klientit', ku: 'Koda Muşteriyê'},
+  searchBtn: { de: 'Suchen', en: 'Search', tr: 'Ara', ro: 'Caută', nl: 'Zoeken' , sq: 'Kërko', ku: 'Bigere'},
+  addStampBtn: { de: '+1 Stempel', en: '+1 stamp', tr: '+1 damga', ro: '+1 ștampilă', nl: '+1 stempel' , sq: '+1 vulë', ku: '+1 Mor'},
+  prizeCodePh: { de: 'Gewinn-Code', en: 'Prize code', tr: 'Ödül kodu', ro: 'Cod premiu', nl: 'Prijscode' , sq: 'Kodi i fitores', ku: 'Koda Xelatê'},
+  alreadyRedeemed: { de: 'Bereits eingelöst', en: 'Already redeemed', tr: 'Zaten kullanıldı', ro: 'Deja utilizat', nl: 'Al ingewisseld' , sq: 'Përdorur tashmë', ku: 'Berê hatiye bikaranîn'},
+  validLabel: { de: 'Gültig', en: 'Valid', tr: 'Geçerli', ro: 'Valid', nl: 'Geldig' , sq: 'I vlefshëm', ku: 'Derbasdar'},
+  stampAddedMsg: { de: 'Stempel hinzugefügt ✓', en: 'Stamp added ✓', tr: 'Damga eklendi ✓', ro: 'Ștampilă adăugată ✓', nl: 'Stempel toegevoegd ✓' , sq: 'Vula u shtua ✓', ku: 'Mor hate zêdekirin ✓'},
+  freePortionRedeemedMsg: { de: 'Gratis-Portion eingelöst ✓', en: 'Free item redeemed ✓', tr: 'Ücretsiz ürün kullanıldı ✓', ro: 'Produs gratuit utilizat ✓', nl: 'Gratis item ingewisseld ✓' , sq: 'Racioni falas u përdor ✓', ku: 'Portîyona belaş hate bikaranîn ✓'},
+  redeemedMsg: { de: '✓ Eingelöst', en: '✓ Redeemed', tr: '✓ Kullanıldı', ro: '✓ Utilizat', nl: '✓ Ingewisseld' , sq: '✓ U përdor', ku: '✓ Hate bikaranîn'},
+  stampsWord: { de: 'Stempel', en: 'stamps', tr: 'damga', ro: 'ștampile', nl: 'stempels' , sq: 'vula', ku: 'mor'},
+  haveCodeLabel: { de: 'ICH HABE SCHON EINEN CODE', en: 'I ALREADY HAVE A CODE', tr: 'ZATEN BİR KODUM VAR', ro: 'AM DEJA UN COD', nl: 'IK HEB AL EEN CODE' , sq: 'UNË KAM TASHMË NJË KOD', ku: 'MIN JIXWE KODEK HEYE'},
+  codeExamplePh: { de: 'Z. B. K7XQ2M', en: 'e.g. K7XQ2M', tr: 'Örn. K7XQ2M', ro: 'ex. K7XQ2M', nl: 'bijv. K7XQ2M' , sq: 'P.sh. K7XQ2M', ku: 'Mînak K7XQ2M'},
+  showBtn: { de: 'Anzeigen', en: 'Show', tr: 'Göster', ro: 'Afișează', nl: 'Tonen' , sq: 'Trego', ku: 'Nîşan bide'},
+  orLabel: { de: '— oder —', en: '— or —', tr: '— veya —', ro: '— sau —', nl: '— of —' , sq: '— ose —', ku: '— an —'},
+  createNewCardBtn: { de: 'Neue Treuekarte erstellen', en: 'Create new loyalty card', tr: 'Yeni sadakat kartı oluştur', ro: 'Creează un card nou de fidelitate', nl: 'Nieuwe spaarkaart aanmaken' , sq: 'Krijo kartë të re besnikërie', ku: 'Karteke nû ya dilsozîyê çêke'},
+  screenshotNote: { de: '📸 Bitte den Code notieren oder einen Screenshot machen — er ist dein einziger Zugang zur Karte!', en: '📸 Please note the code or take a screenshot — it\'s your only access to the card!', tr: '📸 Lütfen kodu not al veya ekran görüntüsü al — karta tek erişimin bu!', ro: '📸 Notează codul sau fă o captură de ecran — este singurul tău acces la card!', nl: '📸 Noteer de code of maak een screenshot — het is je enige toegang tot de kaart!' , sq: '📸 Ju lutem shënoni kodin ose bëni një pamje ekrani — është aksesi juaj i vetëm te karta!', ku: '📸 Ji kerema xwe kodê not bike an dîmenekê bigire — ev yekane rêya te ya gihîştina kartê ye!'},
+  yourCodeLabel: { de: 'DEIN CODE', en: 'YOUR CODE', tr: 'KODUN', ro: 'CODUL TĂU', nl: 'JOUW CODE' , sq: 'KODI YT', ku: 'KODA TE'},
+  freeItemEarned: { de: '🎉 Gratis-Portion verdient!', en: '🎉 Free item earned!', tr: '🎉 Ücretsiz ürün kazandın!', ro: '🎉 Produs gratuit câștigat!', nl: '🎉 Gratis item verdiend!' , sq: '🎉 Fitove një racion falas!', ku: '🎉 Te portîyoneke belaş bi dest xist!'},
+  stampsUntilFreePrefix: { de: 'Noch', en: 'Only', tr: 'Sadece', ro: 'Mai', nl: 'Nog' , sq: 'Edhe', ku: 'Hîn'},
+  stampsUntilFreeSuffix: { de: 'Stempel bis zur Gratis-Portion', en: 'stamps until your free item', tr: 'damga kaldı, ücretsiz ürün kazanacaksın', ro: 'ștampile până la produsul gratuit', nl: 'stempels tot je gratis item' , sq: 'vula deri te racioni falas', ku: 'mor heta portîyona belaş'},
+  noteExampleCheese: { de: 'Anmerkung, z.B. ohne Käse', en: 'Note, e.g. no cheese', tr: 'Not, örn. peynirsiz', ro: 'Observație, ex. fără brânză', nl: 'Opmerking, bijv. zonder kaas' , sq: 'Shënim, p.sh. pa djathë', ku: 'Not, mînak bêyî penîr'},
+  noteExampleOnions: { de: 'Anmerkung, z.B. ohne Zwiebeln', en: 'Note, e.g. no onions', tr: 'Not, örn. soğansız', ro: 'Observație, ex. fără ceapă', nl: 'Opmerking, bijv. zonder uien' , sq: 'Shënim, p.sh. pa qepë', ku: 'Not, mînak bêyî pîvaz'},
+  noteOptional: { de: 'Anmerkung (optional)', en: 'Note (optional)', tr: 'Not (isteğe bağlı)', ro: 'Observație (opțional)', nl: 'Opmerking (optioneel)' , sq: 'Shënim (opsionale)', ku: 'Not (vebijarkî)'},
+  pickupTimePh: { de: 'Gewünschte Abholzeit (optional)', en: 'Desired pickup time (optional)', tr: 'İstenen teslim alma saati (isteğe bağlı)', ro: 'Ora de ridicare dorită (opțional)', nl: 'Gewenste ophaaltijd (optioneel)' , sq: 'Ora e dëshiruar e marrjes (opsionale)', ku: 'Dema standinê ya xwestî (vebijarkî)'},
+  pickupTimeLabel: { de: 'Abholzeit', en: 'Pickup time', tr: 'Teslim alma saati', ro: 'Ora de ridicare', nl: 'Ophaaltijd' , sq: 'Ora e marrjes', ku: 'Dema Standinê'},
+  titlePizzaBuilder: { de: 'DEINE PIZZA', en: 'YOUR PIZZA', tr: 'SENİN PİZZAN', ro: 'PIZZA TA', nl: 'JOUW PIZZA' , sq: 'PICA JOTE', ku: 'PIZZAYA TE'},
+  titlePastaBuilder: { de: 'DEINE PASTA', en: 'YOUR PASTA', tr: 'SENİN MAKARNAN', ro: 'PASTA TA', nl: 'JOUW PASTA' , sq: 'PASTA JOTE', ku: 'PASTAYA TE'},
+  chooseCreationTitle: { de: 'Was möchtest du zusammenstellen?', en: 'What would you like to build?', tr: 'Ne oluşturmak istersin?', ro: 'Ce dorești să creezi?', nl: 'Wat wil je samenstellen?' , sq: 'Çfarë dëshiron të krijosh?', ku: 'Tu dixwazî çi çêkî?'},
+  chooseCreationSub: { de: 'Wähle deine Basis — Schritt für Schritt zu deinem Wunschgericht.', en: 'Choose your base — step by step to your dream dish.', tr: 'Bazını seç — adım adım hayalindeki yemeğe ulaş.', ro: 'Alege baza — pas cu pas spre felul tău preferat.', nl: 'Kies je basis — stap voor stap naar jouw droomgerecht.' , sq: 'Zgjidh bazën tënde — hap pas hapi drejt gjellës që dëshiron.', ku: 'Bingeha xwe hilbijêre — gav bi gav ber bi xwarina xwestî.'},
+  buildDoener: { de: 'Baue deinen Döner', en: 'Build your Döner', tr: 'Dönerini Oluştur', ro: 'Construiește-ți Kebap-ul', nl: 'Bouw je Döner' , sq: 'Krijo Dönerin tënd', ku: 'Dönerê xwe çêke'},
+  buildPizza: { de: 'Baue deine Pizza', en: 'Build your Pizza', tr: 'Pizzanı Oluştur', ro: 'Construiește-ți Pizza', nl: 'Bouw je Pizza' , sq: 'Krijo picën tënde', ku: 'Pizzaya xwe çêke'},
+  buildPasta: { de: 'Baue deine Pasta', en: 'Build your Pasta', tr: 'Makarnanı Oluştur', ro: 'Construiește-ți Pasta', nl: 'Bouw je Pasta' , sq: 'Krijo pastën tënde', ku: 'Pastaya xwe çêke'},
+  choosePizzaSize: { de: 'Wähle deine Größe', en: 'Choose your size', tr: 'Boyutunu seç', ro: 'Alege dimensiunea', nl: 'Kies je formaat' , sq: 'Zgjidh madhësinë tënde', ku: 'Mezinahiya xwe hilbijêre'},
+  choosePizzaSizeSub: { de: 'Klein oder groß?', en: 'Small or large?', tr: 'Küçük mü büyük mü?', ro: 'Mică sau mare?', nl: 'Klein of groot?' , sq: 'E vogël apo e madhe?', ku: 'Biçûk an mezin?'},
+  chooseToppingsSub: { de: 'So viele du möchtest — je 1,00 €.', en: 'As many as you like — €1.00 each.', tr: 'İstediğin kadar — her biri 1,00 €.', ro: 'Câte dorești — 1,00 € fiecare.', nl: 'Zoveel als je wilt — elk € 1,00.' , sq: 'Sa shumë të duash — nga 1,00 € secila.', ku: 'Çend ku tu bixwazî — her yek 1,00 €.'},
+  pizzaReadyTitle: { de: 'Deine Pizza ist fertig! 🎉', en: 'Your Pizza is ready! 🎉', tr: 'Pizzan hazır! 🎉', ro: 'Pizza ta este gata! 🎉', nl: 'Jouw Pizza is klaar! 🎉' , sq: 'Pica jote është gati! 🎉', ku: 'Pizzaya te amade ye! 🎉'},
+  choosePastaStyle: { de: 'Wähle deinen Stil', en: 'Choose your style', tr: 'Stilini seç', ro: 'Alege stilul', nl: 'Kies je stijl' , sq: 'Zgjidh stilin tënd', ku: 'Şêweya xwe hilbijêre'},
+  yaprakWeekendOnly: { de: 'Yaprak Döner gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'Yaprak Döner is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Yaprak Döner sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Yaprak Döner este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Yaprak Döner is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' , sq: 'Yaprak Döner ofrohet vetëm të premten, të shtunën dhe të dielën. Në ditët e tjera fatkeqësisht nuk ofrohet.', ku: 'Yaprak Döner tenê roja Îni, Şemî û Yekşemê heye. Di rojên din de mixabin nîne.'},
+  weekendItemOnly: { de: 'Dieses Gericht gibt es nur freitags, samstags und sonntags. An anderen Tagen leider nicht verfügbar.', en: 'This dish is only available on Fridays, Saturdays and Sundays. Not available on other days.', tr: 'Bu ürün sadece Cuma, Cumartesi ve Pazar günleri mevcuttur. Diğer günler maalesef yok.', ro: 'Acest fel este disponibil doar vineri, sâmbătă și duminică. În celelalte zile, din păcate, nu.', nl: 'Dit gerecht is alleen op vrijdag, zaterdag en zondag verkrijgbaar. Andere dagen helaas niet.' , sq: 'Kjo gjellë ofrohet vetëm të premten, të shtunën dhe të dielën. Në ditët e tjera fatkeqësisht nuk ofrohet.', ku: 'Ev xwarin tenê roja Îni, Şemî û Yekşemê heye. Di rojên din de mixabin nîne.'},
+  weekendWarnTitle: { de: 'Nur am Wochenende', en: 'Weekends only', tr: 'Sadece hafta sonu', ro: 'Doar în weekend', nl: 'Alleen in het weekend' , sq: 'Vetëm në fundjavë', ku: 'Tenê Dawiya Hefteyê'},
+  statusOpenNow: { de: 'Jetzt geöffnet', en: 'Open now', tr: 'Şu an açık', ro: 'Acum deschis', nl: 'Nu geopend' , sq: 'Hapur tani', ku: 'Niha vekirî ye'},
+  statusClosedRestDay: { de: 'Geschlossen · Ruhetag', en: 'Closed · Rest day', tr: 'Kapalı · Tatil günü', ro: 'Închis · Zi liberă', nl: 'Gesloten · Rustdag' , sq: 'Mbyllur · Ditë pushimi', ku: 'Girtî · Roja Vala'},
+  statusNotYetOpen: { de: 'Noch geschlossen', en: 'Not open yet', tr: 'Henüz açılmadı', ro: 'Încă închis', nl: 'Nog gesloten' , sq: 'Ende mbyllur', ku: 'Hîn girtî'},
+  statusClosed: { de: 'Geschlossen', en: 'Closed', tr: 'Kapalı', ro: 'Închis', nl: 'Gesloten' , sq: 'Mbyllur', ku: 'Girtî'},
+  sizeLabel: { de: 'GRÖSSE', en: 'SIZE', tr: 'BOYUT', ro: 'MĂRIME', nl: 'FORMAAT' , sq: 'MADHËSIA', ku: 'MEZINAHÎ'},
+  pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' , sq: '🎉 Oferta e fundjavës: Zgjidh picën tënde 28cm për {price} me pije të përfshirë!', ku: '🎉 Pêşniyara Dawiya Hefteyê: Pizzaya xwe ya 28cm ji bo {price} bi vexwarinê ve hilbijêre!'},
+  leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' , sq: 'Largohu nga oferta', ku: 'Ji pêşniyarê derkeve'},
+  itemAddedToast: { de: 'Zum Warenkorb hinzugefügt', en: 'Added to cart', tr: 'Sepete eklendi', ro: 'Adăugat în coș', nl: 'Toegevoegd aan winkelwagen' , sq: 'U shtua në shportë', ku: 'Li selikê hate zêdekirin'},
+  meatTypeLabel: { de: 'FLEISCHART (KOSTENLOS)', en: 'TYPE OF MEAT (FREE)', tr: 'ET TÜRÜ (ÜCRETSİZ)', ro: 'TIP DE CARNE (GRATUIT)', nl: 'SOORT VLEES (GRATIS)' , sq: 'LLOJI I MISHIT (FALAS)', ku: 'CUREYÊ GOŞT (BELAŞ)'},
+  meatKalb: { de: 'Kalb/Rind', en: 'Veal/Beef', tr: 'Dana/Kalb', ro: 'Vițel/Vită', nl: 'Kalfs-/rundvlees' , sq: 'Viç/Lopë', ku: 'Golik/Ga'},
+  lunchComboTitle: { de: '🍽️ Mittagsangebot', en: '🍽️ Lunch special', tr: '🍽️ Öğle fırsatı', ro: '🍽️ Ofertă de prânz', nl: '🍽️ Lunchaanbieding' , sq: '🍽️ Oferta e drekës', ku: '🍽️ Pêşniyara Navrojê'},
+  lunchComboSub: { de: 'Wähle dein Getränk dazu — zusammen nur 9,50 €!', en: 'Choose your drink — together only €9.50!', tr: 'Yanına içeceğini seç — birlikte sadece 9,50 €!', ro: 'Alege băutura — împreună doar 9,50 €!', nl: 'Kies je drankje — samen maar € 9,50!' , sq: 'Zgjidh pijen tënde shtesë — së bashku vetëm 9,50 €!', ku: 'Vexwarina xwe hilbijêre — bi hev re tenê 9,50 €!'},
+  lunchComboConfirm: { de: 'Zur Bestellung hinzufügen', en: 'Add to order', tr: 'Siparişe ekle', ro: 'Adaugă la comandă', nl: 'Toevoegen aan bestelling' , sq: 'Shto te porosia', ku: 'Li sifarişê zêde bike'},
+  lunchSmallHint: { de: '💡 Tipp: Bei der großen Pizza bekommst du zwischen 11:30–14:00 Uhr ein Getränk gratis dazu!', en: '💡 Tip: With the large pizza you get a free drink between 11:30 AM–2:00 PM!', tr: '💡 İpucu: Büyük pizzayla 11:30–14:00 arası ücretsiz içecek kazanırsın!', ro: '💡 Sfat: La pizza mare primești o băutură gratuită între 11:30–14:00!', nl: '💡 Tip: Bij de grote pizza krijg je tussen 11:30–14:00 uur een gratis drankje!' , sq: '💡 Këshillë: Me picën e madhe merr një pije falas midis orës 11:30–14:00!', ku: '💡 Şîret: Bi pizzaya mezin di navbera saet 11:30–14:00 de vexwarineke belaş bi dest dixî!'},
+  pickupEstimate: { de: 'Fertig in ca. 15–20 Minuten', en: 'Ready in approx. 15–20 minutes', tr: 'Yaklaşık 15-20 dakikada hazır', ro: 'Gata în aprox. 15–20 minute', nl: 'Klaar in ca. 15–20 minuten' , sq: 'Gati për rreth 15–20 minuta', ku: 'Nêzîkî 15–20 deqîqeyan de amade ye'},
+  allergenInfoBtn: { de: 'ⓘ Allergene & Zusatzstoffe', en: 'ⓘ Allergens & additives', tr: 'ⓘ Alerjen ve katkı maddeleri', ro: 'ⓘ Alergeni și aditivi', nl: 'ⓘ Allergenen & additieven' , sq: 'ⓘ Alergjenët & Aditivët', ku: 'ⓘ Alerjen & Zêdebûyî'},
+  recommendedForYou: { de: 'PASST GUT DAZU', en: 'GOES WELL WITH THIS', tr: 'BUNA ÇOK YAKIŞIR', ro: 'SE POTRIVEȘTE BINE', nl: 'PAST HIER GOED BIJ' , sq: 'SHKON MIRË ME KËTË', ku: 'BI VÊ RE BAŞ TÊKILDAR E'},
+  groupSubmitBtn: { de: 'Meine Bestellung abschicken', en: 'Submit my order', tr: 'Siparişimi gönder', ro: 'Trimite comanda mea', nl: 'Mijn bestelling versturen' , sq: 'Dërgo porosinë time', ku: 'Sifarişa xwe bişîne'},
+  freeDrinkProgress: { de: 'Noch {amount} bis zum 1L-Getränk gratis!', en: 'Only {amount} more for a free 1L drink!', tr: '1L içecek hediye için {amount} kaldı!', ro: 'Mai sunt {amount} pentru o băutură de 1L gratuită!', nl: 'Nog {amount} tot een gratis 1L drankje!' , sq: 'Edhe {amount} deri te pija falas 1L!', ku: 'Hîn {amount} heta vexwarina 1L ya belaş!'},
+  freeDrinkUnlocked: { de: '🎉 1L-Getränk gratis freigeschaltet!', en: '🎉 Free 1L drink unlocked!', tr: '🎉 1L içecek hediye kazandın!', ro: '🎉 Băutură de 1L gratuită deblocată!', nl: '🎉 Gratis 1L drankje ontgrendeld!' , sq: '🎉 Pija falas 1L u aktivizua!', ku: '🎉 Vexwarina 1L ya belaş vebû!'},
+  noDrinkReminder: { de: 'Durst? Vergiss dein Getränk nicht!', en: 'Thirsty? Don\'t forget a drink!', tr: 'Susadın mı? İçeceğini unutma!', ro: 'Ți-e sete? Nu uita o băutură!', nl: 'Dorst? Vergeet je drankje niet!' , sq: 'Etje? Mos harro pijen tënde!', ku: 'Tî yî? Vexwarina xwe ji bîr neke!'},
+  allergenLegendTitle: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjen ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & additieven' , sq: 'Alergjenët & Aditivët', ku: 'Alerjen & Zêdebûyî'},
+  allergenSectionTitle: { de: 'ALLERGENE', en: 'ALLERGENS', tr: 'ALERJENLER', ro: 'ALERGENI', nl: 'ALLERGENEN' , sq: 'ALERGJENËT', ku: 'ALERJEN'},
+  zusatzSectionTitle: { de: 'ZUSATZSTOFFE', en: 'ADDITIVES', tr: 'KATKI MADDELERİ', ro: 'ADITIVI', nl: 'ADDITIEVEN' , sq: 'ADITIVËT', ku: 'ZÊDEBÛYÎ'},
+  choosePastaTypeTitle: { de: 'Spaghetti oder Makkaroni?', en: 'Spaghetti or Macaroni?', tr: 'Spagetti mi Makarna mı?', ro: 'Spaghete sau macaroane?', nl: 'Spaghetti of macaroni?' , sq: 'Spageti apo Makarona?', ku: 'Spageta an Makarona?'},
+  weiterShort: { de: 'Weiter', en: 'Next', tr: 'İleri', ro: 'Continuă', nl: 'Verder' , sq: 'Vazhdo', ku: 'Bidomîne'},
+  choosePastaStyleSub: { de: 'Jede Pasta wird mit Kurkuma-Penne & Marktsalat serviert.', en: 'Every pasta is served with turmeric penne & market salad.', tr: 'Her makarna zerdeçallı penne ve mevsim salatasıyla servis edilir.', ro: 'Fiecare pastă este servită cu penne cu turmeric și salată de sezon.', nl: 'Elke pasta wordt geserveerd met kurkumapenne & marktsalade.' , sq: 'Çdo pastë shërbehet me penne kurkumë & sallatë tregu.', ku: 'Her pasta bi Kurkuma-Penne & salata bazarê tê pêşkêşkirin.'},
+  pastaReadyTitle: { de: 'Deine Pasta ist fertig! 🎉', en: 'Your Pasta is ready! 🎉', tr: 'Makarnan hazır! 🎉', ro: 'Pasta ta este gata! 🎉', nl: 'Jouw Pasta is klaar! 🎉' , sq: 'Pasta jote është gati! 🎉', ku: 'Pastaya te amade ye! 🎉'},
+  sizeSmall: { de: 'klein', en: 'small', tr: 'küçük', ro: 'mic', nl: 'klein' , sq: 'e vogël', ku: 'biçûk'},
+  sizeLarge: { de: 'groß', en: 'large', tr: 'büyük', ro: 'mare', nl: 'groot' , sq: 'e madhe', ku: 'mezin'},
+  extrasPricePrefix: { de: 'Extras (je', en: 'Extras (each', tr: 'Ekstralar (her biri', ro: 'Extra (fiecare', nl: 'Extra’s (elk' , sq: 'Ekstra (nga', ku: 'Zêde (her'},
+  cartTitle: { de: 'Deine Bestellung', en: 'Your order', tr: 'Siparişin', ro: 'Comanda ta', nl: 'Jouw bestelling' , sq: 'Porosia jote', ku: 'Sifarişa Te'},
+  drinksTitle: { de: 'Etwas zu trinken?', en: 'Something to drink?', tr: 'İçecek ister misin?', ro: 'Ceva de băut?', nl: 'Iets te drinken?' , sq: 'Diçka për të pirë?', ku: 'Tiştek ji bo vexwarinê?'},
+  itemsWord: { de: 'Artikel', en: 'items', tr: 'ürün', ro: 'articole', nl: 'items' , sq: 'artikuj', ku: 'tişt'},
+  orderSentTitle: { de: '✓ Bestellung gesendet!', en: '✓ Order sent!', tr: '✓ Sipariş gönderildi!', ro: '✓ Comandă trimisă!', nl: '✓ Bestelling verstuurd!' , sq: '✓ Porosia u dërgua!', ku: '✓ Sifariş hate şandin!'},
+  orderSentSub: { de: 'Vielen Dank! Wir bereiten deine Bestellung vor.', en: "Thank you! We're preparing your order.", tr: 'Teşekkürler! Siparişini hazırlıyoruz.', ro: 'Mulțumim! Îți pregătim comanda.', nl: 'Bedankt! We bereiden je bestelling voor.' , sq: 'Faleminderit shumë! Po përgatisim porosinë tënde.', ku: 'Gelek spas! Em sifarişa te amade dikin.'},
+  backToHomeBtn: { de: 'Zurück zur Startseite', en: 'Back to homepage', tr: 'Ana sayfaya dön', ro: 'Înapoi la pagina principală', nl: 'Terug naar startpagina' , sq: 'Kthehu te faqja kryesore', ku: 'Vegere Rûpela Sereke'},
+  newOrderBtn: { de: 'Neue Bestellung starten', en: 'Start a new order', tr: 'Yeni sipariş oluştur', ro: 'Începe o comandă nouă', nl: 'Nieuwe bestelling starten' , sq: 'Fillo porosi të re', ku: 'Sifarişeke nû dest pê bike'},
+  installAppBtn: { de: '📲 App installieren', en: '📲 Install app', tr: '📲 Uygulamayı yükle', ro: '📲 Instalează aplicația', nl: '📲 App installeren' , sq: '📲 Instalo aplikacionin', ku: '📲 Sepan saz bike'},
+  installHelpTitle: { de: 'Zum Startbildschirm hinzufügen', en: 'Add to Home Screen', tr: 'Ana Ekrana Ekle', ro: 'Adaugă pe ecranul principal', nl: 'Toevoegen aan beginscherm' , sq: 'Shto te ekrani kryesor', ku: 'Li Ekrana Destpêkê Zêde bike'},
+  installHelpIOS: { de: 'Tippe unten auf Teilen 􀈂 und dann auf „Zum Home-Bildschirm".', en: 'Tap the Share button below, then "Add to Home Screen".', tr: 'Aşağıdaki Paylaş simgesine, ardından "Ana Ekrana Ekle"ye dokun.', ro: 'Atinge butonul Distribuie de mai jos, apoi „Adaugă pe ecranul principal".', nl: 'Tik op Delen hieronder en dan op "Zet op beginscherm".' , sq: 'Prek butonin Ndaj poshtë, pastaj \\"Shto në ekranin kryesor\\".', ku: 'Li jêr bişkoja Parve bike bitikîne, paşê \\"Li Ekrana Destpêkê Zêde bike\\".'},
+  installHelpAndroid: { de: 'Tippe oben rechts auf das Menü ⋮ und dann auf „App installieren" oder „Zum Startbildschirm hinzufügen".', en: 'Tap the ⋮ menu top right, then "Install app" or "Add to Home Screen".', tr: 'Sağ üstteki ⋮ menüsüne dokun, sonra "Uygulamayı yükle" veya "Ana Ekrana Ekle" seç.', ro: 'Atinge meniul ⋮ din dreapta sus, apoi „Instalează aplicația".', nl: 'Tik op het ⋮-menu rechtsboven, dan op "App installeren".' , sq: 'Prek menynë ⋮ lart djathtas, pastaj \\"Instalo aplikacionin\\" ose \\"Shto te ekrani kryesor\\".', ku: 'Li jor rastê menûya ⋮ bitikîne, paşê \\"Sepan saz bike\\" an \\"Li Ekrana Destpêkê Zêde bike\\".'},
+  installHelpClose: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen' , sq: 'E kuptova', ku: 'Fêm kir'},
+  downloadReceiptBtn: { de: 'Fiş als Bild speichern', en: 'Save receipt as image', tr: 'Fişi görsel olarak kaydet', ro: 'Salvează bonul ca imagine', nl: 'Bon opslaan als afbeelding', sq: 'Ruaj faturën si imazh' , ku: 'Fîşê wek wêne tomar bike'},
+  showReceiptBtn: { de: 'Fiş anzeigen', en: 'Show receipt', tr: 'Fişi göster', ro: 'Arată bonul', nl: 'Bon tonen', sq: 'Shfaq faturën' , ku: 'Fîşê nîşan bide'},
 };
 
 const CATEGORY_IMAGES = {
@@ -418,139 +419,139 @@ function LanguageSwitcher({ lang, setLang, dark }) {
 
 /* ============ MENU TRANSLATIONS (word/phrase-level) ============ */
 const MENU_PHRASES = {
-  'Hähnchenbrust mit Paprika & Pilzen in Sojasoße': { en: 'Chicken breast with bell pepper & mushrooms in soy sauce', tr: 'Biberli ve mantarlı soya soslu tavuk göğsü', ro: 'Piept de pui cu ardei și ciuperci în sos de soia', nl: 'Kipfilet met paprika & champignons in sojasaus' , sq: 'Gjoks pule me spec dhe kërpudha në salcë soje'},
-  'Hähnchenbrust in Sahnesoße mit Berg-Thymian': { en: 'Chicken breast in cream sauce with mountain thyme', tr: 'Dağ kekikli kremalı soslu tavuk göğsü', ro: 'Piept de pui în sos de smântână cu cimbru de munte', nl: 'Kipfilet in roomsaus met bergtijm' , sq: 'Gjoks pule në salcë kremi me trumzë mali'},
-  'Hähnchenbrust mit Pilzen in Curry-Sahnesoße': { en: 'Chicken breast with mushrooms in curry cream sauce', tr: 'Mantarlı köri kremalı soslu tavuk göğsü', ro: 'Piept de pui cu ciuperci în sos de curry cu smântână', nl: 'Kipfilet met champignons in curry-roomsaus' , sq: 'Gjoks pule me kërpudha në salcë kremi kerri'},
-  'Hähnchenbrust in Paprika-Auberginen-Soße': { en: 'Chicken breast in bell pepper-eggplant sauce', tr: 'Biberli-patlıcanlı soslu tavuk göğsü', ro: 'Piept de pui în sos de ardei și vinete', nl: 'Kipfilet in paprika-auberginesaus' , sq: 'Gjoks pule në salcë specash dhe patëllxhani'},
-  'Hähnchenbrust mit Pilzen in Sahnesoße': { en: 'Chicken breast with mushrooms in cream sauce', tr: 'Mantarlı kremalı soslu tavuk göğsü', ro: 'Piept de pui cu ciuperci în sos de smântână', nl: 'Kipfilet met champignons in roomsaus' , sq: 'Gjoks pule me kërpudha në salcë kremi'},
-  'Extra Portion Fleisch vom Drehspieß': { en: 'Extra portion of rotisserie meat', tr: 'Ekstra porsiyon döner et', ro: 'Porție extra de carne la frigărui rotative', nl: 'Extra portie vlees van het draaispit' , sq: 'Racion shtesë mish nga rrotisi'},
-  'mit türkischer Knoblauchwurst': { en: 'with Turkish garlic sausage', tr: 'Türk sarımsaklı sucuklu', ro: 'cu cârnat turcesc cu usturoi', nl: 'met Turkse knoflookworst' , sq: 'me sallam hudhre turk'},
-  'mit kleinem Beilagensalat': { en: 'with a small side salad', tr: 'küçük yan salata ile', ro: 'cu o salată mică', nl: 'met een kleine bijgerechtsalade' , sq: 'me sallatë të vogël shoqëruese'},
-  'Pilzen in Curry-Sahnesoße': { en: 'Mushrooms in curry cream sauce', tr: 'Köri kremalı soslu mantar', ro: 'Ciuperci în sos de curry cu smântână', nl: 'Champignons in curry-roomsaus' , sq: 'Kërpudha në salcë kremi kerri'},
-  'Fleisch vom Drehspieß': { en: 'Rotisserie meat', tr: 'Döner et', ro: 'Carne la frigărui rotative', nl: 'Vlees van het draaispit' , sq: 'Mish nga rrotisi'},
-  'Weichkäse in Salzlake': { en: 'Soft cheese in brine', tr: 'Salamura yumuşak peynir', ro: 'Brânză moale în saramură', nl: 'Zachte kaas in pekel' , sq: 'Djathë i butë në shëllirë'},
-  'Apfel-Kirsch-Holunder': { en: 'Apple-cherry-elderberry', tr: 'Elma-kiraz-mürver', ro: 'Măr-cireșe-soc', nl: 'Appel-kers-vlier' , sq: 'Mollë-Qershi-Shtog'},
-  'Gratis Dip inklusive': { en: 'Free dip included', tr: 'Ücretsiz sos dahil', ro: 'Sos gratuit inclus', nl: 'Gratis dipsaus inbegrepen' , sq: 'Salcë falas e përfshirë'},
-  'mit Käse überbacken': { en: 'baked with cheese', tr: 'peynirli fırınlanmış', ro: 'gratinat cu brânză', nl: 'gegratineerd met kaas' , sq: 'i pjekur me djathë'},
-  'Käse überbacken': { en: 'Baked with cheese', tr: 'Peynirli fırınlanmış', ro: 'Gratinat cu brânză', nl: 'Gegratineerd met kaas' , sq: 'Djathë i pjekur'},
-  'Gebratenes Hähnchen': { en: 'Fried chicken', tr: 'Kızarmış tavuk', ro: 'Pui prăjit', nl: 'Gebakken kip' , sq: 'Pulë e skuqur'},
-  'Pilzen in Sahnesoße': { en: 'Mushrooms in cream sauce', tr: 'Kremalı soslu mantar', ro: 'Ciuperci în sos de smântână', nl: 'Champignons in roomsaus' , sq: 'Kërpudha në salcë kremi'},
-  'Zigeuner Schnitzel': { en: 'Paprika Schnitzel', tr: 'Biberli Şnitzel', ro: 'Șnițel cu Sos de Ardei', nl: 'Paprika Schnitzel' , sq: 'Shnicel Zigeuner'},
-  'Bio-Traubenschorle': { en: 'Organic grape spritzer', tr: 'Organik üzüm sodası', ro: 'Suc de struguri bio cu apă minerală', nl: 'Bio-druivenspuitwater' , sq: 'Lëng rrushi bio'},
-  'Pilzen in Sojasoße': { en: 'Mushrooms in soy sauce', tr: 'Soya soslu mantar', ro: 'Ciuperci în sos de soia', nl: 'Champignons in sojasaus' , sq: 'Kërpudha në salcë soje'},
-  'Fritiertes Gemüse': { en: 'Fried vegetables', tr: 'Kızarmış sebze', ro: 'Legume prăjite', nl: 'Gefrituurde groenten' , sq: 'Perime të fërguara'},
-  'fritiertes Gemüse': { en: 'fried vegetables', tr: 'kızarmış sebze', ro: 'legume prăjite', nl: 'gefrituurde groenten' , sq: 'perime të fërguara'},
-  'Hollandaise Sauce': { en: 'Hollandaise sauce', tr: 'Hollandaise sos', ro: 'Sos hollandaise', nl: 'Hollandaisesaus' , sq: 'Salcë Hollandaise'},
-  'Hollandaise Soße': { en: 'Hollandaise sauce', tr: 'Hollandaise sos', ro: 'Sos hollandaise', nl: 'Hollandaisesaus' , sq: 'Salcë Hollandaise'},
-  'Jäger Schnitzel': { en: 'Hunter\'s Schnitzel', tr: 'Avcı Usulü Şnitzel', ro: 'Șnițel Vânătoresc', nl: 'Jagers Schnitzel' , sq: 'Shnicel Gjahtari'},
-  'Türkische Pizza': { en: 'Turkish Pizza', tr: 'Türk Pizzası', ro: 'Pizza Turcească', nl: 'Turkse Pizza' , sq: 'Picë turke'},
-  'Frische Tomaten': { en: 'Fresh tomatoes', tr: 'Taze domates', ro: 'Roșii proaspete', nl: 'Verse tomaten' , sq: 'Domate të freskëta'},
-  'still/spritzig': { en: 'still/sparkling', tr: 'sade/gazlı', ro: 'plată/acidulată', nl: 'plat/bruisend' , sq: 'pa gaz/me gaz'},
-  'Knoblauchsauce': { en: 'Garlic sauce', tr: 'Sarımsak sos', ro: 'Sos de usturoi', nl: 'Knoflooksaus' , sq: 'Salcë hudhre'},
-  'Chicken Strips': { en: 'Chicken strips', tr: 'Tavuk parçaları', ro: 'Fâșii de pui', nl: 'Kipfilet strips' , sq: 'Copa pule'},
-  'Pommes Frites': { en: 'French Fries', tr: 'Patates Kızartması', ro: 'Cartofi Prăjiți', nl: 'Friet' , sq: 'Patate të skuqura'},
-  'Hähnchenbrust': { en: 'Chicken breast', tr: 'Tavuk göğsü', ro: 'Piept de pui', nl: 'Kipfilet' , sq: 'Gjoks pule'},
-  'Bio-Rhabarber': { en: 'Organic rhubarb', tr: 'Organik ravent', ro: 'Rubarbă bio', nl: 'Bio-rabarber' , sq: 'Rrabarbër bio'},
-  'Kurkuma-Penne': { en: 'Turmeric penne', tr: 'Zerdeçallı penne', ro: 'Penne cu turmeric', nl: 'Kurkumapenne' , sq: 'Penne me kurkumë'},
-  'Steak Fleisch': { en: 'Steak meat', tr: 'Biftek et', ro: 'Carne de vită (steak)', nl: 'Steakvlees' , sq: 'Mish biftek'},
-  'Knoblauchsoße': { en: 'Garlic sauce', tr: 'Sarımsak sos', ro: 'Sos de usturoi', nl: 'Knoflooksaus' , sq: 'Salcë hudhre'},
-  'Cocktailsauce': { en: 'Cocktail sauce', tr: 'Kokteyl sos', ro: 'Sos cocktail', nl: 'Cocktailsaus' , sq: 'Salcë kokteil'},
-  'Beilagensalat': { en: 'Side salad', tr: 'Yan salata', ro: 'Salată garnitură', nl: 'Bijgerechtsalade' , sq: 'Sallatë shoqëruese'},
-  'Meeresfrüchte': { en: 'Seafood', tr: 'Deniz ürünleri', ro: 'Fructe de mare', nl: 'Zeevruchten' , sq: 'Fruta deti'},
-  'Pizzabrötchen': { en: 'Pizza rolls', tr: 'Pizza topları', ro: 'Chifle pizza', nl: 'Pizzabroodjes' , sq: 'Simite pice'},
-  'Kräuterbutter': { en: 'Herb butter', tr: 'Otlu tereyağı', ro: 'Unt cu ierburi', nl: 'Kruidenboter' , sq: 'Gjalpë me erëza'},
-  'Putenschinken': { en: 'Turkey ham', tr: 'Hindi jambonu', ro: 'Șuncă de curcan', nl: 'Kalkoenham' , sq: 'Proshutë gjeli'},
-  'Berg-Thymian': { en: 'Mountain thyme', tr: 'Dağ kekiği', ro: 'Cimbru de munte', nl: 'Bergtijm' , sq: 'Trumzë mali'},
-  'Grüner Salat': { en: 'Green salad', tr: 'Yeşil salata', ro: 'Salată verde', nl: 'Groene salade' , sq: 'Sallatë jeshile'},
-  'grüner Salat': { en: 'green salad', tr: 'yeşil salata', ro: 'salată verde', nl: 'groene salade' , sq: 'sallatë jeshile'},
-  'Vegetarische': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetariană', nl: 'Vegetarische' , sq: 'Vegjetariane'},
-  'Rindersalami': { en: 'Beef salami', tr: 'Dana salam', ro: 'Salam de vită', nl: 'Runderworst' , sq: 'Sallam viçi'},
-  'Zigeunersoße': { en: 'Spicy paprika sauce', tr: 'Acılı biber sosu', ro: 'Sos picant cu ardei', nl: 'Pikante paprikasaus' , sq: 'Salcë Zigeuner'},
-  'Energy Drink': { en: 'Energy drink', tr: 'Enerji içeceği', ro: 'Băutură energizantă', nl: 'Energiedrank' , sq: 'Pije energjike'},
-  'Vegetarisch': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetarian', nl: 'Vegetarisch' , sq: 'Vegjetarian'},
-  'Tomatensoße': { en: 'Tomato sauce', tr: 'Domates sos', ro: 'Sos de roșii', nl: 'Tomatensaus' , sq: 'Salcë domatesh'},
-  'Fleischsoße': { en: 'Meat sauce', tr: 'Kıymalı sos', ro: 'Sos de carne', nl: 'Vleessaus' , sq: 'Salcë mishi'},
-  'Bolognese-Soße': { en: 'Bolognese sauce', tr: 'Bolonez sos', ro: 'Sos Bolognese', nl: 'Bolognesesaus' , sq: 'Salcë Bolonjeze'},
-  'Baue deine eigene Pizza 🎨': { en: 'Build your own Pizza 🎨', tr: 'Kendi Pizzanı Oluştur 🎨', ro: 'Construiește-ți propria Pizza 🎨', nl: 'Bouw je eigen Pizza 🎨' , sq: 'Krijo picën tënde 🎨'},
-  'Baue deine eigene Pasta 🎨': { en: 'Build your own Pasta 🎨', tr: 'Kendi Makarnanı Oluştur 🎨', ro: 'Construiește-ți propria Pasta 🎨', nl: 'Bouw je eigen Pasta 🎨' , sq: 'Krijo pastën tënde 🎨'},
-  'Tomatensoße inklusive — wähle deine Beläge': { en: 'Tomato sauce included — choose your toppings', tr: 'Domates sosu dahil — malzemelerini seç', ro: 'Sos de roșii inclus — alege ingredientele', nl: 'Tomatensaus inbegrepen — kies je toppings' , sq: 'Salcë domatesh e përfshirë — zgjidh mbushjet e tua'},
-  'Soße & Extras frei wählbar': { en: 'Sauce & extras of your choice', tr: 'Sos ve ekstralar serbest seçim', ro: 'Sos și extra la alegere', nl: 'Saus & extra’s vrij te kiezen' , sq: 'Salcë & shtesa sipas dëshirës'},
-  'Spaghetti': { en: 'Spaghetti', tr: 'Spagetti', ro: 'Spaghete', nl: 'Spaghetti' , sq: 'Spageti'},
-  'Makkaroni': { en: 'Macaroni', tr: 'Makarna', ro: 'Macaroane', nl: 'Macaroni' , sq: 'Makarona'},
-  'Soße nach Wahl inklusive — wähle deine Extras': { en: 'Choice of sauce included — choose your extras', tr: 'İstediğin sos dahil — ekstralarını seç', ro: 'Sos la alegere inclus — alege extra-urile', nl: 'Saus naar keuze inbegrepen — kies je extra’s' , sq: 'Salcë sipas zgjedhjes e përfshirë — zgjidh shtesat'},
-  'Deutschland': { en: 'Germany', tr: 'Almanya', ro: 'Germania', nl: 'Duitsland' , sq: 'Gjermani'},
-  'Wiener Art': { en: 'Vienna Style', tr: 'Viyana Usulü', ro: 'Stil Vienez', nl: 'Weense Stijl' , sq: 'Stili Vjenez'},
-  'Marktsalat': { en: 'Market salad', tr: 'Pazar salatası', ro: 'Salată de sezon', nl: 'Marktsalade' , sq: 'Sallatë tregu'},
-  'Rahmpulver': { en: 'Cream powder', tr: 'Krema tozu', ro: 'Praf de smântână', nl: 'Roompoeder' , sq: 'Pluhur kremi'},
-  'Mozzarella': { en: 'Mozzarella', tr: 'Mozzarella', ro: 'Mozzarella', nl: 'Mozzarella' , sq: 'Mocarela'},
-  'Gorgonzola': { en: 'Gorgonzola', tr: 'Gorgonzola', ro: 'Gorgonzola', nl: 'Gorgonzola' , sq: 'Gorgonzola'},
-  'Mayonnaise': { en: 'Mayonnaise', tr: 'Mayonez', ro: 'Maioneză', nl: 'Mayonaise' , sq: 'Majonezë'},
-  'überbacken': { en: 'baked & gratinated', tr: 'fırında gratine', ro: 'gratinat', nl: 'gegratineerd' , sq: 'i pjekur në furrë'},
-  'Vier Käse': { en: 'Four Cheese', tr: 'Dört Peynirli', ro: 'Patru Brânzeturi', nl: 'Vier Kazen' , sq: 'Katër djathëra'},
-  'Weichkäse': { en: 'Soft cheese', tr: 'Yumuşak peynir', ro: 'Brânză moale', nl: 'Zachte kaas' , sq: 'Djathë i butë'},
-  'Vegetaria': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetariană', nl: 'Vegetarisch' , sq: 'Vegjetariane'},
-  'Jägersoße': { en: 'Hunter\'s sauce', tr: 'Avcı sosu', ro: 'Sos vânătoresc', nl: 'Jagersaus' , sq: 'Salcë Gjahtari'},
-  'Lavasbrot': { en: 'Lavash bread', tr: 'Lavaş ekmeği', ro: 'Pâine lavash', nl: 'Lavashbrood' , sq: 'Bukë lavash'},
-  'Pizzabrot': { en: 'Pizza bread', tr: 'Pizza ekmeği', ro: 'Pâine pizza', nl: 'Pizzabrood' , sq: 'Bukë pice'},
-  'Sahnesoße': { en: 'Cream sauce', tr: 'Kremalı sos', ro: 'Sos de smântână', nl: 'Roomsaus' , sq: 'Salcë kremi'},
-  'Jalapeños': { en: 'Jalapeños', tr: 'Jalapeño biber', ro: 'Jalapeño', nl: 'Jalapeño\'s' , sq: 'Speca Jalapeño'},
-  'Thunfisch': { en: 'Tuna', tr: 'Ton balığı', ro: 'Ton', nl: 'Tonijn' , sq: 'Ton'},
-  'Knoblauch': { en: 'Garlic', tr: 'Sarımsak', ro: 'Usturoi', nl: 'Knoflook' , sq: 'Hudhër'},
-  'Weißkohl': { en: 'White cabbage', tr: 'Beyaz lahana', ro: 'Varză albă', nl: 'Witte kool' , sq: 'Lakër e bardhë'},
-  'Pfirsich': { en: 'Peach', tr: 'Şeftali', ro: 'Piersică', nl: 'Perzik' , sq: 'Pjeshkë'},
-  'Hähnchen': { en: 'Chicken', tr: 'Tavuk', ro: 'Pui', nl: 'Kip' , sq: 'Pulë'},
-  'Brokkoli': { en: 'Broccoli', tr: 'Brokoli', ro: 'Broccoli', nl: 'Broccoli' , sq: 'Brokoli'},
-  'Peperoni': { en: 'Chili peppers', tr: 'Acı biber', ro: 'Ardei iute', nl: 'Pepperoni' , sq: 'Speca djegës'},
-  'Zwiebeln': { en: 'Onions', tr: 'Soğan', ro: 'Ceapă', nl: 'Uien' , sq: 'Qepë'},
-  'Schinken': { en: 'Ham', tr: 'Jambon', ro: 'Șuncă', nl: 'Ham' , sq: 'Proshutë'},
-  'serviert': { en: 'served', tr: 'servis edilir', ro: 'servit', nl: 'geserveerd' , sq: 'shërbehet'},
-  'Krabben': { en: 'Shrimp sticks', tr: 'Krab çubuğu', ro: 'Bastonașe de crab', nl: 'Krabsticks' , sq: 'Gaforre'},
-  'Nuggets': { en: 'Nuggets', tr: 'Nugget', ro: 'Nuggets', nl: 'Nuggets' , sq: 'Nagets'},
-  'Portion': { en: 'Portion', tr: 'Porsiyon', ro: 'Porție', nl: 'Portie' , sq: 'Racion'},
-  'Spezial': { en: 'Special', tr: 'Özel', ro: 'Special', nl: 'Speciaal' , sq: 'Speciale'},
-  'Schwarz': { en: 'Black', tr: 'Siyah', ro: 'Negre', nl: 'Zwart' , sq: 'E zezë'},
-  'Brokoli': { en: 'Broccoli', tr: 'Brokoli', ro: 'Broccoli', nl: 'Broccoli' , sq: 'Brokoli'},
-  'Paprika': { en: 'Bell pepper', tr: 'Biber', ro: 'Ardei', nl: 'Paprika' , sq: 'Spec'},
-  'Tomaten': { en: 'Tomatoes', tr: 'Domates', ro: 'Roșii', nl: 'Tomaten' , sq: 'Domate'},
-  'Ketchup': { en: 'Ketchup', tr: 'Ketçap', ro: 'Ketchup', nl: 'Ketchup' , sq: 'Ketchup'},
-  'Zitrone': { en: 'Lemon', tr: 'Limon', ro: 'Lămâie', nl: 'Citroen' , sq: 'Limon'},
-  'Extra Fleisch': { en: 'Extra meat', tr: 'Ekstra Et', ro: 'Carne extra', nl: 'Extra vlees' , sq: 'Mish shtesë'},
-  'Fleisch': { en: 'Meat', tr: 'Et', ro: 'Carne', nl: 'Vlees' , sq: 'Mish'},
-  '5 Stück': { en: '5 pieces', tr: '5 adet', ro: '5 bucăți', nl: '5 stuks' , sq: '5 copë'},
-  '7 Stück': { en: '7 pieces', tr: '7 adet', ro: '7 bucăți', nl: '7 stuks' , sq: '7 copë'},
-  '10% Rabatt': { en: '10% off', tr: '%10 indirim', ro: '10% reducere', nl: '10% korting' , sq: '10% zbritje'},
-  'Gratis Getränk': { en: 'Free drink', tr: 'Ücretsiz içecek', ro: 'Băutură gratuită', nl: 'Gratis drankje' , sq: 'Pije falas'},
-  'Gratis Pommes': { en: 'Free fries', tr: 'Ücretsiz patates', ro: 'Cartofi prăjiți gratuiți', nl: 'Gratis friet' , sq: 'Patate falas'},
-  'Gratis Nuggets': { en: 'Free nuggets', tr: 'Ücretsiz nugget', ro: 'Nuggets gratuite', nl: 'Gratis nuggets' , sq: 'Nagets falas'},
-  'Nochmal Glück!': { en: 'Try again!', tr: 'Tekrar dene!', ro: 'Încearcă din nou!', nl: 'Nog een keer!' , sq: 'Edhe një herë fat!'},
-  'Eistee': { en: 'Iced tea', tr: 'Soğuk çay', ro: 'Ceai rece', nl: 'IJsthee' , sq: 'Çaj i ftohtë'},
-  'Spinat': { en: 'Spinach', tr: 'Ispanak', ro: 'Spanac', nl: 'Spinazie' , sq: 'Spinaq'},
-  'Gemüse': { en: 'Vegetable', tr: 'Sebzeli', ro: 'Legume', nl: 'Groente' , sq: 'Perime'},
-  'Tasche': { en: 'Pocket', tr: 'Cep', ro: 'Buzunar', nl: 'Zak' , sq: 'Byrek'},
-  'Teller': { en: 'Plate', tr: 'Tabak', ro: 'Farfurie', nl: 'Bord' , sq: 'Pjatë'},
-  'Türkei': { en: 'Turkey', tr: 'Türkiye', ro: 'Turcia', nl: 'Turkije' , sq: 'Turqi'},
-  'Bauern': { en: 'Farmer\'s', tr: 'Çiftçi', ro: 'Țărănească', nl: 'Boeren' , sq: 'Fshatare'},
-  'Oliven': { en: 'Olives', tr: 'Zeytin', ro: 'Măsline', nl: 'Olijven' , sq: 'Ullinj'},
-  'Gurken': { en: 'Cucumbers', tr: 'Salatalık', ro: 'Castraveți', nl: 'Komkommer' , sq: 'Kastravec'},
-  'Salami': { en: 'Salami', tr: 'Salam', ro: 'Salam', nl: 'Salami' , sq: 'Sallam'},
-  'Ananas': { en: 'Pineapple', tr: 'Ananas', ro: 'Ananas', nl: 'Ananas' , sq: 'Ananas'},
-  'Pilzen': { en: 'Mushrooms', tr: 'Mantar', ro: 'Ciuperci', nl: 'Champignons' , sq: 'Kërpudha'},
-  'Pommes': { en: 'Fries', tr: 'Patates kızartması', ro: 'Cartofi prăjiți', nl: 'Friet' , sq: 'Patate'},
-  'Wasser': { en: 'Water', tr: 'Su', ro: 'Apă', nl: 'Water' , sq: 'Ujë'},
-  ' oder ': { en: ' or ', tr: ' veya ', ro: ' sau ', nl: ' of ' , sq: ' ose '},
-  'Salat': { en: 'Salad', tr: 'Salata', ro: 'Salată', nl: 'Salade' , sq: 'Sallatë'},
-  'Steak': { en: 'Steak', tr: 'Biftek', ro: 'Steak', nl: 'Steak' , sq: 'Biftek'},
-  ' und ': { en: ' and ', tr: ' ve ', ro: ' și ', nl: ' en ' , sq: ' dhe '},
-  ' mit ': { en: ' with ', tr: ' ile ', ro: ' cu ', nl: ' met ' , sq: ' me '},
-  'Rahm': { en: 'Cream', tr: 'Kremalı', ro: 'Cu smântână', nl: 'Room' , sq: 'Krem'},
-  'Mais': { en: 'Corn', tr: 'Mısır', ro: 'Porumb', nl: 'Maïs' , sq: 'Misër'},
-  'Käse': { en: 'Cheese', tr: 'Peynir', ro: 'Brânză', nl: 'Kaas' , sq: 'Djathë'},
-  'Brot': { en: 'Bread', tr: 'Ekmek', ro: 'Pâine', nl: 'Brood' , sq: 'Bukë'},
-  'Dose': { en: 'Can', tr: 'Kutu', ro: 'Doză', nl: 'Blikje' , sq: 'Kanaçe'},
-  'Ei': { en: 'Egg', tr: 'Yumurta', ro: 'Ou', nl: 'Ei' , sq: 'Vezë'},
-  'Scharf': { en: 'Spicy', tr: 'Acılı', ro: 'Picant', nl: 'Pittig' , sq: 'Djegës'},
-  'Hähnchen-Fleisch': { en: 'Chicken meat', tr: 'Tavuk eti', ro: 'Carne de pui', nl: 'Kipvlees' , sq: 'Mish pule'},
-  'Kola & Orange': { en: 'Cola & Orange', tr: 'Kola & Portakal', ro: 'Cola & Portocală', nl: 'Cola & Sinaasappel' , sq: 'Kola & Portokall'},
+  'Hähnchenbrust mit Paprika & Pilzen in Sojasoße': { en: 'Chicken breast with bell pepper & mushrooms in soy sauce', tr: 'Biberli ve mantarlı soya soslu tavuk göğsü', ro: 'Piept de pui cu ardei și ciuperci în sos de soia', nl: 'Kipfilet met paprika & champignons in sojasaus' , sq: 'Gjoks pule me spec dhe kërpudha në salcë soje', ku: 'Sînga mirîşkê bi biber û karkoçkan di soza sojayê de'},
+  'Hähnchenbrust in Sahnesoße mit Berg-Thymian': { en: 'Chicken breast in cream sauce with mountain thyme', tr: 'Dağ kekikli kremalı soslu tavuk göğsü', ro: 'Piept de pui în sos de smântână cu cimbru de munte', nl: 'Kipfilet in roomsaus met bergtijm' , sq: 'Gjoks pule në salcë kremi me trumzë mali', ku: 'Sînga mirîşkê di soza krêmê de bi kekîka çiyayî'},
+  'Hähnchenbrust mit Pilzen in Curry-Sahnesoße': { en: 'Chicken breast with mushrooms in curry cream sauce', tr: 'Mantarlı köri kremalı soslu tavuk göğsü', ro: 'Piept de pui cu ciuperci în sos de curry cu smântână', nl: 'Kipfilet met champignons in curry-roomsaus' , sq: 'Gjoks pule me kërpudha në salcë kremi kerri', ku: 'Sînga mirîşkê bi karkoçkan di soza krêmê ya kariyê de'},
+  'Hähnchenbrust in Paprika-Auberginen-Soße': { en: 'Chicken breast in bell pepper-eggplant sauce', tr: 'Biberli-patlıcanlı soslu tavuk göğsü', ro: 'Piept de pui în sos de ardei și vinete', nl: 'Kipfilet in paprika-auberginesaus' , sq: 'Gjoks pule në salcë specash dhe patëllxhani', ku: 'Sînga mirîşkê di soza biber-bacanreş de'},
+  'Hähnchenbrust mit Pilzen in Sahnesoße': { en: 'Chicken breast with mushrooms in cream sauce', tr: 'Mantarlı kremalı soslu tavuk göğsü', ro: 'Piept de pui cu ciuperci în sos de smântână', nl: 'Kipfilet met champignons in roomsaus' , sq: 'Gjoks pule me kërpudha në salcë kremi', ku: 'Sînga mirîşkê bi karkoçkan di soza krêmê de'},
+  'Extra Portion Fleisch vom Drehspieß': { en: 'Extra portion of rotisserie meat', tr: 'Ekstra porsiyon döner et', ro: 'Porție extra de carne la frigărui rotative', nl: 'Extra portie vlees van het draaispit' , sq: 'Racion shtesë mish nga rrotisi', ku: 'Porsiyoneke zêde ya goştê şîşê zivirî'},
+  'mit türkischer Knoblauchwurst': { en: 'with Turkish garlic sausage', tr: 'Türk sarımsaklı sucuklu', ro: 'cu cârnat turcesc cu usturoi', nl: 'met Turkse knoflookworst' , sq: 'me sallam hudhre turk', ku: 'bi sucûqa sîrê ya tirkî'},
+  'mit kleinem Beilagensalat': { en: 'with a small side salad', tr: 'küçük yan salata ile', ro: 'cu o salată mică', nl: 'met een kleine bijgerechtsalade' , sq: 'me sallatë të vogël shoqëruese', ku: 'bi salateke piçûk a alîkar'},
+  'Pilzen in Curry-Sahnesoße': { en: 'Mushrooms in curry cream sauce', tr: 'Köri kremalı soslu mantar', ro: 'Ciuperci în sos de curry cu smântână', nl: 'Champignons in curry-roomsaus' , sq: 'Kërpudha në salcë kremi kerri', ku: 'Karkoçk di soza krêmê ya kariyê de'},
+  'Fleisch vom Drehspieß': { en: 'Rotisserie meat', tr: 'Döner et', ro: 'Carne la frigărui rotative', nl: 'Vlees van het draaispit' , sq: 'Mish nga rrotisi', ku: 'Goştê şîşê zivirî'},
+  'Weichkäse in Salzlake': { en: 'Soft cheese in brine', tr: 'Salamura yumuşak peynir', ro: 'Brânză moale în saramură', nl: 'Zachte kaas in pekel' , sq: 'Djathë i butë në shëllirë', ku: 'Penîrê nerm di avê şor de'},
+  'Apfel-Kirsch-Holunder': { en: 'Apple-cherry-elderberry', tr: 'Elma-kiraz-mürver', ro: 'Măr-cireșe-soc', nl: 'Appel-kers-vlier' , sq: 'Mollë-Qershi-Shtog', ku: 'Sêv-Gêlaz-Bêbûk'},
+  'Gratis Dip inklusive': { en: 'Free dip included', tr: 'Ücretsiz sos dahil', ro: 'Sos gratuit inclus', nl: 'Gratis dipsaus inbegrepen' , sq: 'Salcë falas e përfshirë', ku: 'Soza belaş tê de'},
+  'mit Käse überbacken': { en: 'baked with cheese', tr: 'peynirli fırınlanmış', ro: 'gratinat cu brânză', nl: 'gegratineerd met kaas' , sq: 'i pjekur me djathë', ku: 'bi penîr hatiye pijandin'},
+  'Käse überbacken': { en: 'Baked with cheese', tr: 'Peynirli fırınlanmış', ro: 'Gratinat cu brânză', nl: 'Gegratineerd met kaas' , sq: 'Djathë i pjekur', ku: 'Penîrê pijandî'},
+  'Gebratenes Hähnchen': { en: 'Fried chicken', tr: 'Kızarmış tavuk', ro: 'Pui prăjit', nl: 'Gebakken kip' , sq: 'Pulë e skuqur', ku: 'Mirîşka biraştî'},
+  'Pilzen in Sahnesoße': { en: 'Mushrooms in cream sauce', tr: 'Kremalı soslu mantar', ro: 'Ciuperci în sos de smântână', nl: 'Champignons in roomsaus' , sq: 'Kërpudha në salcë kremi', ku: 'Karkoçk di soza krêmê de'},
+  'Zigeuner Schnitzel': { en: 'Paprika Schnitzel', tr: 'Biberli Şnitzel', ro: 'Șnițel cu Sos de Ardei', nl: 'Paprika Schnitzel' , sq: 'Shnicel Zigeuner', ku: 'Şnîtzela Çîngeneyan'},
+  'Bio-Traubenschorle': { en: 'Organic grape spritzer', tr: 'Organik üzüm sodası', ro: 'Suc de struguri bio cu apă minerală', nl: 'Bio-druivenspuitwater' , sq: 'Lëng rrushi bio', ku: 'Ava tirî ya bio'},
+  'Pilzen in Sojasoße': { en: 'Mushrooms in soy sauce', tr: 'Soya soslu mantar', ro: 'Ciuperci în sos de soia', nl: 'Champignons in sojasaus' , sq: 'Kërpudha në salcë soje', ku: 'Karkoçk di soza sojayê de'},
+  'Fritiertes Gemüse': { en: 'Fried vegetables', tr: 'Kızarmış sebze', ro: 'Legume prăjite', nl: 'Gefrituurde groenten' , sq: 'Perime të fërguara', ku: 'Sebzeyên sorkirî'},
+  'fritiertes Gemüse': { en: 'fried vegetables', tr: 'kızarmış sebze', ro: 'legume prăjite', nl: 'gefrituurde groenten' , sq: 'perime të fërguara', ku: 'sebzeyên sorkirî'},
+  'Hollandaise Sauce': { en: 'Hollandaise sauce', tr: 'Hollandaise sos', ro: 'Sos hollandaise', nl: 'Hollandaisesaus' , sq: 'Salcë Hollandaise', ku: 'Soza Hollandaise'},
+  'Hollandaise Soße': { en: 'Hollandaise sauce', tr: 'Hollandaise sos', ro: 'Sos hollandaise', nl: 'Hollandaisesaus' , sq: 'Salcë Hollandaise', ku: 'Soza Hollandaise'},
+  'Jäger Schnitzel': { en: 'Hunter\'s Schnitzel', tr: 'Avcı Usulü Şnitzel', ro: 'Șnițel Vânătoresc', nl: 'Jagers Schnitzel' , sq: 'Shnicel Gjahtari', ku: 'Şnîtzela Nêçîrvan'},
+  'Türkische Pizza': { en: 'Turkish Pizza', tr: 'Türk Pizzası', ro: 'Pizza Turcească', nl: 'Turkse Pizza' , sq: 'Picë turke', ku: 'Pizzaya Tirkî'},
+  'Frische Tomaten': { en: 'Fresh tomatoes', tr: 'Taze domates', ro: 'Roșii proaspete', nl: 'Verse tomaten' , sq: 'Domate të freskëta', ku: 'Firangoşên taze'},
+  'still/spritzig': { en: 'still/sparkling', tr: 'sade/gazlı', ro: 'plată/acidulată', nl: 'plat/bruisend' , sq: 'pa gaz/me gaz', ku: 'bêgaz/bigaz'},
+  'Knoblauchsauce': { en: 'Garlic sauce', tr: 'Sarımsak sos', ro: 'Sos de usturoi', nl: 'Knoflooksaus' , sq: 'Salcë hudhre', ku: 'Soza sîr'},
+  'Chicken Strips': { en: 'Chicken strips', tr: 'Tavuk parçaları', ro: 'Fâșii de pui', nl: 'Kipfilet strips' , sq: 'Copa pule', ku: 'Perçeyên mirîşkê'},
+  'Pommes Frites': { en: 'French Fries', tr: 'Patates Kızartması', ro: 'Cartofi Prăjiți', nl: 'Friet' , sq: 'Patate të skuqura', ku: 'Kartol sorkirî'},
+  'Hähnchenbrust': { en: 'Chicken breast', tr: 'Tavuk göğsü', ro: 'Piept de pui', nl: 'Kipfilet' , sq: 'Gjoks pule', ku: 'Sînga mirîşkê'},
+  'Bio-Rhabarber': { en: 'Organic rhubarb', tr: 'Organik ravent', ro: 'Rubarbă bio', nl: 'Bio-rabarber' , sq: 'Rrabarbër bio', ku: 'Rêwendê bio'},
+  'Kurkuma-Penne': { en: 'Turmeric penne', tr: 'Zerdeçallı penne', ro: 'Penne cu turmeric', nl: 'Kurkumapenne' , sq: 'Penne me kurkumë', ku: 'Penne bi kurkumê'},
+  'Steak Fleisch': { en: 'Steak meat', tr: 'Biftek et', ro: 'Carne de vită (steak)', nl: 'Steakvlees' , sq: 'Mish biftek', ku: 'Goştê stêkê'},
+  'Knoblauchsoße': { en: 'Garlic sauce', tr: 'Sarımsak sos', ro: 'Sos de usturoi', nl: 'Knoflooksaus' , sq: 'Salcë hudhre', ku: 'Soza sîr'},
+  'Cocktailsauce': { en: 'Cocktail sauce', tr: 'Kokteyl sos', ro: 'Sos cocktail', nl: 'Cocktailsaus' , sq: 'Salcë kokteil', ku: 'Soza koktêlê'},
+  'Beilagensalat': { en: 'Side salad', tr: 'Yan salata', ro: 'Salată garnitură', nl: 'Bijgerechtsalade' , sq: 'Sallatë shoqëruese', ku: 'Salata alîkar'},
+  'Meeresfrüchte': { en: 'Seafood', tr: 'Deniz ürünleri', ro: 'Fructe de mare', nl: 'Zeevruchten' , sq: 'Fruta deti', ku: 'Fêkiyên deryayê'},
+  'Pizzabrötchen': { en: 'Pizza rolls', tr: 'Pizza topları', ro: 'Chifle pizza', nl: 'Pizzabroodjes' , sq: 'Simite pice', ku: 'Nanikên pizzayê'},
+  'Kräuterbutter': { en: 'Herb butter', tr: 'Otlu tereyağı', ro: 'Unt cu ierburi', nl: 'Kruidenboter' , sq: 'Gjalpë me erëza', ku: 'Rûnê bi giyayan'},
+  'Putenschinken': { en: 'Turkey ham', tr: 'Hindi jambonu', ro: 'Șuncă de curcan', nl: 'Kalkoenham' , sq: 'Proshutë gjeli', ku: 'Jambona hindûrî'},
+  'Berg-Thymian': { en: 'Mountain thyme', tr: 'Dağ kekiği', ro: 'Cimbru de munte', nl: 'Bergtijm' , sq: 'Trumzë mali', ku: 'Kekîka çiyayî'},
+  'Grüner Salat': { en: 'Green salad', tr: 'Yeşil salata', ro: 'Salată verde', nl: 'Groene salade' , sq: 'Sallatë jeshile', ku: 'Salata kesk'},
+  'grüner Salat': { en: 'green salad', tr: 'yeşil salata', ro: 'salată verde', nl: 'groene salade' , sq: 'sallatë jeshile', ku: 'salata kesk'},
+  'Vegetarische': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetariană', nl: 'Vegetarische' , sq: 'Vegjetariane', ku: 'Vejeteryan'},
+  'Rindersalami': { en: 'Beef salami', tr: 'Dana salam', ro: 'Salam de vită', nl: 'Runderworst' , sq: 'Sallam viçi', ku: 'Salamiya ga'},
+  'Zigeunersoße': { en: 'Spicy paprika sauce', tr: 'Acılı biber sosu', ro: 'Sos picant cu ardei', nl: 'Pikante paprikasaus' , sq: 'Salcë Zigeuner', ku: 'Soza Çîngeneyan'},
+  'Energy Drink': { en: 'Energy drink', tr: 'Enerji içeceği', ro: 'Băutură energizantă', nl: 'Energiedrank' , sq: 'Pije energjike', ku: 'Vexwarina enerjiyê'},
+  'Vegetarisch': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetarian', nl: 'Vegetarisch' , sq: 'Vegjetarian', ku: 'Vejeteryan'},
+  'Tomatensoße': { en: 'Tomato sauce', tr: 'Domates sos', ro: 'Sos de roșii', nl: 'Tomatensaus' , sq: 'Salcë domatesh', ku: 'Soza firangoşan'},
+  'Fleischsoße': { en: 'Meat sauce', tr: 'Kıymalı sos', ro: 'Sos de carne', nl: 'Vleessaus' , sq: 'Salcë mishi', ku: 'Soza goşt'},
+  'Bolognese-Soße': { en: 'Bolognese sauce', tr: 'Bolonez sos', ro: 'Sos Bolognese', nl: 'Bolognesesaus' , sq: 'Salcë Bolonjeze', ku: 'Soza Bolognese'},
+  'Baue deine eigene Pizza 🎨': { en: 'Build your own Pizza 🎨', tr: 'Kendi Pizzanı Oluştur 🎨', ro: 'Construiește-ți propria Pizza 🎨', nl: 'Bouw je eigen Pizza 🎨' , sq: 'Krijo picën tënde 🎨', ku: 'Pizzaya xwe çêke 🎨'},
+  'Baue deine eigene Pasta 🎨': { en: 'Build your own Pasta 🎨', tr: 'Kendi Makarnanı Oluştur 🎨', ro: 'Construiește-ți propria Pasta 🎨', nl: 'Bouw je eigen Pasta 🎨' , sq: 'Krijo pastën tënde 🎨', ku: 'Pastaya xwe çêke 🎨'},
+  'Tomatensoße inklusive — wähle deine Beläge': { en: 'Tomato sauce included — choose your toppings', tr: 'Domates sosu dahil — malzemelerini seç', ro: 'Sos de roșii inclus — alege ingredientele', nl: 'Tomatensaus inbegrepen — kies je toppings' , sq: 'Salcë domatesh e përfshirë — zgjidh mbushjet e tua', ku: 'Soza firangoşan tê de — tiştên li ser hilbijêre'},
+  'Soße & Extras frei wählbar': { en: 'Sauce & extras of your choice', tr: 'Sos ve ekstralar serbest seçim', ro: 'Sos și extra la alegere', nl: 'Saus & extra’s vrij te kiezen' , sq: 'Salcë & shtesa sipas dëshirës', ku: 'Soz & Zêde li gorî daxwazê'},
+  'Spaghetti': { en: 'Spaghetti', tr: 'Spagetti', ro: 'Spaghete', nl: 'Spaghetti' , sq: 'Spageti', ku: 'Spageta'},
+  'Makkaroni': { en: 'Macaroni', tr: 'Makarna', ro: 'Macaroane', nl: 'Macaroni' , sq: 'Makarona', ku: 'Makarona'},
+  'Soße nach Wahl inklusive — wähle deine Extras': { en: 'Choice of sauce included — choose your extras', tr: 'İstediğin sos dahil — ekstralarını seç', ro: 'Sos la alegere inclus — alege extra-urile', nl: 'Saus naar keuze inbegrepen — kies je extra’s' , sq: 'Salcë sipas zgjedhjes e përfshirë — zgjidh shtesat', ku: 'Soza li gorî hilbijartinê tê de — zêdeyên xwe hilbijêre'},
+  'Deutschland': { en: 'Germany', tr: 'Almanya', ro: 'Germania', nl: 'Duitsland' , sq: 'Gjermani', ku: 'Almanya'},
+  'Wiener Art': { en: 'Vienna Style', tr: 'Viyana Usulü', ro: 'Stil Vienez', nl: 'Weense Stijl' , sq: 'Stili Vjenez', ku: 'Şêwaza Viyana'},
+  'Marktsalat': { en: 'Market salad', tr: 'Pazar salatası', ro: 'Salată de sezon', nl: 'Marktsalade' , sq: 'Sallatë tregu', ku: 'Salata bazarê'},
+  'Rahmpulver': { en: 'Cream powder', tr: 'Krema tozu', ro: 'Praf de smântână', nl: 'Roompoeder' , sq: 'Pluhur kremi', ku: 'Toza krêmê'},
+  'Mozzarella': { en: 'Mozzarella', tr: 'Mozzarella', ro: 'Mozzarella', nl: 'Mozzarella' , sq: 'Mocarela', ku: 'Mozarella'},
+  'Gorgonzola': { en: 'Gorgonzola', tr: 'Gorgonzola', ro: 'Gorgonzola', nl: 'Gorgonzola' , sq: 'Gorgonzola', ku: 'Gorgonzola'},
+  'Mayonnaise': { en: 'Mayonnaise', tr: 'Mayonez', ro: 'Maioneză', nl: 'Mayonaise' , sq: 'Majonezë', ku: 'Mayonez'},
+  'überbacken': { en: 'baked & gratinated', tr: 'fırında gratine', ro: 'gratinat', nl: 'gegratineerd' , sq: 'i pjekur në furrë', ku: 'pijandî'},
+  'Vier Käse': { en: 'Four Cheese', tr: 'Dört Peynirli', ro: 'Patru Brânzeturi', nl: 'Vier Kazen' , sq: 'Katër djathëra', ku: 'Çar Penîr'},
+  'Weichkäse': { en: 'Soft cheese', tr: 'Yumuşak peynir', ro: 'Brânză moale', nl: 'Zachte kaas' , sq: 'Djathë i butë', ku: 'Penîrê nerm'},
+  'Vegetaria': { en: 'Vegetarian', tr: 'Vejetaryen', ro: 'Vegetariană', nl: 'Vegetarisch' , sq: 'Vegjetariane', ku: 'Vejeteryan'},
+  'Jägersoße': { en: 'Hunter\'s sauce', tr: 'Avcı sosu', ro: 'Sos vânătoresc', nl: 'Jagersaus' , sq: 'Salcë Gjahtari', ku: 'Soza Nêçîrvan'},
+  'Lavasbrot': { en: 'Lavash bread', tr: 'Lavaş ekmeği', ro: 'Pâine lavash', nl: 'Lavashbrood' , sq: 'Bukë lavash', ku: 'Nanê lavaş'},
+  'Pizzabrot': { en: 'Pizza bread', tr: 'Pizza ekmeği', ro: 'Pâine pizza', nl: 'Pizzabrood' , sq: 'Bukë pice', ku: 'Nanê pizzayê'},
+  'Sahnesoße': { en: 'Cream sauce', tr: 'Kremalı sos', ro: 'Sos de smântână', nl: 'Roomsaus' , sq: 'Salcë kremi', ku: 'Soza krêmê'},
+  'Jalapeños': { en: 'Jalapeños', tr: 'Jalapeño biber', ro: 'Jalapeño', nl: 'Jalapeño\'s' , sq: 'Speca Jalapeño', ku: 'Biberên Jalapeño'},
+  'Thunfisch': { en: 'Tuna', tr: 'Ton balığı', ro: 'Ton', nl: 'Tonijn' , sq: 'Ton', ku: 'Masiyê ton'},
+  'Knoblauch': { en: 'Garlic', tr: 'Sarımsak', ro: 'Usturoi', nl: 'Knoflook' , sq: 'Hudhër', ku: 'Sîr'},
+  'Weißkohl': { en: 'White cabbage', tr: 'Beyaz lahana', ro: 'Varză albă', nl: 'Witte kool' , sq: 'Lakër e bardhë', ku: 'Kelema spî'},
+  'Pfirsich': { en: 'Peach', tr: 'Şeftali', ro: 'Piersică', nl: 'Perzik' , sq: 'Pjeshkë', ku: 'Xox'},
+  'Hähnchen': { en: 'Chicken', tr: 'Tavuk', ro: 'Pui', nl: 'Kip' , sq: 'Pulë', ku: 'Mirîşk'},
+  'Brokkoli': { en: 'Broccoli', tr: 'Brokoli', ro: 'Broccoli', nl: 'Broccoli' , sq: 'Brokoli', ku: 'Brokolî'},
+  'Peperoni': { en: 'Chili peppers', tr: 'Acı biber', ro: 'Ardei iute', nl: 'Pepperoni' , sq: 'Speca djegës', ku: 'Biberê tûj'},
+  'Zwiebeln': { en: 'Onions', tr: 'Soğan', ro: 'Ceapă', nl: 'Uien' , sq: 'Qepë', ku: 'Pîvaz'},
+  'Schinken': { en: 'Ham', tr: 'Jambon', ro: 'Șuncă', nl: 'Ham' , sq: 'Proshutë', ku: 'Jambon'},
+  'serviert': { en: 'served', tr: 'servis edilir', ro: 'servit', nl: 'geserveerd' , sq: 'shërbehet', ku: 'tê pêşkêşkirin'},
+  'Krabben': { en: 'Shrimp sticks', tr: 'Krab çubuğu', ro: 'Bastonașe de crab', nl: 'Krabsticks' , sq: 'Gaforre', ku: 'Kevzêrk'},
+  'Nuggets': { en: 'Nuggets', tr: 'Nugget', ro: 'Nuggets', nl: 'Nuggets' , sq: 'Nagets', ku: 'Nagets'},
+  'Portion': { en: 'Portion', tr: 'Porsiyon', ro: 'Porție', nl: 'Portie' , sq: 'Racion', ku: 'Porsiyon'},
+  'Spezial': { en: 'Special', tr: 'Özel', ro: 'Special', nl: 'Speciaal' , sq: 'Speciale', ku: 'Taybet'},
+  'Schwarz': { en: 'Black', tr: 'Siyah', ro: 'Negre', nl: 'Zwart' , sq: 'E zezë', ku: 'Reş'},
+  'Brokoli': { en: 'Broccoli', tr: 'Brokoli', ro: 'Broccoli', nl: 'Broccoli' , sq: 'Brokoli', ku: 'Brokolî'},
+  'Paprika': { en: 'Bell pepper', tr: 'Biber', ro: 'Ardei', nl: 'Paprika' , sq: 'Spec', ku: 'Biber'},
+  'Tomaten': { en: 'Tomatoes', tr: 'Domates', ro: 'Roșii', nl: 'Tomaten' , sq: 'Domate', ku: 'Firangoş'},
+  'Ketchup': { en: 'Ketchup', tr: 'Ketçap', ro: 'Ketchup', nl: 'Ketchup' , sq: 'Ketchup', ku: 'Ketçap'},
+  'Zitrone': { en: 'Lemon', tr: 'Limon', ro: 'Lămâie', nl: 'Citroen' , sq: 'Limon', ku: 'Lîmon'},
+  'Extra Fleisch': { en: 'Extra meat', tr: 'Ekstra Et', ro: 'Carne extra', nl: 'Extra vlees' , sq: 'Mish shtesë', ku: 'Goştê zêde'},
+  'Fleisch': { en: 'Meat', tr: 'Et', ro: 'Carne', nl: 'Vlees' , sq: 'Mish', ku: 'Goşt'},
+  '5 Stück': { en: '5 pieces', tr: '5 adet', ro: '5 bucăți', nl: '5 stuks' , sq: '5 copë', ku: '5 heb'},
+  '7 Stück': { en: '7 pieces', tr: '7 adet', ro: '7 bucăți', nl: '7 stuks' , sq: '7 copë', ku: '7 heb'},
+  '10% Rabatt': { en: '10% off', tr: '%10 indirim', ro: '10% reducere', nl: '10% korting' , sq: '10% zbritje', ku: '10% daxistin'},
+  'Gratis Getränk': { en: 'Free drink', tr: 'Ücretsiz içecek', ro: 'Băutură gratuită', nl: 'Gratis drankje' , sq: 'Pije falas', ku: 'Vexwarina belaş'},
+  'Gratis Pommes': { en: 'Free fries', tr: 'Ücretsiz patates', ro: 'Cartofi prăjiți gratuiți', nl: 'Gratis friet' , sq: 'Patate falas', ku: 'Kartolê belaş'},
+  'Gratis Nuggets': { en: 'Free nuggets', tr: 'Ücretsiz nugget', ro: 'Nuggets gratuite', nl: 'Gratis nuggets' , sq: 'Nagets falas', ku: 'Nagetsên belaş'},
+  'Nochmal Glück!': { en: 'Try again!', tr: 'Tekrar dene!', ro: 'Încearcă din nou!', nl: 'Nog een keer!' , sq: 'Edhe një herë fat!', ku: 'Careke din bext!'},
+  'Eistee': { en: 'Iced tea', tr: 'Soğuk çay', ro: 'Ceai rece', nl: 'IJsthee' , sq: 'Çaj i ftohtë', ku: 'Çaya sar'},
+  'Spinat': { en: 'Spinach', tr: 'Ispanak', ro: 'Spanac', nl: 'Spinazie' , sq: 'Spinaq', ku: 'Spînax'},
+  'Gemüse': { en: 'Vegetable', tr: 'Sebzeli', ro: 'Legume', nl: 'Groente' , sq: 'Perime', ku: 'Sebze'},
+  'Tasche': { en: 'Pocket', tr: 'Cep', ro: 'Buzunar', nl: 'Zak' , sq: 'Byrek', ku: 'Kîs'},
+  'Teller': { en: 'Plate', tr: 'Tabak', ro: 'Farfurie', nl: 'Bord' , sq: 'Pjatë', ku: 'Firaq'},
+  'Türkei': { en: 'Turkey', tr: 'Türkiye', ro: 'Turcia', nl: 'Turkije' , sq: 'Turqi', ku: 'Tirkiye'},
+  'Bauern': { en: 'Farmer\'s', tr: 'Çiftçi', ro: 'Țărănească', nl: 'Boeren' , sq: 'Fshatare', ku: 'Gundî'},
+  'Oliven': { en: 'Olives', tr: 'Zeytin', ro: 'Măsline', nl: 'Olijven' , sq: 'Ullinj', ku: 'Zeytûn'},
+  'Gurken': { en: 'Cucumbers', tr: 'Salatalık', ro: 'Castraveți', nl: 'Komkommer' , sq: 'Kastravec', ku: 'Xiyar'},
+  'Salami': { en: 'Salami', tr: 'Salam', ro: 'Salam', nl: 'Salami' , sq: 'Sallam', ku: 'Salami'},
+  'Ananas': { en: 'Pineapple', tr: 'Ananas', ro: 'Ananas', nl: 'Ananas' , sq: 'Ananas', ku: 'Enenas'},
+  'Pilzen': { en: 'Mushrooms', tr: 'Mantar', ro: 'Ciuperci', nl: 'Champignons' , sq: 'Kërpudha', ku: 'Karkoçk'},
+  'Pommes': { en: 'Fries', tr: 'Patates kızartması', ro: 'Cartofi prăjiți', nl: 'Friet' , sq: 'Patate', ku: 'Kartol'},
+  'Wasser': { en: 'Water', tr: 'Su', ro: 'Apă', nl: 'Water' , sq: 'Ujë', ku: 'Av'},
+  ' oder ': { en: ' or ', tr: ' veya ', ro: ' sau ', nl: ' of ' , sq: ' ose ', ku: ' an '},
+  'Salat': { en: 'Salad', tr: 'Salata', ro: 'Salată', nl: 'Salade' , sq: 'Sallatë', ku: 'Salate'},
+  'Steak': { en: 'Steak', tr: 'Biftek', ro: 'Steak', nl: 'Steak' , sq: 'Biftek', ku: 'Stêk'},
+  ' und ': { en: ' and ', tr: ' ve ', ro: ' și ', nl: ' en ' , sq: ' dhe ', ku: ' û '},
+  ' mit ': { en: ' with ', tr: ' ile ', ro: ' cu ', nl: ' met ' , sq: ' me ', ku: ' bi '},
+  'Rahm': { en: 'Cream', tr: 'Kremalı', ro: 'Cu smântână', nl: 'Room' , sq: 'Krem', ku: 'Krêm'},
+  'Mais': { en: 'Corn', tr: 'Mısır', ro: 'Porumb', nl: 'Maïs' , sq: 'Misër', ku: 'Genimoke'},
+  'Käse': { en: 'Cheese', tr: 'Peynir', ro: 'Brânză', nl: 'Kaas' , sq: 'Djathë', ku: 'Penîr'},
+  'Brot': { en: 'Bread', tr: 'Ekmek', ro: 'Pâine', nl: 'Brood' , sq: 'Bukë', ku: 'Nan'},
+  'Dose': { en: 'Can', tr: 'Kutu', ro: 'Doză', nl: 'Blikje' , sq: 'Kanaçe', ku: 'Qutî'},
+  'Ei': { en: 'Egg', tr: 'Yumurta', ro: 'Ou', nl: 'Ei' , sq: 'Vezë', ku: 'Hêk'},
+  'Scharf': { en: 'Spicy', tr: 'Acılı', ro: 'Picant', nl: 'Pittig' , sq: 'Djegës', ku: 'Tûj'},
+  'Hähnchen-Fleisch': { en: 'Chicken meat', tr: 'Tavuk eti', ro: 'Carne de pui', nl: 'Kipvlees' , sq: 'Mish pule', ku: 'Goştê mirîşkê'},
+  'Kola & Orange': { en: 'Cola & Orange', tr: 'Kola & Portakal', ro: 'Cola & Portocală', nl: 'Cola & Sinaasappel' , sq: 'Kola & Portokall', ku: 'Kola & Porteqal'},
 };
 const MENU_PHRASE_KEYS = Object.keys(MENU_PHRASES);
 const MENU_PHRASE_RE = new RegExp(MENU_PHRASE_KEYS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
@@ -726,10 +727,10 @@ const MENU = [
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Scharf'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Jalapeños', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Scharf'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
 const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
-const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Jalapeños', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
 const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
@@ -1269,6 +1270,71 @@ function EmojiConfetti({ emojis = ['🎉', '🥙', '🍕', '⭐', '🎊'] }) {
   );
 }
 
+function ReceiptView({ snapshot, onClose }) {
+  const { t } = React.useContext(LangContext);
+  const [busy, setBusy] = useState(false);
+  const download = async () => {
+    setBusy(true);
+    try {
+      const dataUrl = await generateReceiptImage(snapshot);
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `bestellung-${snapshot.code}.png`, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Bestellung', text: `Bodrum Kebap Vechta · ${snapshot.code}` });
+      } else {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `bestellung-${snapshot.code}.png`;
+        a.click();
+      }
+    } catch {}
+    setBusy(false);
+  };
+  const now = new Date();
+  return (
+    <ConfigModal onClose={onClose}>
+      <div className="p-5">
+        <div className="rounded-2xl overflow-hidden" style={{ background: '#FFF6EA', boxShadow: '0 8px 24px rgba(21,56,38,.12)' }}>
+          <div className="text-center py-6 px-5" style={{ background: GREEN }}>
+            <div className="font-black text-xl" style={{ color: GOLD }}>🥙 BODRUM KEBAP</div>
+            <div className="text-xs font-bold mt-1" style={{ color: '#fff' }}>VECHTA · Oyther Straße 37</div>
+            <div className="text-[11px] font-semibold mt-2" style={{ color: '#d9cdb4' }}>{now.toLocaleDateString('de-DE')} · {now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div>
+          </div>
+          <div className="p-5">
+            <div className="rounded-xl p-3.5 mb-4" style={{ background: GREEN }}>
+              <div className="text-[10px] font-bold tracking-widest" style={{ color: GOLD }}>BESTELLCODE</div>
+              <div className="font-black text-xl" style={{ color: '#fff' }}>{snapshot.code}</div>
+            </div>
+            <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: GREEN }}>BESTELLUNG</div>
+            <div style={{ borderTop: '1px solid #e3d5bd' }} className="pt-3 flex flex-col gap-2">
+              {snapshot.items.map((it, i) => (
+                <div key={i} className="flex items-start justify-between gap-3 text-sm">
+                  <span className="font-semibold" style={{ color: GREEN }}>{it.qty}x {it.name}</span>
+                  <span className="font-bold flex-shrink-0" style={{ color: ORANGE }}>{fmt(it.price)}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ borderTop: '1px dashed #c9b896' }} className="mt-4 pt-4 flex items-center justify-between">
+              <span className="font-black text-base" style={{ color: GREEN }}>GESAMT</span>
+              <span className="font-black text-xl" style={{ color: GREEN }}>{fmt(snapshot.total)}</span>
+            </div>
+            {snapshot.pickupTime && <div className="text-xs font-semibold mt-3" style={{ color: '#7c6d55' }}>🕐 Abholzeit: {snapshot.pickupTime}</div>}
+            {snapshot.name && <div className="text-xs font-semibold mt-1.5" style={{ color: '#7c6d55' }}>👤 {snapshot.name}</div>}
+            {snapshot.note && <div className="text-xs font-semibold mt-1.5" style={{ color: '#7c6d55' }}>📝 {snapshot.note}</div>}
+            <div className="text-center mt-5">
+              <div className="text-xs font-bold" style={{ color: '#a4906c' }}>Vielen Dank für deine Bestellung! 🙏</div>
+              <div className="text-[10px] font-semibold mt-1" style={{ color: '#a4906c' }}>bodrumkebapvechta.de</div>
+            </div>
+          </div>
+        </div>
+        <button onClick={download} disabled={busy} className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
+          <span className="text-base">⬇️</span> {busy ? '…' : t('downloadReceiptBtn')}
+        </button>
+      </div>
+    </ConfigModal>
+  );
+}
 function ConfigModal({ onClose, children }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -2102,7 +2168,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold" style={{ color: GREEN }}>{lang === 'de' ? 'Täglich 11:30–22:00' : '11:30–22:00'}</span></div>
-            <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : 'Dinsdag'}</span></div>
+            <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : lang === 'ku' ? 'Sêşem' : 'Dinsdag'}</span></div>
             <div className="flex justify-between py-2.5 text-sm"><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroAddress')}</span><span className="font-bold text-right" style={{ color: GREEN }}>Oyther Straße 37,<br />49377 Vechta</span></div>
             <img src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
             <img src={PENNE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 78, height: 78, bottom: -18, left: -18, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(-8deg)' }} />
@@ -2233,7 +2299,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="rounded-2xl p-6 flex flex-col justify-center" style={{ background: GREEN }}>
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
             <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
-            <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div><div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : 'Dinsdag gesloten'}</div></div></div>
+            <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : lang === 'ku' ? 'Her roj 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div><div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : lang === 'ku' ? 'Sêşeman girtî' : 'Dinsdag gesloten'}</div></div></div>
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
@@ -2309,7 +2375,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [itemNotes, setItemNotes] = useState({});
   const [burst, setBurst] = useState(false);
   const [sentSnapshot, setSentSnapshot] = useState(null);
-  const [receiptBusy, setReceiptBusy] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
   const resetOrder = () => { setCart({}); setName(''); setNote(''); setWheelResult(null); setItemNotes({}); setDrawerView('cart'); setCartOpen(false); };
   const handleSend = () => {
     setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
@@ -2317,25 +2383,6 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList.map(({ name, qty }) => ({ name, qty })), pickupTime: pickupTime || null });
     setSentSnapshot({ code: orderCode, items: itemsList, total: totalPrice, name, pickupTime, note });
     setOrderCode(makeNumericCode(4));
-  };
-  const downloadReceipt = async () => {
-    if (!sentSnapshot) return;
-    setReceiptBusy(true);
-    try {
-      const dataUrl = await generateReceiptImage(sentSnapshot);
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], `bestellung-${sentSnapshot.code}.png`, { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Bestellung', text: `Bodrum Kebap Vechta · ${sentSnapshot.code}` });
-      } else {
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = `bestellung-${sentSnapshot.code}.png`;
-        a.click();
-      }
-    } catch {}
-    setReceiptBusy(false);
   };
 
   const [cartPop, setCartPop] = useState(0);
@@ -2972,7 +3019,8 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   </div>
                 </div>
                 <button onClick={() => go('track', { orderCode: sentSnapshot?.code || orderCode })} className="w-full flex items-center justify-center gap-2 mb-3 py-3 rounded-xl font-bold text-sm" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8', animation: 'slideUpFade .5s ease .44s both' }}><Timer size={16} /> {t('trackOrderBtn')} ({sentSnapshot?.code || orderCode})</button>
-                <button onClick={downloadReceipt} disabled={receiptBusy} className="w-full flex items-center justify-center gap-2 mb-6 py-3 rounded-xl font-bold text-sm disabled:opacity-50" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd`, animation: 'slideUpFade .5s ease .47s both' }}><span className="text-base">🧾</span> {receiptBusy ? '…' : t('downloadReceiptBtn')}</button>
+                <button onClick={() => setShowReceipt(true)} className="w-full flex items-center justify-center gap-2 mb-6 py-3 rounded-xl font-bold text-sm" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd`, animation: 'slideUpFade .5s ease .47s both' }}><span className="text-base">🧾</span> {t('showReceiptBtn')}</button>
+                {showReceipt && sentSnapshot && <ReceiptView snapshot={sentSnapshot} onClose={() => setShowReceipt(false)} />}
                 <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .5s both' }}>
                   <button onClick={resetOrder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('newOrderBtn')}</button>
                   <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
@@ -3010,6 +3058,7 @@ const SAUCES = [
 ];
 const BUILDER_EXTRAS = [
   { id: 'kaese', label: 'Käse', price: 1.0 }, { id: 'peperoni', label: 'Peperoni', price: 1.0 },
+  { id: 'jalapenos', label: 'Jalapeños', price: 1.0 },
   { id: 'zwiebeln', label: 'Zwiebeln', price: 0 }, { id: 'tomaten', label: 'Tomaten', price: 0 },
   { id: 'rotkohl', label: 'Rotkohl', price: 0 }, { id: 'mais', label: 'Mais', price: 1.0 },
   { id: 'extrafleisch', label: 'Extra Fleisch', price: 1.0 },
@@ -3071,7 +3120,7 @@ function DonerBuilderView({ back, go }) {
   const [burst, setBurst] = useState(false);
   const [orderCode, setOrderCode] = useState(() => makeNumericCode(4));
   const [sentSnapshot, setSentSnapshot] = useState(null);
-  const [receiptBusy, setReceiptBusy] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
   const handleSend = () => {
     setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200);
     const itemName = kind === 'pasta'
@@ -3080,25 +3129,6 @@ function DonerBuilderView({ back, go }) {
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
     setSentSnapshot({ code: orderCode, items: [{ name: itemName, qty: 1, price: total }], total, name, pickupTime: null, note: '' });
     setOrderCode(makeNumericCode(4));
-  };
-  const downloadReceipt = async () => {
-    if (!sentSnapshot) return;
-    setReceiptBusy(true);
-    try {
-      const dataUrl = await generateReceiptImage(sentSnapshot);
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], `bestellung-${sentSnapshot.code}.png`, { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Bestellung', text: `Bodrum Kebap Vechta · ${sentSnapshot.code}` });
-      } else {
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = `bestellung-${sentSnapshot.code}.png`;
-        a.click();
-      }
-    } catch {}
-    setReceiptBusy(false);
   };
   const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
@@ -3255,7 +3285,8 @@ function DonerBuilderView({ back, go }) {
           </div>
           <div className="font-black text-xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
           <p className="text-sm mb-8" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
-          <button onClick={downloadReceipt} disabled={receiptBusy} className="w-full flex items-center justify-center gap-2 mb-3 py-3 rounded-xl font-bold text-sm disabled:opacity-50" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd` }}><span className="text-base">🧾</span> {receiptBusy ? '…' : t('downloadReceiptBtn')}</button>
+          <button onClick={() => setShowReceipt(true)} className="w-full flex items-center justify-center gap-2 mb-3 py-3 rounded-xl font-bold text-sm" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd` }}><span className="text-base">🧾</span> {t('showReceiptBtn')}</button>
+          {showReceipt && sentSnapshot && <ReceiptView snapshot={sentSnapshot} onClose={() => setShowReceipt(false)} />}
           <div className="w-full flex flex-col gap-3" style={{ animation: 'slideUpFade .5s ease .45s both' }}>
             <button onClick={resetBuilder} className="w-full py-3.5 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>{t('newOrderBtn')}</button>
             <button onClick={back} className="w-full py-3.5 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('backToHomeBtn')}</button>
