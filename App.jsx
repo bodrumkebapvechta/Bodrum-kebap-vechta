@@ -108,6 +108,7 @@ const UI = {
   notifTestBtn: { de: 'Testton abspielen', en: 'Play test sound', tr: 'Test sesini çal', ro: 'Redă sunetul de test', nl: 'Testgeluid afspelen' , sq: 'Luaj tingullin provë', ku: 'Dengê ceribandinê lêxe'},
   markSoldOutOn: { de: 'Als „Ausverkauft" markiert', en: 'Marked as "Sold out"', tr: '"Tükendi" olarak işaretlendi', ro: 'Marcat ca „Epuizat"', nl: 'Gemarkeerd als "Uitverkocht"' , sq: 'Shënuar si \\"I shitur\\"', ku: 'Wek \\"Tune\\" hate nîşankirin'},
   markSoldOutOff: { de: 'Als „Ausverkauft" markieren', en: 'Mark as "Sold out"', tr: '"Tükendi" olarak işaretle', ro: 'Marchează ca „Epuizat"', nl: 'Markeren als "Uitverkocht"' , sq: 'Shëno si \\"I shitur\\"', ku: 'Wek \\"Tune\\" nîşan bike'},
+  chickenSoldOutLabel: { de: 'Hähnchenfleisch (Döner) ausverkauft', en: 'Chicken meat (Döner) sold out', tr: 'Tavuk döner eti tükendi', ro: 'Carne de pui (Döner) epuizată', nl: 'Kipvlees (Döner) uitverkocht', sq: 'Mishi i pulës (Döner) i shitur', ku: 'Goştê mirîşkê (Döner) nema' },
   groupShareBtn: { de: 'Per WhatsApp einladen', en: 'Invite via WhatsApp', tr: 'WhatsApp ile davet et', ro: 'Invită prin WhatsApp', nl: 'Uitnodigen via WhatsApp' , sq: 'Fto përmes WhatsApp', ku: 'Bi WhatsApp vexwîne'},
   groupShareMsg: { de: 'Hey! Lass uns zusammen bei Bodrum Kebap Vechta bestellen 🥙 Tritt mit dem Code {code} bei: https://bodrumkebapvechta.de', en: 'Hey! Let\'s order together from Bodrum Kebap Vechta 🥙 Join with code {code}: https://bodrumkebapvechta.de', tr: 'Selam! Bodrum Kebap Vechta\'dan birlikte sipariş verelim 🥙 {code} koduyla katıl: https://bodrumkebapvechta.de', ro: 'Hei! Hai să comandăm împreună de la Bodrum Kebap Vechta 🥙 Alătură-te cu codul {code}: https://bodrumkebapvechta.de', nl: 'Hé! Laten we samen bestellen bij Bodrum Kebap Vechta 🥙 Doe mee met code {code}: https://bodrumkebapvechta.de' , sq: 'Hej! Le të porosisim së bashku nga Bodrum Kebap Vechta 🥙 Bashkohu me kodin {code}: https://bodrumkebapvechta.de', ku: 'Silav! Werin em bi hev re ji Bodrum Kebap Vechta sifariş bidin 🥙 Bi koda {code} tevlî bibe: https://bodrumkebapvechta.de'},
   pendingParticipantsPrefix: { de: 'Noch nicht fertig:', en: 'Not finished yet:', tr: 'Henüz bitirmedi:', ro: 'Încă nu au terminat:', nl: 'Nog niet klaar:' , sq: 'Ende pa mbaruar:', ku: 'Hê ne temam:'},
@@ -2398,10 +2399,12 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [waExtraText, setWaExtraText] = useState('');
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [soldOutIds, setSoldOutIds] = useState([]);
+  const [chickenSoldOut, setChickenSoldOut] = useState(false);
   useEffect(() => {
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
     safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+    safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
     safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
   const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
@@ -2494,7 +2497,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             <div className="text-[11px] font-bold tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
             <div className="flex gap-2 mb-6">
               <button onClick={() => setMeatChoiceSel(null)} className="flex-1 py-3 rounded-lg text-sm font-bold" style={!meatChoiceSel ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
-              <button onClick={() => setMeatChoiceSel('Hähnchen')} className="flex-1 py-3 rounded-lg text-sm font-bold" style={meatChoiceSel === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
+              <button onClick={() => !chickenSoldOut && setMeatChoiceSel('Hähnchen')} disabled={chickenSoldOut} className="flex-1 py-3 rounded-lg text-sm font-bold disabled:opacity-40" style={meatChoiceSel === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}{chickenSoldOut && <span className="block text-[9px] font-black mt-0.5">{t('soldOutBadge')}</span>}</button>
             </div>
             <input
               value={meatChoiceNote}
@@ -2637,7 +2640,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
                           <div className="flex gap-2 mb-5">
                             <button onClick={() => setConfigMeat(null)} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={!configMeat ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
-                            <button onClick={() => setConfigMeat('Hähnchen')} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={configMeat === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
+                            <button onClick={() => !chickenSoldOut && setConfigMeat('Hähnchen')} disabled={chickenSoldOut} className="flex-1 py-2.5 rounded-lg text-xs font-bold disabled:opacity-40" style={configMeat === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}{chickenSoldOut && <span className="block text-[8px] font-black">{t('soldOutBadge')}</span>}</button>
                           </div>
                         </>
                       )}
@@ -3093,9 +3096,9 @@ function AllergenLegendModal({ onClose }) {
     </ConfigModal>
   );
 }
-function OptionCard({ selected, onClick, children }) {
+function OptionCard({ selected, onClick, children, disabled }) {
   return (
-    <button onClick={onClick} className="w-full text-left px-4 py-3.5 rounded-xl flex items-center justify-between" style={selected ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}>
+    <button onClick={onClick} disabled={disabled} className="w-full text-left px-4 py-3.5 rounded-xl flex items-center justify-between disabled:opacity-40" style={selected ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}>
       {children}{selected && <Check size={18} />}
     </button>
   );
@@ -3105,6 +3108,8 @@ function DonerBuilderView({ back, go }) {
   const [kind, setKind] = useState(null); // null | 'doener' | 'pasta'
   const [waExtraText, setWaExtraText] = useState('');
   useEffect(() => { safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); }); }, []);
+  const [chickenSoldOut, setChickenSoldOut] = useState(false);
+  useEffect(() => { safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); }); }, []);
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
   const [meat, setMeat] = useState(null);
@@ -3216,7 +3221,7 @@ function DonerBuilderView({ back, go }) {
         {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseBase')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseBaseSub')}</p>
           <div className="flex flex-col gap-2.5">{BASES.map((b) => (<OptionCard key={b.id} selected={base?.id === b.id} onClick={() => setBase(b)}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{b.emoji}</span> {mx(b.label, lang)}<span className="text-xs font-medium opacity-80">· {mx(b.desc, lang)}</span></span></OptionCard>))}</div></div>)}
         {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseMeatQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseMeatTitle')}</p>
-          <div className="flex flex-col gap-2.5">{MEATS.map((m) => (<OptionCard key={m.id} selected={meat?.id === m.id} onClick={() => { if (m.weekendOnly && !isWeekendDay()) { alert(t('yaprakWeekendOnly')); return; } setMeat(m); }}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{m.emoji}</span> {mx(m.label, lang)}{m.extra !== 0 && <span className="text-xs font-medium opacity-80">({m.extra > 0 ? '+' : ''}{fmt(m.extra)})</span>}{m.weekendOnly && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>FR·SA·SO</span>}</span></OptionCard>))}</div></div>)}
+          <div className="flex flex-col gap-2.5">{MEATS.map((m) => (<OptionCard key={m.id} selected={meat?.id === m.id} disabled={m.id === 'haehnchen' && chickenSoldOut} onClick={() => { if (m.id === 'haehnchen' && chickenSoldOut) return; if (m.weekendOnly && !isWeekendDay()) { alert(t('yaprakWeekendOnly')); return; } setMeat(m); }}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{m.emoji}</span> {mx(m.label, lang)}{m.extra !== 0 && <span className="text-xs font-medium opacity-80">({m.extra > 0 ? '+' : ''}{fmt(m.extra)})</span>}{m.weekendOnly && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>FR·SA·SO</span>}{m.id === 'haehnchen' && chickenSoldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span></OptionCard>))}</div></div>)}
         {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
           <div className="flex flex-col gap-2.5">{SAUCES.map((s) => (<OptionCard key={s.id} selected={sauce === s.id} onClick={() => setSauce(s.id)}><span className="font-bold text-sm">{mx(s.label, lang)}</span></OptionCard>))}</div></div>)}
         {step === 3 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
@@ -3378,10 +3383,12 @@ function GroupOrderView({ back }) {
   const [waExtraText, setWaExtraText] = useState('');
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [soldOutIds, setSoldOutIds] = useState([]);
+  const [chickenSoldOut, setChickenSoldOut] = useState(false);
   useEffect(() => {
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
     safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+    safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
     safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
   const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
@@ -3473,7 +3480,7 @@ function GroupOrderView({ back }) {
             <div className="text-[11px] font-bold tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
             <div className="flex gap-2 mb-6">
               <button onClick={() => setMeatChoiceSel(null)} className="flex-1 py-3 rounded-lg text-sm font-bold" style={!meatChoiceSel ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
-              <button onClick={() => setMeatChoiceSel('Hähnchen')} className="flex-1 py-3 rounded-lg text-sm font-bold" style={meatChoiceSel === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
+              <button onClick={() => !chickenSoldOut && setMeatChoiceSel('Hähnchen')} disabled={chickenSoldOut} className="flex-1 py-3 rounded-lg text-sm font-bold disabled:opacity-40" style={meatChoiceSel === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}{chickenSoldOut && <span className="block text-[9px] font-black mt-0.5">{t('soldOutBadge')}</span>}</button>
             </div>
             <input
               value={meatChoiceNote}
@@ -3655,7 +3662,7 @@ function GroupOrderView({ back }) {
                               <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('meatTypeLabel')}</div>
                               <div className="flex gap-2 mb-5">
                                 <button onClick={() => setConfigMeat(null)} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={!configMeat ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
-                                <button onClick={() => setConfigMeat('Hähnchen')} className="flex-1 py-2.5 rounded-lg text-xs font-bold" style={configMeat === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
+                                <button onClick={() => !chickenSoldOut && setConfigMeat('Hähnchen')} disabled={chickenSoldOut} className="flex-1 py-2.5 rounded-lg text-xs font-bold disabled:opacity-40" style={configMeat === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}{chickenSoldOut && <span className="block text-[8px] font-black">{t('soldOutBadge')}</span>}</button>
                               </div>
                             </>
                           )}
@@ -4273,6 +4280,7 @@ function StaffPanelView({ back }) {
   const [editLarge, setEditLarge] = useState('');
   const [menuSaveMsg, setMenuSaveMsg] = useState('');
   const [soldOutIds, setSoldOutIdsStaff] = useState([]);
+  const [chickenSoldOut, setChickenSoldOut] = useState(false);
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [photoSearch, setPhotoSearch] = useState('');
   const [editingPhotoItem, setEditingPhotoItem] = useState(null);
@@ -4314,6 +4322,7 @@ function StaffPanelView({ back }) {
     if (ok && tab === 'menu') {
       safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
       safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIdsStaff(r); });
+      safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -4504,6 +4513,11 @@ function StaffPanelView({ back }) {
     const next = isOut ? soldOutIds.filter((id) => id !== editingItem.id) : [...soldOutIds, editingItem.id];
     await safeSet('siteconfig:soldOut', next);
     setSoldOutIdsStaff(next);
+  };
+  const toggleChickenSoldOut = async () => {
+    const next = !chickenSoldOut;
+    await safeSet('siteconfig:chickenSoldOut', next);
+    setChickenSoldOut(next);
   };
 
   const photoSearchResults = useMemo(() => {
@@ -4748,6 +4762,10 @@ function StaffPanelView({ back }) {
           {tab === 'menu' && (
             <div className="px-5">
               <div className="flex items-center gap-2 mb-3"><span className="text-lg">💰</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffMenuTab')}</h3></div>
+              <button onClick={toggleChickenSoldOut} className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl mb-4" style={chickenSoldOut ? { background: CHILI } : { background: '#fff', border: '1px solid #e3d5bd' }}>
+                <span className="flex items-center gap-2 font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>🍗 {t('chickenSoldOutLabel')}</span>
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-full" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+              </button>
               <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingItem && menuSearchResults.map((item) => (
                 <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
