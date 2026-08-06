@@ -2152,6 +2152,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [weekendWarnOpen, setWeekendWarnOpen] = useState(false);
   const [meatChoiceItem, setMeatChoiceItem] = useState(null);
   const [meatChoiceSel, setMeatChoiceSel] = useState(null);
+  const [meatChoiceNote, setMeatChoiceNote] = useState('');
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
@@ -2257,13 +2258,21 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               <button onClick={() => setMeatChoiceSel(null)} className="flex-1 py-3 rounded-lg text-sm font-bold" style={!meatChoiceSel ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
               <button onClick={() => setMeatChoiceSel('Hähnchen')} className="flex-1 py-3 rounded-lg text-sm font-bold" style={meatChoiceSel === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
             </div>
+            <input
+              value={meatChoiceNote}
+              onChange={(e) => setMeatChoiceNote(e.target.value)}
+              placeholder={t('noteExampleOnions')}
+              className="w-full mb-5 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
+              style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+            />
             <button
               onClick={() => {
                 const item = meatChoiceItem;
-                const deLabel = meatChoiceSel ? `${item.name} [${meatChoiceSel}]` : item.name;
-                const displayLabel = meatChoiceSel ? `${mx(item.name, lang)} [${mx(meatChoiceSel, lang)}]` : mx(item.name, lang);
+                let deLabel = meatChoiceSel ? `${item.name} [${meatChoiceSel}]` : item.name;
+                let displayLabel = meatChoiceSel ? `${mx(item.name, lang)} [${mx(meatChoiceSel, lang)}]` : mx(item.name, lang);
+                if (meatChoiceNote.trim()) { deLabel += ` [${meatChoiceNote.trim()}]`; displayLabel += ` [${meatChoiceNote.trim()}]`; }
                 setLastAddedTab('kebap');
-                addItem(`${item.id}-${meatChoiceSel || 'x'}`, displayLabel, item.price, deLabel);
+                addItem(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel);
                 setMeatChoiceItem(null);
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
@@ -2550,7 +2559,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                 <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
-                <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceItem(item); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
                 </div>
               </div>
               {qty > 0 && item.sauceChoice && (
@@ -3115,6 +3124,7 @@ function GroupOrderView({ back }) {
   const [weekendWarnOpen, setWeekendWarnOpen] = useState(false);
   const [meatChoiceItem, setMeatChoiceItem] = useState(null);
   const [meatChoiceSel, setMeatChoiceSel] = useState(null);
+  const [meatChoiceNote, setMeatChoiceNote] = useState('');
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
@@ -3219,13 +3229,21 @@ function GroupOrderView({ back }) {
               <button onClick={() => setMeatChoiceSel(null)} className="flex-1 py-3 rounded-lg text-sm font-bold" style={!meatChoiceSel ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{t('meatKalb')}</button>
               <button onClick={() => setMeatChoiceSel('Hähnchen')} className="flex-1 py-3 rounded-lg text-sm font-bold" style={meatChoiceSel === 'Hähnchen' ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: '#7c6d55' }}>{mx('Hähnchen', lang)}</button>
             </div>
+            <input
+              value={meatChoiceNote}
+              onChange={(e) => setMeatChoiceNote(e.target.value)}
+              placeholder={t('noteExampleOnions')}
+              className="w-full mb-5 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
+              style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+            />
             <button
               onClick={() => {
                 const item = meatChoiceItem;
-                const deLabel = meatChoiceSel ? `${item.name} [${meatChoiceSel}]` : item.name;
-                const displayLabel = meatChoiceSel ? `${mx(item.name, lang)} [${mx(meatChoiceSel, lang)}]` : mx(item.name, lang);
+                let deLabel = meatChoiceSel ? `${item.name} [${meatChoiceSel}]` : item.name;
+                let displayLabel = meatChoiceSel ? `${mx(item.name, lang)} [${mx(meatChoiceSel, lang)}]` : mx(item.name, lang);
+                if (meatChoiceNote.trim()) { deLabel += ` [${meatChoiceNote.trim()}]`; displayLabel += ` [${meatChoiceNote.trim()}]`; }
                 setLastAddedTab('kebap');
-                addLocal(`${item.id}-${meatChoiceSel || 'x'}`, displayLabel, item.price, deLabel);
+                addLocal(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel);
                 setMeatChoiceItem(null);
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
@@ -3550,7 +3568,7 @@ function GroupOrderView({ back }) {
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                     <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
-                    <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceItem(item); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
                     </div>
                   </div>
                   {qty > 0 && item.sauceChoice && (
