@@ -67,7 +67,7 @@ const UI = {
   staffOrdersTab: { de: 'Bestellungen', en: 'Orders', tr: 'Siparişler', ro: 'Comenzi', nl: 'Bestellingen' , sq: 'Porositë', ku: 'Sifariş'},
   staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' , sq: 'Cilësimet', ku: 'Mîheng'},
   staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' , sq: 'Statistikat', ku: 'Statîstîk'},
-  staffMenuTab: { de: 'Preise', en: 'Prices', tr: 'Fiyatlar', ro: 'Prețuri', nl: 'Prijzen' , sq: 'Çmimet', ku: 'Biha'},
+  staffMenuTab: { de: 'Menü', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menu' , sq: 'Menuja', ku: 'Menû'},
   staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" , sq: 'Fotot', ku: 'Wêne'},
   staffWelcomeTitle: { de: 'Willkommen zurück!', en: 'Welcome back!', tr: 'Tekrar hoş geldin!', ro: 'Bine ai revenit!', nl: 'Welkom terug!' , sq: 'Mirë se erdhe përsëri!', ku: 'Bi xêr hatî!'},
   staffWelcomeSub: { de: 'Wähle einen Bereich unten aus', en: 'Choose an area below', tr: 'Aşağıdan bir bölüm seç', ro: 'Alege o secțiune mai jos', nl: 'Kies hieronder een gebied' , sq: 'Zgjidh një seksion më poshtë', ku: 'Ji jêr beşekê hilbijêre'},
@@ -1211,7 +1211,7 @@ const CATEGORY_UPSELL_RECS = {
 };
 const UPSELL_ITEMS = [...UPSELL_FOOD, ...UPSELL_DRINKS];
 
-function UpsellStrip({ addItem }) {
+function UpsellStrip({ addItem, lang }) {
   return (
     <div className="mx-5 mt-1 mb-3 rounded-xl overflow-hidden" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
       <div className="px-3.5 pt-2.5 text-[11px] font-black tracking-wide" style={{ color: '#8a5a1f' }}>🔥 DAZU PASST PERFEKT — nicht vergessen!</div>
@@ -1219,7 +1219,7 @@ function UpsellStrip({ addItem }) {
         {UPSELL_ITEMS.map((u) => (
           <button
             key={u.id}
-            onClick={() => addItem(u.id, u.name, u.price)}
+            onClick={() => addItem(u.id, mx(u.name, lang), u.price, u.name)}
             className="flex-none flex items-center gap-2 pl-2 pr-3 py-2 rounded-full"
             style={{ background: '#fff', border: '1px solid #f0d4a8' }}
           >
@@ -4586,7 +4586,7 @@ function StaffPanelView({ back }) {
               {[
                 { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
                 { key: 'wheel', icon: '🎡', label: t('staffWheelCodeTitle') },
-                { key: 'menu', icon: '💰', label: t('staffMenuTab') },
+                { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                 { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
                 { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                 { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
@@ -4761,7 +4761,7 @@ function StaffPanelView({ back }) {
           })()}
           {tab === 'menu' && (
             <div className="px-5">
-              <div className="flex items-center gap-2 mb-3"><span className="text-lg">💰</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffMenuTab')}</h3></div>
+              <div className="flex items-center gap-2 mb-3"><span className="text-lg">📋</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffMenuTab')}</h3></div>
               <button onClick={toggleChickenSoldOut} className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl mb-4" style={chickenSoldOut ? { background: CHILI } : { background: '#fff', border: '1px solid #e3d5bd' }}>
                 <span className="flex items-center gap-2 font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>🍗 {t('chickenSoldOutLabel')}</span>
                 <span className="text-[10px] font-black px-2.5 py-1 rounded-full" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
