@@ -1,0 +1,103 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  ShoppingBag, Trash2, Plus, Minus, Send, Phone, MapPin, 
+  Clock, CheckCircle2, ChevronRight, AlertCircle, Utensils, 
+  X, Search, MessageSquare, Info, Sparkles, Globe, ArrowRight, Download 
+} from 'lucide-react';
+
+// STYLES & THEMING
+const THEME = {
+  primary: '#059669', // Emerald 600
+  primaryHover: '#047857',
+  accent: '#ea580c', // Orange 600
+  bg: '#f8fafc',
+  cardBg: '#ffffff',
+  text: '#0f172a',
+  textMuted: '#64748b'
+};
+
+const CATEGORY_ICONS = {
+  'Doner': '🥙',
+  'Durum': '🌯',
+  'Burger': '🍔',
+  'Pizza': '🍕',
+  'Tavuk': '🍗',
+  'Tatli': '🍰',
+  'Icecek': '🥤',
+  'Soslar': '🥣'
+};
+
+const UI = {
+  // Navigation & General
+  menu: { de: 'Speisekarte', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menu', sq: 'Menuja', ku: 'Pêşek' },
+  cart: { de: 'Warenkorb', en: 'Cart', tr: 'Sepet', ro: 'Coș', nl: 'Winkelmand', sq: 'Shporta', ku: 'Seryan' },
+  info: { de: 'Über uns', en: 'About', tr: 'Hakkımızda', ro: 'Despre', nl: 'Over uns', sq: 'Rreth nesh', ku: 'Derbarê me' },
+  emptyCart: { de: 'Ihr Warenkorb ist leer', en: 'Your cart is empty', tr: 'Sepetiniz boş', ro: 'Coșul este gol', nl: 'Winkelmand is leeg', sq: 'Shporta është e zbrazët', ku: 'Seryana we vala ye' },
+  total: { de: 'Gesamt', en: 'Total', tr: 'Toplam', ro: 'Total', nl: 'Totaal', sq: 'Totali', ku: 'Tevahî' },
+  checkout: { de: 'Kostenpflichtig bestellen', en: 'Checkout', tr: 'Siparişi Tamamla', ro: 'Finalizează', nl: 'Arekenen', sq: 'Paguaj', ku: 'Sipariş bide' },
+  
+  // App Install
+  installAppBtn: { 
+    de: '📲 App installieren', 
+    en: '📲 Install app', 
+    tr: '📲 Uygulamayı yükle', 
+    ro: '📲 Instalează aplicația', 
+    nl: '📲 App installeren', 
+    sq: '📲 Instalo aplikacionin', 
+    ku: '📲 Aplikasyonê saz bike' 
+  }
+};
+
+// APP COMPONENT
+export default function App() {
+  const [lang, setLang] = useState('de');
+
+  return (
+    <div style={{ backgroundColor: THEME.bg, color: THEME.text, minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h1 style={{ color: THEME.primary, margin: 0 }}>Bodrum Kebap</h1>
+        
+        {/* Language Selector */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {['de', 'en', 'tr', 'ro', 'nl', 'sq', 'ku'].map((l) => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              style={{
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                backgroundColor: lang === l ? THEME.primary : '#fff',
+                color: lang === l ? '#fff' : '#333',
+                cursor: 'pointer',
+                fontWeight: lang === l ? 'bold' : 'normal'
+              }}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      <main style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', paddingTop: '40px' }}>
+        <h2>{UI.menu[lang] || UI.menu.de}</h2>
+        <p>{UI.emptyCart[lang] || UI.emptyCart.de}</p>
+        
+        <button 
+          style={{ 
+            backgroundColor: THEME.accent, 
+            color: '#fff', 
+            border: 'none', 
+            padding: '12px 24px', 
+            borderRadius: '8px', 
+            fontSize: '16px', 
+            cursor: 'pointer',
+            marginTop: '20px' 
+          }}
+        >
+          {UI.installAppBtn[lang] || UI.installAppBtn.de}
+        </button>
+      </main>
+    </div>
+  );
+}
