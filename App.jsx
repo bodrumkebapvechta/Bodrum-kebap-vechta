@@ -3224,7 +3224,7 @@ const BUILDER_EXTRAS = [
   { id: 'brot', label: 'Brot', price: 1.0 },
 ];
 const ALL_EXTRA_NAMES = Array.from(new Set([
-  ...EXTRA_TOPPINGS, ...PASTA_TOPPINGS, ...PASTA_EXTRA_ITEMS, ...BUILDER_EXTRAS.map((e) => e.label),
+  ...EXTRA_TOPPINGS, ...PASTA_TOPPINGS, ...PASTA_EXTRA_ITEMS, ...BUILDER_EXTRAS.map((e) => e.label), 'Steak Fleisch',
 ]));
 function AllergenTag({ alg }) {
   if (!alg) return null;
@@ -5239,7 +5239,7 @@ export default function App() {
     </ConfigModal>,
     document.body
   );
-  const cartBadge = cartCount > 0 && ReactDOM.createPortal(
+  const cartBadge = cartCount > 0 && !cartOpen && ReactDOM.createPortal(
     <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className={`fixed ${view === 'home' ? 'bottom-5 right-4' : 'top-4 right-4'} flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white`} style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
       {fmt(cartTotal)}
