@@ -2048,6 +2048,17 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   }, []);
   const HOME_EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(homePriceOverrides, homePhotoOverrides, homeSoldOutIds), [homePriceOverrides, homePhotoOverrides, homeSoldOutIds]);
   const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
+  const [heroSearch, setHeroSearch] = useState('');
+  const [heroSearchFocused, setHeroSearchFocused] = useState(false);
+  const HOME_SEARCHABLE_ITEMS = useMemo(() => {
+    return HOME_EFFECTIVE_MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta).map((i) => ({ ...i, catKey: cat.key })));
+  }, [HOME_EFFECTIVE_MENU]);
+  const heroSearchResults = useMemo(() => {
+    if (!heroSearch.trim()) return [];
+    const q = heroSearch.trim().toLowerCase();
+    return HOME_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)).slice(0, 6);
+  }, [heroSearch, HOME_SEARCHABLE_ITEMS, lang]);
+  const goToItem = (item) => { go('whatsapp', { quickSearchTerm: menuNum(item.id) || item.name }); };
   const [dailyBanner, setDailyBanner] = useState('');
   useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
   const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
@@ -2252,6 +2263,43 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
+            <div className="relative mb-6 max-w-md" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setHeroSearchFocused(false); }}>
+              <div className="flex items-center gap-3 px-5 py-3.5 rounded-2xl" style={{ background: 'rgba(255,246,234,.08)', border: `1.5px solid ${heroSearchFocused ? GOLD : 'rgba(255,246,234,.22)'}`, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: heroSearchFocused ? '0 8px 28px rgba(255,199,56,.18)' : 'none', transition: 'border-color .25s ease, box-shadow .25s ease' }}>
+                <span style={{ color: GOLD, opacity: .9 }}>🔍</span>
+                <input
+                  value={heroSearch}
+                  onChange={(e) => setHeroSearch(e.target.value)}
+                  onFocus={() => setHeroSearchFocused(true)}
+                  placeholder={t('quickSearchPh')}
+                  inputMode="search"
+                  className="flex-1 bg-transparent outline-none text-sm font-semibold"
+                  style={{ color: CREAM }}
+                />
+                {heroSearch && (
+                  <button onClick={() => setHeroSearch('')} className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,.15)' }}><X size={11} color={CREAM} /></button>
+                )}
+              </div>
+              {heroSearchFocused && heroSearch.trim() && (
+                <div className="absolute left-0 right-0 mt-2 rounded-2xl overflow-hidden z-20" style={{ background: CREAM, boxShadow: '0 16px 40px rgba(21,56,38,.35)' }}>
+                  {heroSearchResults.length === 0 ? (
+                    <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
+                  ) : (
+                    heroSearchResults.map((item, i) => (
+                      <button
+                        key={item.id}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => goToItem(item)}
+                        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3"
+                        style={{ borderTop: i > 0 ? '1px solid #ede0c8' : 'none' }}
+                      >
+                        <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
+                        <span className="text-xs font-bold flex-shrink-0" style={{ color: CHILI }}>{item.priceLarge !== undefined ? fmt(item.priceLarge) : fmt(item.price)}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
             <div className="flex flex-wrap gap-3 mb-3">
               <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
             </div>
@@ -2545,6 +2593,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     if (initialAction?.lunchSurprise) {
       setLunchDrink(null);
       setLunchPending(initialAction.lunchSurprise);
+    }
+    if (initialAction?.quickSearchTerm) {
+      setQuickSearch(initialAction.quickSearchTerm);
     }
     onConsumeAction && onConsumeAction();
   }, []);
