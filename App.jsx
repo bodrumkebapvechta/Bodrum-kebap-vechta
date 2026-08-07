@@ -118,6 +118,10 @@ const UI = {
   extrasSoldOutTitle: { de: 'Zutaten ausverkauft', en: 'Ingredients sold out', tr: 'Malzeme tükendi', ro: 'Ingrediente epuizate', nl: 'Ingrediënten uitverkocht', sq: 'Përbërësit e shitur', ku: 'Malzemeyên nema' },
   extrasSoldOutHint: { de: 'Markiere eine Zutat (z.B. Brokkoli), die gerade nicht verfügbar ist. Kunden sehen dann eine Warnung, können sie aber trotzdem wählen.', en: 'Mark an ingredient (e.g. broccoli) that is currently unavailable. Customers will see a warning but can still choose it.', tr: 'Şu anda mevcut olmayan bir malzemeyi (örn. brokoli) işaretle. Müşteriler bir uyarı görecek ama yine de seçebilecek.', ro: 'Marchează un ingredient (de ex. broccoli) care nu este momentan disponibil. Clienții vor vedea un avertisment, dar îl pot alege oricum.', nl: 'Markeer een ingrediënt (bijv. broccoli) dat momenteel niet beschikbaar is. Klanten zien een waarschuwing maar kunnen het toch kiezen.', sq: 'Shëno një përbërës (p.sh. brokoli) që nuk është i disponueshëm aktualisht. Klientët do të shohin një paralajmërim por mund ta zgjedhin gjithsesi.', ku: 'Malzemeyekê (mînak brokolî) ku niha ne mevcûd e nîşan bike. Xerîdar dê hişyariyekê bibînin lê dîsa jî dikarin wê hilbijêrin.' },
   extraSearchPh: { de: 'z.B. Brokkoli, Zwiebeln...', en: 'e.g. broccoli, onions...', tr: 'örn. brokoli, soğan...', ro: 'ex. broccoli, ceapă...', nl: 'bijv. broccoli, uien...', sq: 'p.sh. brokoli, qepë...', ku: 'mînak brokolî, pîvaz...' },
+  quickSearchPh: { de: '🔍 Nummer oder Name eingeben (z.B. 24)', en: '🔍 Enter number or name (e.g. 24)', tr: '🔍 Numara veya isim yaz (örn. 24)', ro: '🔍 Introdu numărul sau numele (ex. 24)', nl: '🔍 Nummer of naam invoeren (bijv. 24)', sq: '🔍 Vendos numrin ose emrin (p.sh. 24)', ku: '🔍 Hejmar an nav binivîse (mînak 24)' },
+  quickSearchNoResults: { de: 'Nichts gefunden', en: 'Nothing found', tr: 'Bir şey bulunamadı', ro: 'Nimic găsit', nl: 'Niets gevonden', sq: 'Nuk u gjet asgjë', ku: 'Tiştek nehat dîtin' },
+  staffQuickLookupTitle: { de: '🔍 Nummer nachschlagen', en: '🔍 Look up number', tr: '🔍 Numara sorgula', ro: '🔍 Caută numărul', nl: '🔍 Nummer opzoeken', sq: '🔍 Kërko numrin', ku: '🔍 Hejmarê bigere' },
+  staffQuickLookupHint: { de: 'Für Kunden, die per WhatsApp direkt eine Nummer schreiben.', en: 'For customers who message a number directly via WhatsApp.', tr: 'WhatsApp\'a direkt numara yazan müşteriler için.', ro: 'Pentru clienții care scriu direct un număr pe WhatsApp.', nl: 'Voor klanten die direct een nummer via WhatsApp sturen.', sq: 'Për klientët që shkruajnë direkt një numër në WhatsApp.', ku: 'Ji bo xerîdarên ku rasterast hejmarê li WhatsApp dinivîsin.' },
   extraSoldOutWarnPrefix: { de: 'Achtung: Wir haben gerade kein/e/n', en: 'Note: We currently don\'t have', tr: 'Dikkat: Şu anda', ro: 'Atenție: Momentan nu avem', nl: 'Let op: We hebben momenteel geen', sq: 'Kujdes: Aktualisht nuk kemi', ku: 'Bala xwe bidê: Niha em ne xwedî' },
   extraSoldOutWarnSuffix: { de: 'mehr. Trotzdem hinzufügen?', en: '. Add it anyway?', tr: 'yok. Yine de eklensin mi?', ro: '. Adaugi oricum?', nl: 'meer. Toch toevoegen?', sq: 'më. Ta shtoj gjithsesi?', ku: 'nema. Dîsa jî bê zêdekirin?' },
   addAnywayBtn: { de: 'Trotzdem hinzufügen', en: 'Add anyway', tr: 'Yine de ekle', ro: 'Adaugă oricum', nl: 'Toch toevoegen', sq: 'Shto gjithsesi', ku: 'Dîsa jî zêde bike' },
@@ -2578,6 +2582,37 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
 
   const activeCategory = EFFECTIVE_MENU.find((m) => m.key === tab);
 
+  const [quickSearch, setQuickSearch] = useState('');
+  const ALL_SEARCHABLE_ITEMS = useMemo(() => {
+    return EFFECTIVE_MENU.flatMap((cat) => cat.items
+      .filter((i) => !i.customPizza && !i.customPasta)
+      .map((i) => ({ ...i, catKey: cat.key })));
+  }, [EFFECTIVE_MENU]);
+  const quickSearchResults = useMemo(() => {
+    if (!quickSearch.trim()) return [];
+    const q = quickSearch.trim().toLowerCase();
+    return ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)).slice(0, 15);
+  }, [quickSearch, ALL_SEARCHABLE_ITEMS, lang]);
+  const handleQuickAdd = (item) => {
+    const soExtra = findSoldOutExtraInItem(item, soldOutExtras);
+    const proceed = () => {
+      if (item.soldOut) return;
+      if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
+      if (item.priceLarge !== undefined) {
+        setTab(item.catKey);
+        setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
+        setQuickSearch('');
+        return;
+      }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); setQuickSearch(''); return; }
+      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); setQuickSearch(''); return; }
+      setLastAddedTab(item.catKey); addItem(item.id, mx(item.name, lang), item.price, item.name);
+      setQuickSearch('');
+    };
+    if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: proceed }); return; }
+    proceed();
+  };
+
   return (
     <div className="pb-32">
       <CartPopEmoji trigger={cartPop} />
@@ -2652,7 +2687,34 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       )}
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleWa')} /></div>
 
-      <div className="flex gap-2 overflow-x-auto px-5 pt-4 pb-2">
+      <div className="px-5 pt-4 pb-1">
+        <input
+          value={quickSearch}
+          onChange={(e) => setQuickSearch(e.target.value)}
+          placeholder={t('quickSearchPh')}
+          inputMode="search"
+          className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none"
+          style={{ background: '#fff', border: '1.5px solid #e3d5bd', color: GREEN }}
+        />
+      </div>
+      {quickSearch.trim() && (
+        <div className="px-5 pb-3">
+          {quickSearchResults.length === 0 ? (
+            <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {quickSearchResults.map((item) => (
+                <button key={item.id} onClick={() => handleQuickAdd(item)} disabled={item.soldOut} className="w-full text-left bg-white rounded-xl p-3 flex items-center justify-between shadow-sm disabled:opacity-50">
+                  <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
+                  <span className="text-xs font-bold flex-shrink-0 ml-2" style={{ color: CHILI }}>{item.priceLarge !== undefined ? fmt(item.priceLarge) : fmt(item.price)}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
         {MENU.map((m) => (
           <button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap"
             style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>
@@ -3644,6 +3706,37 @@ function GroupOrderView({ back }) {
   };
   const activeCategory = EFFECTIVE_MENU.find((m) => m.key === tab);
 
+  const [quickSearch, setQuickSearch] = useState('');
+  const ALL_SEARCHABLE_ITEMS = useMemo(() => {
+    return EFFECTIVE_MENU.flatMap((cat) => cat.items
+      .filter((i) => !i.customPizza && !i.customPasta)
+      .map((i) => ({ ...i, catKey: cat.key })));
+  }, [EFFECTIVE_MENU]);
+  const quickSearchResults = useMemo(() => {
+    if (!quickSearch.trim()) return [];
+    const q = quickSearch.trim().toLowerCase();
+    return ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)).slice(0, 15);
+  }, [quickSearch, ALL_SEARCHABLE_ITEMS, lang]);
+  const handleQuickAdd = (item) => {
+    const soExtra = findSoldOutExtraInItem(item, soldOutExtras);
+    const proceed = () => {
+      if (item.soldOut) return;
+      if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
+      if (item.priceLarge !== undefined) {
+        setTab(item.catKey);
+        setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
+        setQuickSearch('');
+        return;
+      }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); setQuickSearch(''); return; }
+      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); setQuickSearch(''); return; }
+      setLastAddedTab(item.catKey); addLocal(item.id, mx(item.name, lang), item.price, item.name);
+      setQuickSearch('');
+    };
+    if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: proceed }); return; }
+    proceed();
+  };
+
   return (
     <div className="pb-32 relative">
       {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐']} />}
@@ -3784,6 +3877,32 @@ function GroupOrderView({ back }) {
       )}
       {view === 'order' && (
         <div>
+          <div className="px-5 pt-2 pb-1">
+            <input
+              value={quickSearch}
+              onChange={(e) => setQuickSearch(e.target.value)}
+              placeholder={t('quickSearchPh')}
+              inputMode="search"
+              className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none"
+              style={{ background: '#fff', border: '1.5px solid #e3d5bd', color: GREEN }}
+            />
+          </div>
+          {quickSearch.trim() && (
+            <div className="px-5 pb-3">
+              {quickSearchResults.length === 0 ? (
+                <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {quickSearchResults.map((item) => (
+                    <button key={item.id} onClick={() => handleQuickAdd(item)} disabled={item.soldOut} className="w-full text-left bg-white rounded-xl p-3 flex items-center justify-between shadow-sm disabled:opacity-50">
+                      <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
+                      <span className="text-xs font-bold flex-shrink-0 ml-2" style={{ color: CHILI }}>{item.priceLarge !== undefined ? fmt(item.priceLarge) : fmt(item.price)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
             {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>{CATEGORY_ICONS[m.key]} {catLabel(m.key, lang)}</button>))}
           </div>
@@ -4473,6 +4592,18 @@ function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
   const [ok, setOk] = useState(false);
+  const [staffLookup, setStaffLookup] = useState('');
+  useEffect(() => {
+    if (ok) {
+      safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+      safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIdsStaff(r); });
+    }
+  }, [ok]);
+  const staffLookupResults = useMemo(() => {
+    if (!staffLookup.trim()) return [];
+    const q = staffLookup.trim().toLowerCase();
+    return MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta)).filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || i.name.toLowerCase().includes(q)).slice(0, 15);
+  }, [staffLookup]);
   const [tab, setTab] = useState('orders'); // orders | wheel | settings | analytics
 
   const [wheelCode, setWheelCode] = useState('');
@@ -4875,6 +5006,38 @@ function StaffPanelView({ back }) {
                 <div className="font-black text-sm" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
                 <div className="text-[11px] font-medium" style={{ color: '#d9cdb4' }}>{t('staffWelcomeSub')}</div>
               </div>
+            </div>
+          </div>
+          <div className="px-5 pt-3 pb-1">
+            <div className="rounded-2xl p-4" style={{ background: '#fff', border: '1.5px solid #e3d5bd' }}>
+              <div className="font-black text-sm mb-1" style={{ color: GREEN }}>{t('staffQuickLookupTitle')}</div>
+              <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('staffQuickLookupHint')}</p>
+              <input value={staffLookup} onChange={(e) => setStaffLookup(e.target.value)} placeholder={t('quickSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+              {staffLookup.trim() && (
+                staffLookupResults.length === 0 ? (
+                  <p className="text-xs font-semibold text-center py-2" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
+                ) : (
+                  <div className="flex flex-col gap-1.5">
+                    {staffLookupResults.map((item) => {
+                      const isOut = soldOutIds.includes(item.id);
+                      const priceOv = priceOverrides[item.id];
+                      const priceDisplay = item.priceLarge !== undefined
+                        ? `${fmt(priceOv?.small ?? item.priceSmall)} / ${fmt(priceOv?.large ?? item.priceLarge)}`
+                        : fmt(priceOv?.price ?? item.price);
+                      return (
+                        <div key={item.id} className="rounded-lg p-2.5" style={{ background: '#f7f0e2' }}>
+                          <div className="font-bold text-sm flex items-center gap-1.5" style={{ color: GREEN }}>
+                            {menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)}</span>} {item.name}
+                            {isOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>{t('soldOutBadge')}</span>}
+                          </div>
+                          {item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}
+                          <div className="text-xs font-bold mt-1" style={{ color: CHILI }}>{priceDisplay}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )
+              )}
             </div>
           </div>
           <div className="px-5 pt-3 pb-2">
