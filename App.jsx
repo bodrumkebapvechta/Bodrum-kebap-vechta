@@ -2055,19 +2055,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   }, []);
   const HOME_EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(homePriceOverrides, homePhotoOverrides, homeSoldOutIds), [homePriceOverrides, homePhotoOverrides, homeSoldOutIds]);
   const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
-  const [heroSearch, setHeroSearch] = useState('');
-  const [heroSearchFocused, setHeroSearchFocused] = useState(false);
-  const HOME_SEARCHABLE_ITEMS = useMemo(() => {
-    return HOME_EFFECTIVE_MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta).map((i) => ({ ...i, catKey: cat.key })));
-  }, [HOME_EFFECTIVE_MENU]);
-  const heroSearchResults = useMemo(() => {
-    if (!heroSearch.trim()) return [];
-    const q = heroSearch.trim().toLowerCase();
-    const exactNum = HOME_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q);
-    const nameMatches = HOME_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() !== q && (mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)));
-    return [...exactNum, ...nameMatches].slice(0, 6);
-  }, [heroSearch, HOME_SEARCHABLE_ITEMS, lang]);
-  const goToItem = (item) => { go('whatsapp', { quickSearchTerm: menuNum(item.id) || item.name }); };
   const [dailyBanner, setDailyBanner] = useState('');
   useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
   const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
@@ -2146,6 +2133,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes sideSpinHome { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
         @keyframes floatY2 { 0%,100%{ transform:translateY(0px) rotate(4deg);} 50%{ transform:translateY(-14px) rotate(-4deg);} }
         @keyframes ctaGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,106,26,.55);} 50%{ box-shadow:0 0 0 10px rgba(255,106,26,0);} }
+        @keyframes quickOrderShimmer { 0%{ background-position: 0% 0; } 100%{ background-position: 200% 0; } }
+        @keyframes quickOrderPulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.015); } }
         @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
         @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
@@ -2167,6 +2156,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         .combo-card:hover{ transform: translateY(-4px); }
         .gallery-img:hover{ transform: scale(1.05); filter: brightness(1.05); }
         .cta-pulse{ animation: ctaGlow 2.2s ease-out infinite; }
+        .quick-order-btn{ animation: quickOrderShimmer 3s linear infinite, quickOrderPulse 2.4s ease-in-out infinite; }
         .hero-float{ animation: floatY 4.5s ease-in-out infinite; }
         .hero-float2{ animation: floatY2 5.5s ease-in-out infinite; }
       `}</style>
@@ -2270,44 +2260,16 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
-            <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
-            <div className="relative mb-6 max-w-md" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setHeroSearchFocused(false); }}>
-              <div className="flex items-center gap-3 px-5 py-3.5 rounded-2xl" style={{ background: 'rgba(255,246,234,.08)', border: `1.5px solid ${heroSearchFocused ? GOLD : 'rgba(255,246,234,.22)'}`, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: heroSearchFocused ? '0 8px 28px rgba(255,199,56,.18)' : 'none', transition: 'border-color .25s ease, box-shadow .25s ease' }}>
-                <span style={{ color: GOLD, opacity: .9 }}>🔍</span>
-                <input
-                  value={heroSearch}
-                  onChange={(e) => setHeroSearch(e.target.value)}
-                  onFocus={() => setHeroSearchFocused(true)}
-                  placeholder={t('quickSearchPh')}
-                  inputMode="search"
-                  className="flex-1 bg-transparent outline-none text-sm font-semibold"
-                  style={{ color: CREAM }}
-                />
-                {heroSearch && (
-                  <button onClick={() => setHeroSearch('')} className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,.15)' }}><X size={11} color={CREAM} /></button>
-                )}
-              </div>
-              {heroSearchFocused && heroSearch.trim() && (
-                <div className="absolute left-0 right-0 mt-2 rounded-2xl overflow-hidden z-20" style={{ background: CREAM, boxShadow: '0 16px 40px rgba(21,56,38,.35)' }}>
-                  {heroSearchResults.length === 0 ? (
-                    <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
-                  ) : (
-                    heroSearchResults.map((item, i) => (
-                      <button
-                        key={item.id}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => goToItem(item)}
-                        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3"
-                        style={{ borderTop: i > 0 ? '1px solid #ede0c8' : 'none' }}
-                      >
-                        <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
-                        <span className="text-xs font-bold flex-shrink-0" style={{ color: CHILI }}>{item.priceLarge !== undefined ? fmt(item.priceLarge) : fmt(item.price)}</span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
+            <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
+            <button
+              onClick={() => go('whatsapp', { focusSearch: true })}
+              className="quick-order-btn w-full sm:w-auto flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-base mb-5 relative overflow-hidden"
+              style={{ background: `linear-gradient(120deg, #ff3d68, #ff6a1a 55%, ${GOLD})`, backgroundSize: '200% 100%', color: '#fff', boxShadow: '0 14px 34px rgba(255,61,104,.4)' }}
+            >
+              <span className="text-2xl relative">🔢</span>
+              <span className="relative">{t('quickOrderByNumberBtn')}</span>
+              <ArrowRight size={18} className="relative ml-auto sm:ml-1" />
+            </button>
             <div className="flex flex-wrap gap-3 mb-3">
               <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
             </div>
@@ -2318,7 +2280,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
             </button>
             <div className="flex flex-wrap gap-2.5 mt-3">
-              <button onClick={() => go('whatsapp', { focusSearch: true })} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.14)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>🔢 {t('quickOrderByNumberBtn')}</button>
               <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>
               <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
@@ -2608,7 +2569,15 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       setQuickSearch(initialAction.quickSearchTerm);
     }
     if (initialAction?.focusSearch) {
-      setTimeout(() => quickSearchRef.current?.focus(), 350);
+      const tryFocus = () => {
+        const el = quickSearchRef.current;
+        if (!el) return;
+        el.focus();
+        el.click();
+      };
+      requestAnimationFrame(() => requestAnimationFrame(tryFocus));
+      setTimeout(tryFocus, 120);
+      setTimeout(tryFocus, 400);
     }
     onConsumeAction && onConsumeAction();
   }, []);
@@ -2792,11 +2761,11 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         </div>
       )}
 
-      <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
+      <div className="flex gap-2.5 overflow-x-auto px-5 pt-3 pb-3">
         {MENU.map((m) => (
-          <button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap"
-            style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>
-            {CATEGORY_ICONS[m.key]} {catLabel(m.key, lang)}
+          <button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1.5"
+            style={tab === m.key ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 6px 16px rgba(21,56,38,.3)', border: '1.5px solid transparent' } : { background: '#fff', color: GREEN, border: `1.5px solid #e3d5bd` }}>
+            <span className="text-base">{CATEGORY_ICONS[m.key]}</span> {catLabel(m.key, lang)}
           </button>
         ))}
       </div>
@@ -3097,7 +3066,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         })}
       </div>
 
-      {totalCount > 0 && !cartOpen && !openExtra && ReactDOM.createPortal(
+      {totalCount > 0 && !cartOpen && !openExtra && !quickSearch.trim() && ReactDOM.createPortal(
         <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-center gap-2 shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)', zIndex: 90 }}>
           <span className="font-black text-base">{t('weiter')}</span>
         </button>,
@@ -3997,7 +3966,7 @@ function GroupOrderView({ back }) {
             </div>
           )}
           <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
-            {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" style={tab === m.key ? { background: GREEN, color: GOLD } : { background: 'transparent', color: GREEN, border: `1.5px solid ${GREEN}` }}>{CATEGORY_ICONS[m.key]} {catLabel(m.key, lang)}</button>))}
+            {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1.5" style={tab === m.key ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 6px 16px rgba(21,56,38,.3)', border: '1.5px solid transparent' } : { background: '#fff', color: GREEN, border: `1.5px solid #e3d5bd` }}><span className="text-base">{CATEGORY_ICONS[m.key]}</span> {catLabel(m.key, lang)}</button>))}
           </div>
           {CATEGORY_IMAGES[tab] && (
             <div className="px-5 pt-2">
