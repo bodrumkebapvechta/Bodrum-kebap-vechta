@@ -115,6 +115,12 @@ const UI = {
   markSoldOutOn: { de: 'Als „Ausverkauft" markiert', en: 'Marked as "Sold out"', tr: '"Tükendi" olarak işaretlendi', ro: 'Marcat ca „Epuizat"', nl: 'Gemarkeerd als "Uitverkocht"' , sq: 'Shënuar si \\"I shitur\\"', ku: 'Wek \\"Tune\\" hate nîşankirin'},
   markSoldOutOff: { de: 'Als „Ausverkauft" markieren', en: 'Mark as "Sold out"', tr: '"Tükendi" olarak işaretle', ro: 'Marchează ca „Epuizat"', nl: 'Markeren als "Uitverkocht"' , sq: 'Shëno si \\"I shitur\\"', ku: 'Wek \\"Tune\\" nîşan bike'},
   chickenSoldOutLabel: { de: 'Hähnchenfleisch (Döner) ausverkauft', en: 'Chicken meat (Döner) sold out', tr: 'Tavuk döner eti tükendi', ro: 'Carne de pui (Döner) epuizată', nl: 'Kipvlees (Döner) uitverkocht', sq: 'Mishi i pulës (Döner) i shitur', ku: 'Goştê mirîşkê (Döner) nema' },
+  extrasSoldOutTitle: { de: 'Zutaten ausverkauft', en: 'Ingredients sold out', tr: 'Malzeme tükendi', ro: 'Ingrediente epuizate', nl: 'Ingrediënten uitverkocht', sq: 'Përbërësit e shitur', ku: 'Malzemeyên nema' },
+  extrasSoldOutHint: { de: 'Markiere eine Zutat (z.B. Brokkoli), die gerade nicht verfügbar ist. Kunden sehen dann eine Warnung, können sie aber trotzdem wählen.', en: 'Mark an ingredient (e.g. broccoli) that is currently unavailable. Customers will see a warning but can still choose it.', tr: 'Şu anda mevcut olmayan bir malzemeyi (örn. brokoli) işaretle. Müşteriler bir uyarı görecek ama yine de seçebilecek.', ro: 'Marchează un ingredient (de ex. broccoli) care nu este momentan disponibil. Clienții vor vedea un avertisment, dar îl pot alege oricum.', nl: 'Markeer een ingrediënt (bijv. broccoli) dat momenteel niet beschikbaar is. Klanten zien een waarschuwing maar kunnen het toch kiezen.', sq: 'Shëno një përbërës (p.sh. brokoli) që nuk është i disponueshëm aktualisht. Klientët do të shohin një paralajmërim por mund ta zgjedhin gjithsesi.', ku: 'Malzemeyekê (mînak brokolî) ku niha ne mevcûd e nîşan bike. Xerîdar dê hişyariyekê bibînin lê dîsa jî dikarin wê hilbijêrin.' },
+  extraSearchPh: { de: 'z.B. Brokkoli, Zwiebeln...', en: 'e.g. broccoli, onions...', tr: 'örn. brokoli, soğan...', ro: 'ex. broccoli, ceapă...', nl: 'bijv. broccoli, uien...', sq: 'p.sh. brokoli, qepë...', ku: 'mînak brokolî, pîvaz...' },
+  extraSoldOutWarnPrefix: { de: 'Achtung: Wir haben gerade kein/e/n', en: 'Note: We currently don\'t have', tr: 'Dikkat: Şu anda', ro: 'Atenție: Momentan nu avem', nl: 'Let op: We hebben momenteel geen', sq: 'Kujdes: Aktualisht nuk kemi', ku: 'Bala xwe bidê: Niha em ne xwedî' },
+  extraSoldOutWarnSuffix: { de: 'mehr. Trotzdem hinzufügen?', en: '. Add it anyway?', tr: 'yok. Yine de eklensin mi?', ro: '. Adaugi oricum?', nl: 'meer. Toch toevoegen?', sq: 'më. Ta shtoj gjithsesi?', ku: 'nema. Dîsa jî bê zêdekirin?' },
+  addAnywayBtn: { de: 'Trotzdem hinzufügen', en: 'Add anyway', tr: 'Yine de ekle', ro: 'Adaugă oricum', nl: 'Toch toevoegen', sq: 'Shto gjithsesi', ku: 'Dîsa jî zêde bike' },
   groupShareBtn: { de: 'Per WhatsApp einladen', en: 'Invite via WhatsApp', tr: 'WhatsApp ile davet et', ro: 'Invită prin WhatsApp', nl: 'Uitnodigen via WhatsApp' , sq: 'Fto përmes WhatsApp', ku: 'Bi WhatsApp vexwîne'},
   groupShareMsg: { de: 'Hey! Lass uns zusammen bei Bodrum Kebap Vechta bestellen 🥙 Tritt mit dem Code {code} bei: https://bodrumkebapvechta.de', en: 'Hey! Let\'s order together from Bodrum Kebap Vechta 🥙 Join with code {code}: https://bodrumkebapvechta.de', tr: 'Selam! Bodrum Kebap Vechta\'dan birlikte sipariş verelim 🥙 {code} koduyla katıl: https://bodrumkebapvechta.de', ro: 'Hei! Hai să comandăm împreună de la Bodrum Kebap Vechta 🥙 Alătură-te cu codul {code}: https://bodrumkebapvechta.de', nl: 'Hé! Laten we samen bestellen bij Bodrum Kebap Vechta 🥙 Doe mee met code {code}: https://bodrumkebapvechta.de' , sq: 'Hej! Le të porosisim së bashku nga Bodrum Kebap Vechta 🥙 Bashkohu me kodin {code}: https://bodrumkebapvechta.de', ku: 'Silav! Werin em bi hev re ji Bodrum Kebap Vechta sifariş bidin 🥙 Bi koda {code} tevlî bibe: https://bodrumkebapvechta.de'},
   pendingParticipantsPrefix: { de: 'Noch nicht fertig:', en: 'Not finished yet:', tr: 'Henüz bitirmedi:', ro: 'Încă nu au terminat:', nl: 'Nog niet klaar:' , sq: 'Ende pa mbaruar:', ku: 'Hê ne temam:'},
@@ -2467,11 +2473,14 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [soldOutIds, setSoldOutIds] = useState([]);
   const [chickenSoldOut, setChickenSoldOut] = useState(false);
+  const [soldOutExtras, setSoldOutExtras] = useState([]);
+  const [pendingSoldOutExtra, setPendingSoldOutExtra] = useState(null);
   useEffect(() => {
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
     safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
     safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
+    safeGet('siteconfig:soldOutExtras').then((r) => { if (r) setSoldOutExtras(r); });
     safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
   const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
@@ -2590,6 +2599,18 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           </div>
         </ConfigModal>
       )}
+      {pendingSoldOutExtra && (
+        <ConfigModal onClose={() => setPendingSoldOutExtra(null)}>
+          <div className="p-6 text-center">
+            <div className="text-3xl mb-3">⚠️</div>
+            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra, lang)} {t('extraSoldOutWarnSuffix')}</p>
+            <div className="flex flex-col gap-2.5">
+              <button onClick={() => { setConfigExtras((ex) => [...ex, pendingSoldOutExtra]); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
+              <button onClick={() => setPendingSoldOutExtra(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+            </div>
+          </div>
+        </ConfigModal>
+      )}
       {weekendWarnOpen && (
         <ConfigModal onClose={() => setWeekendWarnOpen(false)}>
           <div className="p-6 text-center">
@@ -2653,7 +2674,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
             const openFor = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
-            const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
+            const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra(t); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const confirmAdd = () => {
               const sizeLabel = size === 'klein' ? 'klein' : 'groß';
@@ -2715,7 +2736,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                       <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         {EXTRA_TOPPINGS.map((top) => (
-                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
+                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                         ))}
                       </div>
                       <input
@@ -2736,7 +2757,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const isOpen = openExtra?.itemId === item.id;
             const configTotal = item.price + configExtras.reduce((s, e) => s + extraCost(e), 0);
             const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
-            const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+            const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
             const confirmAdd = () => {
               let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
@@ -2768,7 +2789,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                       <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         {EXTRA_TOPPINGS.map((top) => (
-                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
+                          <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                         ))}
                       </div>
                       <input
@@ -2790,7 +2811,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
             const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.reduce((s, e) => s + extraCost(e), 0);
             const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
-            const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+            const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
             const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
             const confirmAdd = () => {
               let deLabel = `${item.name} – ${pastaSauceSel}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
@@ -2832,7 +2853,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {PASTA_EXTRA_ITEMS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                             ))}
                           </div>
                           <input
@@ -3135,6 +3156,9 @@ const BUILDER_EXTRAS = [
   { id: 'extrafleisch', label: 'Extra Fleisch', price: 1.0 },
   { id: 'scharf', label: 'Scharf', price: 1.0 },
 ];
+const ALL_EXTRA_NAMES = Array.from(new Set([
+  ...EXTRA_TOPPINGS, ...PASTA_TOPPINGS, ...PASTA_EXTRA_ITEMS, ...BUILDER_EXTRAS.map((e) => e.label),
+]));
 function AllergenTag({ alg }) {
   if (!alg) return null;
   return <sup className="font-semibold" style={{ fontSize: '9px', color: '#a4906c', marginLeft: 2 }}>{alg}</sup>;
@@ -3178,6 +3202,9 @@ function DonerBuilderView({ back, go }) {
   useEffect(() => { safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); }); }, []);
   const [chickenSoldOut, setChickenSoldOut] = useState(false);
   useEffect(() => { safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); }); }, []);
+  const [soldOutExtras, setSoldOutExtras] = useState([]);
+  const [pendingSoldOutExtra, setPendingSoldOutExtra] = useState(null);
+  useEffect(() => { safeGet('siteconfig:soldOutExtras').then((r) => { if (r) setSoldOutExtras(r); }); }, []);
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
   const [meat, setMeat] = useState(null);
@@ -3205,7 +3232,11 @@ function DonerBuilderView({ back, go }) {
   };
   const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
-  const toggleExtra = (id) => setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+  const toggleExtra = (id) => {
+    const extraDef = BUILDER_EXTRAS.find((e) => e.id === id);
+    if (!extras.includes(id) && extraDef && soldOutExtras.includes(extraDef.label)) { setPendingSoldOutExtra(extraDef.label); return; }
+    setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+  };
   const togglePastaExtra = (top) => setPastaExtras((e) => (e.includes(top) ? e.filter((x) => x !== top) : [...e, top]));
 
   const total = useMemo(() => {
@@ -3293,7 +3324,7 @@ function DonerBuilderView({ back, go }) {
         {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
           <div className="flex flex-col gap-2.5">{SAUCES.map((s) => (<OptionCard key={s.id} selected={sauce === s.id} onClick={() => setSauce(s.id)}><span className="font-bold text-sm">{mx(s.label, lang)}</span></OptionCard>))}</div></div>)}
         {step === 3 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
-          <div className="grid grid-cols-2 gap-2.5">{BUILDER_EXTRAS.map((e) => { const sel = extras.includes(e.id); return (<button key={e.id} onClick={() => toggleExtra(e.id)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(e.label, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{e.price > 0 ? `+${fmt(e.price)}` : t('freeLabel')}</div></button>); })}</div></div>)}
+          <div className="grid grid-cols-2 gap-2.5">{BUILDER_EXTRAS.map((e) => { const sel = extras.includes(e.id); return (<button key={e.id} onClick={() => toggleExtra(e.id)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(e.label, lang)}{soldOutExtras.includes(e.label) && <span className="ml-1">⚠️</span>}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{e.price > 0 ? `+${fmt(e.price)}` : t('freeLabel')}</div></button>); })}</div></div>)}
         {step === totalSteps && !showWheel && !sent && (
           <div>
             <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('doenerReadyTitle')}</h2>
@@ -3385,6 +3416,22 @@ function DonerBuilderView({ back, go }) {
           <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl disabled:opacity-40" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('continueBtn')} <ArrowRight size={18} /></button>
         </div>
       )}
+      {pendingSoldOutExtra && (
+        <ConfigModal onClose={() => setPendingSoldOutExtra(null)}>
+          <div className="p-6 text-center">
+            <div className="text-3xl mb-3">⚠️</div>
+            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra, lang)} {t('extraSoldOutWarnSuffix')}</p>
+            <div className="flex flex-col gap-2.5">
+              <button onClick={() => {
+                const extraDef = BUILDER_EXTRAS.find((e) => e.label === pendingSoldOutExtra);
+                if (extraDef) setExtras((e) => [...e, extraDef.id]);
+                setPendingSoldOutExtra(null);
+              }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
+              <button onClick={() => setPendingSoldOutExtra(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+            </div>
+          </div>
+        </ConfigModal>
+      )}
     </div>
   );
 }
@@ -3452,11 +3499,14 @@ function GroupOrderView({ back }) {
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [soldOutIds, setSoldOutIds] = useState([]);
   const [chickenSoldOut, setChickenSoldOut] = useState(false);
+  const [soldOutExtras, setSoldOutExtras] = useState([]);
+  const [pendingSoldOutExtra, setPendingSoldOutExtra] = useState(null);
   useEffect(() => {
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
     safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
     safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
+    safeGet('siteconfig:soldOutExtras').then((r) => { if (r) setSoldOutExtras(r); });
     safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
   const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
@@ -3574,6 +3624,18 @@ function GroupOrderView({ back }) {
           </div>
         </ConfigModal>
       )}
+      {pendingSoldOutExtra && (
+        <ConfigModal onClose={() => setPendingSoldOutExtra(null)}>
+          <div className="p-6 text-center">
+            <div className="text-3xl mb-3">⚠️</div>
+            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra, lang)} {t('extraSoldOutWarnSuffix')}</p>
+            <div className="flex flex-col gap-2.5">
+              <button onClick={() => { setConfigExtras((ex) => [...ex, pendingSoldOutExtra]); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
+              <button onClick={() => setPendingSoldOutExtra(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+            </div>
+          </div>
+        </ConfigModal>
+      )}
       {weekendWarnOpen && (
         <ConfigModal onClose={() => setWeekendWarnOpen(false)}>
           <div className="p-6 text-center">
@@ -3676,7 +3738,7 @@ function GroupOrderView({ back }) {
                 const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
                 const openFor = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
-                const toggleExtra = (t) => setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t]));
+                const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra(t); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const confirmAdd = () => {
                   const sizeLabel = size === 'klein' ? 'klein' : 'groß';
@@ -3738,7 +3800,7 @@ function GroupOrderView({ back }) {
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('extrasPricePrefix')} {fmt(1.0)}):</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {EXTRA_TOPPINGS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                             ))}
                           </div>
                           <input
@@ -3759,7 +3821,7 @@ function GroupOrderView({ back }) {
                 const isOpen = openExtra?.itemId === item.id;
                 const configTotal = item.price + configExtras.reduce((s, e) => s + extraCost(e), 0);
                 const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
-                const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+                const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
                 const confirmAdd = () => {
                   let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
@@ -3790,7 +3852,7 @@ function GroupOrderView({ back }) {
                           <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {EXTRA_TOPPINGS.map((top) => (
-                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
+                              <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                             ))}
                           </div>
                           <input
@@ -3812,7 +3874,7 @@ function GroupOrderView({ back }) {
                 const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
                 const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.reduce((s, e) => s + extraCost(e), 0);
                 const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
-                const toggleExtra = (top) => setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top]));
+                const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
                 const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
                 const confirmAdd = () => {
                   let deLabel = `${item.name} – ${pastaSauceSel}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
@@ -3854,7 +3916,7 @@ function GroupOrderView({ back }) {
                               <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('rowExtras').toUpperCase()} (+{fmt(1.0)})</div>
                               <div className="grid grid-cols-2 gap-2 mb-4">
                                 {PASTA_EXTRA_ITEMS.map((top) => (
-                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
+                                  <button key={top} onClick={() => toggleExtra(top)} className="px-3 py-2.5 rounded-lg text-xs font-bold text-left" style={configExtras.includes(top) ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>} <span className="opacity-70">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</span></button>
                                 ))}
                               </div>
                               <input
@@ -4350,6 +4412,8 @@ function StaffPanelView({ back }) {
   const [menuSaveMsg, setMenuSaveMsg] = useState('');
   const [soldOutIds, setSoldOutIdsStaff] = useState([]);
   const [chickenSoldOut, setChickenSoldOut] = useState(false);
+  const [soldOutExtras, setSoldOutExtras] = useState([]);
+  const [extraSearch, setExtraSearch] = useState('');
   const [photoOverrides, setPhotoOverrides] = useState({});
   const [photoSearch, setPhotoSearch] = useState('');
   const [editingPhotoItem, setEditingPhotoItem] = useState(null);
@@ -4392,6 +4456,7 @@ function StaffPanelView({ back }) {
       safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
       safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIdsStaff(r); });
       safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
+      safeGet('siteconfig:soldOutExtras').then((r) => { if (r) setSoldOutExtras(r); });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -4589,6 +4654,17 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:chickenSoldOut', next);
     setChickenSoldOut(next);
   };
+  const toggleSoldOutExtra = async (name) => {
+    const isOut = soldOutExtras.includes(name);
+    const next = isOut ? soldOutExtras.filter((n) => n !== name) : [...soldOutExtras, name];
+    await safeSet('siteconfig:soldOutExtras', next);
+    setSoldOutExtras(next);
+  };
+  const extraSearchResults = useMemo(() => {
+    if (!extraSearch.trim()) return [];
+    const q = extraSearch.trim().toLowerCase();
+    return ALL_EXTRA_NAMES.filter((n) => n.toLowerCase().includes(q)).slice(0, 12);
+  }, [extraSearch]);
 
   const photoSearchResults = useMemo(() => {
     if (!photoSearch.trim()) return [];
@@ -4900,6 +4976,27 @@ function StaffPanelView({ back }) {
                 <span className="flex items-center gap-2 font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>🍗 {t('chickenSoldOutLabel')}</span>
                 <span className="text-[10px] font-black px-2.5 py-1 rounded-full" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
               </button>
+              <div className="rounded-xl p-4 mb-4" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
+                <div className="font-black text-sm mb-1" style={{ color: '#8a5a1f' }}>🥦 {t('extrasSoldOutTitle')}</div>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('extrasSoldOutHint')}</p>
+                <input value={extraSearch} onChange={(e) => setExtraSearch(e.target.value)} placeholder={t('extraSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#fff', color: GREEN }} />
+                {extraSearchResults.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    {extraSearchResults.map((name) => {
+                      const isOut = soldOutExtras.includes(name);
+                      return (
+                        <button key={name} onClick={() => toggleSoldOutExtra(name)} className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg" style={isOut ? { background: CHILI } : { background: '#fff', border: '1px solid #f0d4a8' }}>
+                          <span className="font-bold text-sm" style={{ color: isOut ? '#fff' : GREEN }}>{mx(name, lang)}</span>
+                          <span className="text-[10px] font-black px-2 py-1 rounded-full" style={isOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{isOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {soldOutExtras.length > 0 && !extraSearch && (
+                  <p className="text-[11px] font-bold mt-2" style={{ color: '#8a5a1f' }}>{soldOutExtras.length} {t('editedPricesCount')}</p>
+                )}
+              </div>
               <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingItem && menuSearchResults.map((item) => (
                 <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
