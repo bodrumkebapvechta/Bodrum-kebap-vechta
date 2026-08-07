@@ -2061,7 +2061,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const heroSearchResults = useMemo(() => {
     if (!heroSearch.trim()) return [];
     const q = heroSearch.trim().toLowerCase();
-    return HOME_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)).slice(0, 6);
+    const exactNum = HOME_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q);
+    const nameMatches = HOME_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() !== q && (mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)));
+    return [...exactNum, ...nameMatches].slice(0, 6);
   }, [heroSearch, HOME_SEARCHABLE_ITEMS, lang]);
   const goToItem = (item) => { go('whatsapp', { quickSearchTerm: menuNum(item.id) || item.name }); };
   const [dailyBanner, setDailyBanner] = useState('');
@@ -2646,7 +2648,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const quickSearchResults = useMemo(() => {
     if (!quickSearch.trim()) return [];
     const q = quickSearch.trim().toLowerCase();
-    return ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)).slice(0, 15);
+    const exactNum = ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q);
+    const nameMatches = ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() !== q && (mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)));
+    return [...exactNum, ...nameMatches].slice(0, 15);
   }, [quickSearch, ALL_SEARCHABLE_ITEMS, lang]);
   const handleQuickAdd = (item) => {
     const soExtra = findSoldOutExtraInItem(item, soldOutExtras);
@@ -3768,7 +3772,9 @@ function GroupOrderView({ back }) {
   const quickSearchResults = useMemo(() => {
     if (!quickSearch.trim()) return [];
     const q = quickSearch.trim().toLowerCase();
-    return ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)).slice(0, 15);
+    const exactNum = ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() === q);
+    const nameMatches = ALL_SEARCHABLE_ITEMS.filter((i) => menuNum(i.id).toLowerCase() !== q && (mx(i.name, lang).toLowerCase().includes(q) || i.name.toLowerCase().includes(q)));
+    return [...exactNum, ...nameMatches].slice(0, 15);
   }, [quickSearch, ALL_SEARCHABLE_ITEMS, lang]);
   const handleQuickAdd = (item) => {
     const soExtra = findSoldOutExtraInItem(item, soldOutExtras);
@@ -4653,7 +4659,10 @@ function StaffPanelView({ back }) {
   const staffLookupResults = useMemo(() => {
     if (!staffLookup.trim()) return [];
     const q = staffLookup.trim().toLowerCase();
-    return MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta)).filter((i) => menuNum(i.id).toLowerCase() === q || menuNum(i.id).toLowerCase().startsWith(q) || i.name.toLowerCase().includes(q)).slice(0, 15);
+    const pool = MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta));
+    const exactNum = pool.filter((i) => menuNum(i.id).toLowerCase() === q);
+    const nameMatches = pool.filter((i) => menuNum(i.id).toLowerCase() !== q && i.name.toLowerCase().includes(q));
+    return [...exactNum, ...nameMatches].slice(0, 15);
   }, [staffLookup]);
   const [tab, setTab] = useState('orders'); // orders | wheel | settings | analytics
 
