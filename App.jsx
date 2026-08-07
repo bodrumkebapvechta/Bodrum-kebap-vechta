@@ -854,6 +854,10 @@ function isLunchWindowNow() {
   return now >= start && now <= end;
 }
 const LUNCH_CATEGORIES = ['pizza', 'salat', 'schnitzel', 'nudeln'];
+function findSoldOutExtraInItem(item, soldOutExtras) {
+  if (!soldOutExtras || soldOutExtras.length === 0 || !item.desc) return null;
+  return soldOutExtras.find((name) => item.desc.includes(name)) || null;
+}
 function hasDonerMeat(item) {
   if (item.name.includes('Steak')) return false;
   return item.name.includes('Kebap') || (item.desc && item.desc.includes('Fleisch vom Drehspieß'));
@@ -2603,9 +2607,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         <ConfigModal onClose={() => setPendingSoldOutExtra(null)}>
           <div className="p-6 text-center">
             <div className="text-3xl mb-3">⚠️</div>
-            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra, lang)} {t('extraSoldOutWarnSuffix')}</p>
+            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra.name, lang)} {t('extraSoldOutWarnSuffix')}</p>
             <div className="flex flex-col gap-2.5">
-              <button onClick={() => { setConfigExtras((ex) => [...ex, pendingSoldOutExtra]); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
+              <button onClick={() => { pendingSoldOutExtra.onConfirm(); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
               <button onClick={() => setPendingSoldOutExtra(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
             </div>
           </div>
@@ -2672,9 +2676,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const size = openExtra?.size || 'gross';
             const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
             const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-            const openFor = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+            const doOpen = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+            const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
-            const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra(t); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
+            const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra({ name: t, onConfirm: () => setConfigExtras((ex) => [...ex, t]) }); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
             const confirmAdd = () => {
               const sizeLabel = size === 'klein' ? 'klein' : 'groß';
@@ -2756,8 +2761,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
           if (item.customPizza) {
             const isOpen = openExtra?.itemId === item.id;
             const configTotal = item.price + configExtras.reduce((s, e) => s + extraCost(e), 0);
-            const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
-            const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
+            const doOpen = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
+            const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
+            const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra({ name: top, onConfirm: () => setConfigExtras((ex) => [...ex, top]) }); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
             const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
             const confirmAdd = () => {
               let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
@@ -2810,8 +2816,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const isOpen = openExtra?.itemId === item.id;
             const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
             const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.reduce((s, e) => s + extraCost(e), 0);
-            const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
-            const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
+            const doOpen = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+            const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
+            const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra({ name: top, onConfirm: () => setConfigExtras((ex) => [...ex, top]) }); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
             const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
             const confirmAdd = () => {
               let deLabel = `${item.name} – ${pastaSauceSel}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
@@ -2889,7 +2896,18 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                 <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
-                <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeItem(item.id)} />
+                <Stepper qty={qty} onAdd={() => {
+                  const doAdd = () => {
+                    if (item.soldOut) return;
+                    if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
+                    if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+                    if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
+                    setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name);
+                  };
+                  const soExtra = findSoldOutExtraInItem(item, soldOutExtras);
+                  if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doAdd }); return; }
+                  doAdd();
+                }} onRemove={() => removeItem(item.id)} />
                 </div>
               </div>
               {qty > 0 && item.sauceChoice && (
@@ -3234,10 +3252,19 @@ function DonerBuilderView({ back, go }) {
 
   const toggleExtra = (id) => {
     const extraDef = BUILDER_EXTRAS.find((e) => e.id === id);
-    if (!extras.includes(id) && extraDef && soldOutExtras.includes(extraDef.label)) { setPendingSoldOutExtra(extraDef.label); return; }
+    if (!extras.includes(id) && extraDef && soldOutExtras.includes(extraDef.label)) {
+      setPendingSoldOutExtra({ name: extraDef.label, onConfirm: () => setExtras((e) => [...e, id]) });
+      return;
+    }
     setExtras((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
   };
-  const togglePastaExtra = (top) => setPastaExtras((e) => (e.includes(top) ? e.filter((x) => x !== top) : [...e, top]));
+  const togglePastaExtra = (top) => {
+    if (!pastaExtras.includes(top) && soldOutExtras.includes(top)) {
+      setPendingSoldOutExtra({ name: top, onConfirm: () => setPastaExtras((e) => [...e, top]) });
+      return;
+    }
+    setPastaExtras((e) => (e.includes(top) ? e.filter((x) => x !== top) : [...e, top]));
+  };
 
   const total = useMemo(() => {
     if (kind === 'pasta') {
@@ -3362,7 +3389,7 @@ function DonerBuilderView({ back, go }) {
         {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
           <div className="flex flex-col gap-2.5">{PASTA_SAUCE_OPTIONS.map((s) => (<OptionCard key={s} selected={pastaSauce === s} onClick={() => setPastaSauce(s)}><span className="font-bold text-sm">{mx(s, lang)} {s === 'Bolognese-Soße' ? `+${fmt(0.5)}` : `· ${t('freeLabel')}`}</span></OptionCard>))}</div></div>)}
         {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('extrasQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseExtrasSub')}</p>
-          <div className="grid grid-cols-2 gap-2.5">{PASTA_EXTRA_ITEMS.map((top) => { const sel = pastaExtras.includes(top); return (<button key={top} onClick={() => togglePastaExtra(top)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(top, lang)}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</div></button>); })}</div></div>)}
+          <div className="grid grid-cols-2 gap-2.5">{PASTA_EXTRA_ITEMS.map((top) => { const sel = pastaExtras.includes(top); return (<button key={top} onClick={() => togglePastaExtra(top)} className="px-3.5 py-3 rounded-xl text-left" style={sel ? { background: ORANGE, color: '#fff' } : { background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}><div className="font-bold text-sm">{mx(top, lang)}{soldOutExtras.includes(top) && <span className="ml-1">⚠️</span>}</div><div className="text-[11px] font-medium opacity-80 mt-0.5">{extraCost(top) > 0 ? `+${fmt(extraCost(top))}` : t('freeLabel')}</div></button>); })}</div></div>)}
         {step === totalSteps && !showWheel && !sent && (
           <div>
             <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('pastaReadyTitle')}</h2>
@@ -3420,13 +3447,9 @@ function DonerBuilderView({ back, go }) {
         <ConfigModal onClose={() => setPendingSoldOutExtra(null)}>
           <div className="p-6 text-center">
             <div className="text-3xl mb-3">⚠️</div>
-            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra, lang)} {t('extraSoldOutWarnSuffix')}</p>
+            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra.name, lang)} {t('extraSoldOutWarnSuffix')}</p>
             <div className="flex flex-col gap-2.5">
-              <button onClick={() => {
-                const extraDef = BUILDER_EXTRAS.find((e) => e.label === pendingSoldOutExtra);
-                if (extraDef) setExtras((e) => [...e, extraDef.id]);
-                setPendingSoldOutExtra(null);
-              }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
+              <button onClick={() => { pendingSoldOutExtra.onConfirm(); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
               <button onClick={() => setPendingSoldOutExtra(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
             </div>
           </div>
@@ -3628,9 +3651,9 @@ function GroupOrderView({ back }) {
         <ConfigModal onClose={() => setPendingSoldOutExtra(null)}>
           <div className="p-6 text-center">
             <div className="text-3xl mb-3">⚠️</div>
-            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra, lang)} {t('extraSoldOutWarnSuffix')}</p>
+            <p className="text-sm font-bold mb-6" style={{ color: GREEN }}>{t('extraSoldOutWarnPrefix')} {mx(pendingSoldOutExtra.name, lang)} {t('extraSoldOutWarnSuffix')}</p>
             <div className="flex flex-col gap-2.5">
-              <button onClick={() => { setConfigExtras((ex) => [...ex, pendingSoldOutExtra]); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
+              <button onClick={() => { pendingSoldOutExtra.onConfirm(); setPendingSoldOutExtra(null); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)' }}>{t('addAnywayBtn')}</button>
               <button onClick={() => setPendingSoldOutExtra(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
             </div>
           </div>
@@ -3736,9 +3759,10 @@ function GroupOrderView({ back }) {
                 const size = openExtra?.size || 'gross';
                 const basePrice = size === 'klein' ? item.priceSmall : item.priceLarge;
                 const configTotal = basePrice + configExtras.reduce((s, e) => s + extraCost(e), 0);
-                const openFor = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+                const doOpen = () => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+            const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
-                const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra(t); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
+                const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra({ name: t, onConfirm: () => setConfigExtras((ex) => [...ex, t]) }); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
                 const confirmAdd = () => {
                   const sizeLabel = size === 'klein' ? 'klein' : 'groß';
@@ -3820,8 +3844,9 @@ function GroupOrderView({ back }) {
               if (item.customPizza) {
                 const isOpen = openExtra?.itemId === item.id;
                 const configTotal = item.price + configExtras.reduce((s, e) => s + extraCost(e), 0);
-                const openFor = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
-                const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
+                const doOpen = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
+            const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
+                const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra({ name: top, onConfirm: () => setConfigExtras((ex) => [...ex, top]) }); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
                 const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
                 const confirmAdd = () => {
                   let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
@@ -3873,8 +3898,9 @@ function GroupOrderView({ back }) {
                 const isOpen = openExtra?.itemId === item.id;
                 const detectedType = item.name.includes('Makkaroni') ? 'Makkaroni' : 'Spaghetti';
                 const configTotal = item.price + (pastaSauceSel === 'Bolognese-Soße' ? 0.5 : 0) + configExtras.reduce((s, e) => s + extraCost(e), 0);
-                const openFor = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
-                const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra(top); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
+                const doOpen = () => { setOpenExtra({ itemId: item.id }); setPastaStep(0); setPastaType(detectedType); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
+            const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
+                const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra({ name: top, onConfirm: () => setConfigExtras((ex) => [...ex, top]) }); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
                 const closeModal = () => { setOpenExtra(null); setPastaStep(0); setPastaType(null); setPastaSauceSel(null); setConfigExtras([]); setConfigNote(''); };
                 const confirmAdd = () => {
                   let deLabel = `${item.name} – ${pastaSauceSel}${configExtras.length > 0 ? ` ${configExtras.map((e) => `+${e}`).join(' ')}` : ''}`;
@@ -3952,7 +3978,18 @@ function GroupOrderView({ back }) {
                     <div><div className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && (<><span style={{ color: ORANGE }}>{menuNum(item.id)}</span> · </>)}{mx(item.name, lang)}<AllergenTag alg={item.alg} />{item.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>{item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{mx(item.desc, lang)}</div>}<div className="text-xs font-semibold mt-1" style={{ color: CHILI }}>{fmt(item.price)}</div></div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                     <FavoriteHeart id={item.id} favorites={favorites} setFavorites={setFavorites} />
-                    <Stepper qty={qty} onAdd={() => { if (item.soldOut) return; if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; } if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; } if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; } setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name); }} onRemove={() => removeLocal(item.id)} />
+                    <Stepper qty={qty} onAdd={() => {
+                      const doAdd = () => {
+                        if (item.soldOut) return;
+                        if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
+                        if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+                        if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
+                        setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name);
+                      };
+                      const soExtra = findSoldOutExtraInItem(item, soldOutExtras);
+                      if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doAdd }); return; }
+                      doAdd();
+                    }} onRemove={() => removeLocal(item.id)} />
                     </div>
                   </div>
                   {qty > 0 && item.sauceChoice && (
