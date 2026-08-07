@@ -1438,14 +1438,18 @@ function CartPopEmoji({ trigger }) {
   useEffect(() => {
     if (!trigger) return;
     setShow(true);
-    const t = setTimeout(() => setShow(false), 1600);
+    const t = setTimeout(() => setShow(false), 1900);
     return () => clearTimeout(t);
   }, [trigger]);
   if (!show) return null;
   return (
-    <div className="pointer-events-none fixed left-1/2 top-6 flex items-center gap-2.5 px-4 py-3 rounded-2xl" style={{ zIndex: 300, transform: 'translateX(-50%)', background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', animation: 'toastSlide 1.6s cubic-bezier(.22,1,.36,1) forwards' }}>
-      <span className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#25D366' }}><Check size={15} color="#fff" strokeWidth={3} /></span>
-      <span className="text-sm font-bold text-white whitespace-nowrap">{t('itemAddedToast')}</span>
+    <div className="pointer-events-none fixed left-1/2 top-6 flex items-center gap-3 pl-3 pr-5 py-3 rounded-2xl overflow-hidden" style={{ zIndex: 300, transform: 'translateX(-50%)', background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, border: `1px solid rgba(255,199,56,.35)`, boxShadow: '0 16px 40px rgba(21,56,38,.5), 0 0 0 1px rgba(255,199,56,.08)', animation: 'toastSlide 1.9s cubic-bezier(.22,1,.36,1) forwards' }}>
+      <span className="absolute inset-0" style={{ background: 'linear-gradient(120deg, transparent 30%, rgba(255,199,56,.14) 50%, transparent 70%)', animation: 'toastSheen 1.9s ease forwards' }} />
+      <span className="relative w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffb020)`, boxShadow: '0 0 0 4px rgba(255,199,56,.15)', animation: 'checkPop .5s cubic-bezier(.34,1.56,.64,1) .1s both' }}>
+        <Check size={16} color={GREEN} strokeWidth={3.5} />
+      </span>
+      <span className="relative text-sm font-bold text-white whitespace-nowrap tracking-wide">{t('itemAddedToast')}</span>
+      <span className="relative text-base" style={{ animation: 'sparkleFloat 1.9s ease forwards' }}>✨</span>
     </div>
   );
 }
@@ -2260,7 +2264,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-8 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="relative mb-6 max-w-md" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setHeroSearchFocused(false); }}>
@@ -2652,13 +2656,11 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       if (item.priceLarge !== undefined) {
         setTab(item.catKey);
         setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
-        setQuickSearch('');
         return;
       }
-      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); setQuickSearch(''); return; }
-      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); setQuickSearch(''); return; }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
       setLastAddedTab(item.catKey); addItem(item.id, mx(item.name, lang), item.price, item.name);
-      setQuickSearch('');
     };
     if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: proceed }); return; }
     proceed();
@@ -3776,13 +3778,11 @@ function GroupOrderView({ back }) {
       if (item.priceLarge !== undefined) {
         setTab(item.catKey);
         setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
-        setQuickSearch('');
         return;
       }
-      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); setQuickSearch(''); return; }
-      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); setQuickSearch(''); return; }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
       setLastAddedTab(item.catKey); addLocal(item.id, mx(item.name, lang), item.price, item.name);
-      setQuickSearch('');
     };
     if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: proceed }); return; }
     proceed();
@@ -5415,6 +5415,12 @@ export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
   const cartTotal = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty * v.price, 0), [cart]);
+  const [cartBumpKey, setCartBumpKey] = useState(0);
+  const prevCartCountRef = useRef(0);
+  useEffect(() => {
+    if (cartCount > prevCartCountRef.current) setCartBumpKey((k) => k + 1);
+    prevCartCountRef.current = cartCount;
+  }, [cartCount]);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallHelp, setShowInstallHelp] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -5454,7 +5460,7 @@ export default function App() {
     document.body
   );
   const cartBadge = cartCount > 0 && !cartOpen && ReactDOM.createPortal(
-    <button onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className={`fixed ${view === 'home' ? 'bottom-5 right-4' : 'top-4 right-4'} flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white`} style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90 }}>
+    <button key={cartBumpKey} onClick={() => { if (view === 'whatsapp') { setCartOpen(true); } else { go('whatsapp', { openCart: true }); } }} className={`fixed ${view === 'home' ? 'bottom-5 right-4' : 'top-4 right-4'} flex items-center gap-2 pl-3.5 pr-4 py-2.5 rounded-full font-bold text-sm text-white`} style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 10px 26px rgba(230,90,10,.45)', zIndex: 90, animation: 'cartBump .45s cubic-bezier(.34,1.56,.64,1)' }}>
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
       {fmt(cartTotal)}
     </button>,
@@ -5481,7 +5487,13 @@ export default function App() {
         @keyframes slideUpFade { from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
         @keyframes modalBgFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
-        @keyframes toastSlide { 0%{ opacity:0; transform:translateX(-50%) translateY(-16px); } 12%{ opacity:1; transform:translateX(-50%) translateY(0); } 85%{ opacity:1; transform:translateX(-50%) translateY(0); } 100%{ opacity:0; transform:translateX(-50%) translateY(-10px); } }
+        @keyframes toastSlide { 0%{ opacity:0; transform:translateX(-50%) translateY(-16px) scale(.92); } 10%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); } 88%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); } 100%{ opacity:0; transform:translateX(-50%) translateY(-10px) scale(.97); } }
+        @keyframes toastSheen { 0%{ transform: translateX(-120%); } 35%{ transform: translateX(120%); } 100%{ transform: translateX(120%); } }
+        @keyframes checkPop { 0%{ transform: scale(0) rotate(-25deg); opacity:0; } 60%{ transform: scale(1.15) rotate(4deg); opacity:1; } 100%{ transform: scale(1) rotate(0); } }
+        @keyframes sparkleFloat { 0%,15%{ opacity:0; transform: translateY(4px) scale(.6); } 30%{ opacity:1; transform: translateY(-2px) scale(1); } 60%{ opacity:1; transform: translateY(-6px) scale(1); } 85%,100%{ opacity:0; transform: translateY(-14px) scale(.8); } }
+        @keyframes cartBump { 0%{ transform: scale(1); } 30%{ transform: scale(1.18); } 55%{ transform: scale(.94); } 100%{ transform: scale(1); } }
+        @keyframes shimmerGold { 0%{ background-position: -200% 0; } 100%{ background-position: 200% 0; } }
+        @keyframes softFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-6px); } }
         button, a { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, opacity .18s ease; }
         button:active { transform: scale(.97); }
         @keyframes sadBounce { 0%,100%{ transform:translateY(0) rotate(0deg);} 25%{ transform:translateY(-6px) rotate(-4deg);} 75%{ transform:translateY(-2px) rotate(4deg);} }
