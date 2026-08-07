@@ -2454,7 +2454,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
 /* ============ WHATSAPP ORDER ============ */
 function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart, cartOpen, setCartOpen, go }) {
-  const { lang, t, installPrompt, onInstall } = React.useContext(LangContext);
+  const { lang, setLang, t, installPrompt, onInstall, globalNavOpen, setGlobalNavOpen } = React.useContext(LangContext);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
   const [catImgIdx, setCatImgIdx] = useState(0);
@@ -2967,9 +2967,32 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       {cartOpen && (
         <div className="fixed inset-0 z-50 flex justify-center">
           <div className="w-full max-w-md h-full flex flex-col" style={{ background: CREAM }}>
-            <div style={{ background: GREEN }} className="px-5 py-5 flex items-center gap-3">
-              <button onClick={() => (drawerView === 'wheel' || drawerView === 'upsell2' ? setDrawerView(drawerView === 'upsell2' ? 'upsell' : 'cart') : setCartOpen(false))} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}><ChevronLeft size={18} color="#fff" /></button>
-              <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? t('wheelTitle') : drawerView === 'upsell' ? t('upsellTitle') : drawerView === 'upsell2' ? t('drinksTitle') : drawerView === 'sent' ? t('orderSentTitle') : t('cartTitle')}</div>
+            <div style={{ background: GREEN }} className="px-5 py-5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <button onClick={() => (drawerView === 'wheel' || drawerView === 'upsell2' ? setDrawerView(drawerView === 'upsell2' ? 'upsell' : 'cart') : setCartOpen(false))} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}><ChevronLeft size={18} color="#fff" /></button>
+                <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? t('wheelTitle') : drawerView === 'upsell' ? t('upsellTitle') : drawerView === 'upsell2' ? t('drinksTitle') : drawerView === 'sent' ? t('orderSentTitle') : t('cartTitle')}</div>
+              </div>
+              <div className="relative flex-shrink-0">
+                <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
+                  {globalNavOpen ? <X size={16} color="#fff" /> : <MenuIcon size={16} color="#fff" />}
+                </button>
+                {globalNavOpen && (
+                  <>
+                    <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
+                    <div className="absolute top-10 right-0 w-56 rounded-2xl overflow-hidden py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
+                      <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
+                      <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
+                      <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>
+                      <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>
+                      <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+                      <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
+                      <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
+                        <LanguageSwitcher lang={lang} setLang={setLang} dark />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {drawerView === 'upsell' && (
