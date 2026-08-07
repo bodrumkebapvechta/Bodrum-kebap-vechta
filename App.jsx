@@ -5147,6 +5147,7 @@ export default function App() {
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const langCtx = useLang();
+  const [globalNavOpen, setGlobalNavOpen] = useState(false);
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
@@ -5196,6 +5197,30 @@ export default function App() {
     </button>,
     document.body
   );
+  const globalHamburger = view !== 'home' && ReactDOM.createPortal(
+    <>
+      <button onClick={() => setGlobalNavOpen((v) => !v)} className="fixed top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 8px 20px rgba(21,56,38,.35)', zIndex: 200 }}>
+        {globalNavOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
+      </button>
+      {globalNavOpen && (
+        <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)}>
+          <div className="absolute top-16 left-4 w-56 rounded-2xl overflow-hidden py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{langCtx.t('backToHomeBtn')}</button>
+            <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{langCtx.t('navMenu')}</button>
+            <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{langCtx.t('titleGroup')}</button>
+            <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {langCtx.t('navTrackOrder')}</button>
+            <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {langCtx.t('navStaffArea')}</button>
+            <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
+            <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
+              <LanguageSwitcher lang={langCtx.lang} setLang={langCtx.setLang} dark />
+            </div>
+          </div>
+        </div>
+      )}
+    </>,
+    document.body
+  );
+
 
   if (view === 'home') {
     return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}</LangContext.Provider>;
@@ -5239,6 +5264,7 @@ export default function App() {
       </div>
 
       {cartBadge}
+      {globalHamburger}
 
       <div key={view} className="w-full max-w-5xl mx-auto relative min-h-screen" style={{ background: CREAM, animation: 'viewFade .3s ease-out', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} go={go} />}
