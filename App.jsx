@@ -120,6 +120,8 @@ const UI = {
   extraSearchPh: { de: 'z.B. Brokkoli, Zwiebeln...', en: 'e.g. broccoli, onions...', tr: 'örn. brokoli, soğan...', ro: 'ex. broccoli, ceapă...', nl: 'bijv. broccoli, uien...', sq: 'p.sh. brokoli, qepë...', ku: 'mînak brokolî, pîvaz...' },
   quickSearchPh: { de: '🔍 Nummer oder Name eingeben (z.B. 24)', en: '🔍 Enter number or name (e.g. 24)', tr: '🔍 Numara veya isim yaz (örn. 24)', ro: '🔍 Introdu numărul sau numele (ex. 24)', nl: '🔍 Nummer of naam invoeren (bijv. 24)', sq: '🔍 Vendos numrin ose emrin (p.sh. 24)', ku: '🔍 Hejmar an nav binivîse (mînak 24)' },
   quickSearchNoResults: { de: 'Nichts gefunden', en: 'Nothing found', tr: 'Bir şey bulunamadı', ro: 'Nimic găsit', nl: 'Niets gevonden', sq: 'Nuk u gjet asgjë', ku: 'Tiştek nehat dîtin' },
+  quickOrderByNumberBtn: { de: 'Mit Nummer bestellen', en: 'Order by number', tr: 'Numara ile sipariş ver', ro: 'Comandă după număr', nl: 'Bestellen met nummer', sq: 'Porosit me numër', ku: 'Bi hejmarê sifariş bide' },
+  quantityLabel: { de: 'MENGE', en: 'QUANTITY', tr: 'ADET', ro: 'CANTITATE', nl: 'AANTAL', sq: 'SASIA', ku: 'HEJMAR' },
   staffQuickLookupTitle: { de: '🔍 Nummer nachschlagen', en: '🔍 Look up number', tr: '🔍 Numara sorgula', ro: '🔍 Caută numărul', nl: '🔍 Nummer opzoeken', sq: '🔍 Kërko numrin', ku: '🔍 Hejmarê bigere' },
   staffQuickLookupHint: { de: 'Für Kunden, die per WhatsApp direkt eine Nummer schreiben.', en: 'For customers who message a number directly via WhatsApp.', tr: 'WhatsApp\'a direkt numara yazan müşteriler için.', ro: 'Pentru clienții care scriu direct un număr pe WhatsApp.', nl: 'Voor klanten die direct een nummer via WhatsApp sturen.', sq: 'Për klientët që shkruajnë direkt një numër në WhatsApp.', ku: 'Ji bo xerîdarên ku rasterast hejmarê li WhatsApp dinivîsin.' },
   extraSoldOutWarnPrefix: { de: 'Achtung: Wir haben gerade kein/e/n', en: 'Note: We currently don\'t have', tr: 'Dikkat: Şu anda', ro: 'Atenție: Momentan nu avem', nl: 'Let op: We hebben momenteel geen', sq: 'Kujdes: Aktualisht nuk kemi', ku: 'Bala xwe bidê: Niha em ne xwedî' },
@@ -1802,7 +1804,7 @@ const DAILY_SPECIALS = [
 const WEEKEND_MEAT_OPTIONS = [
   { key: 'haehnchen', label: 'Hähnchen', extra: 0 },
   { key: 'kalb', label: 'Kalb/Rind', extra: 0 },
-  { key: 'yaprak', label: 'Yaprak Döner', extra: 1.0 },
+  { key: 'yaprak', label: 'Yaprak Döner', extra: 2.0 },
 ];
 const DOENER_COMBO = { title: 'Dönerteller + Dose Getränk', price: 12.5, emoji: '🍽️' };
 const PIZZA_COMBO_PRICE = 11.0;
@@ -2316,6 +2318,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
             </button>
             <div className="flex flex-wrap gap-2.5 mt-3">
+              <button onClick={() => go('whatsapp', { focusSearch: true })} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.14)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>🔢 {t('quickOrderByNumberBtn')}</button>
               <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>
               <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
               <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
@@ -2552,6 +2555,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [meatChoiceItem, setMeatChoiceItem] = useState(null);
   const [meatChoiceSel, setMeatChoiceSel] = useState(null);
   const [meatChoiceNote, setMeatChoiceNote] = useState('');
+  const [meatChoiceQty, setMeatChoiceQty] = useState(1);
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
@@ -2582,7 +2586,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [pastaStep, setPastaStep] = useState(0);
   const [pastaType, setPastaType] = useState(null);
   const [pastaSauceSel, setPastaSauceSel] = useState(null);
-  const addItem = (lineKey, label, price, deLabel) => { setCart((c) => ({ ...c, [lineKey]: { name: label, deName: deLabel || label, price, qty: (c[lineKey]?.qty || 0) + 1 } })); setCartPop((x) => x + 1); };
+  const addItem = (lineKey, label, price, deLabel, qty = 1) => { setCart((c) => ({ ...c, [lineKey]: { name: label, deName: deLabel || label, price, qty: (c[lineKey]?.qty || 0) + qty } })); setCartPop((x) => x + 1); };
 
   useEffect(() => {
     if (initialAction?.pendingCombo) {
@@ -2602,6 +2606,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     }
     if (initialAction?.quickSearchTerm) {
       setQuickSearch(initialAction.quickSearchTerm);
+    }
+    if (initialAction?.focusSearch) {
+      setTimeout(() => quickSearchRef.current?.focus(), 350);
     }
     onConsumeAction && onConsumeAction();
   }, []);
@@ -2640,6 +2647,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const activeCategory = EFFECTIVE_MENU.find((m) => m.key === tab);
 
   const [quickSearch, setQuickSearch] = useState('');
+  const quickSearchRef = useRef(null);
   const ALL_SEARCHABLE_ITEMS = useMemo(() => {
     return EFFECTIVE_MENU.flatMap((cat) => cat.items
       .filter((i) => !i.customPizza && !i.customPasta)
@@ -2662,7 +2670,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
         return;
       }
-      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
       if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
       setLastAddedTab(item.catKey); addItem(item.id, mx(item.name, lang), item.price, item.name);
     };
@@ -2704,6 +2712,12 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               className="w-full mb-5 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
               style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
             />
+            <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('quantityLabel')}</div>
+            <div className="flex items-center justify-center gap-5 mb-6 py-1">
+              <button onClick={() => setMeatChoiceQty((q) => Math.max(1, q - 1))} className="w-11 h-11 rounded-full flex items-center justify-center font-black text-lg" style={{ background: '#f7f0e2', color: GREEN }}>−</button>
+              <span key={meatChoiceQty} className="font-black text-2xl w-10 text-center" style={{ color: GREEN, animation: 'qtyPop .25s cubic-bezier(.34,1.56,.64,1)' }}>{meatChoiceQty}</span>
+              <button onClick={() => setMeatChoiceQty((q) => Math.min(50, q + 1))} className="w-11 h-11 rounded-full flex items-center justify-center font-black text-lg text-white" style={{ background: ORANGE }}>+</button>
+            </div>
             <button
               onClick={() => {
                 const item = meatChoiceItem;
@@ -2711,12 +2725,12 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 let displayLabel = meatChoiceSel ? `${mx(item.name, lang)} [${mx(meatChoiceSel, lang)}]` : mx(item.name, lang);
                 if (meatChoiceNote.trim()) { deLabel += ` [${meatChoiceNote.trim()}]`; displayLabel += ` [${meatChoiceNote.trim()}]`; }
                 setLastAddedTab('kebap');
-                addItem(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel);
+                addItem(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel, meatChoiceQty);
                 setMeatChoiceItem(null);
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
               style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
-            >{t('hinzufuegen')} · {fmt(meatChoiceItem.price)}</button>
+            >{t('hinzufuegen')} · {fmt(meatChoiceItem.price * meatChoiceQty)}</button>
           </div>
         </ConfigModal>
       )}
@@ -2745,14 +2759,21 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleWa')} /></div>
 
       <div className="px-5 pt-4 pb-1">
-        <input
-          value={quickSearch}
-          onChange={(e) => setQuickSearch(e.target.value)}
-          placeholder={t('quickSearchPh')}
-          inputMode="search"
-          className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none"
-          style={{ background: '#fff', border: '1.5px solid #e3d5bd', color: GREEN }}
-        />
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base" style={{ color: ORANGE }}>🔍</span>
+          <input
+            ref={quickSearchRef}
+            value={quickSearch}
+            onChange={(e) => setQuickSearch(e.target.value)}
+            placeholder={t('quickSearchPh')}
+            inputMode="search"
+            className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm font-bold outline-none"
+            style={{ background: '#fff', border: `1.5px solid ${quickSearch ? ORANGE : '#e3d5bd'}`, color: GREEN, boxShadow: quickSearch ? '0 6px 20px rgba(230,90,10,.15)' : 'none', transition: 'border-color .2s ease, box-shadow .2s ease' }}
+          />
+          {quickSearch && (
+            <button onClick={() => setQuickSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#f0e5cf' }}><X size={12} color={GREEN} /></button>
+          )}
+        </div>
       </div>
       {quickSearch.trim() && (
         <div className="px-5 pb-3">
@@ -2760,9 +2781,9 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
           ) : (
             <div className="flex flex-col gap-2">
-              {quickSearchResults.map((item) => (
-                <button key={item.id} onClick={() => handleQuickAdd(item)} disabled={item.soldOut} className="w-full text-left bg-white rounded-xl p-3 flex items-center justify-between shadow-sm disabled:opacity-50">
-                  <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
+              {quickSearchResults.map((item, i) => (
+                <button key={item.id} onClick={() => handleQuickAdd(item)} disabled={item.soldOut} className="w-full text-left bg-white rounded-xl p-3 flex items-center justify-between shadow-sm disabled:opacity-50 active:scale-[.98]" style={{ animation: `resultPop .3s cubic-bezier(.22,1,.36,1) ${i * 0.04}s both`, transition: 'transform .1s ease' }}>
+                  <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span className="inline-flex items-center justify-center min-w-[26px] px-1.5 py-0.5 rounded-md mr-1.5 text-[11px] font-black" style={{ background: '#fdecd4', color: ORANGE }}>{menuNum(item.id)}</span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
                   <span className="text-xs font-bold flex-shrink-0 ml-2" style={{ color: CHILI }}>{item.priceLarge !== undefined ? fmt(item.priceLarge) : fmt(item.price)}</span>
                 </button>
               ))}
@@ -3044,7 +3065,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   const doAdd = () => {
                     if (item.soldOut) return;
                     if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
-                    if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+                    if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
                     if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
                     setLastAddedTab(tab); addItem(item.id, mx(item.name, lang), item.price, item.name);
                   };
@@ -3327,7 +3348,7 @@ const MEATS = [
   { id: 'gemischt', label: 'Gemischt', extra: 0.5, emoji: '🍖' },
   { id: 'steak', label: 'Steakfleisch', extra: 2.0, emoji: '🔥' },
   { id: 'falafel', label: 'Falafel (vegetarisch)', extra: -1.0, emoji: '🧆' },
-  { id: 'yaprak', label: 'Yaprak Döner', extra: 1.0, emoji: '🌿', weekendOnly: true },
+  { id: 'yaprak', label: 'Yaprak Döner', extra: 2.0, emoji: '🌿', weekendOnly: true },
 ];
 const SAUCES = [
   { id: 'knoblauch', label: 'Knoblauchsoße' }, { id: 'hollandaise', label: 'Hollandaise' },
@@ -3682,6 +3703,7 @@ function GroupOrderView({ back }) {
   const [meatChoiceItem, setMeatChoiceItem] = useState(null);
   const [meatChoiceSel, setMeatChoiceSel] = useState(null);
   const [meatChoiceNote, setMeatChoiceNote] = useState('');
+  const [meatChoiceQty, setMeatChoiceQty] = useState(1);
   const [sauceSel, setSauceSel] = useState({});
   const [allergenLegendOpen, setAllergenLegendOpen] = useState(false);
   const [lastAddedTab, setLastAddedTab] = useState(null);
@@ -3712,7 +3734,7 @@ function GroupOrderView({ back }) {
   const [pastaStep, setPastaStep] = useState(0);
   const [pastaType, setPastaType] = useState(null);
   const [pastaSauceSel, setPastaSauceSel] = useState(null);
-  const addLocal = (id, label, price, deLabel) => { setLocalCart((c) => ({ ...c, [id]: { name: label, deName: deLabel || label, price, qty: (c[id]?.qty || 0) + 1 } })); setCartPop((x) => x + 1); };
+  const addLocal = (id, label, price, deLabel, qty = 1) => { setLocalCart((c) => ({ ...c, [id]: { name: label, deName: deLabel || label, price, qty: (c[id]?.qty || 0) + qty } })); setCartPop((x) => x + 1); };
   const removeLocal = (id) => setLocalCart((c) => { const ex = c[id]; if (!ex) return c; if (ex.qty <= 1) { const cp = { ...c }; delete cp[id]; return cp; } return { ...c, [id]: { ...ex, qty: ex.qty - 1 } }; });
   const myLines = Object.entries(localCart);
   const myTotal = myLines.reduce((s, [, v]) => s + v.qty * v.price, 0);
@@ -3764,6 +3786,7 @@ function GroupOrderView({ back }) {
   const activeCategory = EFFECTIVE_MENU.find((m) => m.key === tab);
 
   const [quickSearch, setQuickSearch] = useState('');
+  const quickSearchRef = useRef(null);
   const ALL_SEARCHABLE_ITEMS = useMemo(() => {
     return EFFECTIVE_MENU.flatMap((cat) => cat.items
       .filter((i) => !i.customPizza && !i.customPasta)
@@ -3786,7 +3809,7 @@ function GroupOrderView({ back }) {
         setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
         return;
       }
-      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
       if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
       setLastAddedTab(item.catKey); addLocal(item.id, mx(item.name, lang), item.price, item.name);
     };
@@ -3830,6 +3853,12 @@ function GroupOrderView({ back }) {
               className="w-full mb-5 px-3.5 py-3 rounded-xl text-sm font-medium outline-none"
               style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
             />
+            <div className="text-[11px] font-bold tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('quantityLabel')}</div>
+            <div className="flex items-center justify-center gap-5 mb-6 py-1">
+              <button onClick={() => setMeatChoiceQty((q) => Math.max(1, q - 1))} className="w-11 h-11 rounded-full flex items-center justify-center font-black text-lg" style={{ background: '#f7f0e2', color: GREEN }}>−</button>
+              <span key={meatChoiceQty} className="font-black text-2xl w-10 text-center" style={{ color: GREEN, animation: 'qtyPop .25s cubic-bezier(.34,1.56,.64,1)' }}>{meatChoiceQty}</span>
+              <button onClick={() => setMeatChoiceQty((q) => Math.min(50, q + 1))} className="w-11 h-11 rounded-full flex items-center justify-center font-black text-lg text-white" style={{ background: ORANGE }}>+</button>
+            </div>
             <button
               onClick={() => {
                 const item = meatChoiceItem;
@@ -3837,12 +3866,12 @@ function GroupOrderView({ back }) {
                 let displayLabel = meatChoiceSel ? `${mx(item.name, lang)} [${mx(meatChoiceSel, lang)}]` : mx(item.name, lang);
                 if (meatChoiceNote.trim()) { deLabel += ` [${meatChoiceNote.trim()}]`; displayLabel += ` [${meatChoiceNote.trim()}]`; }
                 setLastAddedTab('kebap');
-                addLocal(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel);
+                addLocal(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel, meatChoiceQty);
                 setMeatChoiceItem(null);
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
               style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
-            >{t('hinzufuegen')} · {fmt(meatChoiceItem.price)}</button>
+            >{t('hinzufuegen')} · {fmt(meatChoiceItem.price * meatChoiceQty)}</button>
           </div>
         </ConfigModal>
       )}
@@ -3935,14 +3964,21 @@ function GroupOrderView({ back }) {
       {view === 'order' && (
         <div>
           <div className="px-5 pt-2 pb-1">
-            <input
-              value={quickSearch}
-              onChange={(e) => setQuickSearch(e.target.value)}
-              placeholder={t('quickSearchPh')}
-              inputMode="search"
-              className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none"
-              style={{ background: '#fff', border: '1.5px solid #e3d5bd', color: GREEN }}
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base" style={{ color: ORANGE }}>🔍</span>
+              <input
+                ref={quickSearchRef}
+                value={quickSearch}
+                onChange={(e) => setQuickSearch(e.target.value)}
+                placeholder={t('quickSearchPh')}
+                inputMode="search"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm font-bold outline-none"
+                style={{ background: '#fff', border: `1.5px solid ${quickSearch ? ORANGE : '#e3d5bd'}`, color: GREEN, boxShadow: quickSearch ? '0 6px 20px rgba(230,90,10,.15)' : 'none', transition: 'border-color .2s ease, box-shadow .2s ease' }}
+              />
+              {quickSearch && (
+                <button onClick={() => setQuickSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#f0e5cf' }}><X size={12} color={GREEN} /></button>
+              )}
+            </div>
           </div>
           {quickSearch.trim() && (
             <div className="px-5 pb-3">
@@ -3950,9 +3986,9 @@ function GroupOrderView({ back }) {
                 <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
               ) : (
                 <div className="flex flex-col gap-2">
-                  {quickSearchResults.map((item) => (
-                    <button key={item.id} onClick={() => handleQuickAdd(item)} disabled={item.soldOut} className="w-full text-left bg-white rounded-xl p-3 flex items-center justify-between shadow-sm disabled:opacity-50">
-                      <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
+                  {quickSearchResults.map((item, i) => (
+                    <button key={item.id} onClick={() => handleQuickAdd(item)} disabled={item.soldOut} className="w-full text-left bg-white rounded-xl p-3 flex items-center justify-between shadow-sm disabled:opacity-50 active:scale-[.98]" style={{ animation: `resultPop .3s cubic-bezier(.22,1,.36,1) ${i * 0.04}s both`, transition: 'transform .1s ease' }}>
+                      <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span className="inline-flex items-center justify-center min-w-[26px] px-1.5 py-0.5 rounded-md mr-1.5 text-[11px] font-black" style={{ background: '#fdecd4', color: ORANGE }}>{menuNum(item.id)}</span>}{mx(item.name, lang)}{item.soldOut && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span>
                       <span className="text-xs font-bold flex-shrink-0 ml-2" style={{ color: CHILI }}>{item.priceLarge !== undefined ? fmt(item.priceLarge) : fmt(item.price)}</span>
                     </button>
                   ))}
@@ -4207,7 +4243,7 @@ function GroupOrderView({ back }) {
                       const doAdd = () => {
                         if (item.soldOut) return;
                         if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
-                        if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceItem(item); return; }
+                        if (tab === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
                         if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(tab) && tab !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
                         setLastAddedTab(tab); addLocal(item.id, mx(item.name, lang), item.price, item.name);
                       };
@@ -5503,6 +5539,8 @@ export default function App() {
         @keyframes cartBump { 0%{ transform: scale(1); } 30%{ transform: scale(1.18); } 55%{ transform: scale(.94); } 100%{ transform: scale(1); } }
         @keyframes shimmerGold { 0%{ background-position: -200% 0; } 100%{ background-position: 200% 0; } }
         @keyframes softFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-6px); } }
+        @keyframes resultPop { 0%{ opacity:0; transform: translateY(8px) scale(.96); } 100%{ opacity:1; transform: translateY(0) scale(1); } }
+        @keyframes qtyPop { 0%{ transform: scale(.6); opacity:.4; } 60%{ transform: scale(1.2); } 100%{ transform: scale(1); opacity:1; } }
         button, a { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, opacity .18s ease; }
         button:active { transform: scale(.97); }
         @keyframes sadBounce { 0%,100%{ transform:translateY(0) rotate(0deg);} 25%{ transform:translateY(-6px) rotate(-4deg);} 75%{ transform:translateY(-2px) rotate(4deg);} }
