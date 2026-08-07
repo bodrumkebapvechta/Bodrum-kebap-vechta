@@ -76,7 +76,8 @@ const UI = {
   resetBtn: { de: 'Zurücksetzen', en: 'Reset', tr: 'Sıfırla', ro: 'Resetează', nl: 'Resetten' , sq: 'Rivendos', ku: 'Ji nû ve saz bike'},
   cancelBtn: { de: 'Abbrechen', en: 'Cancel', tr: 'Vazgeç', ro: 'Anulează', nl: 'Annuleren' , sq: 'Anulo', ku: 'Betal bike'},
   editedPricesCount: { de: 'Preis(e) angepasst', en: 'price(s) adjusted', tr: 'fiyat düzenlendi', ro: 'prețuri ajustate', nl: 'prijzen aangepast' , sq: 'çmim(e) të ndryshuar', ku: 'biha(yên) hatin guherandin'},
-  photoUrlHint: { de: 'Füge einen Bild-Link ein (z.B. von einem Foto-Hosting-Dienst). Direkte Datei-Uploads sind hier noch nicht möglich.', en: 'Paste an image link (e.g. from a photo hosting service). Direct file uploads are not yet possible here.', tr: 'Bir resim linki yapıştır (örn. bir fotoğraf barındırma servisinden). Doğrudan dosya yükleme henüz mümkün değil.', ro: 'Adaugă un link de imagine (de ex. de la un serviciu de găzduire foto). Încărcarea directă a fișierelor nu este încă posibilă aici.', nl: 'Plak een afbeeldingslink (bijv. van een fotohostingdienst). Direct bestanden uploaden kan hier nog niet.' , sq: 'Ngjit një lidhje foto (p.sh. nga një shërbim hostimi fotosh). Ngarkimi direkt i skedarëve nuk është ende i mundur këtu.', ku: 'Girêdana wêneyekî lê zêde bike (mînak ji xizmeteke hostkirina wêneyan). Barkirina rasterast a pelan hê ne gengaz e li vir.'},
+  photoUrlHint: { de: 'Foto direkt von deinem Gerät hochladen, oder alternativ einen Bild-Link einfügen (z.B. von einem Foto-Hosting-Dienst).', en: 'Upload a photo directly from your device, or alternatively paste an image link (e.g. from a photo hosting service).', tr: 'Cihazından doğrudan fotoğraf yükle, ya da alternatif olarak bir resim linki yapıştır (örn. bir fotoğraf barındırma servisinden).', ro: 'Încarcă o fotografie direct de pe dispozitiv, sau alternativ adaugă un link de imagine (de ex. de la un serviciu de găzduire foto).', nl: 'Upload een foto direct vanaf je apparaat, of plak als alternatief een afbeeldingslink (bijv. van een fotohostingdienst).' , sq: 'Ngarko një foto direkt nga pajisja jote, ose alternativisht ngjit një lidhje foto (p.sh. nga një shërbim hostimi fotosh).', ku: 'Wêneyekî rasterast ji amûra xwe bar bike, an jî girêdana wêneyekî lê zêde bike (mînak ji xizmeteke hostkirina wêneyan).'},
+  uploadPhotoBtn: { de: 'Foto aus Galerie hochladen', en: 'Upload photo from gallery', tr: 'Galeriden fotoğraf yükle', ro: 'Încarcă fotografie din galerie', nl: 'Foto uploaden vanuit galerij', sq: 'Ngarko foto nga galeria', ku: 'Ji galeriyê wêne bar bike' },
   visitsToday: { de: 'Besuche heute', en: 'Visits today', tr: 'Bugünkü ziyaret', ro: 'Vizite azi', nl: 'Bezoeken vandaag' , sq: 'Vizita sot', ku: 'Serdanên îro'},
   visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' , sq: 'Vizitat e fundit', ku: 'Serdanên dawî'},
   byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' , sq: 'SIPAS GJUHËS', ku: 'LI GORÎ ZIMAN'},
@@ -774,6 +775,27 @@ function findMenuItemById(id) {
   for (const cat of MENU) { const item = cat.items.find((i) => i.id === id); if (item) return item; }
   return null;
 }
+function findMenuItemByName(name) {
+  for (const cat of MENU) { const item = cat.items.find((i) => i.name === name); if (item) return item; }
+  return null;
+}
+function applyItemOverride(item, overrides, photoOverrides, soldOutSet) {
+  const ov = overrides ? overrides[item.id] : null;
+  const photoOv = photoOverrides ? photoOverrides[item.id] : null;
+  const isSoldOut = soldOutSet ? soldOutSet.has(item.id) : false;
+  if (!ov && !photoOv && !isSoldOut) return item;
+  let next = item;
+  if (ov) {
+    if (item.priceLarge !== undefined) {
+      next = { ...next, priceSmall: ov.small !== undefined ? ov.small : item.priceSmall, priceLarge: ov.large !== undefined ? ov.large : item.priceLarge };
+    } else {
+      next = { ...next, price: ov.price !== undefined ? ov.price : item.price };
+    }
+  }
+  if (photoOv) next = { ...next, img: photoOv, imgContain: false };
+  if (isSoldOut) next = { ...next, soldOut: true };
+  return next;
+}
 function applyPriceOverrides(overrides, photoOverrides, soldOutIds) {
   const hasPrice = overrides && Object.keys(overrides).length > 0;
   const hasPhoto = photoOverrides && Object.keys(photoOverrides).length > 0;
@@ -782,24 +804,16 @@ function applyPriceOverrides(overrides, photoOverrides, soldOutIds) {
   const soldOutSet = hasSoldOut ? new Set(soldOutIds) : null;
   return MENU.map((cat) => ({
     ...cat,
-    items: cat.items.map((item) => {
-      const ov = hasPrice ? overrides[item.id] : null;
-      const photoOv = hasPhoto ? photoOverrides[item.id] : null;
-      const isSoldOut = soldOutSet ? soldOutSet.has(item.id) : false;
-      if (!ov && !photoOv && !isSoldOut) return item;
-      let next = item;
-      if (ov) {
-        if (item.priceLarge !== undefined) {
-          next = { ...next, priceSmall: ov.small !== undefined ? ov.small : item.priceSmall, priceLarge: ov.large !== undefined ? ov.large : item.priceLarge };
-        } else {
-          next = { ...next, price: ov.price !== undefined ? ov.price : item.price };
-        }
-      }
-      if (photoOv) next = { ...next, img: photoOv, imgContain: false };
-      if (isSoldOut) next = { ...next, soldOut: true };
-      return next;
-    }),
+    items: cat.items.map((item) => applyItemOverride(item, overrides, photoOverrides, soldOutSet)),
   }));
+}
+function applyOverridesToFlatList(items, overrides, photoOverrides, soldOutIds) {
+  const hasPrice = overrides && Object.keys(overrides).length > 0;
+  const hasPhoto = photoOverrides && Object.keys(photoOverrides).length > 0;
+  const hasSoldOut = soldOutIds && soldOutIds.length > 0;
+  if (!hasPrice && !hasPhoto && !hasSoldOut) return items;
+  const soldOutSet = hasSoldOut ? new Set(soldOutIds) : null;
+  return items.map((item) => applyItemOverride(item, overrides, photoOverrides, soldOutSet));
 }
 function getFavorites() { try { return JSON.parse(localStorage.getItem('bk_favorites') || '[]'); } catch { return []; } }
 function toggleFavoriteId(id) {
@@ -879,6 +893,15 @@ async function safeListPrefix(prefix, limit = 20) {
     return await res.json();
   } catch { return []; }
 }
+async function safeListPrefixOldest(prefix, limit = 2000) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.asc&limit=${limit}`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
 async function safeDeleteKey(key) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}`, {
@@ -897,16 +920,19 @@ async function cleanupOldOrders() {
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
     const cutoff48h = Date.now() - 48 * 60 * 60 * 1000;
     const [orders, groups, visits] = await Promise.all([
-      safeListPrefix('order:', 500),
-      safeListPrefix('grouporder:', 200),
-      safeListPrefix('analytics:', 1000),
+      safeListPrefixOldest('order:', 2000),
+      safeListPrefixOldest('grouporder:', 2000),
+      safeListPrefixOldest('analytics:', 5000),
     ]);
     const staleOrders = orders.filter((r) => !r.value?.createdAt || r.value.createdAt < todayStart.getTime());
     const staleGroups = groups.filter((r) => {
       const ts = r.value?.createdAt || (r.updated_at ? new Date(r.updated_at).getTime() : 0);
       return !ts || ts < cutoff48h;
     });
-    const staleVisits = visits.filter((r) => !r.value?.ts || r.value.ts < cutoff48h);
+    const staleVisits = visits.filter((r) => {
+      const ts = r.value?.ts || (r.updated_at ? new Date(r.updated_at).getTime() : 0);
+      return !ts || ts < todayStart.getTime();
+    });
     await Promise.all([...staleOrders, ...staleGroups, ...staleVisits].map((r) => safeDeleteKey(r.key)));
   } catch {}
 }
@@ -1184,18 +1210,22 @@ const UPSELL_FOOD = [
 const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤', img: d.img, imgContain: d.imgContain }));
 const UPSELL_ITEMS_POOL = [...UPSELL_FOOD, ...UPSELL_DRINKS];
 const SURPRISE_CATEGORIES = ['kebap', 'pizza', 'calzone', 'baguette', 'ueberbacken', 'rollo', 'nudeln', 'schnitzel', 'salat'];
-const SURPRISE_ITEMS = MENU.filter((cat) => SURPRISE_CATEGORIES.includes(cat.key)).flatMap((cat) => cat.items
-  .filter((i) => !i.customPizza && !i.customPasta)
-  .map((i) => ({
-    id: i.id,
-    name: i.name,
-    price: i.priceLarge !== undefined ? i.priceLarge : i.price,
-    img: i.img,
-    imgContain: i.imgContain,
-    weekend: i.weekend || false,
-    cat: cat.key,
-    desc: i.desc || '',
-  })));
+function buildSurpriseItems(effectiveMenu) {
+  return effectiveMenu.filter((cat) => SURPRISE_CATEGORIES.includes(cat.key)).flatMap((cat) => cat.items
+    .filter((i) => !i.customPizza && !i.customPasta)
+    .map((i) => ({
+      id: i.id,
+      name: i.name,
+      price: i.priceLarge !== undefined ? i.priceLarge : i.price,
+      img: i.img,
+      imgContain: i.imgContain,
+      weekend: i.weekend || false,
+      cat: cat.key,
+      desc: i.desc || '',
+      soldOut: i.soldOut || false,
+    })));
+}
+const SURPRISE_ITEMS = buildSurpriseItems(MENU);
 const CATEGORY_UPSELL_RECS = {
   kebap: ['g305', 'g301'],
   pizza: ['g301', 'f204a'],
@@ -1872,7 +1902,11 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
           <span className="font-black text-lg" style={{ color: GOLD }}>
             {fmt(displayPrice)}{isLunchWindow && <span className="text-[10px] font-bold ml-1" style={{ color: '#d9cdb4' }}>inkl. Getränk</span>}
           </span>
-          <button onClick={orderNow} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('orderNow')} →</button>
+          {item.soldOut ? (
+            <span className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>
+          ) : (
+            <button onClick={orderNow} className="px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('orderNow')} →</button>
+          )}
         </div>
       </div>
     </div>
@@ -1882,6 +1916,14 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
+  const [photoOverrides, setPhotoOverrides] = useState({});
+  const [priceOverrides, setPriceOverrides] = useState({});
+  const [soldOutIds, setSoldOutIds] = useState([]);
+  useEffect(() => {
+    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+    safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+    safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+  }, []);
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
@@ -1928,11 +1970,18 @@ function DailySpecial({ go }) {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        {entry.items.map((item, i) => (
+        {entry.items.map((item, i) => {
+          const menuMatch = findMenuItemByName(item.name);
+          const overrideImg = menuMatch ? photoOverrides[menuMatch.id] : null;
+          const priceOv = menuMatch ? priceOverrides[menuMatch.id] : null;
+          const overridePrice = priceOv ? (priceOv.price !== undefined ? priceOv.price : priceOv.large) : null;
+          const isSoldOut = menuMatch ? soldOutIds.includes(menuMatch.id) : false;
+          return (
           <div key={i} style={{ animation: `cardIn .6s cubic-bezier(.22,1,.36,1) ${i * 0.12}s both` }}>
-            <DailySpecialCard item={{ ...item, imgSrc: imgMap[item.img] }} isLunchWindow={isLunchWindow} go={go} />
+            <DailySpecialCard item={{ ...item, price: overridePrice !== null && overridePrice !== undefined ? overridePrice : item.price, imgSrc: overrideImg || imgMap[item.img], soldOut: isSoldOut }} isLunchWindow={isLunchWindow} go={go} />
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <WeekendTeaser go={go} />
@@ -1946,14 +1995,22 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
-  useEffect(() => { safeGet('siteconfig:soldOut').then((r) => { if (r) setHomeSoldOutIds(r); }); }, []);
+  const [homePriceOverrides, setHomePriceOverrides] = useState({});
+  const [homePhotoOverrides, setHomePhotoOverrides] = useState({});
+  useEffect(() => {
+    safeGet('siteconfig:soldOut').then((r) => { if (r) setHomeSoldOutIds(r); });
+    safeGet('siteconfig:priceOverrides').then((r) => { if (r) setHomePriceOverrides(r); });
+    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setHomePhotoOverrides(r); });
+  }, []);
+  const HOME_EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(homePriceOverrides, homePhotoOverrides, homeSoldOutIds), [homePriceOverrides, homePhotoOverrides, homeSoldOutIds]);
+  const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
   const [dailyBanner, setDailyBanner] = useState('');
   useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
   const [surpriseRolling, setSurpriseRolling] = useState(false);
   const rollSurprise = () => {
     setSurpriseRolling(true);
-    let pool = isWeekendDay() ? SURPRISE_ITEMS : SURPRISE_ITEMS.filter((i) => !i.weekend);
-    if (homeSoldOutIds.length > 0) pool = pool.filter((i) => !homeSoldOutIds.includes(i.id));
+    let pool = isWeekendDay() ? HOME_SURPRISE_ITEMS : HOME_SURPRISE_ITEMS.filter((i) => !i.weekend);
+    pool = pool.filter((i) => !i.soldOut);
     let count = 0;
     const maxCount = 16;
     const spin = () => {
@@ -2408,6 +2465,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
   const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
+  const EFFECTIVE_UPSELL_POOL = useMemo(() => applyOverridesToFlatList(UPSELL_ITEMS_POOL, priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
   const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
@@ -2852,7 +2910,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                     <div className="text-[11px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: ORANGE }}>✨ {t('recommendedForYou')}</div>
                     <div className="flex flex-col gap-2.5">
                       {CATEGORY_UPSELL_RECS[lastAddedTab].map((id) => {
-                        const u = UPSELL_ITEMS_POOL.find((x) => x.id === id);
+                        const u = EFFECTIVE_UPSELL_POOL.find((x) => x.id === id);
                         if (!u) return null;
                         const qty = cart[u.id]?.qty || 0;
                         return (
@@ -2870,7 +2928,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                                 <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                               </div>
                             </div>
-                            <Stepper qty={qty} onAdd={() => addItem(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeItem(u.id)} />
+                            <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addItem(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeItem(u.id)} />
                           </div>
                         );
                       })}
@@ -2890,7 +2948,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                             <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                           </div>
                         </div>
-                        <Stepper qty={qty} onAdd={() => addItem(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeItem(u.id)} />
+                        <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addItem(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeItem(u.id)} />
                       </div>
                     );
                   })}
@@ -2926,7 +2984,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                             <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                           </div>
                         </div>
-                        <Stepper qty={qty} onAdd={() => addItem(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeItem(u.id)} />
+                        <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addItem(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeItem(u.id)} />
                       </div>
                     );
                   })}
@@ -3392,6 +3450,7 @@ function GroupOrderView({ back }) {
     safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaExtraText(r.text); });
   }, []);
   const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
+  const EFFECTIVE_UPSELL_POOL = useMemo(() => applyOverridesToFlatList(UPSELL_ITEMS_POOL, priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
   const [favorites, setFavorites] = useState(() => getFavorites());
   const [lunchDrink, setLunchDrink] = useState(null);
   const confirmLunchAdd = () => {
@@ -3864,7 +3923,7 @@ function GroupOrderView({ back }) {
               <div className="text-[11px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: ORANGE }}>✨ {t('recommendedForYou')}</div>
               <div className="flex flex-col gap-2.5">
                 {CATEGORY_UPSELL_RECS[lastAddedTab].map((id) => {
-                  const u = UPSELL_ITEMS_POOL.find((x) => x.id === id);
+                  const u = EFFECTIVE_UPSELL_POOL.find((x) => x.id === id);
                   if (!u) return null;
                   const qty = localCart[u.id]?.qty || 0;
                   return (
@@ -3882,7 +3941,7 @@ function GroupOrderView({ back }) {
                           <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                         </div>
                       </div>
-                      <Stepper qty={qty} onAdd={() => addLocal(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeLocal(u.id)} />
+                      <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addLocal(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeLocal(u.id)} />
                     </div>
                   );
                 })}
@@ -3901,7 +3960,7 @@ function GroupOrderView({ back }) {
                       <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                     </div>
                   </div>
-                  <Stepper qty={qty} onAdd={() => addLocal(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeLocal(u.id)} />
+                  <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addLocal(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeLocal(u.id)} />
                 </div>
               );
             })}
@@ -3935,7 +3994,7 @@ function GroupOrderView({ back }) {
                       <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                     </div>
                   </div>
-                  <Stepper qty={qty} onAdd={() => addLocal(u.id, mx(u.name, lang), u.price, u.name)} onRemove={() => removeLocal(u.id)} />
+                  <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addLocal(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeLocal(u.id)} />
                 </div>
               );
             })}
@@ -4541,6 +4600,37 @@ function StaffPanelView({ back }) {
     setPhotoSaveMsg(t('savedMsg'));
     setTimeout(() => setPhotoSaveMsg(''), 2500);
   };
+  const [photoUploadBusy, setPhotoUploadBusy] = useState(false);
+  const handlePhotoFileUpload = (file) => {
+    if (!file || !editingPhotoItem) return;
+    setPhotoUploadBusy(true);
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.onload = async () => {
+        const maxW = 900;
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+        setEditPhotoUrl(dataUrl);
+        const next = { ...photoOverrides, [editingPhotoItem.id]: dataUrl };
+        await safeSet('siteconfig:photoOverrides', next);
+        setPhotoOverrides(next);
+        setPhotoSaveMsg(t('savedMsg'));
+        setTimeout(() => setPhotoSaveMsg(''), 2500);
+        setPhotoUploadBusy(false);
+      };
+      img.onerror = () => setPhotoUploadBusy(false);
+      img.src = e.target.result;
+    };
+    reader.onerror = () => setPhotoUploadBusy(false);
+    reader.readAsDataURL(file);
+  };
   const resetPhoto = async () => {
     if (!editingPhotoItem) return;
     const next = { ...photoOverrides };
@@ -4822,6 +4912,15 @@ function StaffPanelView({ back }) {
                 <div className="bg-white rounded-xl p-5">
                   <div className="font-black text-base mb-3" style={{ color: GREEN }}>{editingPhotoItem.name}</div>
                   {editPhotoUrl && <img src={editPhotoUrl} alt="" className="w-full h-36 object-cover rounded-lg mb-3" onError={(e) => { e.target.style.display = 'none'; }} />}
+                  <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: photoUploadBusy ? 0.6 : 1 }}>
+                    <span className="text-base">📷</span> {photoUploadBusy ? '…' : t('uploadPhotoBtn')}
+                    <input type="file" accept="image/*" className="hidden" disabled={photoUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoFileUpload(f); e.target.value = ''; }} />
+                  </label>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex-1 h-px" style={{ background: '#e3d5bd' }} />
+                    <span className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('orLabel')}</span>
+                    <div className="flex-1 h-px" style={{ background: '#e3d5bd' }} />
+                  </div>
                   <input value={editPhotoUrl} onChange={(e) => setEditPhotoUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN }} />
                   <div className="flex gap-2">
                     <button onClick={savePhoto} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
