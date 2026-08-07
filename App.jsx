@@ -740,10 +740,10 @@ const MENU = [
     { id: 'g312', name: 'Energy Drink', price: 3.0 },
   ]},
 ];
-const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Jalapeños', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Scharf'];
+const EXTRA_TOPPINGS = ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Jalapeños', 'Paprika', 'Brokkoli', 'Pilzen', 'Sucuk', 'Extra Fleisch', 'Brot', 'Scharf'];
 const PASTA_TOPPINGS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße', 'Käse', 'Extra Fleisch', 'Peperoni', 'Pilzen'];
 const PASTA_SAUCE_OPTIONS = ['Tomatensoße', 'Sahnesoße', 'Bolognese-Soße'];
-const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Jalapeños', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Scharf'];
+const PASTA_EXTRA_ITEMS = ['Käse', 'Käse überbacken', 'Extra Fleisch', 'Peperoni', 'Jalapeños', 'Pilzen', 'Mais', 'Brokkoli', 'Putenschinken', 'Paprika', 'Ei', 'Brot', 'Scharf'];
 const PASTA_TYPES = ['Spaghetti', 'Makkaroni'];
 
 /* ============ HELPERS ============ */
@@ -1168,19 +1168,43 @@ function wheelConicGradient() {
 
 /* ============ SHARED UI ============ */
 function TopBar({ onHome, title, dark = true }) {
+  const { t, go, globalNavOpen, setGlobalNavOpen, lang, setLang } = React.useContext(LangContext);
   return (
-    <div className="flex items-center gap-3 px-5 pt-6 pb-4">
-      <button onClick={onHome} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: dark ? 'rgba(255,246,234,0.12)' : '#f0e5cf' }}>
-        <ArrowLeft size={18} color={dark ? CREAM : GREEN} />
-      </button>
-      <div className="flex items-center gap-2.5">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
-          <Flame size={18} color="#fff" />
+    <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-4">
+      <div className="flex items-center gap-3">
+        <button onClick={onHome} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: dark ? 'rgba(255,246,234,0.12)' : '#f0e5cf' }}>
+          <ArrowLeft size={18} color={dark ? CREAM : GREEN} />
+        </button>
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
+            <Flame size={18} color="#fff" />
+          </div>
+          <div>
+            <div className="font-extrabold text-sm leading-tight tracking-wide" style={{ color: dark ? '#fff' : GREEN }}>BODRUM KEBAP</div>
+            <div className="text-[10px] font-semibold tracking-[0.2em]" style={{ color: GOLD }}>{title}</div>
+          </div>
         </div>
-        <div>
-          <div className="font-extrabold text-sm leading-tight tracking-wide" style={{ color: dark ? '#fff' : GREEN }}>BODRUM KEBAP</div>
-          <div className="text-[10px] font-semibold tracking-[0.2em]" style={{ color: GOLD }}>{title}</div>
-        </div>
+      </div>
+      <div className="relative flex-shrink-0">
+        <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: dark ? 'rgba(255,246,234,0.12)' : '#f0e5cf' }}>
+          {globalNavOpen ? <X size={18} color={dark ? CREAM : GREEN} /> : <MenuIcon size={18} color={dark ? CREAM : GREEN} />}
+        </button>
+        {globalNavOpen && (
+          <>
+            <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
+            <div className="absolute top-11 right-0 w-56 rounded-2xl overflow-hidden py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
+              <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
+              <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
+              <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>
+              <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>
+              <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+              <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
+              <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
+                <LanguageSwitcher lang={lang} setLang={setLang} dark />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -1221,6 +1245,7 @@ const UPSELL_FOOD = [
   { id: 'f204c', name: 'Ketchup', price: 1.0, emoji: '🍅' },
   { id: 'f204d', name: 'Mayonnaise', price: 1.0, emoji: '🥫' },
   { id: 'f204e', name: 'Hollandaise Sauce', price: 2.5, emoji: '🧈' },
+  { id: 'extra-brot', name: 'Brot', price: 1.0, emoji: '🍞' },
 ];
 const UPSELL_DRINKS = (MENU.find((m) => m.key === 'getraenke')?.items || []).map((d) => ({ id: d.id, name: d.name, price: d.price, emoji: '🥤', img: d.img, imgContain: d.imgContain }));
 const UPSELL_ITEMS_POOL = [...UPSELL_FOOD, ...UPSELL_DRINKS];
@@ -3173,6 +3198,7 @@ const BUILDER_EXTRAS = [
   { id: 'rotkohl', label: 'Rotkohl', price: 0 }, { id: 'mais', label: 'Mais', price: 1.0 },
   { id: 'extrafleisch', label: 'Extra Fleisch', price: 1.0 },
   { id: 'scharf', label: 'Scharf', price: 1.0 },
+  { id: 'brot', label: 'Brot', price: 1.0 },
 ];
 const ALL_EXTRA_NAMES = Array.from(new Set([
   ...EXTRA_TOPPINGS, ...PASTA_TOPPINGS, ...PASTA_EXTRA_ITEMS, ...BUILDER_EXTRAS.map((e) => e.label),
@@ -5177,7 +5203,7 @@ export default function App() {
 
   if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
-  const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall };
+  const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall, go, globalNavOpen, setGlobalNavOpen };
   const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
   const installHelpModal = showInstallHelp && ReactDOM.createPortal(
     <ConfigModal onClose={() => setShowInstallHelp(false)}>
@@ -5195,29 +5221,6 @@ export default function App() {
       <span className="relative"><ShoppingBag size={17} /><span className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: GREEN, color: GOLD }}>{cartCount}</span></span>
       {fmt(cartTotal)}
     </button>,
-    document.body
-  );
-  const globalHamburger = view !== 'home' && ReactDOM.createPortal(
-    <>
-      <button onClick={() => setGlobalNavOpen((v) => !v)} className="fixed top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 8px 20px rgba(21,56,38,.35)', zIndex: 200 }}>
-        {globalNavOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
-      </button>
-      {globalNavOpen && (
-        <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)}>
-          <div className="absolute top-16 left-4 w-56 rounded-2xl overflow-hidden py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }} onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{langCtx.t('backToHomeBtn')}</button>
-            <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{langCtx.t('navMenu')}</button>
-            <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{langCtx.t('titleGroup')}</button>
-            <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {langCtx.t('navTrackOrder')}</button>
-            <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {langCtx.t('navStaffArea')}</button>
-            <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
-            <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
-              <LanguageSwitcher lang={langCtx.lang} setLang={langCtx.setLang} dark />
-            </div>
-          </div>
-        </div>
-      )}
-    </>,
     document.body
   );
 
@@ -5264,7 +5267,6 @@ export default function App() {
       </div>
 
       {cartBadge}
-      {globalHamburger}
 
       <div key={view} className="w-full max-w-5xl mx-auto relative min-h-screen" style={{ background: CREAM, animation: 'viewFade .3s ease-out', zIndex: 1 }}>
         {view === 'whatsapp' && <WhatsAppOrderView back={() => setView('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} cart={cart} setCart={setCart} cartOpen={cartOpen} setCartOpen={setCartOpen} go={go} />}
