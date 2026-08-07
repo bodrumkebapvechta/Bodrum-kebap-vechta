@@ -2034,6 +2034,7 @@ function DailySpecial({ go }) {
 }
 
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
+  const { lang, setLang, t } = React.useContext(LangContext);
   const [navOpen, setNavOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
@@ -2111,7 +2112,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   }, [lightbox]);
   const now = useLiveClock();
   const status = getOpenStatus(now);
-  const { lang, setLang, t } = React.useContext(LangContext);
   useEffect(() => { logVisit(lang); }, []);
   const HERO_IMAGES = [DOENER_SPIESS_IMG, PIZZA_KAESE_IMG, CALZONE_IMG, LAHMACUN_IMG, PENNE_IMG];
   const [heroIdx, setHeroIdx] = useState(0);
