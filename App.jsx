@@ -78,6 +78,11 @@ const UI = {
   editedPricesCount: { de: 'Preis(e) angepasst', en: 'price(s) adjusted', tr: 'fiyat düzenlendi', ro: 'prețuri ajustate', nl: 'prijzen aangepast' , sq: 'çmim(e) të ndryshuar', ku: 'biha(yên) hatin guherandin'},
   photoUrlHint: { de: 'Foto direkt von deinem Gerät hochladen, oder alternativ einen Bild-Link einfügen (z.B. von einem Foto-Hosting-Dienst).', en: 'Upload a photo directly from your device, or alternatively paste an image link (e.g. from a photo hosting service).', tr: 'Cihazından doğrudan fotoğraf yükle, ya da alternatif olarak bir resim linki yapıştır (örn. bir fotoğraf barındırma servisinden).', ro: 'Încarcă o fotografie direct de pe dispozitiv, sau alternativ adaugă un link de imagine (de ex. de la un serviciu de găzduire foto).', nl: 'Upload een foto direct vanaf je apparaat, of plak als alternatief een afbeeldingslink (bijv. van een fotohostingdienst).' , sq: 'Ngarko një foto direkt nga pajisja jote, ose alternativisht ngjit një lidhje foto (p.sh. nga një shërbim hostimi fotosh).', ku: 'Wêneyekî rasterast ji amûra xwe bar bike, an jî girêdana wêneyekî lê zêde bike (mînak ji xizmeteke hostkirina wêneyan).'},
   uploadPhotoBtn: { de: 'Foto aus Galerie hochladen', en: 'Upload photo from gallery', tr: 'Galeriden fotoğraf yükle', ro: 'Încarcă fotografie din galerie', nl: 'Foto uploaden vanuit galerij', sq: 'Ngarko foto nga galeria', ku: 'Ji galeriyê wêne bar bike' },
+  applyToCategoryBtn: { de: 'Auf alle Artikel dieser Kategorie anwenden', en: 'Apply to all items in this category', tr: 'Bu kategorideki tüm ürünlere uygula', ro: 'Aplică la toate produsele din această categorie', nl: 'Toepassen op alle items in deze categorie', sq: 'Zbato tek të gjitha artikujt e kësaj kategorie', ku: 'Li ser hemû tiştên vê kategoriyê bicîh bike' },
+  photoAppliedCategoryMsg: { de: '✓ Auf {count} Artikel angewendet', en: '✓ Applied to {count} items', tr: '✓ {count} ürüne uygulandı', ro: '✓ Aplicat la {count} produse', nl: '✓ Toegepast op {count} items', sq: '✓ U zbatua në {count} artikuj', ku: '✓ Li ser {count} tiştan hate bicîhkirin' },
+  independentPhotoTitle: { de: 'Foto ohne Bezug zu einem Gericht', en: 'Photo not tied to a dish', tr: 'Bir yemekle bağlantısız fotoğraf', ro: 'Fotografie fără legătură cu un fel de mâncare', nl: "Foto zonder verband met een gerecht", sq: 'Foto pa lidhje me një gjellë', ku: 'Wêne bêyî girêdan bi xwarinekê' },
+  independentPhotoHint: { de: 'Für Fotos, die zu keinem bestimmten Gericht gehören (z.B. Restaurant, Team, Events) — wird zur Galerie auf der Startseite hinzugefügt.', en: 'For photos that don\'t belong to a specific dish (e.g. restaurant, team, events) — added to the gallery on the homepage.', tr: 'Belirli bir yemekle ilgili olmayan fotoğraflar için (örn. mekan, ekip, etkinlik) — ana sayfadaki galeriye eklenir.', ro: 'Pentru fotografii care nu aparțin unui anumit fel de mâncare (de ex. restaurant, echipă, evenimente) — adăugate la galeria de pe pagina principală.', nl: 'Voor foto\'s die niet bij een specifiek gerecht horen (bijv. restaurant, team, evenementen) — wordt toegevoegd aan de galerij op de homepage.', sq: 'Për foto që nuk i përkasin një gjelle të caktuar (p.sh. lokali, ekipi, evente) — shtohet te galeria në faqen kryesore.', ku: 'Ji bo wêneyên ku girêdayî gjelleyekê taybet nînin (mînak dikan, tîm, bûyer) — li galeriya rûpelê sereke tê zêdekirin.' },
+  uploadGalleryPhotoBtn: { de: 'Foto zur Galerie hinzufügen', en: 'Add photo to gallery', tr: 'Galeriye fotoğraf ekle', ro: 'Adaugă fotografie la galerie', nl: 'Foto toevoegen aan galerij', sq: 'Shto foto te galeria', ku: 'Wêne li galeriyê zêde bike' },
   visitsToday: { de: 'Besuche heute', en: 'Visits today', tr: 'Bugünkü ziyaret', ro: 'Vizite azi', nl: 'Bezoeken vandaag' , sq: 'Vizita sot', ku: 'Serdanên îro'},
   visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' , sq: 'Vizitat e fundit', ku: 'Serdanên dawî'},
   byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' , sq: 'SIPAS GJUHËS', ku: 'LI GORÎ ZIMAN'},
@@ -2006,6 +2011,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
   const [dailyBanner, setDailyBanner] = useState('');
   useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
+  const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
+  useEffect(() => { safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); }); }, []);
   const [surpriseRolling, setSurpriseRolling] = useState(false);
   const rollSurprise = () => {
     setSurpriseRolling(true);
@@ -2311,6 +2318,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <img src={FRITZ_LIMO_IMG} onClick={() => setLightbox(FRITZ_LIMO_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
           <img src={FRITZ_SPRITZ_TRAUBE_IMG} onClick={() => setLightbox(FRITZ_SPRITZ_TRAUBE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
           <img src={FRITZ_MISCHMASCH_IMG} onClick={() => setLightbox(FRITZ_MISCHMASCH_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
+          {extraGalleryPhotos.map((src, idx) => (
+            <img key={idx} src={src} onClick={() => setLightbox(src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 + (idx % 3) * 25 }} />
+          ))}
         </div>
       </section>
 
@@ -4387,6 +4397,7 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'photos') {
       safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+      safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); });
     }
   }, [ok, tab]);
   const toggleOrderStatus = async (o) => {
@@ -4600,15 +4611,23 @@ function StaffPanelView({ back }) {
     setPhotoSaveMsg(t('savedMsg'));
     setTimeout(() => setPhotoSaveMsg(''), 2500);
   };
+  const applyPhotoToCategory = async () => {
+    if (!editingPhotoItem || !editPhotoUrl.trim()) return;
+    const cat = MENU.find((c) => c.items.some((i) => i.id === editingPhotoItem.id));
+    if (!cat) return;
+    const next = { ...photoOverrides };
+    cat.items.forEach((i) => { next[i.id] = editPhotoUrl.trim(); });
+    await safeSet('siteconfig:photoOverrides', next);
+    setPhotoOverrides(next);
+    setPhotoSaveMsg(t('photoAppliedCategoryMsg').replace('{count}', String(cat.items.length)));
+    setTimeout(() => setPhotoSaveMsg(''), 3000);
+  };
   const [photoUploadBusy, setPhotoUploadBusy] = useState(false);
-  const handlePhotoFileUpload = (file) => {
-    if (!file || !editingPhotoItem) return;
-    setPhotoUploadBusy(true);
+  const compressImageFile = (file, maxW = 900, quality = 0.78) => new Promise((resolve, reject) => {
     const img = new Image();
     const reader = new FileReader();
     reader.onload = (e) => {
-      img.onload = async () => {
-        const maxW = 900;
+      img.onload = () => {
         const scale = Math.min(1, maxW / img.width);
         const w = Math.round(img.width * scale);
         const h = Math.round(img.height * scale);
@@ -4616,20 +4635,45 @@ function StaffPanelView({ back }) {
         canvas.width = w; canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
-        setEditPhotoUrl(dataUrl);
-        const next = { ...photoOverrides, [editingPhotoItem.id]: dataUrl };
-        await safeSet('siteconfig:photoOverrides', next);
-        setPhotoOverrides(next);
-        setPhotoSaveMsg(t('savedMsg'));
-        setTimeout(() => setPhotoSaveMsg(''), 2500);
-        setPhotoUploadBusy(false);
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
-      img.onerror = () => setPhotoUploadBusy(false);
+      img.onerror = reject;
       img.src = e.target.result;
     };
-    reader.onerror = () => setPhotoUploadBusy(false);
+    reader.onerror = reject;
     reader.readAsDataURL(file);
+  });
+  const handlePhotoFileUpload = async (file) => {
+    if (!file || !editingPhotoItem) return;
+    setPhotoUploadBusy(true);
+    try {
+      const dataUrl = await compressImageFile(file);
+      setEditPhotoUrl(dataUrl);
+      const next = { ...photoOverrides, [editingPhotoItem.id]: dataUrl };
+      await safeSet('siteconfig:photoOverrides', next);
+      setPhotoOverrides(next);
+      setPhotoSaveMsg(t('savedMsg'));
+      setTimeout(() => setPhotoSaveMsg(''), 2500);
+    } catch {}
+    setPhotoUploadBusy(false);
+  };
+  const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
+  const [galleryUploadBusy, setGalleryUploadBusy] = useState(false);
+  const handleGalleryFileUpload = async (file) => {
+    if (!file) return;
+    setGalleryUploadBusy(true);
+    try {
+      const dataUrl = await compressImageFile(file, 1000, 0.75);
+      const next = [...extraGalleryPhotos, dataUrl];
+      await safeSet('siteconfig:extraGalleryPhotos', next);
+      setExtraGalleryPhotos(next);
+    } catch {}
+    setGalleryUploadBusy(false);
+  };
+  const removeGalleryPhoto = async (idx) => {
+    const next = extraGalleryPhotos.filter((_, i) => i !== idx);
+    await safeSet('siteconfig:extraGalleryPhotos', next);
+    setExtraGalleryPhotos(next);
   };
   const resetPhoto = async () => {
     if (!editingPhotoItem) return;
@@ -4921,7 +4965,12 @@ function StaffPanelView({ back }) {
                     <span className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('orLabel')}</span>
                     <div className="flex-1 h-px" style={{ background: '#e3d5bd' }} />
                   </div>
-                  <input value={editPhotoUrl} onChange={(e) => setEditPhotoUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input value={editPhotoUrl} onChange={(e) => setEditPhotoUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+                  {editPhotoUrl.trim() && (
+                    <button onClick={applyPhotoToCategory} className="w-full mb-4 text-left px-3.5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>
+                      <span className="text-sm">🔁</span> {t('applyToCategoryBtn')}
+                    </button>
+                  )}
                   <div className="flex gap-2">
                     <button onClick={savePhoto} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                     {photoOverrides[editingPhotoItem.id] && <button onClick={resetPhoto} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>}
@@ -4930,6 +4979,24 @@ function StaffPanelView({ back }) {
                   {photoSaveMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{photoSaveMsg}</p>}
                 </div>
               )}
+              <div className="mt-6 pt-5" style={{ borderTop: '1px solid #e3d5bd' }}>
+                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">🖼️</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('independentPhotoTitle')}</h3></div>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('independentPhotoHint')}</p>
+                <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-4 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
+                  <span className="text-base">📷</span> {galleryUploadBusy ? '…' : t('uploadGalleryPhotoBtn')}
+                  <input type="file" accept="image/*" className="hidden" disabled={galleryUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleGalleryFileUpload(f); e.target.value = ''; }} />
+                </label>
+                {extraGalleryPhotos.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {extraGalleryPhotos.map((src, idx) => (
+                      <div key={idx} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '1' }}>
+                        <img src={src} alt="" className="w-full h-full object-cover" />
+                        <button onClick={() => removeGalleryPhoto(idx)} className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.75)' }}><X size={13} color="#fff" /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </>
