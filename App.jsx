@@ -1198,7 +1198,7 @@ function TopBar({ onHome, title, dark = true }) {
         {globalNavOpen && (
           <>
             <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
-            <div className="absolute top-11 right-0 w-56 rounded-2xl overflow-hidden py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
+            <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
               <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
               <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
               <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>
@@ -3091,7 +3091,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 {globalNavOpen && (
                   <>
                     <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
-                    <div className="absolute top-10 right-0 w-56 rounded-2xl overflow-hidden py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
+                    <div className="absolute top-10 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
                       <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
                       <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
                       <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>
