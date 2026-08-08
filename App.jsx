@@ -1417,7 +1417,7 @@ function ConfigModal({ onClose, children }) {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-6"
       style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', zIndex: 150, animation: 'modalBgFade .35s ease' }}
@@ -1430,7 +1430,8 @@ function ConfigModal({ onClose, children }) {
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -2737,7 +2738,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             value={quickSearch}
             onChange={(e) => setQuickSearch(e.target.value)}
             placeholder={t('quickSearchPh')}
-            inputMode="search"
+            inputMode="numeric"
             className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm font-bold outline-none"
             style={{ background: '#fff', border: `1.5px solid ${quickSearch ? ORANGE : '#e3d5bd'}`, color: GREEN, boxShadow: quickSearch ? '0 6px 20px rgba(230,90,10,.15)' : 'none', transition: 'border-color .2s ease, box-shadow .2s ease' }}
           />
@@ -3944,7 +3945,7 @@ function GroupOrderView({ back }) {
                 value={quickSearch}
                 onChange={(e) => setQuickSearch(e.target.value)}
                 placeholder={t('quickSearchPh')}
-                inputMode="search"
+                inputMode="numeric"
                 className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm font-bold outline-none"
                 style={{ background: '#fff', border: `1.5px solid ${quickSearch ? ORANGE : '#e3d5bd'}`, color: GREEN, boxShadow: quickSearch ? '0 6px 20px rgba(230,90,10,.15)' : 'none', transition: 'border-color .2s ease, box-shadow .2s ease' }}
               />
