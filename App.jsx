@@ -2635,12 +2635,13 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       if (item.soldOut) return;
       if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
       if (item.priceLarge !== undefined) {
+        quickSearchRef.current?.blur();
         setTab(item.catKey);
         setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
         return;
       }
-      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
-      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { quickSearchRef.current?.blur(); setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
+      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { quickSearchRef.current?.blur(); setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
       setLastAddedTab(item.catKey); addItem(item.id, mx(item.name, lang), item.price, item.name);
     };
     if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: proceed }); return; }
@@ -2696,6 +2697,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 setLastAddedTab('kebap');
                 addItem(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel, meatChoiceQty);
                 setMeatChoiceItem(null);
+                if (quickSearch.trim()) setTimeout(() => quickSearchRef.current?.focus(), 50);
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
               style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
@@ -2745,7 +2747,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         </div>
       </div>
       {quickSearch.trim() && (
-        <div className="px-5 pb-3">
+        <div className="px-5 pb-24">
           {quickSearchResults.length === 0 ? (
             <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
           ) : (
@@ -2814,7 +2816,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
             const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
             const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra({ name: t, onConfirm: () => setConfigExtras((ex) => [...ex, t]) }); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
-            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);  if (quickSearch.trim()) setTimeout(() => quickSearchRef.current?.focus(), 50); };
             const confirmAdd = () => {
               const sizeLabel = size === 'klein' ? 'klein' : 'groß';
               const displaySizeLabel = size === 'klein' ? t('sizeSmall') : t('sizeLarge');
@@ -2898,7 +2900,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             const doOpen = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
             const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
             const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra({ name: top, onConfirm: () => setConfigExtras((ex) => [...ex, top]) }); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
-            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
+            const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote('');  if (quickSearch.trim()) setTimeout(() => quickSearchRef.current?.focus(), 50); };
             const confirmAdd = () => {
               let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
               let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
@@ -3066,7 +3068,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
         })}
       </div>
 
-      {totalCount > 0 && !cartOpen && !openExtra && !quickSearch.trim() && ReactDOM.createPortal(
+      {totalCount > 0 && !cartOpen && !openExtra && ReactDOM.createPortal(
         <button onClick={() => { setCartOpen(true); setDrawerView('upsell'); }} className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[360px] rounded-2xl px-5 py-4 flex items-center justify-center gap-2 shadow-xl" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)', zIndex: 90 }}>
           <span className="font-black text-base">{t('weiter')}</span>
         </button>,
@@ -3774,12 +3776,13 @@ function GroupOrderView({ back }) {
       if (item.soldOut) return;
       if (item.weekend && !isWeekendDay()) { setWeekendWarnOpen(true); return; }
       if (item.priceLarge !== undefined) {
+        quickSearchRef.current?.blur();
         setTab(item.catKey);
         setOpenExtra({ itemId: item.id, size: 'gross' }); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);
         return;
       }
-      if (item.catKey === 'kebap' && hasDonerMeat(item)) { setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
-      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
+      if (item.catKey === 'kebap' && hasDonerMeat(item)) { quickSearchRef.current?.blur(); setMeatChoiceSel(null); setMeatChoiceNote(''); setMeatChoiceQty(1); setMeatChoiceItem(item); return; }
+      if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.catKey) && item.catKey !== 'pizza') { quickSearchRef.current?.blur(); setLunchDrink(null); setLunchPending({ label: mx(item.name, lang), deLabel: item.name }); return; }
       setLastAddedTab(item.catKey); addLocal(item.id, mx(item.name, lang), item.price, item.name);
     };
     if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: proceed }); return; }
@@ -3837,6 +3840,7 @@ function GroupOrderView({ back }) {
                 setLastAddedTab('kebap');
                 addLocal(`${item.id}-${meatChoiceSel || 'x'}-${Date.now()}`, displayLabel, item.price, deLabel, meatChoiceQty);
                 setMeatChoiceItem(null);
+                if (quickSearch.trim()) setTimeout(() => quickSearchRef.current?.focus(), 50);
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
               style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
@@ -3950,7 +3954,7 @@ function GroupOrderView({ back }) {
             </div>
           </div>
           {quickSearch.trim() && (
-            <div className="px-5 pb-3">
+            <div className="px-5 pb-24">
               {quickSearchResults.length === 0 ? (
                 <p className="text-xs font-semibold text-center py-4" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
               ) : (
@@ -3993,7 +3997,7 @@ function GroupOrderView({ back }) {
             const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
                 const setSize = (sz) => setOpenExtra({ itemId: item.id, size: sz });
                 const toggleExtra = (t) => { if (!configExtras.includes(t) && soldOutExtras.includes(t)) { setPendingSoldOutExtra({ name: t, onConfirm: () => setConfigExtras((ex) => [...ex, t]) }); return; } setConfigExtras((ex) => (ex.includes(t) ? ex.filter((x) => x !== t) : [...ex, t])); };
-                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null); };
+                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); setConfigMeat(null);  if (quickSearch.trim()) setTimeout(() => quickSearchRef.current?.focus(), 50); };
                 const confirmAdd = () => {
                   const sizeLabel = size === 'klein' ? 'klein' : 'groß';
                   const displaySizeLabel = size === 'klein' ? t('sizeSmall') : t('sizeLarge');
@@ -4077,7 +4081,7 @@ function GroupOrderView({ back }) {
                 const doOpen = () => { setOpenExtra({ itemId: item.id }); setConfigExtras([]); setConfigNote(''); };
             const openFor = () => { const soExtra = findSoldOutExtraInItem(item, soldOutExtras); if (soExtra) { setPendingSoldOutExtra({ name: soExtra, onConfirm: doOpen }); return; } doOpen(); };
                 const toggleExtra = (top) => { if (!configExtras.includes(top) && soldOutExtras.includes(top)) { setPendingSoldOutExtra({ name: top, onConfirm: () => setConfigExtras((ex) => [...ex, top]) }); return; } setConfigExtras((ex) => (ex.includes(top) ? ex.filter((x) => x !== top) : [...ex, top])); };
-                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote(''); };
+                const closeModal = () => { setOpenExtra(null); setConfigExtras([]); setConfigNote('');  if (quickSearch.trim()) setTimeout(() => quickSearchRef.current?.focus(), 50); };
                 const confirmAdd = () => {
                   let deLabel = configExtras.length > 0 ? `${item.name} ${configExtras.map((e) => `+${e}`).join(' ')}` : `${item.name}`;
                   let displayLabel = configExtras.length > 0 ? `${mx(item.name, lang)} ${configExtras.map((e) => `+${mx(e, lang)}`).join(' ')}` : `${mx(item.name, lang)}`;
