@@ -122,6 +122,7 @@ const UI = {
   quickSearchNoResults: { de: 'Nichts gefunden', en: 'Nothing found', tr: 'Bir şey bulunamadı', ro: 'Nimic găsit', nl: 'Niets gevonden', sq: 'Nuk u gjet asgjë', ku: 'Tiştek nehat dîtin' },
   quickOrderByNumberBtn: { de: 'Mit Nummer bestellen', en: 'Order by number', tr: 'Numara ile sipariş ver', ro: 'Comandă după număr', nl: 'Bestellen met nummer', sq: 'Porosit me numër', ku: 'Bi hejmarê sifariş bide' },
   quantityLabel: { de: 'MENGE', en: 'QUANTITY', tr: 'ADET', ro: 'CANTITATE', nl: 'AANTAL', sq: 'SASIA', ku: 'HEJMAR' },
+  comboFreeDrinkHint: { de: 'Dein erstes Getränk ist gratis!', en: 'Your first drink is free!', tr: 'İlk içeceğin ücretsiz!', ro: 'Prima ta băutură este gratuită!', nl: 'Je eerste drankje is gratis!', sq: 'Pija jote e parë është falas!', ku: 'Vexwarina te ya yekem belaş e!' },
   staffQuickLookupTitle: { de: '🔍 Nummer nachschlagen', en: '🔍 Look up number', tr: '🔍 Numara sorgula', ro: '🔍 Caută numărul', nl: '🔍 Nummer opzoeken', sq: '🔍 Kërko numrin', ku: '🔍 Hejmarê bigere' },
   staffQuickLookupHint: { de: 'Für Kunden, die per WhatsApp direkt eine Nummer schreiben.', en: 'For customers who message a number directly via WhatsApp.', tr: 'WhatsApp\'a direkt numara yazan müşteriler için.', ro: 'Pentru clienții care scriu direct un număr pe WhatsApp.', nl: 'Voor klanten die direct een nummer via WhatsApp sturen.', sq: 'Për klientët që shkruajnë direkt një numër në WhatsApp.', ku: 'Ji bo xerîdarên ku rasterast hejmarê li WhatsApp dinivîsin.' },
   extraSoldOutWarnPrefix: { de: 'Achtung: Wir haben gerade kein/e/n', en: 'Note: We currently don\'t have', tr: 'Dikkat: Şu anda', ro: 'Atenție: Momentan nu avem', nl: 'Let op: We hebben momenteel geen', sq: 'Kujdes: Aktualisht nuk kemi', ku: 'Bala xwe bidê: Niha em ne xwedî' },
@@ -2498,6 +2499,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [drawerView, setDrawerView] = useState('cart');
   const [wheelResult, setWheelResult] = useState(null);
   const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
+  const [comboDrinkFreeUsed, setComboDrinkFreeUsed] = useState(false);
   const [itemNotes, setItemNotes] = useState({});
   const [burst, setBurst] = useState(false);
   const [sentSnapshot, setSentSnapshot] = useState(null);
@@ -3173,11 +3175,16 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   <div className="text-3xl mb-2">🥤</div>
                   <div className="font-black text-lg" style={{ color: GREEN }}>Etwas zu trinken?</div>
                   <p className="text-sm mt-1" style={{ color: '#7c6d55' }}>{t('drinksSub')}</p>
+                  {pizzaComboActive && !comboDrinkFreeUsed && (
+                    <div className="inline-flex items-center gap-1.5 mt-3 px-3.5 py-1.5 rounded-full font-bold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>🎁 {t('comboFreeDrinkHint')}</div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2.5">
                   {UPSELL_DRINKS.map((u) => {
                     const key = u.id;
                     const qty = cart[key]?.qty || 0;
+                    const freeKey = `${u.id}-combofree`;
+                    const isFreeLine = pizzaComboActive && !!cart[freeKey];
                     return (
                       <div key={u.id} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm" style={{ borderLeft: `4px solid ${ORANGE}` }}>
                         <div className="flex items-center gap-3">
@@ -3193,7 +3200,18 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                             <div className="text-xs font-semibold" style={{ color: CHILI }}>{fmt(u.price)}</div>
                           </div>
                         </div>
-                        <Stepper qty={qty} onAdd={() => { if (!u.soldOut) addItem(u.id, mx(u.name, lang), u.price, u.name); }} onRemove={() => removeItem(u.id)} />
+                        <Stepper qty={qty + (cart[freeKey]?.qty || 0)} onAdd={() => {
+                          if (u.soldOut) return;
+                          if (pizzaComboActive && !comboDrinkFreeUsed) {
+                            addItem(freeKey, `🎁 ${mx(u.name, lang)} (gratis)`, 0, `${u.name} (gratis)`);
+                            setComboDrinkFreeUsed(true);
+                            return;
+                          }
+                          addItem(u.id, mx(u.name, lang), u.price, u.name);
+                        }} onRemove={() => {
+                          if (isFreeLine) { removeItem(freeKey); setComboDrinkFreeUsed(false); return; }
+                          removeItem(u.id);
+                        }} />
                       </div>
                     );
                   })}
