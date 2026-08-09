@@ -5445,6 +5445,12 @@ function StaffPanelView({ back }) {
 
 /* ============ LOYALTY (Treuekarte) ============ */
 /* ============ APP ============ */
+const CATEGORY_EMOJI = {
+  kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥐', baguette: '🥪',
+  ueberbacken: '🧀', rollo: '🌯', nudeln: '🍝', schnitzel: '🍖',
+  salat: '🥗', finger: '🍤', getraenke: '🥤',
+};
+
 function TischMenuView() {
   const { lang, setLang, t } = React.useContext(LangContext);
   const [photoOverrides, setPhotoOverrides] = useState({});
@@ -5489,9 +5495,10 @@ function TischMenuView() {
           <button
             key={cat.key}
             onClick={() => setActiveCat(cat.key)}
-            className="flex-shrink-0 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap"
+            className="flex-shrink-0 px-5 py-3 rounded-full font-black text-base whitespace-nowrap flex items-center gap-1.5"
             style={activeCat === cat.key ? { background: GREEN, color: GOLD } : { background: '#fff', color: '#7c6d55', border: '1px solid #e3d5bd' }}
           >
+            <span className="text-lg">{CATEGORY_EMOJI[cat.key] || '🍽️'}</span>
             {catLabel(cat.key, lang)}
           </button>
         ))}
