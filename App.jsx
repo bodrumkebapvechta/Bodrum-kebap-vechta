@@ -51,6 +51,10 @@ const LANG_NAMES = { de: 'Deutsch', en: 'English', tr: 'Türkçe', ro: 'Română
 const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧', tr: '🇹🇷', ro: '🇷🇴', nl: '🇳🇱', sq: '🇦🇱', ku: '☀️' };
 
 const UI = {
+  tischMenuKicker: { de: 'TISCHMENÜ', en: 'TABLE MENU', tr: 'MASA MENÜSÜ', ro: 'MENIU DE MASĂ', nl: 'TAFELMENU', sq: 'MENYJA E TRYEZËS', ku: 'MENÛYA MASÊ'},
+  tischMenuOrderNotice: { de: '🛎️ Zum Bestellen bitte an die Theke kommen', en: '🛎️ Please order at the counter', tr: '🛎️ Sipariş için lütfen kasaya gelin', ro: '🛎️ Pentru comandă, veniți la tejghea', nl: '🛎️ Bestel aan de toonbank', sq: '🛎️ Për porosi, ejani te banaku', ku: '🛎️ Ji kerema xwe re bo sifarişê were qeşetê'},
+  tischMenuFromLabel: { de: 'ab', en: 'from', tr: 'başlangıç', ro: 'de la', nl: 'vanaf', sq: 'nga', ku: 'ji'},
+  tischMenuBackHome: { de: 'Zur Startseite', en: 'Back to homepage', tr: 'Ana sayfaya dön', ro: 'Înapoi la pagina principală', nl: 'Terug naar startpagina', sq: 'Kthehu te faqja kryesore', ku: 'Vegere rûpela sereke'},
   navExtras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: 'Extra’s' , sq: 'Ekstra', ku: 'Zêde'},
   navMenu: { de: 'Speisekarte', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menukaart' , sq: 'Menuja', ku: 'Menû'},
   navGallery: { de: 'Galerie', en: 'Gallery', tr: 'Galeri', ro: 'Galerie', nl: 'Galerij' , sq: 'Galeria', ku: 'Galerî'},
@@ -5441,9 +5445,113 @@ function StaffPanelView({ back }) {
 
 /* ============ LOYALTY (Treuekarte) ============ */
 /* ============ APP ============ */
+function TischMenuView() {
+  const { lang, setLang, t } = React.useContext(LangContext);
+  const [photoOverrides, setPhotoOverrides] = useState({});
+  const [priceOverrides, setPriceOverrides] = useState({});
+  const [soldOutIds, setSoldOutIds] = useState([]);
+  const [activeCat, setActiveCat] = useState(MENU[0].key);
+  const [legendOpen, setLegendOpen] = useState(false);
+
+  useEffect(() => {
+    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+    safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
+    safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+  }, []);
+
+  const EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(priceOverrides, photoOverrides, soldOutIds), [priceOverrides, photoOverrides, soldOutIds]);
+  const activeItems = EFFECTIVE_MENU.find((c) => c.key === activeCat)?.items || [];
+
+  return (
+    <div className="min-h-screen w-full" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-3" style={{ background: GREEN }}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
+            <Flame size={18} color="#fff" />
+          </div>
+          <div>
+            <div className="font-extrabold text-sm leading-tight tracking-wide text-white">BODRUM KEBAP</div>
+            <div className="text-[10px] font-semibold tracking-[0.2em]" style={{ color: GOLD }}>{t('tischMenuKicker')}</div>
+          </div>
+        </div>
+        <LanguageSwitcher lang={lang} setLang={setLang} dark />
+      </div>
+
+      {/* Order-at-counter notice */}
+      <div className="px-5 py-3 text-center" style={{ background: GOLD }}>
+        <span className="font-bold text-sm" style={{ color: GREEN }}>{t('tischMenuOrderNotice')}</span>
+      </div>
+
+      {/* Category tabs */}
+      <div className="flex gap-2 px-4 py-3 overflow-x-auto" style={{ background: CREAM, borderBottom: '1px solid #e3d5bd' }}>
+        {MENU.map((cat) => (
+          <button
+            key={cat.key}
+            onClick={() => setActiveCat(cat.key)}
+            className="flex-shrink-0 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap"
+            style={activeCat === cat.key ? { background: GREEN, color: GOLD } : { background: '#fff', color: '#7c6d55', border: '1px solid #e3d5bd' }}
+          >
+            {catLabel(cat.key, lang)}
+          </button>
+        ))}
+      </div>
+
+      {/* Allergen legend trigger */}
+      <div className="px-5 pt-3">
+        <button onClick={() => setLegendOpen(true)} className="text-[11px] font-bold underline" style={{ color: '#a4906c' }}>ⓘ {t('allergenLegendTitle')}</button>
+      </div>
+
+      {/* Item list */}
+      <div className="px-4 py-4 space-y-3">
+        {activeItems.map((item) => (
+          <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3" style={{ opacity: item.soldOut ? 0.55 : 1 }}>
+            {item.img && (
+              <img src={item.img} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" style={item.imgContain ? { objectFit: 'contain', background: '#f7f0e2' } : undefined} />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-sm flex items-center flex-wrap gap-1" style={{ color: GREEN }}>
+                {menuNum(item.id) && <span className="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 rounded-md text-[11px] font-black" style={{ background: '#fdecd4', color: ORANGE }}>{menuNum(item.id)}</span>}
+                {mx(item.name, lang)}
+                <AllergenTag alg={item.alg} />
+                {item.weekend && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>FR·SA·SO</span>}
+                {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
+              </div>
+              {item.desc && <div className="text-xs mt-1" style={{ color: '#7c6d55' }}>{mx(item.desc, lang)}</div>}
+            </div>
+            <div className="flex-shrink-0 text-right">
+              {item.priceLarge !== undefined ? (
+                <div className="text-xs font-black leading-tight" style={{ color: ORANGE }}>
+                  <div>24cm {fmt(item.priceSmall)}</div>
+                  <div>28cm {fmt(item.priceLarge)}</div>
+                </div>
+              ) : (
+                <div className="text-sm font-black" style={{ color: ORANGE }}>{fmt(item.price)}</div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer contact info */}
+      <div className="px-5 py-6 text-center" style={{ background: GREEN }}>
+        <div className="text-white font-bold text-sm mb-1">Oyther Straße 37, 49377 Vechta</div>
+        <div className="text-xs" style={{ color: '#d9cdb4' }}>04441 / 95 16 104</div>
+      </div>
+
+      {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
+    </div>
+  );
+}
+
+function isTischMenuUrl() {
+  try { return new URLSearchParams(window.location.search).get('menu') === '1'; } catch { return false; }
+}
+
 export default function App() {
-  const [booted, setBooted] = useState(false);
-  const [view, setView] = useState('home');
+  const isTischMenu = isTischMenuUrl();
+  const [booted, setBooted] = useState(isTischMenu);
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const langCtx = useLang();
@@ -5507,6 +5615,10 @@ export default function App() {
 
   if (view === 'home') {
     return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}</LangContext.Provider>;
+  }
+
+  if (view === 'tischmenu') {
+    return <LangContext.Provider value={ctxValue}><TischMenuView />{installHelpModal}</LangContext.Provider>;
   }
 
   return (
