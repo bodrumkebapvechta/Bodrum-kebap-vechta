@@ -901,6 +901,13 @@ function tischText(val, lang) {
   if (typeof val === 'string') return val;
   return val[lang] || val.de || '';
 }
+function tischCatLabel(cat, lang) {
+  if (cat.key.startsWith('imp-')) {
+    const orig = cat.key.slice(4);
+    if (CATEGORY_LABELS[orig]) return catLabel(orig, lang);
+  }
+  return mx(tischText(cat.label, 'de'), lang);
+}
 
 async function safeSet(key, value) {
   try {
@@ -5651,6 +5658,13 @@ function StaffPanelView({ back }) {
 
 /* ============ LOYALTY (Treuekarte) ============ */
 /* ============ APP ============ */
+const TISCH_CAT_COLORS = ['#e65a0a', '#153826', '#c9962e', '#8a3b2f', '#2f6b4f', '#a44f9e'];
+function tischCatColor(key) {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return TISCH_CAT_COLORS[h % TISCH_CAT_COLORS.length];
+}
+
 function TischMenuView() {
   const { lang, setLang, t } = React.useContext(LangContext);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
@@ -5670,33 +5684,49 @@ function TischMenuView() {
   }, [tischMenu, activeCat]);
 
   return (
-    <div className="min-h-screen w-full" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <style>{`
+        @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+        @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
+        @keyframes tmFlicker { 0%,100%{ transform:scale(1) rotate(-2deg);} 50%{ transform:scale(1.08) rotate(2deg);} }
+        @keyframes tmShimmer { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
+        @keyframes tmBellRing { 0%,100%{ transform:rotate(0deg);} 20%{ transform:rotate(-12deg);} 40%{ transform:rotate(10deg);} 60%{ transform:rotate(-6deg);} 80%{ transform:rotate(4deg);} }
+        .tm-card { animation: tmFadeUp .45s ease both; transition: transform .15s ease, box-shadow .15s ease; }
+        .tm-card:active { transform: scale(.98); }
+        .tm-tab { transition: all .2s ease; }
+      `}</style>
+
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-3" style={{ background: GREEN }}>
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
-            <Flame size={18} color="#fff" />
+      <div className="relative overflow-hidden px-5 pt-7 pb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+        <div className="absolute -top-8 -right-10 w-40 h-40 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.18), transparent 70%)' }} />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
+        <div className="relative flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.5)', animation: 'tmFlicker 2.4s ease-in-out infinite' }}>
+              <Flame size={20} color="#fff" />
+            </div>
+            <div>
+              <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
+              <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>{t('tischMenuKicker')}</div>
+            </div>
           </div>
-          <div>
-            <div className="font-extrabold text-sm leading-tight tracking-wide text-white">BODRUM KEBAP</div>
-            <div className="text-[10px] font-semibold tracking-[0.2em]" style={{ color: GOLD }}>{t('tischMenuKicker')}</div>
-          </div>
+          <LanguageSwitcher lang={lang} setLang={setLang} dark />
         </div>
-        <LanguageSwitcher lang={lang} setLang={setLang} dark />
       </div>
 
       {/* Order-at-counter notice */}
-      <div className="px-5 py-3 text-center" style={{ background: GOLD }}>
-        <span className="font-bold text-sm" style={{ color: GREEN }}>{t('tischMenuOrderNotice')}</span>
+      <div className="px-5 py-3.5 text-center flex items-center justify-center gap-2" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'tmGlow 2.6s ease-in-out infinite' }}>
+        <span style={{ display: 'inline-block', animation: 'tmBellRing 2.2s ease-in-out infinite' }}>🛎️</span>
+        <span className="font-black text-sm" style={{ color: GREEN }}>{t('tischMenuOrderNotice').replace('🛎️ ', '')}</span>
       </div>
 
       {tischMenu === null && (
-        <div className="px-5 py-16 text-center text-sm font-semibold" style={{ color: '#a4906c' }}>…</div>
+        <div className="px-5 py-20 text-center text-sm font-semibold" style={{ color: '#a4906c' }}>…</div>
       )}
 
       {tischMenu && tischMenu.categories.length === 0 && (
-        <div className="px-5 py-16 text-center">
-          <div className="text-4xl mb-3">🍽️</div>
+        <div className="px-5 py-20 text-center" style={{ animation: 'tmFadeUp .5s ease both' }}>
+          <div className="text-5xl mb-3">🍽️</div>
           <p className="text-sm font-semibold" style={{ color: '#a4906c' }}>Menü noch nicht eingerichtet.</p>
         </div>
       )}
@@ -5704,48 +5734,77 @@ function TischMenuView() {
       {tischMenu && tischMenu.categories.length > 0 && (
         <>
           {/* Category tabs */}
-          <div className="flex gap-2 px-4 py-3 overflow-x-auto" style={{ background: CREAM, borderBottom: '1px solid #e3d5bd' }}>
-            {tischMenu.categories.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCat(cat.key)}
-                className="flex-shrink-0 px-5 py-3 rounded-full font-black text-base whitespace-nowrap flex items-center gap-1.5"
-                style={activeCat === cat.key ? { background: GREEN, color: GOLD } : { background: '#fff', color: '#7c6d55', border: '1px solid #e3d5bd' }}
-              >
-                <span className="text-lg">{cat.emoji || '🍽️'}</span>
-                {tischText(cat.label, lang)}
-              </button>
-            ))}
+          <div className="flex gap-2.5 px-4 py-4 overflow-x-auto sticky top-0 z-10" style={{ background: 'rgba(253,246,232,.94)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e9dcc0' }}>
+            {tischMenu.categories.map((cat) => {
+              const active = activeCat === cat.key;
+              const color = tischCatColor(cat.key);
+              return (
+                <button
+                  key={cat.key}
+                  onClick={() => setActiveCat(cat.key)}
+                  className="tm-tab flex-shrink-0 px-5 py-3 rounded-2xl font-black text-base whitespace-nowrap flex items-center gap-2"
+                  style={active
+                    ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 8px 18px ${color}55`, transform: 'scale(1.04)' }
+                    : { background: '#fff', color: '#7c6d55', border: '1.5px solid #e9dcc0', boxShadow: '0 2px 6px rgba(0,0,0,.04)' }}
+                >
+                  <span className="text-xl">{cat.emoji || '🍽️'}</span>
+                  {tischCatLabel(cat, lang)}
+                </button>
+              );
+            })}
           </div>
 
           {/* Item list */}
-          <div className="px-4 py-4 space-y-3">
+          <div className="px-4 py-5 space-y-3.5">
             {activeItems.length === 0 && (
-              <p className="text-xs font-semibold text-center py-6" style={{ color: '#a4906c' }}>—</p>
+              <p className="text-xs font-semibold text-center py-10" style={{ color: '#a4906c' }}>—</p>
             )}
-            {activeItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3" style={{ opacity: item.soldOut ? 0.55 : 1 }}>
-                {item.img && <img src={item.img} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />}
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-sm flex items-center flex-wrap gap-1" style={{ color: GREEN }}>
-                    {tischText(item.name, lang)}
-                    {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
+            {activeItems.map((item, idx) => {
+              const color = tischCatColor(item.category);
+              return (
+                <div
+                  key={item.id}
+                  className="tm-card bg-white rounded-2xl p-3.5 flex items-center gap-3.5"
+                  style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 8) * 0.05}s` }}
+                >
+                  {item.img ? (
+                    <img src={item.img} alt="" className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-[68px] h-[68px] rounded-xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }}>
+                      🍽️
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black text-[15px] flex items-center flex-wrap gap-1.5 leading-snug" style={{ color: GREEN }}>
+                      {mx(tischText(item.name, 'de'), lang)}
+                      {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
+                    </div>
+                    {item.desc && <div className="text-xs mt-0.5 leading-snug" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</div>}
                   </div>
-                  {item.desc && <div className="text-xs mt-1" style={{ color: '#7c6d55' }}>{tischText(item.desc, lang)}</div>}
+                  <div className="flex-shrink-0 text-right">
+                    {item.priceLarge !== undefined ? (
+                      <div className="flex flex-col gap-0.5 items-end">
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.priceLarge)}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex-shrink-0 text-sm font-black text-right" style={{ color: ORANGE }}>
-                  {item.priceLarge !== undefined ? <>{fmt(item.price)}<br />{fmt(item.priceLarge)}</> : fmt(item.price)}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
 
       {/* Footer contact info */}
-      <div className="px-5 py-6 text-center" style={{ background: GREEN }}>
-        <div className="text-white font-bold text-sm mb-1">Oyther Straße 37, 49377 Vechta</div>
-        <div className="text-xs" style={{ color: '#d9cdb4' }}>04441 / 95 16 104</div>
+      <div className="relative overflow-hidden px-5 py-8 text-center mt-2" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+        <div className="absolute -top-6 -left-6 w-28 h-28 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.15), transparent 70%)' }} />
+        <div className="relative flex flex-col items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-white font-bold text-sm"><MapPin size={14} color={GOLD} /> Oyther Straße 37, 49377 Vechta</div>
+          <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> 04441 / 95 16 104</div>
+        </div>
       </div>
     </div>
   );
