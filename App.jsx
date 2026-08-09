@@ -4746,6 +4746,7 @@ function StaffPanelView({ back }) {
   const [tischItemImg, setTischItemImg] = useState('');
   const [tischEditingId, setTischEditingId] = useState(null);
   const [tischUploadBusy, setTischUploadBusy] = useState(false);
+  const [tischAdminOpen, setTischAdminOpen] = useState(false);
   const [tischMsg, setTischMsg] = useState('');
 
   useEffect(() => {
@@ -5159,6 +5160,84 @@ function StaffPanelView({ back }) {
     await safeSet(`spincode:${c}`, updated); setWheelResult(updated); setRedeemMsg(t('redeemedMsg'));
   };
 
+  if (ok && tischAdminOpen) {
+    return (
+      <div className="pb-10" style={{ background: CREAM, minHeight: '100vh' }}>
+        <div style={{ background: GREEN }}><TopBar onHome={() => setTischAdminOpen(false)} title={t('staffTischMenuTab')} /></div>
+        <div className="px-5 pt-4">
+          <p className="text-[11px] mb-2" style={{ color: '#a4906c' }}>Eigene Karte für den QR-Tischmenü-Bildschirm — unabhängig vom Bestell-Menü. Einträge werden auf Deutsch gespeichert; für andere Sprachen im Chat Bescheid geben, dann werden sie wie auf der Hauptseite von Hand übersetzt.</p>
+          <a href="?menu=1" target="_blank" rel="noreferrer" className="inline-block mb-4 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>👁️ Vorschau ansehen</a>
+
+          {/* Kategorien */}
+          <div className="bg-white rounded-xl p-4 mb-4">
+            <div className="font-black text-xs mb-2.5" style={{ color: GREEN }}>Kategorien</div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {tischMenu.categories.map((cat) => (
+                <div key={cat.key} className="flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-xs font-bold" style={{ background: '#f7f0e2', color: GREEN }}>
+                  {cat.emoji} {tischText(cat.label, 'de')}
+                  <button onClick={() => { if (confirm(`"${tischText(cat.label, 'de')}" und alle ihre Artikel löschen?`)) tischDeleteCategory(cat.key); }} className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#f0d4d4' }}><X size={11} color={CHILI} /></button>
+                </div>
+              ))}
+              {tischMenu.categories.length === 0 && <p className="text-[11px] font-semibold" style={{ color: '#c4b697' }}>Noch keine Kategorien — leg unten die erste an.</p>}
+            </div>
+            <div className="flex gap-2">
+              <input value={tischNewCatEmoji} onChange={(e) => setTischNewCatEmoji(e.target.value)} placeholder="🍽️" className="w-14 px-2 py-2.5 rounded-lg text-center text-lg outline-none" style={{ background: '#f7f0e2' }} />
+              <input value={tischNewCatName} onChange={(e) => setTischNewCatName(e.target.value)} placeholder="Neue Kategorie (z.B. Vorspeisen)" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+              <button onClick={tischAddCategory} className="px-4 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>+</button>
+            </div>
+          </div>
+
+          {/* Artikel-Liste je Kategorie */}
+          {tischMenu.categories.map((cat) => {
+            const catItems = tischMenu.items.filter((i) => i.category === cat.key);
+            return (
+              <div key={cat.key} className="mb-4">
+                <div className="font-black text-xs mb-2" style={{ color: '#a4906c' }}>{cat.emoji} {tischText(cat.label, 'de')}</div>
+                {catItems.map((item) => (
+                  <div key={item.id} className="bg-white rounded-xl p-3 mb-2 flex items-center gap-2.5">
+                    {item.img && <img src={item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-sm" style={{ color: GREEN }}>{tischText(item.name, 'de')} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
+                      <div className="text-xs font-bold" style={{ color: ORANGE }}>{fmt(item.price)}</div>
+                    </div>
+                    <button onClick={() => tischToggleSoldOut(item.id)} className="text-[10px] font-bold px-2 py-1.5 rounded-lg" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? 'Zurück' : 'Ausverkauft'}</button>
+                    <button onClick={() => tischStartEdit(item)} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#f0e5cf' }}>✏️</button>
+                    <button onClick={() => { if (confirm('Artikel löschen?')) tischDeleteItem(item.id); }} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#f0d4d4' }}><X size={13} color={CHILI} /></button>
+                  </div>
+                ))}
+                {catItems.length === 0 && <p className="text-[11px] font-semibold px-1" style={{ color: '#c4b697' }}>Noch keine Artikel</p>}
+              </div>
+            );
+          })}
+
+          {/* Artikel hinzufügen/bearbeiten */}
+          {tischMenu.categories.length > 0 && (
+            <div className="bg-white rounded-xl p-4 mt-2" style={{ border: `1.5px solid ${GOLD}` }}>
+              <div className="font-black text-xs mb-3" style={{ color: GREEN }}>{tischEditingId ? 'Artikel bearbeiten' : 'Neuer Artikel'}</div>
+              <select value={tischItemCat} onChange={(e) => setTischItemCat(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }}>
+                <option value="">Kategorie wählen…</option>
+                {tischMenu.categories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {tischText(c.label, 'de')}</option>)}
+              </select>
+              <input value={tischItemName} onChange={(e) => setTischItemName(e.target.value)} placeholder="Name (auf Deutsch)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+              <textarea value={tischItemDesc} onChange={(e) => setTischItemDesc(e.target.value)} placeholder="Beschreibung (optional, auf Deutsch)" rows={2} className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
+              <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+              {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2" />}
+              <label className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
+                <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
+                <input type="file" accept="image/*" className="hidden" disabled={tischUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) tischHandleImageUpload(f); e.target.value = ''; }} />
+              </label>
+              <div className="flex gap-2">
+                <button onClick={tischSaveItem} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                {tischEditingId && <button onClick={tischResetForm} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>}
+              </div>
+              {tischMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{tischMsg}</p>}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-10">
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
@@ -5217,7 +5296,6 @@ function StaffPanelView({ back }) {
                 { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
                 { key: 'wheel', icon: '🎡', label: t('staffWheelCodeTitle') },
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
-                { key: 'tischmenu', icon: '🍽️', label: t('staffTischMenuTab') },
                 { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
                 { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                 { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
@@ -5235,6 +5313,19 @@ function StaffPanelView({ back }) {
                 </button>
               ))}
             </div>
+          </div>
+          <div className="px-5 pb-2">
+            <button
+              onClick={() => setTischAdminOpen(true)}
+              className="w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-left"
+              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
+            >
+              <span className="text-2xl">🍽️</span>
+              <div>
+                <div className="font-black text-sm text-white">{t('staffTischMenuTab')}</div>
+                <div className="text-[11px] font-semibold" style={{ color: '#ffe8d1' }}>Eigene Karte für den QR-Tischbildschirm →</div>
+              </div>
+            </button>
           </div>
 
           {tab === 'wheel' && (
@@ -5515,78 +5606,6 @@ function StaffPanelView({ back }) {
                   </div>
                 )}
               </div>
-            </div>
-          )}
-          {tab === 'tischmenu' && (
-            <div className="px-5">
-              <div className="flex items-center gap-2 mb-1"><span className="text-lg">🍽️</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffTischMenuTab')}</h3></div>
-              <p className="text-[11px] mb-2" style={{ color: '#a4906c' }}>Eigene Karte für den QR-Tischmenü-Bildschirm — unabhängig vom Bestell-Menü. Einträge werden auf Deutsch gespeichert; für andere Sprachen im Chat Bescheid geben, dann werden sie wie auf der Hauptseite von Hand übersetzt.</p>
-              <a href="?menu=1" target="_blank" rel="noreferrer" className="inline-block mb-4 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>👁️ Vorschau ansehen</a>
-
-              {/* Kategorien */}
-              <div className="bg-white rounded-xl p-4 mb-4">
-                <div className="font-black text-xs mb-2.5" style={{ color: GREEN }}>Kategorien</div>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {tischMenu.categories.map((cat) => (
-                    <div key={cat.key} className="flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-xs font-bold" style={{ background: '#f7f0e2', color: GREEN }}>
-                      {cat.emoji} {tischText(cat.label, 'de')}
-                      <button onClick={() => { if (confirm(`"${tischText(cat.label, 'de')}" und alle ihre Artikel löschen?`)) tischDeleteCategory(cat.key); }} className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#f0d4d4' }}><X size={11} color={CHILI} /></button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input value={tischNewCatEmoji} onChange={(e) => setTischNewCatEmoji(e.target.value)} placeholder="🍽️" className="w-14 px-2 py-2.5 rounded-lg text-center text-lg outline-none" style={{ background: '#f7f0e2' }} />
-                  <input value={tischNewCatName} onChange={(e) => setTischNewCatName(e.target.value)} placeholder="Neue Kategorie (z.B. Vorspeisen)" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                  <button onClick={tischAddCategory} className="px-4 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>+</button>
-                </div>
-              </div>
-
-              {/* Artikel-Liste je Kategorie */}
-              {tischMenu.categories.map((cat) => {
-                const catItems = tischMenu.items.filter((i) => i.category === cat.key);
-                return (
-                  <div key={cat.key} className="mb-4">
-                    <div className="font-black text-xs mb-2" style={{ color: '#a4906c' }}>{cat.emoji} {tischText(cat.label, 'de')}</div>
-                    {catItems.map((item) => (
-                      <div key={item.id} className="bg-white rounded-xl p-3 mb-2 flex items-center gap-2.5">
-                        {item.img && <img src={item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-sm" style={{ color: GREEN }}>{tischText(item.name, 'de')} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
-                          <div className="text-xs font-bold" style={{ color: ORANGE }}>{fmt(item.price)}</div>
-                        </div>
-                        <button onClick={() => tischToggleSoldOut(item.id)} className="text-[10px] font-bold px-2 py-1.5 rounded-lg" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? 'Zurück' : 'Ausverkauft'}</button>
-                        <button onClick={() => tischStartEdit(item)} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#f0e5cf' }}>✏️</button>
-                        <button onClick={() => { if (confirm('Artikel löschen?')) tischDeleteItem(item.id); }} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#f0d4d4' }}><X size={13} color={CHILI} /></button>
-                      </div>
-                    ))}
-                    {catItems.length === 0 && <p className="text-[11px] font-semibold px-1" style={{ color: '#c4b697' }}>Noch keine Artikel</p>}
-                  </div>
-                );
-              })}
-
-              {/* Artikel hinzufügen/bearbeiten */}
-              {tischMenu.categories.length > 0 && (
-                <div className="bg-white rounded-xl p-4 mt-2" style={{ border: `1.5px solid ${GOLD}` }}>
-                  <div className="font-black text-xs mb-3" style={{ color: GREEN }}>{tischEditingId ? 'Artikel bearbeiten' : 'Neuer Artikel'}</div>
-                  <select value={tischItemCat} onChange={(e) => setTischItemCat(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }}>
-                    <option value="">Kategorie wählen…</option>
-                    {tischMenu.categories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {tischText(c.label, 'de')}</option>)}
-                  </select>
-                  <input value={tischItemName} onChange={(e) => setTischItemName(e.target.value)} placeholder="Name (auf Deutsch)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-                  <textarea value={tischItemDesc} onChange={(e) => setTischItemDesc(e.target.value)} placeholder="Beschreibung (optional, auf Deutsch)" rows={2} className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                  <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-                  {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2" />}
-                  <label className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
-                    <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
-                    <input type="file" accept="image/*" className="hidden" disabled={tischUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) tischHandleImageUpload(f); e.target.value = ''; }} />
-                  </label>
-                  <div className="flex gap-2">
-                    <button onClick={tischSaveItem} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
-                    {tischEditingId && <button onClick={tischResetForm} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>}
-                  </div>
-                  {tischMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{tischMsg}</p>}
-                </div>
-              )}
             </div>
           )}
         </>
