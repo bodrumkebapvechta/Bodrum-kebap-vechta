@@ -5684,7 +5684,7 @@ function TischMenuView() {
   }, [tischMenu, activeCat]);
 
   return (
-    <div className="min-h-screen w-full" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full relative" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(rgba(21,56,38,.06) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: '24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
@@ -5697,9 +5697,9 @@ function TischMenuView() {
       `}</style>
 
       {/* Header */}
-      <div className="relative overflow-hidden px-5 pt-7 pb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
-        <div className="absolute -top-8 -right-10 w-40 h-40 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.18), transparent 70%)' }} />
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
+      <div className="relative px-5 pt-7 pb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+        <div className="absolute -top-8 -right-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.18), transparent 70%)' }} />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
         <div className="relative flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.5)', animation: 'tmFlicker 2.4s ease-in-out infinite' }}>
@@ -5755,7 +5755,10 @@ function TischMenuView() {
           </div>
 
           {/* Item list */}
-          <div className="px-4 py-5 space-y-3.5">
+          <div className="relative px-4 py-5 space-y-3.5">
+            <div className="absolute top-10 -left-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.10), transparent 70%)', filter: 'blur(2px)' }} />
+            <div className="absolute top-1/2 -right-14 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(21,56,38,.08), transparent 70%)', filter: 'blur(2px)' }} />
+            <div className="absolute bottom-10 left-1/3 w-36 h-36 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.14), transparent 70%)', filter: 'blur(2px)' }} />
             {activeItems.length === 0 && (
               <p className="text-xs font-semibold text-center py-10" style={{ color: '#a4906c' }}>—</p>
             )}
@@ -5799,8 +5802,8 @@ function TischMenuView() {
       )}
 
       {/* Footer contact info */}
-      <div className="relative overflow-hidden px-5 py-8 text-center mt-2" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
-        <div className="absolute -top-6 -left-6 w-28 h-28 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.15), transparent 70%)' }} />
+      <div className="relative px-5 py-8 text-center mt-2" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+        <div className="absolute -top-6 -left-6 w-28 h-28 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.15), transparent 70%)' }} />
         <div className="relative flex flex-col items-center gap-1.5">
           <div className="flex items-center gap-1.5 text-white font-bold text-sm"><MapPin size={14} color={GOLD} /> Oyther Straße 37, 49377 Vechta</div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> 04441 / 95 16 104</div>
