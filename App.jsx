@@ -4743,6 +4743,7 @@ function StaffPanelView({ back }) {
   const [tischItemName, setTischItemName] = useState('');
   const [tischItemDesc, setTischItemDesc] = useState('');
   const [tischItemPrice, setTischItemPrice] = useState('');
+  const [tischItemPriceLarge, setTischItemPriceLarge] = useState('');
   const [tischItemImg, setTischItemImg] = useState('');
   const [tischEditingId, setTischEditingId] = useState(null);
   const [tischUploadBusy, setTischUploadBusy] = useState(false);
@@ -4770,27 +4771,59 @@ function StaffPanelView({ back }) {
     saveTischMenu(next);
   }
   function tischResetForm() {
-    setTischEditingId(null); setTischItemName(''); setTischItemDesc(''); setTischItemPrice(''); setTischItemImg(''); setTischMsg('');
+    setTischEditingId(null); setTischItemName(''); setTischItemDesc(''); setTischItemPrice(''); setTischItemPriceLarge(''); setTischItemImg(''); setTischMsg('');
   }
   function tischStartEdit(item) {
     setTischEditingId(item.id); setTischItemCat(item.category);
     setTischItemName(typeof item.name === 'string' ? item.name : (item.name?.de || ''));
     setTischItemDesc(typeof item.desc === 'string' ? item.desc : (item.desc?.de || ''));
-    setTischItemPrice(String(item.price)); setTischItemImg(item.img || '');
+    setTischItemPrice(String(item.price)); setTischItemPriceLarge(item.priceLarge !== undefined ? String(item.priceLarge) : '');
+    setTischItemImg(item.img || '');
   }
   function tischSaveItem() {
     const price = parseFloat(tischItemPrice.replace(',', '.'));
     if (!tischItemCat || !tischItemName.trim() || isNaN(price)) { setTischMsg('⚠️ Kategorie, Name und Preis erforderlich'); return; }
+    const priceLargeVal = tischItemPriceLarge.trim() ? parseFloat(tischItemPriceLarge.replace(',', '.')) : undefined;
     let items;
     if (tischEditingId) {
-      items = tischMenu.items.map((i) => (i.id === tischEditingId ? { ...i, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, img: tischItemImg } : i));
+      items = tischMenu.items.map((i) => {
+        if (i.id !== tischEditingId) return i;
+        const next = { ...i, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, img: tischItemImg };
+        if (priceLargeVal !== undefined) next.priceLarge = priceLargeVal; else delete next.priceLarge;
+        return next;
+      });
     } else {
       const id = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      items = [...tischMenu.items, { id, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, img: tischItemImg, soldOut: false }];
+      const newItem = { id, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, img: tischItemImg, soldOut: false };
+      if (priceLargeVal !== undefined) newItem.priceLarge = priceLargeVal;
+      items = [...tischMenu.items, newItem];
     }
     saveTischMenu({ ...tischMenu, items });
     setTischMsg('✅ Gespeichert (auf Deutsch — sag mir im Chat Bescheid, wenn ich es in alle Sprachen übersetzen soll)');
     tischResetForm();
+  }
+  function tischImportFromMenu() {
+    const emojiMap = { kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥐', baguette: '🥪', ueberbacken: '🧀', rollo: '🌯', nudeln: '🍝', schnitzel: '🍖', salat: '🥗', finger: '🍤', getraenke: '🥤' };
+    const existingItemIds = new Set(tischMenu.items.map((i) => i.id));
+    const existingCatKeys = new Set(tischMenu.categories.map((c) => c.key));
+    const newCats = [];
+    const newItems = [];
+    MENU.forEach((cat) => {
+      const catKey = 'imp-' + cat.key;
+      if (!existingCatKeys.has(catKey)) newCats.push({ key: catKey, label: cat.label, emoji: emojiMap[cat.key] || '🍽️' });
+      cat.items.forEach((it) => {
+        if (it.customPizza || it.customPasta) return;
+        const id = 'imp-' + it.id;
+        if (existingItemIds.has(id)) return;
+        const base = { id, category: catKey, name: it.name, desc: it.desc || '', img: '', soldOut: false };
+        if (it.priceLarge !== undefined) { base.price = it.priceSmall; base.priceLarge = it.priceLarge; }
+        else base.price = it.price;
+        newItems.push(base);
+      });
+    });
+    if (newItems.length === 0) { setTischMsg('Alle Artikel sind bereits importiert.'); return; }
+    saveTischMenu({ categories: [...tischMenu.categories, ...newCats], items: [...tischMenu.items, ...newItems] });
+    setTischMsg(`✅ ${newItems.length} Artikel von der Bestellseite importiert`);
   }
   function tischDeleteItem(id) {
     saveTischMenu({ ...tischMenu, items: tischMenu.items.filter((i) => i.id !== id) });
@@ -5166,7 +5199,8 @@ function StaffPanelView({ back }) {
         <div style={{ background: GREEN }}><TopBar onHome={() => setTischAdminOpen(false)} title={t('staffTischMenuTab')} /></div>
         <div className="px-5 pt-4">
           <p className="text-[11px] mb-2" style={{ color: '#a4906c' }}>Eigene Karte für den QR-Tischmenü-Bildschirm — unabhängig vom Bestell-Menü. Einträge werden auf Deutsch gespeichert; für andere Sprachen im Chat Bescheid geben, dann werden sie wie auf der Hauptseite von Hand übersetzt.</p>
-          <a href="?menu=1" target="_blank" rel="noreferrer" className="inline-block mb-4 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>👁️ Vorschau ansehen</a>
+          <a href="?menu=1" target="_blank" rel="noreferrer" className="inline-block mb-3 mr-2 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>👁️ Vorschau ansehen</a>
+          <button onClick={tischImportFromMenu} className="inline-block mb-4 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#e2eee2', color: GREEN, border: `1px solid ${GREEN}` }}>📥 Alle Artikel von der Bestellseite importieren</button>
 
           {/* Kategorien */}
           <div className="bg-white rounded-xl p-4 mb-4">
@@ -5198,7 +5232,7 @@ function StaffPanelView({ back }) {
                     {item.img && <img src={item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-sm" style={{ color: GREEN }}>{tischText(item.name, 'de')} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
-                      <div className="text-xs font-bold" style={{ color: ORANGE }}>{fmt(item.price)}</div>
+                      <div className="text-xs font-bold" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `${fmt(item.price)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</div>
                     </div>
                     <button onClick={() => tischToggleSoldOut(item.id)} className="text-[10px] font-bold px-2 py-1.5 rounded-lg" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? 'Zurück' : 'Ausverkauft'}</button>
                     <button onClick={() => tischStartEdit(item)} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#f0e5cf' }}>✏️</button>
@@ -5220,7 +5254,8 @@ function StaffPanelView({ back }) {
               </select>
               <input value={tischItemName} onChange={(e) => setTischItemName(e.target.value)} placeholder="Name (auf Deutsch)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
               <textarea value={tischItemDesc} onChange={(e) => setTischItemDesc(e.target.value)} placeholder="Beschreibung (optional, auf Deutsch)" rows={2} className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
-              <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+              <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+              <input value={tischItemPriceLarge} onChange={(e) => setTischItemPriceLarge(e.target.value)} placeholder="Preis groß (optional, z.B. für Pizza 28cm)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2" />}
               <label className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
                 <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
@@ -5698,7 +5733,9 @@ function TischMenuView() {
                   </div>
                   {item.desc && <div className="text-xs mt-1" style={{ color: '#7c6d55' }}>{tischText(item.desc, lang)}</div>}
                 </div>
-                <div className="flex-shrink-0 text-sm font-black" style={{ color: ORANGE }}>{fmt(item.price)}</div>
+                <div className="flex-shrink-0 text-sm font-black text-right" style={{ color: ORANGE }}>
+                  {item.priceLarge !== undefined ? <>{fmt(item.price)}<br />{fmt(item.priceLarge)}</> : fmt(item.price)}
+                </div>
               </div>
             ))}
           </div>
