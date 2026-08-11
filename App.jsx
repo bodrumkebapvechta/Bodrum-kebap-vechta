@@ -4877,26 +4877,34 @@ function StaffPanelView({ back }) {
   }
   function tischImportFromMenu() {
     const emojiMap = { kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥐', baguette: '🥪', ueberbacken: '🧀', rollo: '🌯', nudeln: '🍝', schnitzel: '🍖', salat: '🥗', finger: '🍤', getraenke: '🥤' };
-    const existingItemIds = new Set(tischMenu.items.map((i) => i.id));
     const existingCatKeys = new Set(tischMenu.categories.map((c) => c.key));
+    const existingItemsById = new Map(tischMenu.items.map((i) => [i.id, i]));
     const newCats = [];
-    const newItems = [];
+    const mergedItems = [...tischMenu.items];
+    let addedCount = 0, updatedCount = 0;
     MENU.forEach((cat) => {
       const catKey = 'imp-' + cat.key;
       if (!existingCatKeys.has(catKey)) newCats.push({ key: catKey, label: cat.label, emoji: emojiMap[cat.key] || '🍽️' });
       cat.items.forEach((it) => {
         if (it.customPizza || it.customPasta) return;
         const id = 'imp-' + it.id;
-        if (existingItemIds.has(id)) return;
-        const base = { id, category: catKey, name: it.name, desc: it.desc || '', img: '', soldOut: false };
+        const base = { id, category: catKey, name: it.name, desc: it.desc || '', number: menuNum(it.id), alg: it.alg || '' };
         if (it.priceLarge !== undefined) { base.price = it.priceSmall; base.priceLarge = it.priceLarge; }
         else base.price = it.price;
-        newItems.push(base);
+        const existing = existingItemsById.get(id);
+        if (existing) {
+          const idx = mergedItems.findIndex((x) => x.id === id);
+          mergedItems[idx] = { ...existing, ...base };
+          updatedCount++;
+        } else {
+          mergedItems.push({ ...base, img: '', soldOut: false });
+          addedCount++;
+        }
       });
     });
-    if (newItems.length === 0) { setTischMsg('Alle Artikel sind bereits importiert.'); return; }
-    saveTischMenu({ categories: [...tischMenu.categories, ...newCats], items: [...tischMenu.items, ...newItems] });
-    setTischMsg(`✅ ${newItems.length} Artikel von der Bestellseite importiert`);
+    if (addedCount === 0 && updatedCount === 0) { setTischMsg('Keine Änderungen.'); return; }
+    saveTischMenu({ categories: [...tischMenu.categories, ...newCats], items: mergedItems });
+    setTischMsg(`✅ ${addedCount} neu, ${updatedCount} aktualisiert (Nummern & Allergene ergänzt)`);
   }
   function tischDeleteItem(id) {
     saveTischMenu({ ...tischMenu, items: tischMenu.items.filter((i) => i.id !== id) });
@@ -5304,7 +5312,7 @@ function StaffPanelView({ back }) {
                   <div key={item.id} className="bg-white rounded-xl p-3 mb-2 flex items-center gap-2.5">
                     {item.img && <img src={item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-sm" style={{ color: GREEN }}>{tischText(item.name, 'de')} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
+                      <div className="font-bold text-sm" style={{ color: GREEN }}>{item.number && <span className="text-[10px] font-black mr-1" style={{ color: ORANGE }}>#{item.number}</span>}{tischText(item.name, 'de')}{item.alg && <sup className="ml-0.5 font-semibold" style={{ fontSize: '9px', color: '#a4906c' }}>{item.alg}</sup>} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
                       <div className="text-xs font-bold" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `${fmt(item.price)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</div>
                     </div>
                     <button onClick={() => tischToggleSoldOut(item.id)} className="text-[10px] font-bold px-2 py-1.5 rounded-lg" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? 'Zurück' : 'Ausverkauft'}</button>
@@ -5735,6 +5743,7 @@ function TischMenuView({ back }) {
   const { lang, setLang, t } = React.useContext(LangContext);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
   const [activeCat, setActiveCat] = useState(null);
+  const [legendOpen, setLegendOpen] = useState(false);
 
   useEffect(() => {
     safeGet('siteconfig:tischMenu').then((r) => {
@@ -5785,11 +5794,13 @@ function TischMenuView({ back }) {
         </div>
       </div>
 
-      {/* Order-at-counter notice */}
-      <div className="px-5 py-3.5 text-center flex items-center justify-center gap-2" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'tmGlow 2.6s ease-in-out infinite' }}>
-        <span style={{ display: 'inline-block', animation: 'tmBellRing 2.2s ease-in-out infinite' }}>🛎️</span>
-        <span className="font-black text-sm" style={{ color: GREEN }}>{t('tischMenuOrderNotice').replace('🛎️ ', '')}</span>
-      </div>
+      {/* Order-at-counter notice — only relevant for the QR table screen, not in-app browsing */}
+      {!back && (
+        <div className="px-5 py-3.5 text-center flex items-center justify-center gap-2" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'tmGlow 2.6s ease-in-out infinite' }}>
+          <span style={{ display: 'inline-block', animation: 'tmBellRing 2.2s ease-in-out infinite' }}>🛎️</span>
+          <span className="font-black text-sm" style={{ color: GREEN }}>{t('tischMenuOrderNotice').replace('🛎️ ', '')}</span>
+        </div>
+      )}
 
       {tischMenu === null && (
         <div className="px-5 py-20 text-center text-sm font-semibold" style={{ color: '#a4906c' }}>…</div>
@@ -5825,6 +5836,10 @@ function TischMenuView({ back }) {
             })}
           </div>
 
+          <div className="px-5 pt-3">
+            <button onClick={() => setLegendOpen(true)} className="text-[11px] font-bold underline" style={{ color: '#a4906c' }}>ⓘ {t('allergenLegendTitle')}</button>
+          </div>
+
           {/* Item list */}
           <div className="relative px-4 py-5 space-y-3.5">
             <div className="absolute top-10 -left-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.10), transparent 70%)', filter: 'blur(2px)' }} />
@@ -5850,7 +5865,9 @@ function TischMenuView({ back }) {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="font-black text-[15px] flex items-center flex-wrap gap-1.5 leading-snug" style={{ color: GREEN }}>
+                      {item.number && <span className="inline-flex items-center justify-center min-w-[22px] px-1.5 py-0.5 rounded-md text-[11px] font-black" style={{ background: `${color}18`, color }}>{item.number}</span>}
                       {mx(tischText(item.name, 'de'), lang)}
+                      <AllergenTag alg={item.alg} />
                       {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
                     </div>
                     {item.desc && <div className="text-xs mt-0.5 leading-snug" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</div>}
@@ -5880,10 +5897,10 @@ function TischMenuView({ back }) {
           <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> 04441 / 95 16 104</div>
         </div>
       </div>
+      {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
     </div>
   );
 }
-
 function isTischMenuUrl() {
   try { return new URLSearchParams(window.location.search).get('menu') === '1'; } catch { return false; }
 }
