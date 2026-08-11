@@ -74,6 +74,12 @@ const UI = {
   staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' , sq: 'Cilësimet', ku: 'Mîheng', pl: 'Ustawienia'},
   staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' , sq: 'Statistikat', ku: 'Statîstîk', pl: 'Statystyki'},
   staffMenuTab: { de: 'Menü', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menu' , sq: 'Menuja', ku: 'Menû', pl: 'Menu'},
+  doenerBuildKicker: { de: 'FRISCH ZUBEREITET', en: 'FRESHLY MADE', tr: 'TAZE HAZIRLANIR', ro: 'PREPARAT PROASPĂT', nl: 'VERS BEREID', sq: 'PËRGATITUR I FRESKËT', ku: 'Taze Tê Amadekirin', pl: 'ŚWIEŻO PRZYGOTOWANE' },
+  doenerBuildTitle: { de: 'So entsteht dein Döner', en: 'How your döner comes together', tr: 'Dönerin böyle hazırlanır', ro: 'Așa se face döner-ul tău', nl: 'Zo ontstaat jouw döner', sq: 'Kështu bëhet doneri yt', ku: 'Dönera te bi vî rengî çêdibe', pl: 'Tak powstaje Twój kebab' },
+  doenerBuildStage1: { de: 'Alles beginnt mit frischem Fladenbrot, warm vom Ofen', en: 'It all starts with fresh flatbread, warm from the oven', tr: 'Her şey fırından sıcak, taze lavaşla başlar', ro: 'Totul începe cu lipie proaspătă, caldă din cuptor', nl: 'Alles begint met vers plat brood, warm uit de oven', sq: 'Gjithçka fillon me bukë të freskët, të ngrohtë nga furra', ku: 'Her tişt bi nanê taze yê ji firnê germ dest pê dike', pl: 'Wszystko zaczyna się od świeżego chleba pita, ciepłego z pieca' },
+  doenerBuildStage2: { de: 'Saftiges Fleisch direkt vom Drehspieß', en: 'Juicy meat straight off the rotating spit', tr: 'Şişten yeni çıkan sulu et', ro: 'Carne suculentă direct de pe frigărui', nl: 'Sappig vlees rechtstreeks van het spit', sq: 'Mish lëngshëm direkt nga rrotulli', ku: 'Goştê av dar rasterast ji şîşê zivirok', pl: 'Soczyste mięso prosto z rożna' },
+  doenerBuildStage3: { de: 'Frischer Salat obendrauf', en: 'Fresh salad on top', tr: 'Üzerine taze salata', ro: 'Salată proaspătă deasupra', nl: 'Verse salade erbovenop', sq: 'Sallatë e freskët sipër', ku: 'Selata taze li ser', pl: 'Świeża sałatka na wierzchu' },
+  doenerBuildStage4: { de: 'Und die perfekte Soße oben drauf — fertig ist dein Döner!', en: 'And the perfect sauce on top — your döner is ready!', tr: 'Ve üzerine mükemmel sos — dönerin hazır!', ro: 'Și sosul perfect deasupra — döner-ul tău e gata!', nl: 'En de perfecte saus erover — jouw döner is klaar!', sq: 'Dhe salca perfekte sipër — doneri yt është gati!', ku: 'Û soşê bêkêmasî li ser — dönera te amade ye!', pl: 'A na to idealny sos — Twój kebab gotowy!' },
   staffTischMenuTab: { de: 'Tischmenü', en: 'Table menu', tr: 'Masa Menüsü', ro: 'Meniu de masă', nl: 'Tafelmenu', sq: 'Menyja e tryezës', ku: 'Menûya masê', pl: 'Menu stolikowe'},
   staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" , sq: 'Fotot', ku: 'Wêne', pl: 'Zdjęcia'},
   staffWelcomeTitle: { de: 'Willkommen zurück!', en: 'Welcome back!', tr: 'Tekrar hoş geldin!', ro: 'Bine ai revenit!', nl: 'Welkom terug!' , sq: 'Mirë se erdhe përsëri!', ku: 'Bi xêr hatî!', pl: 'Witaj ponownie!'},
@@ -1985,6 +1991,98 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
   );
 }
 
+function DoenerScrollBuild() {
+  const { t } = React.useContext(LangContext);
+  const [stage, setStage] = useState(1);
+  const r1 = useRef(null), r2 = useRef(null), r3 = useRef(null), r4 = useRef(null);
+  useEffect(() => {
+    const markers = [[r1, 1], [r2, 2], [r3, 3], [r4, 4]];
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const found = markers.find(([ref]) => ref.current === entry.target);
+          if (found) setStage((s) => Math.max(s, found[1]));
+        }
+      });
+    }, { threshold: 0.55 });
+    markers.forEach(([ref]) => ref.current && obs.observe(ref.current));
+    return () => obs.disconnect();
+  }, []);
+
+  const captions = [t('doenerBuildStage1'), t('doenerBuildStage2'), t('doenerBuildStage3'), t('doenerBuildStage4')];
+
+  return (
+    <section className="relative" style={{ background: `linear-gradient(180deg, ${CREAM}, #f7ecd6)` }}>
+      <style>{`
+        @keyframes ingredientPop { from{ opacity:0; transform: translateY(14px) scale(.85); } to{ opacity:1; transform: translateY(0) scale(1); } }
+      `}</style>
+      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden px-6">
+        <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('doenerBuildKicker')}</div>
+        <h2 className="font-black text-center mb-8" style={{ fontSize: 'clamp(22px,4vw,32px)', color: GREEN }}>{t('doenerBuildTitle')}</h2>
+
+        {/* Illustration */}
+        <div className="relative" style={{ width: 250, height: 250 }}>
+          {/* Bread base */}
+          <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle at 38% 32%, #f4d896, #e0a94a 55%, #c98a2e 100%)', boxShadow: '0 18px 40px rgba(180,120,30,.35), inset 0 -8px 18px rgba(140,80,10,.25)' }} />
+          <div className="absolute inset-3 rounded-full" style={{ background: 'radial-gradient(circle at 42% 36%, #fdeecb, #f2d9a0 70%)', opacity: 0.9 }} />
+
+          {/* Meat strips */}
+          {stage >= 2 && [
+            { top: 60, left: 55, rot: -18, delay: 0 },
+            { top: 90, left: 130, rot: 12, delay: 0.08 },
+            { top: 130, left: 70, rot: 24, delay: 0.16 },
+            { top: 110, left: 155, rot: -10, delay: 0.24 },
+            { top: 150, left: 130, rot: 6, delay: 0.32 },
+          ].map((m, i) => (
+            <div key={i} className="absolute rounded-full" style={{ top: m.top, left: m.left, width: 46, height: 15, background: 'linear-gradient(135deg, #8a3b1f, #5c2412)', transform: `rotate(${m.rot}deg)`, boxShadow: '0 3px 6px rgba(60,20,10,.35)', animation: `ingredientPop .5s ease ${m.delay}s both` }} />
+          ))}
+
+          {/* Salad leaves */}
+          {stage >= 3 && [
+            { top: 45, left: 100, rot: 8, delay: 0 },
+            { top: 75, left: 165, rot: -20, delay: 0.08 },
+            { top: 120, left: 40, rot: 30, delay: 0.16 },
+            { top: 160, left: 100, rot: -12, delay: 0.24 },
+            { top: 95, left: 60, rot: 18, delay: 0.32 },
+          ].map((s, i) => (
+            <div key={i} className="absolute" style={{ top: s.top, left: s.left, width: 26, height: 18, background: 'linear-gradient(135deg, #7fb35e, #4f8a3a)', borderRadius: '60% 40% 55% 45% / 50% 60% 40% 50%', transform: `rotate(${s.rot}deg)`, boxShadow: '0 2px 5px rgba(30,70,10,.3)', animation: `ingredientPop .5s ease ${s.delay}s both` }} />
+          ))}
+
+          {/* Sauce drizzle */}
+          {stage >= 4 && [
+            { top: 55, left: 70, w: 60, rot: -14, delay: 0 },
+            { top: 95, left: 120, w: 55, rot: 20, delay: 0.1 },
+            { top: 135, left: 60, w: 50, rot: -6, delay: 0.2 },
+            { top: 165, left: 115, w: 45, rot: 16, delay: 0.3 },
+          ].map((d, i) => (
+            <div key={i} className="absolute rounded-full" style={{ top: d.top, left: d.left, width: d.w, height: 4, background: 'linear-gradient(90deg, transparent, #fffaf0, transparent)', transform: `rotate(${d.rot}deg)`, animation: `ingredientPop .4s ease ${d.delay}s both` }} />
+          ))}
+
+          {stage >= 4 && (
+            <div className="absolute -bottom-3 -right-2 w-11 h-11 rounded-full flex items-center justify-center" style={{ background: GREEN, boxShadow: '0 8px 18px rgba(21,56,38,.4)', animation: 'ingredientPop .5s ease .45s both' }}>
+              <Check size={20} color={GOLD} />
+            </div>
+          )}
+        </div>
+
+        {/* Progress dots */}
+        <div className="flex gap-2 mt-8 mb-3">
+          {[1, 2, 3, 4].map((n) => (
+            <span key={n} style={{ width: n === stage ? 22 : 8, height: 8, borderRadius: 4, background: n <= stage ? ORANGE : '#e3d5bd', transition: 'all .35s ease' }} />
+          ))}
+        </div>
+        <p className="text-center text-sm font-bold max-w-xs" style={{ color: GREEN, minHeight: 42 }}>{captions[stage - 1]}</p>
+      </div>
+
+      {/* Scroll-driving markers */}
+      <div ref={r1} style={{ height: '10vh' }} />
+      <div ref={r2} style={{ height: '70vh' }} />
+      <div ref={r3} style={{ height: '70vh' }} />
+      <div ref={r4} style={{ height: '90vh' }} />
+    </section>
+  );
+}
+
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -2324,6 +2422,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
         <svg viewBox="0 0 1440 60" className="w-full block relative z-10" style={{ marginBottom: -1 }} preserveAspectRatio="none"><path d="M0,32 C240,64 480,0 720,20 C960,40 1200,60 1440,24 L1440,60 L0,60 Z" fill={CREAM} /></svg>
       </section>
+
+      {/* DÖNER SCROLL STORY */}
+      <DoenerScrollBuild />
 
       {/* DAILY SPECIAL */}
       {ORDERING_ENABLED && <DailySpecial go={go} />}
