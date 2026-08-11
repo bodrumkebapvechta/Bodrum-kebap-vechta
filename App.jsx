@@ -2471,7 +2471,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
       </section>
 
-      {surpriseItem && (
+      {surpriseItem && (() => {
+        const isLunchOffer = isLunchWindowNow() && LUNCH_CATEGORIES.includes(surpriseItem.cat);
+        return (
         <ConfigModal onClose={() => { if (!surpriseRolling) setSurpriseItem(null); }}>
           <div className="p-6 text-center" style={{ minHeight: 340 }}>
             <div className="text-4xl mb-2" style={surpriseRolling ? { animation: 'sadBounce .3s ease-in-out infinite' } : {}}>🎲</div>
@@ -2482,9 +2484,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   <img src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
                 </div>
               )}
+              {!surpriseRolling && isLunchOffer && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-[11px] mb-2" style={{ background: ORANGE, color: '#fff' }}>🍽️ {t('lunchOffer')}</div>
+              )}
               <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}{surpriseItem.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
               {surpriseItem.desc && <p className="text-xs font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(surpriseItem.desc, lang)}</p>}
-              <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(surpriseItem.price)}</div>
+              <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>
+                {fmt(isLunchOffer ? 9.5 : surpriseItem.price)}
+                {isLunchOffer && <span className="text-[10px] font-bold ml-1.5" style={{ color: '#8a7c62' }}>inkl. Getränk</span>}
+              </div>
             </div>
             {!surpriseRolling && (
               <div className="flex flex-col gap-2.5">
@@ -2494,7 +2502,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             )}
           </div>
         </ConfigModal>
-      )}
+        );
+      })()}
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
           <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}>
