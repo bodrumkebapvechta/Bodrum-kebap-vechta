@@ -1844,13 +1844,13 @@ function WeekendComboPromo({ go }) {
   const [meat, setMeat] = useState('haehnchen');
 
   const confirmDoener = () => {
-    if (!ORDERING_ENABLED) { go('tischmenu'); return; }
+    if (!ORDERING_ENABLED) { go('tischmenu', { initialCatHint: 'kebap' }); return; }
     const opt = WEEKEND_MEAT_OPTIONS.find((m) => m.key === meat);
     const total = DOENER_COMBO.price + (opt?.extra || 0);
     go('whatsapp', { pendingCombo: { title: `${DOENER_COMBO.title} (${opt.label})`, price: total } });
   };
   const goToPizzaCombo = () => {
-    if (!ORDERING_ENABLED) { go('tischmenu'); return; }
+    if (!ORDERING_ENABLED) { go('tischmenu', { initialCatHint: 'pizza' }); return; }
     go('whatsapp', { pizzaComboMode: true });
   };
 
@@ -1969,7 +1969,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
   const displayPrice = isLunchWindow ? 9.5 : item.price;
 
   const orderNow = () => {
-    if (!ORDERING_ENABLED) { go('tischmenu'); return; }
+    if (!ORDERING_ENABLED) { go('tischmenu', item.cat ? { initialCatHint: item.cat } : undefined); return; }
     go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
   };
 
@@ -2150,7 +2150,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const confirmSurprise = () => {
     const item = surpriseItem;
     if (!item) return;
-    if (!ORDERING_ENABLED) { setSurpriseItem(null); go('tischmenu'); return; }
+    if (!ORDERING_ENABLED) { setSurpriseItem(null); go('tischmenu', item.cat ? { initialCatHint: item.cat } : undefined); return; }
     if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.cat)) {
       go('whatsapp', { lunchSurprise: { label: mx(item.name, lang), deLabel: item.name } });
     } else if (new Date().getDay() === 6 && item.cat === 'pizza') {
@@ -5743,7 +5743,7 @@ function tischCatColor(key) {
   return TISCH_CAT_COLORS[h % TISCH_CAT_COLORS.length];
 }
 
-function TischMenuView({ back }) {
+function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go, globalNavOpen, setGlobalNavOpen } = React.useContext(LangContext);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
   const [activeCat, setActiveCat] = useState(null);
@@ -5754,6 +5754,11 @@ function TischMenuView({ back }) {
     safeGet('siteconfig:tischMenu').then((r) => {
       const data = r || { categories: [], items: [] };
       setTischMenu(data);
+      const hint = initialAction?.initialCatHint;
+      if (hint) {
+        const match = data.categories.find((c) => c.key === 'imp-' + hint) || data.categories.find((c) => c.key.endsWith(hint));
+        if (match) { setActiveCat(match.key); if (onConsumeAction) onConsumeAction(); return; }
+      }
       if (data.categories.length) setActiveCat(data.categories[0].key);
     });
   }, []);
@@ -6024,7 +6029,7 @@ export default function App() {
   }
 
   if (view === 'tischmenu') {
-    return <LangContext.Provider value={ctxValue}><TischMenuView back={isTischMenu ? undefined : () => go('home')} />{installHelpModal}</LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}</LangContext.Provider>;
   }
 
   return (
