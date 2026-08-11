@@ -47,6 +47,8 @@ const FRITZ_MISCHMASCH_IMG = "/fritz-mischmasch.jpg";
 
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl', 'sq', 'ku', 'pl'];
+// Sipariş akışı (WhatsApp/Sepet/Kurucu/Grup/Çark) geçici olarak kapalı — donanım hazır olunca true yapılabilir.
+const ORDERING_ENABLED = false;
 const LANG_NAMES = { de: 'Deutsch', en: 'English', tr: 'Türkçe', ro: 'Română', nl: 'Nederlands', sq: 'Shqip', ku: 'Kurdî', pl: 'Polski' };
 const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧', tr: '🇹🇷', ro: '🇷🇴', nl: '🇳🇱', sq: '🇦🇱', ku: '☀️', pl: '🇵🇱' };
 
@@ -1219,9 +1221,9 @@ function TopBar({ onHome, title, dark = true }) {
             <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
             <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
               <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
-              <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
-              <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>
-              <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>
+              {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
+              {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>}
+              {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>}
               <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
               <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
               <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
@@ -2189,11 +2191,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <span style={{ fontSize: 30, animation: 'sideFloatHome2 4.8s ease-in-out infinite' }}>🍝</span>
       </div>
       <div className="hidden 2xl:flex flex-col items-center gap-12 fixed right-8 top-1/4 opacity-90 pointer-events-none z-10">
-        <button onClick={() => go('group')} className="pointer-events-auto flex flex-col items-center gap-1.5 px-4 py-4 rounded-2xl text-center" style={{ background: ORANGE, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 10px 26px rgba(255,106,26,.4)' }}>
-          <span style={{ fontSize: 30 }}>👥</span>
-          <span className="text-white font-black text-[11px] leading-tight">{t('featGroupTitle')}!</span>
-          <span className="text-white font-semibold text-[9px] opacity-90">{t('weiter')}</span>
-        </button>
+        {ORDERING_ENABLED && (
+          <button onClick={() => go('group')} className="pointer-events-auto flex flex-col items-center gap-1.5 px-4 py-4 rounded-2xl text-center" style={{ background: ORANGE, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 10px 26px rgba(255,106,26,.4)' }}>
+            <span style={{ fontSize: 30 }}>👥</span>
+            <span className="text-white font-black text-[11px] leading-tight">{t('featGroupTitle')}!</span>
+            <span className="text-white font-semibold text-[9px] opacity-90">{t('weiter')}</span>
+          </button>
+        )}
         <span style={{ fontSize: 30, animation: 'sideFloatHome1 5s ease-in-out infinite' }}>🥤</span>
         <span style={{ fontSize: 34, animation: 'sideSpinHome 7s linear infinite reverse', display: 'inline-block' }}>🔥</span>
       </div>
@@ -2213,8 +2217,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
-            <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
-            <button onClick={() => scrollTo('extras')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navExtras')}</button>
+            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>
@@ -2225,7 +2228,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
             </a>
-            <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
+            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
@@ -2236,8 +2239,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
         {navOpen && (
           <div className="md:hidden px-5 pb-4 flex flex-col gap-3" style={{ animation: 'viewFade .35s cubic-bezier(.25,.46,.45,.94)' }}>
-            <button onClick={() => go('whatsapp')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
-            <button onClick={() => scrollTo('extras')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navExtras')}</button>
+            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Instagram size={15} /> @BodrumKebapVechta</a>
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
@@ -2245,11 +2247,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
             )}
-            <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
+            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
           </div>
         )}
       </header>
-      <MittagsBanner />
+      {ORDERING_ENABLED && <MittagsBanner />}
       {dailyBanner && (
         <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
           📣 {dailyBanner}
@@ -2281,28 +2283,32 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
-            <button
-              onClick={() => go('whatsapp', { focusSearch: true })}
-              className="quick-order-btn w-full sm:w-auto flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-base mb-5 relative overflow-hidden"
-              style={{ background: `linear-gradient(120deg, #ff3d68, #ff6a1a 55%, ${GOLD})`, backgroundSize: '200% 100%', color: '#fff', boxShadow: '0 14px 34px rgba(255,61,104,.4)' }}
-            >
-              <span className="text-2xl relative">🔢</span>
-              <span className="relative">{t('quickOrderByNumberBtn')}</span>
-              <ArrowRight size={18} className="relative ml-auto sm:ml-1" />
-            </button>
-            <div className="flex flex-wrap gap-3 mb-3">
-              <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
-            </div>
-            <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
-              <span className="text-lg">👥</span> {t('heroCtaGroup')}
-            </button>
-            <button onClick={() => go('builder')} className="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl font-black text-base mt-4" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdb70)`, color: GREEN, boxShadow: '0 12px 30px rgba(255,199,56,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}>
-              <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
-            </button>
+            {ORDERING_ENABLED && (
+              <>
+                <button
+                  onClick={() => go('whatsapp', { focusSearch: true })}
+                  className="quick-order-btn w-full sm:w-auto flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-base mb-5 relative overflow-hidden"
+                  style={{ background: `linear-gradient(120deg, #ff3d68, #ff6a1a 55%, ${GOLD})`, backgroundSize: '200% 100%', color: '#fff', boxShadow: '0 14px 34px rgba(255,61,104,.4)' }}
+                >
+                  <span className="text-2xl relative">🔢</span>
+                  <span className="relative">{t('quickOrderByNumberBtn')}</span>
+                  <ArrowRight size={18} className="relative ml-auto sm:ml-1" />
+                </button>
+                <div className="flex flex-wrap gap-3 mb-3">
+                  <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
+                </div>
+                <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
+                  <span className="text-lg">👥</span> {t('heroCtaGroup')}
+                </button>
+                <button onClick={() => go('builder')} className="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl font-black text-base mt-4" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdb70)`, color: GREEN, boxShadow: '0 12px 30px rgba(255,199,56,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}>
+                  <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
+                </button>
+              </>
+            )}
             <div className="flex flex-wrap gap-2.5 mt-3">
-              <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>
-              <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
-              <button onClick={() => scrollTo('extras')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
+              {ORDERING_ENABLED && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
+              {ORDERING_ENABLED && <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>}
+              <button onClick={() => scrollTo(ORDERING_ENABLED ? 'extras' : 'galerie')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
@@ -2320,13 +2326,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       </section>
 
       {/* DAILY SPECIAL */}
-      <DailySpecial go={go} />
+      {ORDERING_ENABLED && <DailySpecial go={go} />}
 
       {/* TESTIMONIALS */}
       <Testimonials />
 
       {/* EXTRAS */}
-      {favorites.length > 0 && (
+      {ORDERING_ENABLED && favorites.length > 0 && (
         <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-8">
           <div className="text-xs font-bold tracking-widest mb-3 flex items-center gap-1.5" style={{ color: '#a4906c' }}><Heart size={13} fill={CHILI} color={CHILI} /> {t('favoritesTitle')}</div>
           <div className="flex gap-2.5 overflow-x-auto pb-2">
@@ -2342,6 +2348,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         </section>
       )}
+      {ORDERING_ENABLED && (
       <section id="extras" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <Reveal className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('extrasKicker')}</div>
@@ -2355,6 +2362,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
         <p className="text-center text-xs font-medium mt-6" style={{ color: '#a4906c' }}>{t('extrasTip')}</p>
       </section>
+      )}
 
       {/* GALLERY */}
       <section id="galerie" className="max-w-7xl mx-auto px-5 lg:px-10 py-10">
