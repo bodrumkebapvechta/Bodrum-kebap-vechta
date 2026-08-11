@@ -80,6 +80,7 @@ const UI = {
   doenerBuildStage2: { de: 'Saftiges Fleisch direkt vom Drehspieß', en: 'Juicy meat straight off the rotating spit', tr: 'Şişten yeni çıkan sulu et', ro: 'Carne suculentă direct de pe frigărui', nl: 'Sappig vlees rechtstreeks van het spit', sq: 'Mish lëngshëm direkt nga rrotulli', ku: 'Goştê av dar rasterast ji şîşê zivirok', pl: 'Soczyste mięso prosto z rożna' },
   doenerBuildStage3: { de: 'Frischer Salat obendrauf', en: 'Fresh salad on top', tr: 'Üzerine taze salata', ro: 'Salată proaspătă deasupra', nl: 'Verse salade erbovenop', sq: 'Sallatë e freskët sipër', ku: 'Selata taze li ser', pl: 'Świeża sałatka na wierzchu' },
   doenerBuildStage4: { de: 'Und die perfekte Soße oben drauf — fertig ist dein Döner!', en: 'And the perfect sauce on top — your döner is ready!', tr: 'Ve üzerine mükemmel sos — dönerin hazır!', ro: 'Și sosul perfect deasupra — döner-ul tău e gata!', nl: 'En de perfecte saus erover — jouw döner is klaar!', sq: 'Dhe salca perfekte sipër — doneri yt është gati!', ku: 'Û soşê bêkêmasî li ser — dönera te amade ye!', pl: 'A na to idealny sos — Twój kebab gotowy!' },
+  showcaseTitle: { de: 'Frisch aus unserer Küche', en: 'Fresh from our kitchen', tr: 'Mutfağımızdan taze', ro: 'Proaspăt din bucătăria noastră', nl: 'Vers uit onze keuken', sq: 'Freskët nga kuzhina jonë', ku: 'Taze ji metbexa me', pl: 'Świeże z naszej kuchni' },
   staffTischMenuTab: { de: 'Tischmenü', en: 'Table menu', tr: 'Masa Menüsü', ro: 'Meniu de masă', nl: 'Tafelmenu', sq: 'Menyja e tryezës', ku: 'Menûya masê', pl: 'Menu stolikowe'},
   staffPhotosTab: { de: 'Fotos', en: 'Photos', tr: 'Fotoğraflar', ro: 'Fotografii', nl: "Foto's" , sq: 'Fotot', ku: 'Wêne', pl: 'Zdjęcia'},
   staffWelcomeTitle: { de: 'Willkommen zurück!', en: 'Welcome back!', tr: 'Tekrar hoş geldin!', ro: 'Bine ai revenit!', nl: 'Welkom terug!' , sq: 'Mirë se erdhe përsëri!', ku: 'Bi xêr hatî!', pl: 'Witaj ponownie!'},
@@ -1227,7 +1228,7 @@ function TopBar({ onHome, title, dark = true }) {
             <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
             <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
               <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
-              {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
+              {ORDERING_ENABLED ? <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => { setGlobalNavOpen(false); go('tischmenu'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
               {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>}
               {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>}
               <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
@@ -1991,55 +1992,40 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
   );
 }
 
-function DoenerScrollBuild() {
+function ShowcaseCarousel() {
   const { t } = React.useContext(LangContext);
-  const [stage, setStage] = useState(1);
-  const r1 = useRef(null), r2 = useRef(null), r3 = useRef(null);
-  useEffect(() => {
-    const markers = [[r1, 1], [r2, 2], [r3, 3]];
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const found = markers.find(([ref]) => ref.current === entry.target);
-          if (found) setStage((s) => Math.max(s, found[1]));
-        }
-      });
-    }, { threshold: 0.55 });
-    markers.forEach(([ref]) => ref.current && obs.observe(ref.current));
-    return () => obs.disconnect();
-  }, []);
-
-  const stages = [
-    { img: DOENER_SPIESS_IMG, caption: t('doenerBuildStage2') },
-    { img: BAUERNSALAT_IMG, caption: t('doenerBuildStage3') },
-    { img: DOENER_TELLER_IMG, caption: t('doenerBuildStage4') },
+  const [paused, setPaused] = useState(false);
+  const photos = [
+    DOENER_TELLER_IMG, PIZZA_KAESE_IMG, CALZONE_IMG, DOENER_SPIESS_IMG, LAHMACUN_IMG,
+    SPAGHETTI_IMG, SCHNITZEL_IMG, SALAT_BUNT_IMG, PIZZABROETCHEN_IMG, FALAFEL_IMG,
+    PENNE_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, NUGGETS_IMG, TERRACE_IMG,
   ];
-
+  const loop = [...photos, ...photos];
   return (
-    <section className="relative" style={{ background: `linear-gradient(180deg, ${CREAM}, #f7ecd6)` }}>
-      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden px-6">
-        <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('doenerBuildKicker')}</div>
-        <h2 className="font-black text-center mb-7" style={{ fontSize: 'clamp(22px,4vw,32px)', color: GREEN }}>{t('doenerBuildTitle')}</h2>
-
-        <div className="relative rounded-3xl overflow-hidden" style={{ width: 260, height: 320, boxShadow: '0 20px 44px rgba(21,56,38,.3)' }}>
-          {stages.map((s, i) => (
-            <img key={i} src={s.img} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: stage === i + 1 ? 1 : 0, transition: 'opacity .6s ease' }} />
-          ))}
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.55) 0%, transparent 40%)' }} />
-        </div>
-
-        <div className="flex gap-2 mt-7 mb-3">
-          {[1, 2, 3].map((n) => (
-            <span key={n} style={{ width: n === stage ? 22 : 8, height: 8, borderRadius: 4, background: n <= stage ? ORANGE : '#e3d5bd', transition: 'all .35s ease' }} />
-          ))}
-        </div>
-        <p className="text-center text-sm font-bold max-w-xs" style={{ color: GREEN, minHeight: 42 }}>{stages[stage - 1].caption}</p>
+    <section className="relative py-12 overflow-hidden" style={{ background: `linear-gradient(180deg, ${CREAM}, #f7ecd6)` }}>
+      <style>{`
+        @keyframes showcaseScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .showcase-track { animation: showcaseScroll 55s linear infinite; }
+        .showcase-track.paused { animation-play-state: paused; }
+        .showcase-card { transition: transform .35s ease, box-shadow .35s ease; }
+        .showcase-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 22px 44px rgba(21,56,38,.28); }
+      `}</style>
+      <div className="text-center mb-8 px-5">
+        <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('galleryKitchen')}</div>
+        <h2 className="font-black" style={{ fontSize: 'clamp(24px,4vw,34px)', color: GREEN }}>{t('showcaseTitle')}</h2>
       </div>
-
-      {/* Scroll-driving markers */}
-      <div ref={r1} style={{ height: '20vh' }} />
-      <div ref={r2} style={{ height: '80vh' }} />
-      <div ref={r3} style={{ height: '90vh' }} />
+      <div
+        className="flex gap-5 w-max px-5 showcase-track"
+        style={{ animationPlayState: paused ? 'paused' : 'running' }}
+        onTouchStart={() => setPaused(true)}
+        onTouchEnd={() => setPaused(false)}
+      >
+        {loop.map((src, i) => (
+          <div key={i} className="showcase-card flex-shrink-0 rounded-3xl overflow-hidden" style={{ width: 230, height: 300, boxShadow: '0 14px 34px rgba(21,56,38,.18)' }} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+            <img src={src} alt="" className="w-full h-full object-cover" />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -2276,7 +2262,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
-            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
+            {ORDERING_ENABLED ? <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>
@@ -2298,7 +2284,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
         {navOpen && (
           <div className="md:hidden px-5 pb-4 flex flex-col gap-3" style={{ animation: 'viewFade .35s cubic-bezier(.25,.46,.45,.94)' }}>
-            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
+            {ORDERING_ENABLED ? <button onClick={() => go('whatsapp')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}><Instagram size={15} /> @BodrumKebapVechta</a>
             <button onClick={() => scrollTo('galerie')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => scrollTo('kontakt')} className="text-left text-sm font-semibold py-1.5" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
@@ -2342,6 +2328,16 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
+            {!ORDERING_ENABLED && (
+              <button
+                onClick={() => go('tischmenu')}
+                className="w-full sm:w-auto flex items-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-5"
+                style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 14px 34px rgba(230,90,10,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}
+              >
+                <span className="text-2xl">📋</span> {t('navMenu')}
+                <ArrowRight size={20} className="ml-auto" />
+              </button>
+            )}
             {ORDERING_ENABLED && (
               <>
                 <button
@@ -2384,8 +2380,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <svg viewBox="0 0 1440 60" className="w-full block relative z-10" style={{ marginBottom: -1 }} preserveAspectRatio="none"><path d="M0,32 C240,64 480,0 720,20 C960,40 1200,60 1440,24 L1440,60 L0,60 Z" fill={CREAM} /></svg>
       </section>
 
-      {/* DÖNER SCROLL STORY */}
-      <DoenerScrollBuild />
+      {/* SHOWCASE GALLERY */}
+      <ShowcaseCarousel />
 
       {/* DAILY SPECIAL */}
       {ORDERING_ENABLED && <DailySpecial go={go} />}
@@ -5735,7 +5731,7 @@ function tischCatColor(key) {
   return TISCH_CAT_COLORS[h % TISCH_CAT_COLORS.length];
 }
 
-function TischMenuView() {
+function TischMenuView({ back }) {
   const { lang, setLang, t } = React.useContext(LangContext);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
   const [activeCat, setActiveCat] = useState(null);
@@ -5772,6 +5768,11 @@ function TischMenuView() {
         <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
         <div className="relative flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
+            {back && (
+              <button onClick={back} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,0.12)' }}>
+                <ArrowLeft size={17} color="#fff" />
+              </button>
+            )}
             <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.5)', animation: 'tmFlicker 2.4s ease-in-out infinite' }}>
               <Flame size={20} color="#fff" />
             </div>
@@ -5957,7 +5958,7 @@ export default function App() {
   }
 
   if (view === 'tischmenu') {
-    return <LangContext.Provider value={ctxValue}><TischMenuView />{installHelpModal}</LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><TischMenuView back={isTischMenu ? undefined : () => go('home')} />{installHelpModal}</LangContext.Provider>;
   }
 
   return (
