@@ -1844,11 +1844,13 @@ function WeekendComboPromo({ go }) {
   const [meat, setMeat] = useState('haehnchen');
 
   const confirmDoener = () => {
+    if (!ORDERING_ENABLED) { go('tischmenu'); return; }
     const opt = WEEKEND_MEAT_OPTIONS.find((m) => m.key === meat);
     const total = DOENER_COMBO.price + (opt?.extra || 0);
     go('whatsapp', { pendingCombo: { title: `${DOENER_COMBO.title} (${opt.label})`, price: total } });
   };
   const goToPizzaCombo = () => {
+    if (!ORDERING_ENABLED) { go('tischmenu'); return; }
     go('whatsapp', { pizzaComboMode: true });
   };
 
@@ -1920,7 +1922,7 @@ function WeekendComboPromo({ go }) {
 function WeekendTeaser({ go }) {
   const { t } = React.useContext(LangContext);
   return (
-    <button onClick={() => go('whatsapp')} className="w-full flex items-center justify-center gap-2 flex-wrap text-center py-2.5 px-4 rounded-xl mt-3" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
+    <button onClick={() => go(ORDERING_ENABLED ? 'whatsapp' : 'tischmenu')} className="w-full flex items-center justify-center gap-2 flex-wrap text-center py-2.5 px-4 rounded-xl mt-3" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
       <span className="text-xs font-black" style={{ color: '#8a5a1f' }}>{t('weekendTeaserOnly')}</span>
       <span className="text-xs font-semibold" style={{ color: '#8a5a1f' }}>28cm Pizza + {fmt(PIZZA_COMBO_PRICE)} · {DOENER_COMBO.title.split(' + ')[0]} + {fmt(DOENER_COMBO.price)}</span>
     </button>
@@ -1967,6 +1969,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
   const displayPrice = isLunchWindow ? 9.5 : item.price;
 
   const orderNow = () => {
+    if (!ORDERING_ENABLED) { go('tischmenu'); return; }
     go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
   };
 
@@ -2147,6 +2150,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const confirmSurprise = () => {
     const item = surpriseItem;
     if (!item) return;
+    if (!ORDERING_ENABLED) { setSurpriseItem(null); go('tischmenu'); return; }
     if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.cat)) {
       go('whatsapp', { lunchSurprise: { label: mx(item.name, lang), deLabel: item.name } });
     } else if (new Date().getDay() === 6 && item.cat === 'pizza') {
@@ -2296,7 +2300,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         )}
       </header>
-      {ORDERING_ENABLED && <MittagsBanner />}
+      <MittagsBanner />
       {dailyBanner && (
         <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
           📣 {dailyBanner}
@@ -2362,7 +2366,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             )}
             <div className="flex flex-wrap gap-2.5 mt-3">
               {ORDERING_ENABLED && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
-              {ORDERING_ENABLED && <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>}
+              <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
               <button onClick={() => scrollTo(ORDERING_ENABLED ? 'extras' : 'galerie')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
@@ -2384,7 +2388,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <ShowcaseCarousel />
 
       {/* DAILY SPECIAL */}
-      {ORDERING_ENABLED && <DailySpecial go={go} />}
+      <DailySpecial go={go} />
 
       {/* TESTIMONIALS */}
       <Testimonials />
@@ -5740,7 +5744,7 @@ function tischCatColor(key) {
 }
 
 function TischMenuView({ back }) {
-  const { lang, setLang, t } = React.useContext(LangContext);
+  const { lang, setLang, t, go, globalNavOpen, setGlobalNavOpen } = React.useContext(LangContext);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
   const [activeCat, setActiveCat] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);
@@ -5775,6 +5779,7 @@ function TischMenuView({ back }) {
         @keyframes tmFlicker { 0%,100%{ transform:scale(1) rotate(-2deg);} 50%{ transform:scale(1.08) rotate(2deg);} }
         @keyframes tmShimmer { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
         @keyframes tmBellRing { 0%,100%{ transform:rotate(0deg);} 20%{ transform:rotate(-12deg);} 40%{ transform:rotate(10deg);} 60%{ transform:rotate(-6deg);} 80%{ transform:rotate(4deg);} }
+        @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
         .tm-card { animation: tmFadeUp .45s ease both; transition: transform .15s ease, box-shadow .15s ease; }
         .tm-card:active { transform: scale(.98); }
         .tm-tab { transition: all .2s ease; }
@@ -5799,7 +5804,24 @@ function TischMenuView({ back }) {
               <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>{t('tischMenuKicker')}</div>
             </div>
           </div>
-          <LanguageSwitcher lang={lang} setLang={setLang} dark />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher lang={lang} setLang={setLang} dark />
+            <div className="relative">
+              <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,0.12)' }}>
+                {globalNavOpen ? <X size={17} color="#fff" /> : <MenuIcon size={17} color="#fff" />}
+              </button>
+              {globalNavOpen && (
+                <>
+                  <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
+                  <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
+                    <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
+                    <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+                    <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
