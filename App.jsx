@@ -5744,6 +5744,7 @@ function TischMenuView({ back }) {
   const [tischMenu, setTischMenu] = useState(null); // null = loading
   const [activeCat, setActiveCat] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     safeGet('siteconfig:tischMenu').then((r) => {
@@ -5758,8 +5759,16 @@ function TischMenuView({ back }) {
     return tischMenu.items.filter((i) => i.category === activeCat);
   }, [tischMenu, activeCat]);
 
+  const searchResults = useMemo(() => {
+    if (!tischMenu || !search.trim()) return null;
+    const q = search.trim().toLowerCase();
+    return tischMenu.items.filter((i) => (i.number && i.number === search.trim()) || mx(tischText(i.name, 'de'), lang).toLowerCase().includes(q) || tischText(i.name, 'de').toLowerCase().includes(q));
+  }, [tischMenu, search, lang]);
+
+  const displayedItems = searchResults !== null ? searchResults : activeItems;
+
   return (
-    <div className="min-h-screen w-full relative" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(rgba(21,56,38,.06) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: '24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(rgba(21,56,38,.06) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: '24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
@@ -5794,6 +5803,24 @@ function TischMenuView({ back }) {
         </div>
       </div>
 
+      {/* Search by number or name */}
+      <div className="px-5 py-3">
+        <div className="relative">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('quickSearchPh')}
+            className="w-full px-4 py-3.5 rounded-2xl text-sm font-bold outline-none"
+            style={{ background: '#fff', color: GREEN, border: `1.5px solid #e9dcc0`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#f0e5cf' }}>
+              <X size={13} color={GREEN} />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Order-at-counter notice — only relevant for the QR table screen, not in-app browsing */}
       {!back && (
         <div className="px-5 py-3.5 text-center flex items-center justify-center gap-2" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'tmGlow 2.6s ease-in-out infinite' }}>
@@ -5823,7 +5850,7 @@ function TischMenuView({ back }) {
               return (
                 <button
                   key={cat.key}
-                  onClick={() => setActiveCat(cat.key)}
+                  onClick={() => { setActiveCat(cat.key); setSearch(''); }}
                   className="tm-tab flex-shrink-0 px-5 py-3 rounded-2xl font-black text-base whitespace-nowrap flex items-center gap-2"
                   style={active
                     ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 8px 18px ${color}55`, transform: 'scale(1.04)' }
@@ -5845,10 +5872,10 @@ function TischMenuView({ back }) {
             <div className="absolute top-10 -left-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.10), transparent 70%)', filter: 'blur(2px)' }} />
             <div className="absolute top-1/2 -right-14 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(21,56,38,.08), transparent 70%)', filter: 'blur(2px)' }} />
             <div className="absolute bottom-10 left-1/3 w-36 h-36 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.14), transparent 70%)', filter: 'blur(2px)' }} />
-            {activeItems.length === 0 && (
-              <p className="text-xs font-semibold text-center py-10" style={{ color: '#a4906c' }}>—</p>
+            {displayedItems.length === 0 && (
+              <p className="text-xs font-semibold text-center py-10" style={{ color: '#a4906c' }}>{search.trim() ? t('quickSearchNoResults') : '—'}</p>
             )}
-            {activeItems.map((item, idx) => {
+            {displayedItems.map((item, idx) => {
               const color = tischCatColor(item.category);
               return (
                 <div
