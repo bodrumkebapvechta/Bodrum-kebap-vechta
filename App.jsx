@@ -74,6 +74,9 @@ const UI = {
   staffSettingsTab: { de: 'Einstellungen', en: 'Settings', tr: 'Ayarlar', ro: 'Setări', nl: 'Instellingen' , sq: 'Cilësimet', ku: 'Mîheng', pl: 'Ustawienia'},
   staffAnalyticsTab: { de: 'Statistik', en: 'Analytics', tr: 'İstatistik', ro: 'Statistici', nl: 'Statistieken' , sq: 'Statistikat', ku: 'Statîstîk', pl: 'Statystyki'},
   staffMenuTab: { de: 'Menü', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menu' , sq: 'Menuja', ku: 'Menû', pl: 'Menu'},
+  cookieText: { de: 'Diese Website verwendet lokale Speicherung (z.B. Sprachwahl, Favoriten) und anonyme Besucherstatistiken. Keine Weitergabe an Dritte.', en: 'This website uses local storage (e.g. language, favorites) and anonymous visitor statistics. No data is shared with third parties.', tr: 'Bu site yerel depolama (dil seçimi, favoriler gibi) ve anonim ziyaretçi istatistikleri kullanıyor. Veriler üçüncü taraflarla paylaşılmıyor.', ro: 'Acest site folosește stocare locală (limbă, favorite) și statistici anonime de vizitatori. Datele nu sunt partajate cu terți.', nl: 'Deze website gebruikt lokale opslag (taal, favorieten) en anonieme bezoekersstatistieken. Geen gegevens worden gedeeld met derden.', sq: 'Kjo faqe përdor ruajtje lokale (gjuha, të preferuarat) dhe statistika anonime vizitorësh. Të dhënat nuk ndahen me palë të treta.', ku: 'Ev malper cîgirtina herêmî (ziman, hezkirî) û statîstîkên mêvanan bi awayekî anonîm bi kar tîne. Daneyên bi aliyên sêyemîn re nayên parvekirin.', pl: 'Ta strona wykorzystuje pamięć lokalną (język, ulubione) oraz anonimowe statystyki odwiedzin. Dane nie są udostępniane osobom trzecim.' },
+  cookieAccept: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen', sq: 'E kuptova', ku: 'Fêm kir', pl: 'Rozumiem' },
+  stoppelmarktText: { de: '🎪 Stoppelmarkt-Woche in Vechta! Besuchen Sie uns – frisch für Sie zubereitet', en: '🎪 Stoppelmarkt week in Vechta! Come visit us – freshly made for you', tr: '🎪 Vechta\'da Stoppelmarkt haftası! Bizi ziyaret edin – sizin için taze hazırlıyoruz', ro: '🎪 Săptămâna Stoppelmarkt în Vechta! Vizitați-ne – preparăm proaspăt pentru dvs.', nl: '🎪 Stoppelmarkt-week in Vechta! Kom langs – vers voor u bereid', sq: '🎪 Java e Stoppelmarkt në Vechta! Na vizitoni – përgatitur i freskët për ju', ku: '🎪 Hefteya Stoppelmarkt li Vechta! Serdana me bikin – ji bo we taze tê amadekirin', pl: '🎪 Tydzień Stoppelmarkt w Vechcie! Odwiedź nas – świeżo przygotowane dla Ciebie' },
   doenerBuildKicker: { de: 'FRISCH ZUBEREITET', en: 'FRESHLY MADE', tr: 'TAZE HAZIRLANIR', ro: 'PREPARAT PROASPĂT', nl: 'VERS BEREID', sq: 'PËRGATITUR I FRESKËT', ku: 'Taze Tê Amadekirin', pl: 'ŚWIEŻO PRZYGOTOWANE' },
   doenerBuildTitle: { de: 'So entsteht dein Döner', en: 'How your döner comes together', tr: 'Dönerin böyle hazırlanır', ro: 'Așa se face döner-ul tău', nl: 'Zo ontstaat jouw döner', sq: 'Kështu bëhet doneri yt', ku: 'Dönera te bi vî rengî çêdibe', pl: 'Tak powstaje Twój kebab' },
   doenerBuildStage1: { de: 'Alles beginnt mit frischem Fladenbrot, warm vom Ofen', en: 'It all starts with fresh flatbread, warm from the oven', tr: 'Her şey fırından sıcak, taze lavaşla başlar', ro: 'Totul începe cu lipie proaspătă, caldă din cuptor', nl: 'Alles begint met vers plat brood, warm uit de oven', sq: 'Gjithçka fillon me bukë të freskët, të ngrohtë nga furra', ku: 'Her tişt bi nanê taze yê ji firnê germ dest pê dike', pl: 'Wszystko zaczyna się od świeżego chleba pita, ciepłego z pieca' },
@@ -1929,6 +1932,19 @@ function WeekendTeaser({ go }) {
   );
 }
 
+function StoppelmarktBanner() {
+  const { t } = React.useContext(LangContext);
+  const now = new Date();
+  const start = new Date(2026, 7, 13, 0, 0, 0); // 13. August 2026 (Monat 0-indiziert: 7 = August)
+  const end = new Date(2026, 7, 18, 23, 59, 59); // 18. August 2026
+  if (now < start || now > end) return null;
+  return (
+    <div className="px-5 py-3 text-center" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'goldGlow 2.2s ease-in-out infinite' }}>
+      <span className="font-black text-sm" style={{ color: GREEN }}>{t('stoppelmarktText')}</span>
+    </div>
+  );
+}
+
 function MittagsBanner() {
   const { t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -2300,6 +2316,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         )}
       </header>
+      <StoppelmarktBanner />
       <MittagsBanner />
       {dailyBanner && (
         <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
@@ -2329,6 +2346,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-black mb-4" style={{ background: status.open ? 'rgba(74,222,128,.14)' : 'rgba(255,77,77,.16)', border: `1.5px solid ${status.open ? 'rgba(74,222,128,.5)' : 'rgba(255,77,77,.5)'}`, boxShadow: status.open ? '0 6px 20px rgba(74,222,128,.15)' : '0 6px 20px rgba(255,77,77,.15)' }}>
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#ff4d4d', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
+              <span style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}{!status.open && status.nextOpen && <span className="opacity-80 font-bold"> · {formatCountdown(status.nextOpen - now)}</span>}</span>
+            </div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
@@ -5768,7 +5789,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         const match = data.categories.find((c) => c.key === 'imp-' + hint) || data.categories.find((c) => c.key.endsWith(hint));
         if (match) { setActiveCat(match.key); if (onConsumeAction) onConsumeAction(); return; }
       }
-      if (data.categories.length) setActiveCat(data.categories[0].key);
+      // Kein Hint: keine Kategorie vorauswählen — der Bildschirm startet neutral, die Person wählt selbst.
     });
   }, []);
 
@@ -5909,7 +5930,18 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
             <div className="absolute top-1/2 -right-14 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(21,56,38,.08), transparent 70%)', filter: 'blur(2px)' }} />
             <div className="absolute bottom-10 left-1/3 w-36 h-36 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.14), transparent 70%)', filter: 'blur(2px)' }} />
             {displayedItems.length === 0 && (
-              <p className="text-xs font-semibold text-center py-10" style={{ color: '#a4906c' }}>{search.trim() ? t('quickSearchNoResults') : '—'}</p>
+              <div className="text-center py-14">
+                {search.trim() ? (
+                  <p className="text-xs font-semibold" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
+                ) : !activeCat ? (
+                  <>
+                    <div className="text-4xl mb-3">👆</div>
+                    <p className="text-sm font-bold" style={{ color: GREEN }}>Wähle oben eine Kategorie</p>
+                  </>
+                ) : (
+                  <p className="text-xs font-semibold" style={{ color: '#a4906c' }}>—</p>
+                )}
+              </div>
             )}
             {displayedItems.map((item, idx) => {
               const color = tischCatColor(item.category);
@@ -5964,6 +5996,30 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
     </div>
   );
 }
+function CookieBanner() {
+  const { t, go } = React.useContext(LangContext);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    try { if (!localStorage.getItem('cookieConsent')) setVisible(true); } catch { setVisible(true); }
+  }, []);
+  if (!visible) return null;
+  const accept = () => {
+    try { localStorage.setItem('cookieConsent', '1'); } catch {}
+    setVisible(false);
+  };
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-[300] px-4 py-4" style={{ background: 'rgba(14,34,23,.97)', backdropFilter: 'blur(6px)', boxShadow: '0 -8px 24px rgba(0,0,0,.3)' }}>
+      <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-3">
+        <p className="text-xs font-medium flex-1 text-center sm:text-left" style={{ color: '#d9cdb4' }}>
+          {t('cookieText')}{' '}
+          <button onClick={() => { setVisible(false); go('datenschutz'); }} className="underline font-bold" style={{ color: '#ffc738' }}>{t('footerDatenschutz')}</button>
+        </p>
+        <button onClick={accept} className="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{t('cookieAccept')}</button>
+      </div>
+    </div>
+  );
+}
+
 function isTischMenuUrl() {
   try { return new URLSearchParams(window.location.search).get('menu') === '1'; } catch { return false; }
 }
@@ -6034,11 +6090,11 @@ export default function App() {
 
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}</LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /></LangContext.Provider>;
   }
 
   if (view === 'tischmenu') {
-    return <LangContext.Provider value={ctxValue}><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}</LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
   }
 
   return (
@@ -6099,6 +6155,7 @@ export default function App() {
       </div>
     </div>
     {installHelpModal}
+    <CookieBanner />
     </LangContext.Provider>
   );
 }
