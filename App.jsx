@@ -2294,6 +2294,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <Instagram size={16} color="#fff" />
             </a>
             {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
+            {!ORDERING_ENABLED && <a href="tel:+4944419516104" className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
@@ -2313,6 +2314,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
             )}
             {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
+            {!ORDERING_ENABLED && <a href="tel:+4944419516104" className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </div>
         )}
       </header>
@@ -2356,12 +2358,21 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!ORDERING_ENABLED && (
               <button
                 onClick={() => go('tischmenu')}
-                className="w-full sm:w-auto flex items-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-5"
+                className="w-full sm:w-auto flex items-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-3"
                 style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 14px 34px rgba(230,90,10,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}
               >
                 <span className="text-2xl">📋</span> {t('navMenu')}
                 <ArrowRight size={20} className="ml-auto" />
               </button>
+            )}
+            {!ORDERING_ENABLED && (
+              <a
+                href="tel:+4944419516104"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-5"
+                style={{ background: GOLD, color: GREEN, boxShadow: '0 10px 26px rgba(255,199,56,.35)' }}
+              >
+                <Phone size={22} /> 04441 / 95 16 104
+              </a>
             )}
             {ORDERING_ENABLED && (
               <>
