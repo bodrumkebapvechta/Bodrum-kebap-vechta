@@ -104,6 +104,8 @@ const UI = {
   visitsRecent: { de: 'Letzte Besuche', en: 'Recent visits', tr: 'Son ziyaretler', ro: 'Vizite recente', nl: 'Recente bezoeken' , sq: 'Vizitat e fundit', ku: 'Serdanên dawî', pl: 'Ostatnie odwiedziny'},
   byLanguage: { de: 'NACH SPRACHE', en: 'BY LANGUAGE', tr: 'DİLE GÖRE', ro: 'DUPĂ LIMBĂ', nl: 'PER TAAL' , sq: 'SIPAS GJUHËS', ku: 'LI GORÎ ZIMAN', pl: 'WEDŁUG JĘZYKA'},
   byDevice: { de: 'NACH GERÄT', en: 'BY DEVICE', tr: 'CİHAZA GÖRE', ro: 'DUPĂ DISPOZITIV', nl: 'PER APPARAAT' , sq: 'SIPAS PAJISJES', ku: 'LI GORÎ AMÎR', pl: 'WEDŁUG URZĄDZENIA'},
+  callClicksLabel: { de: 'Anrufe (Website)', en: 'Calls (website)', tr: 'Arama tıklaması', ro: 'Apeluri (site)', nl: 'Belletjes (site)', sq: 'Telefonata (sajti)', ku: 'Bang (malper)', pl: 'Połączenia (strona)' },
+  routeClicksLabel: { de: 'Routenanfragen', en: 'Route requests', tr: 'Yol tarifi tıklaması', ro: 'Cereri traseu', nl: 'Route-aanvragen', sq: 'Kërkesa për rrugë', ku: 'Daxwaza rê', pl: 'Zapytania o trasę' },
   analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.', ku: '500 serdanên dawî nîşan dide. Tu daneyên kesane tune, tenê ziman & cureyê amîr.', pl: 'Pokazuje ostatnie 500 odwiedzin. Brak danych osobowych, tylko język i typ urządzenia.'},
   trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.', ku: 'Ji bo dîtina rewşê koda sifarişê binivîse.', pl: 'Wpisz swój kod zamówienia, aby zobaczyć status.'},
   surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!', ku: 'Min ecêbmayî bihêle!', pl: 'Zaskocz mnie!'},
@@ -1173,6 +1175,12 @@ function logVisit(lang) {
     const device = window.innerWidth < 768 ? 'mobile' : 'desktop';
     const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
     safeSet(key, { ts: Date.now(), lang, device });
+  } catch {}
+}
+function logEvent(eventType) {
+  try {
+    const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
+    safeSet(key, { ts: Date.now(), event: eventType });
   } catch {}
 }
 
@@ -2294,7 +2302,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <Instagram size={16} color="#fff" />
             </a>
             {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
-            {!ORDERING_ENABLED && <a href="tel:+4944419516104" className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
+            {!ORDERING_ENABLED && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
@@ -2314,7 +2322,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <button onClick={onInstall} className="flex items-center gap-2 text-left text-sm font-semibold py-1.5" style={{ color: GOLD }}>{t('installAppBtn')}</button>
             )}
             {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
-            {!ORDERING_ENABLED && <a href="tel:+4944419516104" className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
+            {!ORDERING_ENABLED && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </div>
         )}
       </header>
@@ -2368,6 +2376,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!ORDERING_ENABLED && (
               <a
                 href="tel:+4944419516104"
+                onClick={() => logEvent('call')}
                 className="w-full sm:w-auto flex items-center justify-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-5"
                 style={{ background: GOLD, color: GREEN, boxShadow: '0 10px 26px rgba(255,199,56,.35)' }}
               >
@@ -2554,12 +2563,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="grid lg:grid-cols-2 gap-6 items-stretch">
           <div className="rounded-2xl p-6 flex flex-col justify-center" style={{ background: GREEN }}>
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
-            <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
+            <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" onClick={() => logEvent('call')} className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
             <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : lang === 'ku' ? 'Her roj 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div><div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : lang === 'ku' ? 'Sêşeman girtî' : 'Dinsdag gesloten'}</div></div></div>
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
                 target="_blank" rel="noopener noreferrer"
+                onClick={() => logEvent('route')}
                 className="cta-pulse inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-sm w-fit"
                 style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
               >
@@ -5605,18 +5615,21 @@ function StaffPanelView({ back }) {
           {tab === 'analytics' && (() => {
             const now = Date.now();
             const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-            const total = visits.length;
-            const today = visits.filter((v) => v.value.ts >= todayStart.getTime()).length;
+            const pageVisits = visits.filter((v) => !v.value.event);
+            const callClicks = visits.filter((v) => v.value.event === 'call').length;
+            const routeClicks = visits.filter((v) => v.value.event === 'route').length;
+            const total = pageVisits.length;
+            const today = pageVisits.filter((v) => v.value.ts >= todayStart.getTime()).length;
             const byLang = {};
             const byDevice = { mobile: 0, desktop: 0 };
-            visits.forEach((v) => {
+            pageVisits.forEach((v) => {
               byLang[v.value.lang] = (byLang[v.value.lang] || 0) + 1;
               byDevice[v.value.device] = (byDevice[v.value.device] || 0) + 1;
             });
             const langOrder = Object.entries(byLang).sort((a, b) => b[1] - a[1]);
             return (
               <div className="px-5">
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-3 mb-3">
                   <div className="bg-white rounded-xl p-4 text-center" style={{ boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
@@ -5624,6 +5637,16 @@ function StaffPanelView({ back }) {
                   <div className="bg-white rounded-xl p-4 text-center" style={{ boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
+                  </div>
+                  <div className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </div>
                 </div>
                 <div className="bg-white rounded-xl p-4 mb-3">
