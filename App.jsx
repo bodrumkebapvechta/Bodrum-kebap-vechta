@@ -2342,7 +2342,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       {/* HERO */}
       <section className="relative overflow-hidden">
         {HERO_IMAGES.map((img, i) => (
-          <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: img === TERRACE_IMG ? 'center 20%' : 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
+          <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: img === TERRACE_IMG ? 'center 15%' : 'center 25%', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
         ))}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(21,56,38,.55), rgba(21,56,38,.72))', zIndex: 1 }} />
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
@@ -2355,7 +2355,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-black -mt-6 mb-12" style={{ background: status.open ? 'rgba(74,222,128,.14)' : 'rgba(255,77,77,.16)', border: `1.5px solid ${status.open ? 'rgba(74,222,128,.5)' : 'rgba(255,77,77,.5)'}`, boxShadow: status.open ? '0 6px 20px rgba(74,222,128,.15)' : '0 6px 20px rgba(255,77,77,.15)' }}>
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-black -mt-14 mb-12" style={{ background: status.open ? 'rgba(74,222,128,.14)' : 'rgba(255,77,77,.16)', border: `1.5px solid ${status.open ? 'rgba(74,222,128,.5)' : 'rgba(255,77,77,.5)'}`, boxShadow: status.open ? '0 6px 20px rgba(74,222,128,.15)' : '0 6px 20px rgba(255,77,77,.15)' }}>
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#ff4d4d', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
               <span style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}{!status.open && status.nextOpen && <span className="opacity-80 font-bold"> · {formatCountdown(status.nextOpen - now)}</span>}</span>
             </div>
