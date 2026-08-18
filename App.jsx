@@ -2360,24 +2360,24 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="h-24 sm:h-32" />
             {!ORDERING_ENABLED && (
-              <button
-                onClick={() => go('tischmenu')}
-                className="w-full sm:w-auto flex items-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-3"
-                style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 14px 34px rgba(230,90,10,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}
-              >
-                <span className="text-2xl">📋</span> {t('navMenu')}
-                <ArrowRight size={20} className="ml-auto" />
-              </button>
-            )}
-            {!ORDERING_ENABLED && (
-              <a
-                href="tel:+4944419516104"
-                onClick={() => logEvent('call')}
-                className="w-full sm:w-auto flex items-center justify-center gap-3 px-7 py-5 rounded-2xl font-black text-lg mb-5"
-                style={{ background: GOLD, color: GREEN, boxShadow: '0 10px 26px rgba(255,199,56,.35)' }}
-              >
-                <Phone size={22} /> 04441 / 95 16 104
-              </a>
+              <div className="flex flex-wrap gap-3 mb-5">
+                <button
+                  onClick={() => go('tischmenu')}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm"
+                  style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)', animation: 'goldGlow 2.4s ease-in-out infinite' }}
+                >
+                  <span className="text-lg">📋</span> {t('navMenu')}
+                  <ArrowRight size={16} />
+                </button>
+                <a
+                  href="tel:+4944419516104"
+                  onClick={() => logEvent('call')}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm"
+                  style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.3)' }}
+                >
+                  <Phone size={16} /> 04441 / 95 16 104
+                </a>
+              </div>
             )}
             {ORDERING_ENABLED && (
               <>
