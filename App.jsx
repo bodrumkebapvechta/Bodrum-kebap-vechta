@@ -2342,7 +2342,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       {/* HERO */}
       <section className="relative overflow-hidden">
         {HERO_IMAGES.map((img, i) => (
-          <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
+          <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: img === TERRACE_IMG ? 'center 15%' : 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
         ))}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(21,56,38,.55), rgba(21,56,38,.72))', zIndex: 1 }} />
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
