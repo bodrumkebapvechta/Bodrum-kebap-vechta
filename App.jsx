@@ -2203,7 +2203,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const now = useLiveClock();
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
-  const HERO_IMAGES = [DOENER_SPIESS_IMG, PIZZA_KAESE_IMG, CALZONE_IMG, LAHMACUN_IMG, PENNE_IMG];
+  const HERO_IMAGES = [TERRACE_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG];
   const [heroIdx, setHeroIdx] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setHeroIdx((i) => (i + 1) % HERO_IMAGES.length), 5000);
