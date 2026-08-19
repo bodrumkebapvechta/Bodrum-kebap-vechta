@@ -1965,10 +1965,11 @@ function MittagsBanner() {
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const active = isLunchDay && now >= start && now <= end;
-  let mm = 0, ss = 0;
+  let hh = 0, mm = 0, ss = 0;
   if (active) {
     const diff = end.getTime() - now.getTime();
-    mm = Math.floor(diff / 60000);
+    hh = Math.floor(diff / 3600000);
+    mm = Math.floor((diff % 3600000) / 60000);
     ss = Math.floor((diff % 60000) / 1000);
   }
   return (
@@ -1977,7 +1978,7 @@ function MittagsBanner() {
         <div className="flex flex-wrap items-center justify-center gap-2">
           <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}{t('lunchOffer')}</span>
           <span className="text-white text-sm font-semibold opacity-90">
-            {active ? `noch ${mm}:${ss.toString().padStart(2, '0')} Min.` : t('lunchOfferInactive')}
+            {active ? `noch ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}` : t('lunchOfferInactive')}
           </span>
         </div>
         <span className="text-white text-xs font-semibold opacity-85">{t('lunchOfferItems')}</span>
