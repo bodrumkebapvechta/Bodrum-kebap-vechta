@@ -2523,7 +2523,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const scrollTo = (id) => {
     setNavOpen(false);
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 84;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -2713,11 +2716,19 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
-            <div className="flex flex-wrap gap-2.5 mt-3">
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              <button onClick={() => scrollTo('tagesempfehlung')} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
+                <span className="text-lg">⭐</span> {t('dailyRecommendation')}
+              </button>
+              <button onClick={() => setMoodPickerOpen(true)} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center text-white" style={{ background: 'linear-gradient(135deg, #6d5bd0, #8b7ae8)', boxShadow: '0 8px 20px rgba(109,91,208,.35)' }}>
+                <span className="text-lg">🎯</span> Mood
+              </button>
+              <button onClick={rollSurprise} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center text-white" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
+                <span className="text-lg">🎲</span> {t('surpriseMeBtn')}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2.5 mt-2.5">
               {ORDERING_ENABLED && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
-              <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
-              <button onClick={() => setMoodPickerOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎯 Mood</button>
-              <button onClick={() => scrollTo('tagesempfehlung')} className="flex items-center gap-2 px-5 py-3 rounded-full font-black text-xs" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 22px rgba(255,199,56,.4)', animation: 'goldGlow 2.2s ease-in-out infinite' }}>⭐ {t('dailyRecommendation')} ↓</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
@@ -5734,7 +5745,7 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex items-center justify-center px-6" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,199,56,.08), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
+        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-12" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,199,56,.08), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
           <div className="w-full max-w-xs">
             <div className="flex flex-col items-center mb-7">
               <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)`, boxShadow: '0 10px 28px rgba(21,56,38,.35), 0 0 0 4px rgba(255,199,56,.18)' }}>
@@ -5837,13 +5848,14 @@ function StaffPanelView({ back }) {
 
           {tab === 'wheel' && (
             <div className="px-5">
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎡 GEWINNCODE PRÜFEN</div>
               <div className="flex gap-2 mb-4">
-                <input value={wheelCode} onChange={(e) => setWheelCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && wheelSearch()} placeholder={t('prizeCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={wheelCode} onChange={(e) => setWheelCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && wheelSearch()} placeholder={t('prizeCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#fff', color: GREEN, border: '1.5px solid #f0e5cf' }} />
                 <button onClick={wheelSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
               </div>
               {wheelResult === null && <p className="text-sm font-semibold text-center" style={{ color: CHILI }}>{t('codeNotFound')}</p>}
               {wheelResult && (
-                <div className="bg-white rounded-xl p-5">
+                <div className="bg-white rounded-2xl p-5" style={{ border: '1.5px solid #f0e5cf' }}>
                   <div className="flex items-center gap-2 mb-3"><ShieldCheck size={18} color={wheelResult.redeemed ? '#a4906c' : '#34a065'} /><span className="font-bold text-sm" style={{ color: GREEN }}>{wheelResult.redeemed ? t('alreadyRedeemed') : t('validLabel')}</span></div>
                   <div className="text-lg font-black mb-4" style={{ color: GREEN }}>{mx(wheelResult.prize, lang)}</div>
                   {!wheelResult.redeemed && <button onClick={wheelRedeem} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{t('confirmRedeem')}</button>}
@@ -5854,11 +5866,11 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'orders' && (
             <div className="px-5">
-              <div className="flex items-center gap-2 mb-3"><span className="text-lg">📦</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffOrdersTab')}</h3></div>
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📦 {t('staffOrdersTab').toUpperCase()}</div>
               {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
               {sortedOrders.length === 0 && (
-                <div className="text-center py-14 opacity-70">
-                  <div className="text-5xl mb-3">📭</div>
+                <div className="text-center py-14 rounded-2xl" style={{ background: '#fff', border: '1.5px dashed #e3d5bd' }}>
+                  <div className="text-5xl mb-3 opacity-70">📭</div>
                   <p className="text-sm font-semibold" style={{ color: '#8a7c62' }}>{t('noOrdersYet')}</p>
                 </div>
               )}
@@ -5869,7 +5881,7 @@ function StaffPanelView({ back }) {
                   const pickupTarget = o.value.pickupTime ? parsePickupTimeToday(o.value.pickupTime) : null;
                   const pickupDiffMs = pickupTarget ? pickupTarget.getTime() - nowTick : null;
                   return (
-                  <div key={o.key} className="bg-white rounded-xl p-4 shadow-sm" style={isStuck ? { border: `2px solid ${CHILI}`, background: '#fff5f5' } : {}}>
+                  <div key={o.key} className="bg-white rounded-2xl p-4" style={isStuck ? { border: `2px solid ${CHILI}`, background: '#fff5f5' } : { border: '1.5px solid #f0e5cf' }}>
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <div className="font-black text-sm flex items-center gap-1.5" style={{ color: GREEN }}>{o.value.code} {o.value.name ? `· ${o.value.name}` : ''}{o.value.test && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: '#8a7c62' }}>🧪 TEST</span>}{isStuck && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: CHILI }}>⏰ {t('stuckOrderBadge')}</span>}</div>
@@ -5990,11 +6002,11 @@ function StaffPanelView({ back }) {
             return (
               <div className="px-5">
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-white rounded-xl p-4 text-center" style={{ boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                  <div className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
                   </div>
-                  <div className="bg-white rounded-xl p-4 text-center" style={{ boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                  <div className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
                   </div>
@@ -6046,12 +6058,12 @@ function StaffPanelView({ back }) {
           })()}
           {tab === 'menu' && (
             <div className="px-5">
-              <div className="flex items-center gap-2 mb-3"><span className="text-lg">📋</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffMenuTab')}</h3></div>
-              <button onClick={toggleChickenSoldOut} className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl mb-4" style={chickenSoldOut ? { background: CHILI } : { background: '#fff', border: '1px solid #e3d5bd' }}>
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
+              <button onClick={toggleChickenSoldOut} className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl mb-3" style={chickenSoldOut ? { background: CHILI } : { background: '#fff', border: '1.5px solid #f0e5cf' }}>
                 <span className="flex items-center gap-2 font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>🍗 {t('chickenSoldOutLabel')}</span>
                 <span className="text-[10px] font-black px-2.5 py-1 rounded-full" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
               </button>
-              <div className="rounded-xl p-4 mb-4" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
+              <div className="rounded-2xl p-4 mb-5" style={{ background: '#fdecd4', border: '1.5px solid #f0d4a8' }}>
                 <div className="font-black text-sm mb-1" style={{ color: '#8a5a1f' }}>🥦 {t('extrasSoldOutTitle')}</div>
                 <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('extrasSoldOutHint')}</p>
                 <input value={extraSearch} onChange={(e) => setExtraSearch(e.target.value)} placeholder={t('extraSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#fff', color: GREEN }} />
@@ -6116,7 +6128,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'photos' && (
             <div className="px-5">
-              <div className="flex items-center gap-2 mb-3"><span className="text-lg">📷</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('staffPhotosTab')}</h3></div>
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📷 {t('staffPhotosTab').toUpperCase()}</div>
               <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('photoUrlHint')}</p>
               <input value={photoSearch} onChange={(e) => { setPhotoSearch(e.target.value); setEditingPhotoItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingPhotoItem && photoSearchResults.map((item) => (
