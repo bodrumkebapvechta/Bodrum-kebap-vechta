@@ -1,0 +1,43 @@
+# Standart arama motorları
+User-agent: *
+Allow: /
+
+# --- Yapay zeka arama/yanıt motorları (AI search & citation crawlers) ---
+# Bunlar sitenin ChatGPT, Claude ve Perplexity'nin canlı arama/yanıt
+# sonuçlarında gösterilebilmesi için gerekli.
+
+# OpenAI (ChatGPT)
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: GPTBot
+Allow: /
+
+# Anthropic (Claude)
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+
+# Google AI (Gemini / AI Overviews)
+User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Microsoft Bing / Copilot
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://bodrumkebapvechta.de/sitemap.xml
