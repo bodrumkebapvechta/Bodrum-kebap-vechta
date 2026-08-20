@@ -1975,6 +1975,9 @@ const ASSISTANT_R = {
   itemFound: { de: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", en: "🍽️ No. {num} — **{name}** — {price}\n{desc}", tr: "🍽️ No. {num} — **{name}** — {price}\n{desc}", ro: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", nl: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", sq: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", ku: "🍽️ Hej. {num} — **{name}** — {price}\n{desc}", pl: "🍽️ Nr {num} — **{name}** — {price}\n{desc}" },
   itemFoundNoNum: { de: "🍽️ **{name}** — {price}\n{desc}", en: "🍽️ **{name}** — {price}\n{desc}", tr: "🍽️ **{name}** — {price}\n{desc}", ro: "🍽️ **{name}** — {price}\n{desc}", nl: "🍽️ **{name}** — {price}\n{desc}", sq: "🍽️ **{name}** — {price}\n{desc}", ku: "🍽️ **{name}** — {price}\n{desc}", pl: "🍽️ **{name}** — {price}\n{desc}" },
   fallback: { de: "Das habe ich nicht ganz verstanden 🤔 Frag mich z.B. \"Habt ihr geöffnet?\", \"Wo seid ihr?\", \"Was empfehlt ihr?\" oder gib eine Artikelnummer/-name ein. Oder ruf direkt an: 📞 04441 / 95 16 104", en: '🤔 I didn\'t quite catch that. Try asking "Are you open?", "Where are you?", "What do you recommend?", or type an item number/name. Or call directly: 📞 04441 / 95 16 104', tr: "Bunu tam anlayamadım 🤔 Ama şunları sorabilirsin: \"açık mısınız\", \"adresiniz nerede\", \"ne önerirsiniz\", ya da bir ürün ismi/numarası yazabilirsin. Ya da direkt ara: 📞 04441 / 95 16 104", ro: '🤔 Nu am înțeles bine. Încearcă "Sunteți deschiși?", "Unde sunteți?", "Ce recomandați?" sau scrie un număr/nume de produs. Sau sună direct: 📞 04441 / 95 16 104', nl: '🤔 Dat begreep ik niet helemaal. Probeer "Zijn jullie open?", "Waar zijn jullie?", "Wat raden jullie aan?" of typ een artikelnummer/-naam. Of bel direct: 📞 04441 / 95 16 104', sq: '🤔 Nuk e kuptova plotësisht. Provo "A jeni hapur?", "Ku jeni?", "Çfarë rekomandoni?" ose shkruaj një numër/emër artikulli. Ose telefono direkt: 📞 04441 / 95 16 104', ku: '🤔 Min ev baş fêm nekir. Biceribîne "Hûn vekirî ne?", "Hûn li ku ne?", "Hûn çi pêşniyar dikin?", an hejmar/navê tiştekî binivîse. An rasterast telefon bike: 📞 04441 / 95 16 104', pl: '🤔 Nie do końca to zrozumiałem. Zapytaj np. "Czy jesteście otwarci?", "Gdzie jesteście?", "Co polecacie?" albo wpisz numer/nazwę dania. Albo zadzwoń bezpośrednio: 📞 04441 / 95 16 104' },
+  chipOpen: { de: "Habt ihr geöffnet?", en: "Are you open?", tr: "Açık mısınız?", ro: "Sunteți deschiși?", nl: "Zijn jullie open?", sq: "A jeni hapur?", ku: "Hûn vekirî ne?", pl: "Czy jesteście otwarci?" },
+  chipRecommend: { de: "Was empfehlt ihr?", en: "What do you recommend?", tr: "Ne önerirsiniz?", ro: "Ce recomandați?", nl: "Wat raden jullie aan?", sq: "Çfarë rekomandoni?", ku: "Hûn çi pêşniyar dikin?", pl: "Co polecacie?" },
+  chipAddress: { de: "Wo seid ihr?", en: "Where are you?", tr: "Adresiniz nerede?", ro: "Unde sunteți?", nl: "Waar zijn jullie?", sq: "Ku jeni?", ku: "Hûn li ku ne?", pl: "Gdzie jesteście?" },
 };
 function ar(key, lang) { return ASSISTANT_R[key][lang] || ASSISTANT_R[key].de; }
 
@@ -2053,7 +2056,7 @@ function AIAssistant() {
     setInput('');
   };
 
-  const chips = ['Açık mısınız?', 'Ne önerirsiniz?', 'Adresiniz nerede?'];
+  const chips = [ar('chipOpen', lang), ar('chipRecommend', lang), ar('chipAddress', lang)];
 
   return (
     <>
