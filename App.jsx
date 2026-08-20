@@ -1956,45 +1956,76 @@ function StoppelmarktBanner() {
   );
 }
 
-function getAssistantReply(qRaw, lang, t) {
-  const q = qRaw.toLowerCase();
+const ALL_MENU_ITEMS = MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta).map((i) => ({ ...i, number: menuNum(i.id) })));
+
+const ASSISTANT_R = {
+  openYes: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Dienstags haben wir Ruhetag.", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're closed on Tuesdays.", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız.", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Marțea suntem închiși.", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. Op dinsdag zijn we gesloten.", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Të martave jemi mbyllur.", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Roja Sêşemê em girtî ne.", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. We wtorki mamy zamknięte." },
+  openNoPrefix: { de: "🔴 Wir haben gerade geschlossen.", en: "🔴 We're currently closed.", tr: "🔴 Şu an kapalıyız.", ro: "🔴 Suntem închiși momentan.", nl: "🔴 We zijn nu gesloten.", sq: "🔴 Jemi mbyllur tani.", ku: "🔴 Em niha girtî ne.", pl: "🔴 Jesteśmy teraz zamknięci." },
+  opensIn: { de: "Öffnet in", en: "Opens in", tr: "Açılışa", ro: "Se deschide în", nl: "Opent over", sq: "Hapet pas", ku: "Vedibe piştî", pl: "Otwieramy za" },
+  openNoSuffix: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, außer dienstags.", en: "We're open daily 11:30 AM–10:00 PM, except Tuesdays.", tr: "Her gün 11:30–22:00 arası açığız, Salı hariç.", ro: "Suntem deschiși zilnic 11:30–22:00, cu excepția marțea.", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, behalve dinsdag.", sq: "Jemi hapur çdo ditë 11:30–22:00, përveç të martave.", ku: "Em her roj saet 11:30–22:00 vekirî ne, ji xeynî Sêşemê.", pl: "Jesteśmy otwarci codziennie 11:30–22:00, oprócz wtorków." },
+  address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
+  phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
+  halal: { de: "☪️ Ja, 100% Halal! Alle unsere Produkte sind halal-zertifiziert.", en: "☪️ Yes, 100% Halal! All our products are halal-certified.", tr: "☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.", ro: "☪️ Da, 100% Halal! Toate produsele noastre sunt certificate halal.", nl: "☪️ Ja, 100% Halal! Al onze producten zijn halal-gecertificeerd.", sq: "☪️ Po, 100% Hallall! Të gjitha produktet tona janë të certifikuara hallall.", ku: "☪️ Erê, %100 Helal e! Hemû berhemên me bawernameya helal hene.", pl: "☪️ Tak, 100% Halal! Wszystkie nasze produkty mają certyfikat halal." },
+  allergen: { de: "ⓘ Allergen- und Zusatzstoffinfos stehen bei jedem Artikel in der Speisekarte klein daneben, oder tippe oben auf \"ⓘ Allergene\".", en: "ⓘ Allergen and additive info is shown next to each item on the menu, or tap \"ⓘ Allergens\" at the top.", tr: "ⓘ Alerjen ve katkı madde bilgileri Speisekarte'de her ürünün yanında küçük harflerle yazıyor, üstteki \"ⓘ Allergene\" butonuna da bakabilirsin.", ro: "ⓘ Informațiile despre alergeni sunt afișate lângă fiecare produs din meniu, sau apasă \"ⓘ Alergeni\" sus.", nl: "ⓘ Allergie- en toevoegingsinfo staat bij elk artikel op de kaart, of tik boven op \"ⓘ Allergenen\".", sq: "ⓘ Informacioni për alergjenët shfaqet pranë çdo artikulli në menu, ose troko \"ⓘ Alergjenët\" lart.", ku: "ⓘ Agahiyên alerjiyê li tenişta her tiştî di menuyê de tê nîşandan, an li jor li ser \"ⓘ Alerji\" bitikîne.", pl: "ⓘ Informacje o alergenach są przy każdej pozycji w menu, lub dotknij \"ⓘ Alergeny\" u góry." },
+  orderOn: { de: "🥙 Zum Bestellen tippe oben auf \"Per WhatsApp bestellen\"!", en: '🥙 To order, tap "Order via WhatsApp" at the top!', tr: "🥙 Sipariş vermek için üstteki \"WhatsApp'tan sipariş ver\" butonuna basabilirsin!", ro: "🥙 Pentru a comanda, apasă \"Comandă prin WhatsApp\" sus!", nl: '🥙 Om te bestellen, tik boven op "Bestellen via WhatsApp"!', sq: '🥙 Për të porositur, troko "Porosit me WhatsApp" lart!', ku: '🥙 Bo sifarişê, li jor li ser "Bi WhatsAppê sifariş bike" bitikîne!', pl: '🥙 Aby zamówić, dotknij "Zamów przez WhatsApp" u góry!' },
+  orderOff: { de: "📞 Online-Bestellungen sind aktuell nicht möglich, aber du kannst uns ganz einfach anrufen: 04441 / 95 16 104", en: "📞 Online ordering isn't available right now, but you can easily call us: 04441 / 95 16 104", tr: "📞 Şu an online sipariş sistemi kapalı, ama bizi arayarak kolayca sipariş verebilirsin: 04441 / 95 16 104", ro: "📞 Comenzile online nu sunt momentan posibile, dar ne poți suna ușor: 04441 / 95 16 104", nl: "📞 Online bestellen is nu niet mogelijk, maar je kunt ons gewoon bellen: 04441 / 95 16 104", sq: "📞 Porositë online nuk janë të mundshme tani, por mund të na telefononi: 04441 / 95 16 104", ku: "📞 Sifarişên online niha ne gengaz in, lê tu dikarî bi hêsanî telefon bikî: 04441 / 95 16 104", pl: "📞 Zamówienia online są obecnie niedostępne, ale możesz do nas łatwo zadzwonić: 04441 / 95 16 104" },
+  recommendPrefix: { de: "🎲 Meine Empfehlung für heute:", en: "🎲 My recommendation for today:", tr: "🎲 Bugün için önerim:", ro: "🎲 Recomandarea mea de azi:", nl: "🎲 Mijn aanbeveling voor vandaag:", sq: "🎲 Rekomandimi im për sot:", ku: "🎲 Pêşniyara min a îro:", pl: "🎲 Moje polecenie na dziś:" },
+  enjoy: { de: "Guten Appetit! 😋", en: "Enjoy your meal! 😋", tr: "Afiyet olsun! 😋", ro: "Poftă bună! 😋", nl: "Eet smakelijk! 😋", sq: "Ju bëftë mirë! 😋", ku: "Nûşê te be! 😋", pl: "Smacznego! 😋" },
+  menuList: { de: "📋 Unsere Kategorien: Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat. Tippe oben auf \"Speisekarte\" für die komplette Karte.", en: '📋 Our categories: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salad. Tap "Menu" at the top for the full menu.', tr: "📋 Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat kategorilerimiz var — üstteki \"Speisekarte\" butonuyla tüm menüyü görebilirsin.", ro: '📋 Categoriile noastre: Kebap, Pizza, Rollo, Calzone, Baguette, Paste, Șnițel, Salată. Apasă "Meniu" sus pentru meniul complet.', nl: '📋 Onze categorieën: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salade. Tik boven op "Menu" voor de volledige kaart.', sq: '📋 Kategoritë tona: Kebap, Pica, Rollo, Kalcone, Bagetë, Makarona, Shnicel, Sallatë. Troko "Menuja" lart për menynë e plotë.', ku: '📋 Kategoriyên me: Kebap, Pizza, Rollo, Calzone, Baguette, Nûdile, Schnitzel, Selate. Li jor li ser "Menû" bitikîne bo menuya tevahî.', pl: '📋 Nasze kategorie: Kebap, Pizza, Rollo, Calzone, Baguette, Makaron, Sznycel, Sałatka. Dotknij "Menu" u góry, aby zobaczyć pełną kartę.' },
+  itemFound: { de: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", en: "🍽️ No. {num} — **{name}** — {price}\n{desc}", tr: "🍽️ No. {num} — **{name}** — {price}\n{desc}", ro: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", nl: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", sq: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", ku: "🍽️ Hej. {num} — **{name}** — {price}\n{desc}", pl: "🍽️ Nr {num} — **{name}** — {price}\n{desc}" },
+  itemFoundNoNum: { de: "🍽️ **{name}** — {price}\n{desc}", en: "🍽️ **{name}** — {price}\n{desc}", tr: "🍽️ **{name}** — {price}\n{desc}", ro: "🍽️ **{name}** — {price}\n{desc}", nl: "🍽️ **{name}** — {price}\n{desc}", sq: "🍽️ **{name}** — {price}\n{desc}", ku: "🍽️ **{name}** — {price}\n{desc}", pl: "🍽️ **{name}** — {price}\n{desc}" },
+  fallback: { de: "Das habe ich nicht ganz verstanden 🤔 Frag mich z.B. \"Habt ihr geöffnet?\", \"Wo seid ihr?\", \"Was empfehlt ihr?\" oder gib eine Artikelnummer/-name ein. Oder ruf direkt an: 📞 04441 / 95 16 104", en: '🤔 I didn\'t quite catch that. Try asking "Are you open?", "Where are you?", "What do you recommend?", or type an item number/name. Or call directly: 📞 04441 / 95 16 104', tr: "Bunu tam anlayamadım 🤔 Ama şunları sorabilirsin: \"açık mısınız\", \"adresiniz nerede\", \"ne önerirsiniz\", ya da bir ürün ismi/numarası yazabilirsin. Ya da direkt ara: 📞 04441 / 95 16 104", ro: '🤔 Nu am înțeles bine. Încearcă "Sunteți deschiși?", "Unde sunteți?", "Ce recomandați?" sau scrie un număr/nume de produs. Sau sună direct: 📞 04441 / 95 16 104', nl: '🤔 Dat begreep ik niet helemaal. Probeer "Zijn jullie open?", "Waar zijn jullie?", "Wat raden jullie aan?" of typ een artikelnummer/-naam. Of bel direct: 📞 04441 / 95 16 104', sq: '🤔 Nuk e kuptova plotësisht. Provo "A jeni hapur?", "Ku jeni?", "Çfarë rekomandoni?" ose shkruaj një numër/emër artikulli. Ose telefono direkt: 📞 04441 / 95 16 104', ku: '🤔 Min ev baş fêm nekir. Biceribîne "Hûn vekirî ne?", "Hûn li ku ne?", "Hûn çi pêşniyar dikin?", an hejmar/navê tiştekî binivîse. An rasterast telefon bike: 📞 04441 / 95 16 104', pl: '🤔 Nie do końca to zrozumiałem. Zapytaj np. "Czy jesteście otwarci?", "Gdzie jesteście?", "Co polecacie?" albo wpisz numer/nazwę dania. Albo zadzwoń bezpośrednio: 📞 04441 / 95 16 104' },
+};
+function ar(key, lang) { return ASSISTANT_R[key][lang] || ASSISTANT_R[key].de; }
+
+function getAssistantReply(qRaw, lang) {
+  const q = qRaw.toLowerCase().trim();
   const now = new Date();
   const status = getOpenStatus(now);
   const has = (...words) => words.some((w) => q.includes(w));
 
-  if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open', 'closed', 'wann')) {
-    if (status.open) return `🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız (Ruhetag).`;
-    return `🔴 Şu an kapalıyız. ${status.nextOpen ? `Açılışa: ${formatCountdown(status.nextOpen - now)}` : ''} Her gün 11:30–22:00 açığız, Salı hariç.`;
+  // 1) Numeric item lookup takes priority (e.g. "201", "25 numaralı pizza")
+  const numMatch = q.match(/\d+/);
+  if (numMatch) {
+    const found = ALL_MENU_ITEMS.find((it) => it.number === numMatch[0]);
+    if (found) return ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', fmt(found.priceLarge !== undefined ? found.priceSmall : found.price)).replace('{desc}', found.desc ? mx(found.desc, lang) : '');
   }
-  if (has('adres', 'nerede', 'wo ', 'address', 'yol', 'route', 'konum', 'standort')) {
-    return `📍 Oyther Straße 37, 49377 Vechta. Sağ üstteki menüden "Rota" butonuna basarsan direkt yol tarifi açılır.`;
+
+  if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
+    if (status.open) return ar('openYes', lang);
+    return `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${ar('openNoSuffix', lang)}`;
   }
-  if (has('telefon', ' ara', 'anruf', 'phone', 'numara', 'nummer')) {
-    return `📞 04441 / 95 16 104 — üstteki sarı "Ara" butonuna basarak direkt arayabilirsin.`;
+  if (has('adres', 'nerede', 'wo ', 'address', 'yol', 'route', 'konum', 'standort', 'adresse')) {
+    return ar('address', lang);
+  }
+  if (has('telefon', ' ara', 'anruf', 'phone', 'zadzwoń')) {
+    return ar('phone', lang);
   }
   if (has('helal', 'halal')) {
-    return `☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.`;
+    return ar('halal', lang);
   }
   if (has('alerjen', 'allergie', 'allergen', 'zusatzstoffe')) {
-    return `ⓘ Alerjen ve katkı madde bilgileri Speisekarte'de her ürünün yanında küçük harflerle yazıyor, üstteki "ⓘ Allergene" butonuna da bakabilirsin.`;
+    return ar('allergen', lang);
   }
-  if (has('sipariş', 'bestell', 'order')) {
-    if (ORDERING_ENABLED) return `🥙 Sipariş vermek için üstteki "WhatsApp'tan sipariş ver" butonuna basabilirsin!`;
-    return `📞 Şu an online sipariş sistemi kapalı, ama bizi arayarak kolayca sipariş verebilirsin: 04441 / 95 16 104`;
+  if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
+    return ORDERING_ENABLED ? ar('orderOn', lang) : ar('orderOff', lang);
   }
-  if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag')) {
+  if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag', 'polec')) {
     const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
-    return `🎲 Bugün için önerim: **${mx(item.name, lang)}** — ${fmt(item.price)}. Afiyet olsun! 😋`;
+    return `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}. ${ar('enjoy', lang)}`;
   }
   if (has('menü', 'menu', 'speisekarte', 'karte')) {
-    return `📋 Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat kategorilerimiz var — üstteki "Speisekarte" butonuyla tüm menüyü görebilirsin.`;
+    return ar('menuList', lang);
   }
-  // Try matching a menu item by name
-  const match = SURPRISE_ITEMS.find((it) => it.name.toLowerCase().includes(q.trim()) && q.trim().length > 2);
-  if (match) {
-    return `🍽️ **${mx(match.name, lang)}** — ${fmt(match.price)}. Detaylar ve daha fazlası için Speisekarte'ye bakabilirsin.`;
+  // 2) Name-based item lookup
+  if (q.length > 2) {
+    const nameMatch = ALL_MENU_ITEMS.find((it) => it.name.toLowerCase().includes(q) || q.includes(it.name.toLowerCase()));
+    if (nameMatch) {
+      if (nameMatch.number) return ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '');
+      return ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '');
+    }
   }
-  return `Bunu tam anlayamadım 🤔 Ama şunları sorabilirsin: "açık mısınız", "adresiniz nerede", "ne önerirsiniz", ya da bir ürün ismi yazabilirsin. Ya da direkt ara: 📞 04441 / 95 16 104`;
+  return ar('fallback', lang);
 }
 
 function AIAssistant() {
@@ -2017,7 +2048,7 @@ function AIAssistant() {
   const send = (text) => {
     const q = (text ?? input).trim();
     if (!q) return;
-    const reply = getAssistantReply(q, lang, t);
+    const reply = getAssistantReply(q, lang);
     setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
     setInput('');
   };
