@@ -1869,7 +1869,7 @@ function WeekendComboPromo({ go }) {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
+    <section id="tagesempfehlung" className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
       <div className="rounded-2xl overflow-hidden" style={{ background: `linear-gradient(120deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 10px 30px rgba(214,40,40,.3)' }}>
         <div className="px-6 pt-7 pb-3 text-center">
           <div className="text-white font-black text-xs tracking-[4px] mb-1.5 animate-pulse">{t('weekendOnlyToday')}</div>
@@ -2193,6 +2193,10 @@ const MOOD_CATS = {
   light: ['salat'],
   dough: ['pizza', 'calzone', 'baguette'],
 };
+function isVegItem(name) {
+  const n = name.toLowerCase();
+  return n.includes('vegetarisch') || n.includes('falafel') || n.includes('veggie') || n.includes('salat (') || n.includes('salat)') || n.includes(' salat');
+}
 
 function MoodPicker({ onClose }) {
   const { lang } = React.useContext(LangContext);
@@ -2200,11 +2204,13 @@ function MoodPicker({ onClose }) {
 
   const pick = (moodKey) => {
     let pool = SURPRISE_ITEMS;
-    if (moodKey !== 'surprise') {
+    if (moodKey === 'light') {
+      pool = SURPRISE_ITEMS.filter((it) => it.cat === 'salat' || isVegItem(it.name));
+    } else if (moodKey === 'meat' || moodKey === 'dough') {
       const cats = MOOD_CATS[moodKey];
-      pool = SURPRISE_ITEMS.filter((it) => cats.includes(it.cat));
-      if (pool.length === 0) pool = SURPRISE_ITEMS;
+      pool = SURPRISE_ITEMS.filter((it) => cats.includes(it.cat) && !isVegItem(it.name));
     }
+    if (pool.length === 0) pool = SURPRISE_ITEMS;
     setResult(pool[Math.floor(Math.random() * pool.length)]);
   };
 
@@ -2398,7 +2404,7 @@ function DailySpecial({ go }) {
 
   if (day === 2) {
     return (
-      <section className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
+      <section id="tagesempfehlung" className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
         <div className="rounded-2xl p-6 text-center" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
           <div className="text-2xl mb-1.5">😴</div>
           <div className="text-white font-black text-lg mb-1">{t('closedTodayTitle')}</div>
@@ -2410,7 +2416,7 @@ function DailySpecial({ go }) {
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
+    <section id="tagesempfehlung" className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
       <div className="flex justify-center mb-4">
         <div className="px-6 py-2.5 rounded-full font-black text-sm sm:text-base tracking-[2px] text-center" style={{ background: GREEN, color: GOLD, animation: 'goldGlow 2.6s ease-in-out infinite' }}>
           ⭐ {t('dailyRecommendation')} · {days[day].toUpperCase()} ⭐
@@ -2711,7 +2717,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               {ORDERING_ENABLED && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
               <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
               <button onClick={() => setMoodPickerOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎯 Mood</button>
-              <button onClick={() => scrollTo(ORDERING_ENABLED ? 'extras' : 'galerie')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
+              <button onClick={() => scrollTo('tagesempfehlung')} className="flex items-center gap-2 px-5 py-3 rounded-full font-black text-xs" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 22px rgba(255,199,56,.4)', animation: 'goldGlow 2.2s ease-in-out infinite' }}>⭐ {t('dailyRecommendation')} ↓</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
@@ -5682,7 +5688,7 @@ function StaffPanelView({ back }) {
                     {item.img && <img src={item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-sm" style={{ color: GREEN }}>{item.number && <span className="text-[10px] font-black mr-1" style={{ color: ORANGE }}>#{item.number}</span>}{tischText(item.name, 'de')}{item.alg && <sup className="ml-0.5 font-semibold" style={{ fontSize: '9px', color: '#a4906c' }}>{item.alg}</sup>} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
-                      <div className="text-xs font-bold" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `${fmt(item.price)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</div>
+                      <div className="text-xs font-bold" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `22cm ${fmt(item.price)} / 28cm ${fmt(item.priceLarge)}` : fmt(item.price)}</div>
                     </div>
                     <button onClick={() => tischToggleSoldOut(item.id)} className="text-[10px] font-bold px-2 py-1.5 rounded-lg" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? 'Zurück' : 'Ausverkauft'}</button>
                     <button onClick={() => tischStartEdit(item)} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#f0e5cf' }}>✏️</button>
@@ -5728,31 +5734,41 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="px-5 pt-4">
-          <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '0021' && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="PIN ••••" className="w-full px-4 py-3.5 rounded-xl text-lg font-bold tracking-[0.3em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-          <button onClick={() => { if (pin === '0021') { setOk(true); unlockAudio(); } }} className="w-full py-3.5 rounded-xl font-bold text-base" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('loginBtn')}</button>
+        <div className="min-h-[calc(100vh-70px)] flex items-center justify-center px-6" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,199,56,.08), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
+          <div className="w-full max-w-xs">
+            <div className="flex flex-col items-center mb-7">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)`, boxShadow: '0 10px 28px rgba(21,56,38,.35), 0 0 0 4px rgba(255,199,56,.18)' }}>
+                <Lock size={24} color={GOLD} />
+              </div>
+              <div className="font-black text-lg text-center" style={{ color: GREEN }}>{t('titleStaff')}</div>
+              <div className="text-[11px] font-bold tracking-widest mt-1" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
+            </div>
+            <div className="rounded-3xl p-6" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
+              <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '0021' && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="• • • •" className="w-full px-4 py-4 rounded-2xl text-2xl font-black tracking-[0.5em] text-center outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN, border: '1.5px solid #f0e5cf' }} autoFocus />
+              <button onClick={() => { if (pin === '0021') { setOk(true); unlockAudio(); } }} className="w-full py-4 rounded-2xl font-black text-base" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)' }}>🔓 {t('loginBtn')}</button>
+            </div>
+          </div>
         </div>
       ) : (
         <>
-          <div className="px-5 pt-4 pb-1">
-            <div className="rounded-2xl p-4 mb-1 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
-              <span className="text-2xl">👨‍🍳</span>
+          <div className="px-5 pt-4">
+            <div className="rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
+              <span className="text-xl">👨‍🍳</span>
               <div>
                 <div className="font-black text-sm" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
                 <div className="text-[11px] font-medium" style={{ color: '#d9cdb4' }}>{t('staffWelcomeSub')}</div>
               </div>
             </div>
           </div>
-          <div className="px-5 pt-3 pb-1">
-            <div className="rounded-2xl p-4" style={{ background: '#fff', border: '1.5px solid #e3d5bd' }}>
-              <div className="font-black text-sm mb-1" style={{ color: GREEN }}>{t('staffQuickLookupTitle')}</div>
-              <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('staffQuickLookupHint')}</p>
-              <input value={staffLookup} onChange={(e) => setStaffLookup(e.target.value)} placeholder={t('quickSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+          <div className="px-5 pt-2.5">
+            <div className="rounded-2xl p-3.5" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
+              <div className="flex items-center gap-1.5 mb-2"><span className="text-sm">🔍</span><div className="font-bold text-xs" style={{ color: GREEN }}>{t('staffQuickLookupTitle')}</div></div>
+              <input value={staffLookup} onChange={(e) => setStaffLookup(e.target.value)} placeholder={t('quickSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
               {staffLookup.trim() && (
                 staffLookupResults.length === 0 ? (
                   <p className="text-xs font-semibold text-center py-2" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
                 ) : (
-                  <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-col gap-1.5 mt-2">
                     {staffLookupResults.map((item) => {
                       const isOut = soldOutIds.includes(item.id);
                       const priceOv = priceOverrides[item.id];
@@ -5775,7 +5791,10 @@ function StaffPanelView({ back }) {
               )}
             </div>
           </div>
-          <div className="px-5 pt-3 pb-2">
+          <div className="px-5 pt-4 pb-1.5">
+            <div className="text-[10px] font-black tracking-widest" style={{ color: '#a4906c' }}>BEREICHE</div>
+          </div>
+          <div className="px-5 pb-2">
             <div className="grid grid-cols-2 gap-2.5">
               {[
                 { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
@@ -5791,7 +5810,7 @@ function StaffPanelView({ back }) {
                   className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl text-left transition-all"
                   style={tab === item.key
                     ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 8px 20px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }
-                    : { background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.08)', border: '1.5px solid transparent' }}
+                    : { background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.08)', border: '1.5px solid #f0e5cf' }}
                 >
                   <span className="text-xl">{item.icon}</span>
                   <span className="font-bold text-xs leading-tight">{item.label}</span>
@@ -5799,7 +5818,7 @@ function StaffPanelView({ back }) {
               ))}
             </div>
           </div>
-          <div className="px-5 pb-2">
+          <div className="px-5 pb-3">
             <button
               onClick={() => setTischAdminOpen(true)}
               className="w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-left"
@@ -5811,6 +5830,9 @@ function StaffPanelView({ back }) {
                 <div className="text-[11px] font-semibold" style={{ color: '#ffe8d1' }}>Eigene Karte für den QR-Tischbildschirm →</div>
               </div>
             </button>
+          </div>
+          <div className="px-5 pb-1">
+            <div style={{ height: 1, background: '#e9dcc0' }} />
           </div>
 
           {tab === 'wheel' && (
@@ -5885,42 +5907,47 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'settings' && (
             <div className="px-5">
-              <div className="bg-white rounded-xl p-5 mb-3">
-                <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('dailyBannerLabel')}</div>
-                <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+              <div className="text-[10px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
+              <div className="bg-white rounded-2xl p-4 mb-2.5" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('dailyBannerLabel')}</div>
+                <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
                 <div className="flex gap-2">
                   <button onClick={saveDailyBanner} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                   <button onClick={clearDailyBanner} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>
                 </div>
                 {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
               </div>
-              <div className="bg-white rounded-xl p-5 mb-3">
-                <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>🎉 Aktionsbanner</div>
-                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Eigenes Banner für die Startseite — für Zeiträume wie Stoppelmarkt, Feiertage etc.</p>
-                <label className="flex items-center gap-2 text-xs font-semibold mb-3" style={{ color: GREEN }}>
+              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>🎉 Aktionsbanner</div>
+                <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Für Zeiträume wie Stoppelmarkt, Feiertage etc.</p>
+                <label className="flex items-center gap-2 text-xs font-semibold mb-2.5" style={{ color: GREEN }}>
                   <input type="checkbox" checked={campaign.active} onChange={(e) => setCampaign({ ...campaign, active: e.target.checked })} />
                   Banner aktiv
                 </label>
                 <input value={campaign.title} onChange={(e) => setCampaign({ ...campaign, title: e.target.value })} placeholder="Titel (z.B. 🎪 Stoppelmarkt-Woche!)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
                 <input value={campaign.subtitle} onChange={(e) => setCampaign({ ...campaign, subtitle: e.target.value })} placeholder="Untertitel (optional)" className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-                <div className="flex gap-2 mb-3">
+                <div className="flex gap-2 mb-2">
                   <input type="date" value={campaign.startDate} onChange={(e) => setCampaign({ ...campaign, startDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-lg text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                   <input type="date" value={campaign.endDate} onChange={(e) => setCampaign({ ...campaign, endDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-lg text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                 </div>
-                <p className="text-[10px] mb-3" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
+                <p className="text-[10px] mb-2.5" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
                 <button onClick={saveCampaign} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {campaignMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{campaignMsg}</p>}
               </div>
-              <div className="bg-white rounded-xl p-5 mb-3">
-                <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>{t('waTemplateLabel')}</div>
-                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
-                <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💬 WHATSAPP</div>
+              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>{t('waTemplateLabel')}</div>
+                <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
+                <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
                 <button onClick={saveWaTemplate} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {waTemplateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{waTemplateMsg}</p>}
               </div>
-              <div className="bg-white rounded-xl p-5 mb-3">
-                <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>{t('testOrderLabel')}</div>
-                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
+
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🧪 TESTWERKZEUGE</div>
+              <div className="bg-white rounded-2xl p-4 mb-2.5" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>{t('testOrderLabel')}</div>
+                <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
                 <button onClick={createTestOrder} className="w-full py-2.5 rounded-lg font-bold text-sm text-white mb-2" style={{ background: ORANGE }}>🧪 {t('testOrderBtn')}</button>
                 <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
                   <input type="checkbox" checked={showTestOrders} onChange={(e) => setShowTestOrders(e.target.checked)} />
@@ -5928,13 +5955,15 @@ function StaffPanelView({ back }) {
                 </label>
                 {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
               </div>
-              <div className="bg-white rounded-xl p-5 mb-3">
-                <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('notifTestLabel')}</div>
+              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('notifTestLabel')}</div>
                 <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: ORANGE }}>🔔 {t('notifTestBtn')}</button>
               </div>
-              <div className="bg-white rounded-xl p-5">
-                <div className="text-sm font-black mb-3" style={{ color: GREEN }}>{t('googleRatingLabel')}</div>
-                <div className="flex gap-2 mb-3">
+
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>⭐ GOOGLE</div>
+              <div className="bg-white rounded-2xl p-4" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('googleRatingLabel')}</div>
+                <div className="flex gap-2 mb-2.5">
                   <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                   <input value={ratingCount} onChange={(e) => setRatingCount(e.target.value)} placeholder="293" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                 </div>
@@ -6354,8 +6383,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                   <div className="flex-shrink-0 text-right flex flex-col items-end gap-1">
                     {item.priceLarge !== undefined ? (
                       <div className="flex flex-col gap-0.5 items-end">
-                        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
-                        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.priceLarge)}</span>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${color}18`, color }}><span className="opacity-60 font-bold text-[10px]">22cm</span>{fmt(item.price)}</span>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${color}18`, color }}><span className="opacity-60 font-bold text-[10px]">28cm</span>{fmt(item.priceLarge)}</span>
                       </div>
                     ) : (
                       <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
