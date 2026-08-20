@@ -2720,7 +2720,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <button onClick={() => scrollTo('tagesempfehlung')} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
                 <span className="text-lg">⭐</span> {t('dailyRecommendation')}
               </button>
-              <button onClick={() => setMoodPickerOpen(true)} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center text-white" style={{ background: 'linear-gradient(135deg, #6d5bd0, #8b7ae8)', boxShadow: '0 8px 20px rgba(109,91,208,.35)' }}>
+              <button onClick={() => setMoodPickerOpen(true)} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center text-white" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)' }}>
                 <span className="text-lg">🎯</span> Mood
               </button>
               <button onClick={rollSurprise} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl font-black text-[11px] text-center text-white" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
@@ -5161,6 +5161,20 @@ function StaffPanelView({ back }) {
   const [redeemMsg, setRedeemMsg] = useState('');
 
   const [orders, setOrders] = useState([]);
+  const [staffPin, setStaffPin] = useState('440921');
+  const [newPin, setNewPin] = useState('');
+  const [newPin2, setNewPin2] = useState('');
+  const [pinMsg, setPinMsg] = useState('');
+  useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
+  const savePin = async () => {
+    if (newPin.trim().length < 4) { setPinMsg('PIN muss mind. 4 Ziffern haben'); setTimeout(() => setPinMsg(''), 2500); return; }
+    if (newPin !== newPin2) { setPinMsg('PINs stimmen nicht überein'); setTimeout(() => setPinMsg(''), 2500); return; }
+    await safeSet('siteconfig:staffPin', { pin: newPin.trim() });
+    setStaffPin(newPin.trim());
+    setNewPin(''); setNewPin2('');
+    setPinMsg(t('savedMsg'));
+    setTimeout(() => setPinMsg(''), 2500);
+  };
   const [ratingScore, setRatingScore] = useState('4.6');
   const [ratingCount, setRatingCount] = useState('293');
   const [ratingMsg, setRatingMsg] = useState('');
@@ -5755,15 +5769,15 @@ function StaffPanelView({ back }) {
               <div className="text-[11px] font-bold tracking-widest mt-1" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
             </div>
             <div className="rounded-3xl p-6" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
-              <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === '0021' && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="• • • •" className="w-full px-4 py-4 rounded-2xl text-2xl font-black tracking-[0.5em] text-center outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN, border: '1.5px solid #f0e5cf' }} autoFocus />
-              <button onClick={() => { if (pin === '0021') { setOk(true); unlockAudio(); } }} className="w-full py-4 rounded-2xl font-black text-base" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)' }}>🔓 {t('loginBtn')}</button>
+              <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === staffPin && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="• • • • • •" className="w-full px-4 py-4 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN, border: '1.5px solid #f0e5cf' }} autoFocus />
+              <button onClick={() => { if (pin === staffPin) { setOk(true); unlockAudio(); } }} className="w-full py-4 rounded-2xl font-black text-base" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)' }}>🔓 {t('loginBtn')}</button>
             </div>
           </div>
         </div>
       ) : (
-        <>
+        <div style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,199,56,.06), transparent 55%), linear-gradient(180deg, #0e2416, #0a1a10 60%, #0e2416)`, minHeight: 'calc(100vh - 70px)' }}>
           <div className="px-5 pt-4">
-            <div className="rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
+            <div className="rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 8px 24px rgba(0,0,0,.25)' }}>
               <span className="text-xl">👨‍🍳</span>
               <div>
                 <div className="font-black text-sm" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
@@ -5843,7 +5857,7 @@ function StaffPanelView({ back }) {
             </button>
           </div>
           <div className="px-5 pb-1">
-            <div style={{ height: 1, background: '#e9dcc0' }} />
+            <div style={{ height: 1, background: 'rgba(255,246,234,.1)' }} />
           </div>
 
           {tab === 'wheel' && (
@@ -5919,6 +5933,16 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'settings' && (
             <div className="px-5">
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🔒 SICHERHEIT</div>
+              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>PIN ändern</div>
+                <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Aktueller PIN gilt bis du ihn hier änderst.</p>
+                <input value={newPin} onChange={(e) => setNewPin(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
+                <button onClick={savePin} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
+              </div>
+
               <div className="text-[10px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
               <div className="bg-white rounded-2xl p-4 mb-2.5" style={{ border: '1.5px solid #f0e5cf' }}>
                 <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('dailyBannerLabel')}</div>
@@ -6163,9 +6187,9 @@ function StaffPanelView({ back }) {
                   {photoSaveMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{photoSaveMsg}</p>}
                 </div>
               )}
-              <div className="mt-6 pt-5" style={{ borderTop: '1px solid #e3d5bd' }}>
-                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">🖼️</span><h3 className="font-black text-sm" style={{ color: GREEN }}>{t('independentPhotoTitle')}</h3></div>
-                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('independentPhotoHint')}</p>
+              <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
+                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">🖼️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>{t('independentPhotoTitle')}</h3></div>
+                <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>{t('independentPhotoHint')}</p>
                 <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-4 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
                   <span className="text-base">📷</span> {galleryUploadBusy ? '…' : t('uploadGalleryPhotoBtn')}
                   <input type="file" accept="image/*" className="hidden" disabled={galleryUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleGalleryFileUpload(f); e.target.value = ''; }} />
@@ -6183,7 +6207,7 @@ function StaffPanelView({ back }) {
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
