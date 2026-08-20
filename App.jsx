@@ -106,6 +106,9 @@ const UI = {
   byDevice: { de: 'NACH GERÄT', en: 'BY DEVICE', tr: 'CİHAZA GÖRE', ro: 'DUPĂ DISPOZITIV', nl: 'PER APPARAAT' , sq: 'SIPAS PAJISJES', ku: 'LI GORÎ AMÎR', pl: 'WEDŁUG URZĄDZENIA'},
   callClicksLabel: { de: 'Anrufe (Website)', en: 'Calls (website)', tr: 'Arama tıklaması', ro: 'Apeluri (site)', nl: 'Belletjes (site)', sq: 'Telefonata (sajti)', ku: 'Bang (malper)', pl: 'Połączenia (strona)' },
   routeClicksLabel: { de: 'Routenanfragen', en: 'Route requests', tr: 'Yol tarifi tıklaması', ro: 'Cereri traseu', nl: 'Route-aanvragen', sq: 'Kërkesa për rrugë', ku: 'Daxwaza rê', pl: 'Zapytania o trasę' },
+  assistantTitle: { de: 'Bodrum Assistent', en: 'Bodrum Assistant', tr: 'Bodrum Asistan', ro: 'Asistent Bodrum', nl: 'Bodrum Assistent', sq: 'Asistenti Bodrum', ku: 'Alîkarê Bodrum', pl: 'Asystent Bodrum' },
+  assistantGreeting: { de: 'Hallo! 👋 Ich bin der kleine Helfer von Bodrum Kebap. Frag mich nach Öffnungszeiten, Adresse, Preisen oder einer Empfehlung!', en: "Hi! 👋 I'm Bodrum Kebap's little helper. Ask me about hours, address, prices, or a recommendation!", tr: 'Merhaba! 👋 Ben Bodrum Kebap\'ın küçük yardımcısıyım. Açılış saati, adres, fiyat ya da öneri sorabilirsin!', ro: 'Salut! 👋 Sunt micul asistent al Bodrum Kebap. Întreabă-mă despre orar, adresă, prețuri sau o recomandare!', nl: 'Hoi! 👋 Ik ben de kleine helper van Bodrum Kebap. Vraag me naar openingstijden, adres, prijzen of een aanbeveling!', sq: 'Përshëndetje! 👋 Unë jam ndihmësi i vogël i Bodrum Kebap. Më pyet për orarin, adresën, çmimet ose një rekomandim!', ku: 'Silav! 👋 Ez alîkarê piçûk ê Bodrum Kebap im. Ji min bipirse li ser demjimêran, navnîşanê, buhayan an pêşniyarek!', pl: 'Cześć! 👋 Jestem małym asystentem Bodrum Kebap. Zapytaj mnie o godziny, adres, ceny lub polecenie!' },
+  assistantPlaceholder: { de: 'Frag mich etwas...', en: 'Ask me something...', tr: 'Bir şey sor...', ro: 'Întreabă-mă ceva...', nl: 'Vraag me iets...', sq: 'Më pyet diçka...', ku: 'Tiştekî ji min bipirse...', pl: 'Zapytaj mnie o coś...' },
   analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.', ku: '500 serdanên dawî nîşan dide. Tu daneyên kesane tune, tenê ziman & cureyê amîr.', pl: 'Pokazuje ostatnie 500 odwiedzin. Brak danych osobowych, tylko język i typ urządzenia.'},
   trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.', ku: 'Ji bo dîtina rewşê koda sifarişê binivîse.', pl: 'Wpisz swój kod zamówienia, aby zobaczyć status.'},
   surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!', ku: 'Min ecêbmayî bihêle!', pl: 'Zaskocz mnie!'},
@@ -1950,6 +1953,133 @@ function StoppelmarktBanner() {
     <div className="px-5 py-3 text-center" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'goldGlow 2.2s ease-in-out infinite' }}>
       <span className="font-black text-sm" style={{ color: GREEN }}>{t('stoppelmarktText')}</span>
     </div>
+  );
+}
+
+function getAssistantReply(qRaw, lang, t) {
+  const q = qRaw.toLowerCase();
+  const now = new Date();
+  const status = getOpenStatus(now);
+  const has = (...words) => words.some((w) => q.includes(w));
+
+  if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open', 'closed', 'wann')) {
+    if (status.open) return `🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız (Ruhetag).`;
+    return `🔴 Şu an kapalıyız. ${status.nextOpen ? `Açılışa: ${formatCountdown(status.nextOpen - now)}` : ''} Her gün 11:30–22:00 açığız, Salı hariç.`;
+  }
+  if (has('adres', 'nerede', 'wo ', 'address', 'yol', 'route', 'konum', 'standort')) {
+    return `📍 Oyther Straße 37, 49377 Vechta. Sağ üstteki menüden "Rota" butonuna basarsan direkt yol tarifi açılır.`;
+  }
+  if (has('telefon', ' ara', 'anruf', 'phone', 'numara', 'nummer')) {
+    return `📞 04441 / 95 16 104 — üstteki sarı "Ara" butonuna basarak direkt arayabilirsin.`;
+  }
+  if (has('helal', 'halal')) {
+    return `☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.`;
+  }
+  if (has('alerjen', 'allergie', 'allergen', 'zusatzstoffe')) {
+    return `ⓘ Alerjen ve katkı madde bilgileri Speisekarte'de her ürünün yanında küçük harflerle yazıyor, üstteki "ⓘ Allergene" butonuna da bakabilirsin.`;
+  }
+  if (has('sipariş', 'bestell', 'order')) {
+    if (ORDERING_ENABLED) return `🥙 Sipariş vermek için üstteki "WhatsApp'tan sipariş ver" butonuna basabilirsin!`;
+    return `📞 Şu an online sipariş sistemi kapalı, ama bizi arayarak kolayca sipariş verebilirsin: 04441 / 95 16 104`;
+  }
+  if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag')) {
+    const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
+    return `🎲 Bugün için önerim: **${mx(item.name, lang)}** — ${fmt(item.price)}. Afiyet olsun! 😋`;
+  }
+  if (has('menü', 'menu', 'speisekarte', 'karte')) {
+    return `📋 Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat kategorilerimiz var — üstteki "Speisekarte" butonuyla tüm menüyü görebilirsin.`;
+  }
+  // Try matching a menu item by name
+  const match = SURPRISE_ITEMS.find((it) => it.name.toLowerCase().includes(q.trim()) && q.trim().length > 2);
+  if (match) {
+    return `🍽️ **${mx(match.name, lang)}** — ${fmt(match.price)}. Detaylar ve daha fazlası için Speisekarte'ye bakabilirsin.`;
+  }
+  return `Bunu tam anlayamadım 🤔 Ama şunları sorabilirsin: "açık mısınız", "adresiniz nerede", "ne önerirsiniz", ya da bir ürün ismi yazabilirsin. Ya da direkt ara: 📞 04441 / 95 16 104`;
+}
+
+function AIAssistant() {
+  const { lang, t } = React.useContext(LangContext);
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (open && messages.length === 0) {
+      setMessages([{ from: 'bot', text: t('assistantGreeting') }]);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages]);
+
+  const send = (text) => {
+    const q = (text ?? input).trim();
+    if (!q) return;
+    const reply = getAssistantReply(q, lang, t);
+    setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
+    setInput('');
+  };
+
+  const chips = ['Açık mısınız?', 'Ne önerirsiniz?', 'Adresiniz nerede?'];
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="fixed bottom-5 right-5 z-40 w-16 h-16 rounded-full flex items-center justify-center"
+        style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 28px rgba(230,90,10,.5)', animation: open ? 'none' : 'goldGlow 2.4s ease-in-out infinite' }}
+      >
+        <span className="text-2xl">{open ? '✕' : '🤖'}</span>
+      </button>
+
+      {open && (
+        <div className="fixed bottom-24 right-5 z-40 w-[92vw] max-w-sm rounded-3xl overflow-hidden flex flex-col" style={{ height: '65vh', maxHeight: 520, background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.35)' }}>
+          <div className="px-4 py-3 flex items-center gap-2.5 flex-shrink-0" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}><span className="text-lg">🤖</span></div>
+            <div className="text-white font-black text-sm">{t('assistantTitle')}</div>
+          </div>
+
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-3.5 py-3 space-y-2.5">
+            {messages.map((m, i) => (
+              <div key={i} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div
+                  className="px-3.5 py-2.5 rounded-2xl text-sm font-medium max-w-[85%] whitespace-pre-wrap"
+                  style={m.from === 'user'
+                    ? { background: GREEN, color: '#fff', borderBottomRightRadius: 4 }
+                    : { background: '#fff', color: GREEN, borderBottomLeftRadius: 4, boxShadow: '0 2px 8px rgba(21,56,38,.08)' }}
+                >
+                  {m.text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {messages.length <= 1 && (
+            <div className="px-3.5 pb-2 flex flex-wrap gap-1.5 flex-shrink-0">
+              {chips.map((c) => (
+                <button key={c} onClick={() => send(c)} className="px-3 py-1.5 rounded-full text-xs font-bold" style={{ background: '#fff', color: GREEN, border: `1px solid #e3d5bd` }}>{c}</button>
+              ))}
+            </div>
+          )}
+
+          <div className="p-3 flex gap-2 flex-shrink-0" style={{ borderTop: '1px solid #e3d5bd' }}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+              placeholder={t('assistantPlaceholder')}
+              className="flex-1 px-3.5 py-2.5 rounded-full text-sm outline-none"
+              style={{ background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}
+            />
+            <button onClick={() => send()} className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
+              <ArrowRight size={17} color="#fff" />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -6156,7 +6286,7 @@ export default function App() {
 
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><AIAssistant /></LangContext.Provider>;
   }
 
   if (view === 'tischmenu') {
