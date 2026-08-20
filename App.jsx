@@ -6061,6 +6061,41 @@ export default function App() {
   const [view, setView] = useState(isTischMenu ? 'tischmenu' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
+  useEffect(() => {
+    if (document.getElementById('bk-structured-data')) return;
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'bk-structured-data';
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Bodrum Kebap",
+      "image": "https://bodrumkebapvechta.de/hero.jpg",
+      "url": "https://bodrumkebapvechta.de",
+      "telephone": "+4944419516104",
+      "priceRange": "€€",
+      "servesCuisine": ["Turkish", "Döner", "Pizza", "Pasta"],
+      "acceptsReservations": "False",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Oyther Straße 37",
+        "postalCode": "49377",
+        "addressLocality": "Vechta",
+        "addressCountry": "DE"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.6",
+        "reviewCount": "293"
+      },
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }
+      ],
+      "servesHalal": true,
+      "sameAs": ["https://instagram.com/BodrumKebapVechta"]
+    });
+    document.head.appendChild(script);
+  }, []);
   const langCtx = useLang();
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
   const [cart, setCart] = useState({});
