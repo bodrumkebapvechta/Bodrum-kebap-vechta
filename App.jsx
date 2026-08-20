@@ -1991,44 +1991,57 @@ function getAssistantReply(qRaw, lang) {
   const numMatch = q.match(/\d+/);
   if (numMatch) {
     const found = ALL_MENU_ITEMS.find((it) => it.number === numMatch[0]);
-    if (found) return ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', fmt(found.priceLarge !== undefined ? found.priceSmall : found.price)).replace('{desc}', found.desc ? mx(found.desc, lang) : '');
+    if (found) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', fmt(found.priceLarge !== undefined ? found.priceSmall : found.price)).replace('{desc}', found.desc ? mx(found.desc, lang) : '') };
   }
 
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
-    if (status.open) return ar('openYes', lang);
-    return `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${ar('openNoSuffix', lang)}`;
+    if (status.open) return { intent: 'hours', text: ar('openYes', lang) };
+    return { intent: 'hours', text: `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${ar('openNoSuffix', lang)}` };
   }
   if (has('adres', 'nerede', 'wo ', 'address', 'yol', 'route', 'konum', 'standort', 'adresse')) {
-    return ar('address', lang);
+    return { intent: 'address', text: ar('address', lang) };
   }
   if (has('telefon', ' ara', 'anruf', 'phone', 'zadzwoń')) {
-    return ar('phone', lang);
+    return { intent: 'phone', text: ar('phone', lang) };
   }
   if (has('helal', 'halal')) {
-    return ar('halal', lang);
+    return { intent: 'halal', text: ar('halal', lang) };
   }
   if (has('alerjen', 'allergie', 'allergen', 'zusatzstoffe')) {
-    return ar('allergen', lang);
+    return { intent: 'allergen', text: ar('allergen', lang) };
   }
   if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
-    return ORDERING_ENABLED ? ar('orderOn', lang) : ar('orderOff', lang);
+    return { intent: 'order', text: ORDERING_ENABLED ? ar('orderOn', lang) : ar('orderOff', lang) };
   }
   if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag', 'polec')) {
     const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
-    return `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}. ${ar('enjoy', lang)}`;
+    return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}. ${ar('enjoy', lang)}` };
   }
   if (has('menü', 'menu', 'speisekarte', 'karte')) {
-    return ar('menuList', lang);
+    return { intent: 'menu', text: ar('menuList', lang) };
   }
   // 2) Name-based item lookup
   if (q.length > 2) {
     const nameMatch = ALL_MENU_ITEMS.find((it) => it.name.toLowerCase().includes(q) || q.includes(it.name.toLowerCase()));
     if (nameMatch) {
-      if (nameMatch.number) return ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '');
-      return ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '');
+      if (nameMatch.number) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
+      return { intent: 'item', text: ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
     }
   }
-  return ar('fallback', lang);
+  return { intent: 'fallback', text: ar('fallback', lang) };
+}
+
+const SPEECH_LOCALE = { de: 'de-DE', en: 'en-US', tr: 'tr-TR', ro: 'ro-RO', nl: 'nl-NL', sq: 'sq-AL', ku: 'ku', pl: 'pl-PL' };
+
+function speakText(text, lang) {
+  try {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/[*_#🍽️🎲📞📍☪️ⓘ🥙📋🔴🟢😋🤔👋]/gu, '').trim();
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.lang = SPEECH_LOCALE[lang] || 'de-DE';
+    window.speechSynthesis.speak(utter);
+  } catch {}
 }
 
 function AIAssistant() {
@@ -2036,7 +2049,9 @@ function AIAssistant() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [listening, setListening] = useState(false);
   const scrollRef = useRef(null);
+  const recogRef = useRef(null);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -2048,15 +2063,52 @@ function AIAssistant() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
+  // Proactive auto-open: once per browser session, if idle ~28s and never opened
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('bk_assistant_nudged')) return;
+    } catch {}
+    const timer = setTimeout(() => {
+      setOpen((wasOpen) => {
+        if (!wasOpen) {
+          try { sessionStorage.setItem('bk_assistant_nudged', '1'); } catch {}
+          return true;
+        }
+        return wasOpen;
+      });
+    }, 28000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const send = (text) => {
     const q = (text ?? input).trim();
     if (!q) return;
-    const reply = getAssistantReply(q, lang);
+    const { intent, text: reply } = getAssistantReply(q, lang);
+    logEvent('assistant_' + intent);
     setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
     setInput('');
   };
 
+  const startVoiceInput = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Ses tanıma bu tarayıcıda desteklenmiyor.'); return; }
+    const recog = new SR();
+    recog.lang = SPEECH_LOCALE[lang] || 'de-DE';
+    recog.interimResults = false;
+    recog.maxAlternatives = 1;
+    recog.onstart = () => setListening(true);
+    recog.onend = () => setListening(false);
+    recog.onerror = () => setListening(false);
+    recog.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      send(transcript);
+    };
+    recogRef.current = recog;
+    recog.start();
+  };
+
   const chips = [ar('chipOpen', lang), ar('chipRecommend', lang), ar('chipAddress', lang)];
+  const speechSupported = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
 
   return (
     <>
@@ -2079,12 +2131,15 @@ function AIAssistant() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className="px-3.5 py-2.5 rounded-2xl text-sm font-medium max-w-[85%] whitespace-pre-wrap"
+                  className="px-3.5 py-2.5 rounded-2xl text-sm font-medium max-w-[85%] whitespace-pre-wrap flex items-end gap-1.5"
                   style={m.from === 'user'
                     ? { background: GREEN, color: '#fff', borderBottomRightRadius: 4 }
                     : { background: '#fff', color: GREEN, borderBottomLeftRadius: 4, boxShadow: '0 2px 8px rgba(21,56,38,.08)' }}
                 >
-                  {m.text}
+                  <span>{m.text}</span>
+                  {m.from === 'bot' && (
+                    <button onClick={() => speakText(m.text, lang)} className="flex-shrink-0 opacity-60" title="Vorlesen">🔊</button>
+                  )}
                 </div>
               </div>
             ))}
@@ -2107,6 +2162,11 @@ function AIAssistant() {
               className="flex-1 px-3.5 py-2.5 rounded-full text-sm outline-none"
               style={{ background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}
             />
+            {speechSupported && (
+              <button onClick={startVoiceInput} className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: listening ? CHILI : '#f0e5cf', animation: listening ? 'closedBlink 1s ease-in-out infinite' : 'none' }}>
+                <span className="text-base">🎙️</span>
+              </button>
+            )}
             <button onClick={() => send()} className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
               <ArrowRight size={17} color="#fff" />
             </button>
@@ -2114,6 +2174,85 @@ function AIAssistant() {
         </div>
       )}
     </>
+  );
+}
+
+const MOOD_R = {
+  title: { de: 'Worauf hast du Lust?', en: "What are you craving?", tr: 'Ne canın çekiyor?', ro: 'Ce ți-e poftă?', nl: 'Waar heb je zin in?', sq: 'Për çfarë ke qejf?', ku: 'Tu dixwazî çi bixwî?', pl: 'Na co masz ochotę?' },
+  meat: { de: 'Fleisch 🍖', en: 'Meat 🍖', tr: 'Et 🍖', ro: 'Carne 🍖', nl: 'Vlees 🍖', sq: 'Mish 🍖', ku: 'Goşt 🍖', pl: 'Mięso 🍖' },
+  light: { de: 'Leicht 🥗', en: 'Light 🥗', tr: 'Hafif 🥗', ro: 'Ceva ușor 🥗', nl: 'Licht 🥗', sq: 'Lehtë 🥗', ku: 'Sivik 🥗', pl: 'Coś lekkiego 🥗' },
+  dough: { de: 'Teigig 🍕', en: 'Dough 🍕', tr: 'Hamur işi 🍕', ro: 'Cu aluat 🍕', nl: 'Deeg 🍕', sq: 'Brumë 🍕', ku: 'Hevîr 🍕', pl: 'Coś z ciasta 🍕' },
+  surprise: { de: 'Überrasch mich 🎲', en: 'Surprise me 🎲', tr: 'Şaşırt beni 🎲', ro: 'Surprinde-mă 🎲', nl: 'Verras me 🎲', sq: 'Më befaso 🎲', ku: 'Min ecêb bihêle 🎲', pl: 'Zaskocz mnie 🎲' },
+  result: { de: 'Wie wäre es hiermit?', en: 'How about this?', tr: 'Buna ne dersin?', ro: 'Ce zici de asta?', nl: 'Wat dacht je hiervan?', sq: 'Si të duket kjo?', ku: 'Ev çawa ye?', pl: 'Co powiesz na to?' },
+  again: { de: 'Nochmal', en: 'Again', tr: 'Tekrar dene', ro: 'Din nou', nl: 'Opnieuw', sq: 'Përsëri', ku: 'Dîsa', pl: 'Jeszcze raz' },
+};
+function mr(key, lang) { return MOOD_R[key][lang] || MOOD_R[key].de; }
+
+const MOOD_CATS = {
+  meat: ['kebap', 'schnitzel'],
+  light: ['salat'],
+  dough: ['pizza', 'calzone', 'baguette'],
+};
+
+function MoodPicker({ onClose }) {
+  const { lang } = React.useContext(LangContext);
+  const [result, setResult] = useState(null);
+
+  const pick = (moodKey) => {
+    let pool = SURPRISE_ITEMS;
+    if (moodKey !== 'surprise') {
+      const cats = MOOD_CATS[moodKey];
+      pool = SURPRISE_ITEMS.filter((it) => cats.includes(it.cat));
+      if (pool.length === 0) pool = SURPRISE_ITEMS;
+    }
+    setResult(pool[Math.floor(Math.random() * pool.length)]);
+  };
+
+  return (
+    <ConfigModal onClose={onClose}>
+      <div className="p-6 text-center" style={{ minHeight: 320 }}>
+        {!result ? (
+          <>
+            <div className="text-4xl mb-3">🎯</div>
+            <h3 className="font-black text-lg mb-6" style={{ color: GREEN }}>{mr('title', lang)}</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {['meat', 'light', 'dough', 'surprise'].map((k) => (
+                <button key={k} onClick={() => pick(k)} className="py-4 rounded-2xl font-bold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{mr(k, lang)}</button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-4xl mb-2">🎯</div>
+            <h3 className="font-black text-lg mb-4" style={{ color: GREEN }}>{mr('result', lang)}</h3>
+            {result.img && (
+              <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: result.imgContain ? '#f7f0e2' : 'transparent' }}>
+                <img src={result.img} alt={result.name} className={result.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
+              </div>
+            )}
+            <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(result.name, lang)}</div>
+            {result.desc && <p className="text-xs font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(result.desc, lang)}</p>}
+            <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(result.price)}</div>
+            <button onClick={() => setResult(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{mr('again', lang)}</button>
+          </>
+        )}
+      </div>
+    </ConfigModal>
+  );
+}
+
+function CampaignBanner() {
+  const [campaign, setCampaign] = useState(null);
+  useEffect(() => { safeGet('siteconfig:campaign').then((r) => { if (r) setCampaign(r); }); }, []);
+  if (!campaign || !campaign.active || !campaign.title) return null;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (campaign.startDate && todayStr < campaign.startDate) return null;
+  if (campaign.endDate && todayStr > campaign.endDate) return null;
+  return (
+    <div className="px-5 py-3 text-center" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'goldGlow 2.2s ease-in-out infinite' }}>
+      <span className="font-black text-sm" style={{ color: GREEN }}>{campaign.title}</span>
+      {campaign.subtitle && <span className="block text-xs font-semibold mt-0.5" style={{ color: GREEN }}>{campaign.subtitle}</span>}
+    </div>
   );
 }
 
@@ -2304,6 +2443,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
+  const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
   const [homePriceOverrides, setHomePriceOverrides] = useState({});
   const [homePhotoOverrides, setHomePhotoOverrides] = useState({});
@@ -2491,6 +2631,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         )}
       </header>
+      <CampaignBanner />
       <MittagsBanner />
       {dailyBanner && (
         <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
@@ -2569,6 +2710,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex flex-wrap gap-2.5 mt-3">
               {ORDERING_ENABLED && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
               <button onClick={rollSurprise} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎲 {t('surpriseMeBtn')}</button>
+              <button onClick={() => setMoodPickerOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>🎯 Mood</button>
               <button onClick={() => scrollTo(ORDERING_ENABLED ? 'extras' : 'galerie')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>{t('heroCtaMore')}</button>
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
@@ -2706,6 +2848,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </ConfigModal>
         );
       })()}
+
+      {moodPickerOpen && <MoodPicker onClose={() => setMoodPickerOpen(false)} />}
+
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
           <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}>
@@ -5004,6 +5149,8 @@ function StaffPanelView({ back }) {
   const [ratingMsg, setRatingMsg] = useState('');
   const [dailyBannerText, setDailyBannerText] = useState('');
   const [dailyBannerMsg, setDailyBannerMsg] = useState('');
+  const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
+  const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
   const [waTemplateMsg, setWaTemplateMsg] = useState('');
   const [showTestOrders, setShowTestOrders] = useState(false);
@@ -5163,6 +5310,7 @@ function StaffPanelView({ back }) {
       safeGet('siteconfig:rating').then((r) => { if (r) { setRatingScore(String(r.score)); setRatingCount(String(r.count)); } });
       safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBannerText(r.text); });
       safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaTemplateText(r.text); });
+      safeGet('siteconfig:campaign').then((r) => { if (r) setCampaign(r); });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -5298,6 +5446,11 @@ function StaffPanelView({ back }) {
   const clearDailyBanner = async () => {
     setDailyBannerText('');
     await safeSet('siteconfig:dailyBanner', { text: '', updatedAt: Date.now() });
+  };
+  const saveCampaign = async () => {
+    await safeSet('siteconfig:campaign', campaign);
+    setCampaignMsg(t('savedMsg'));
+    setTimeout(() => setCampaignMsg(''), 2500);
   };
   const saveWaTemplate = async () => {
     await safeSet('siteconfig:waTemplate', { text: waTemplateText.trim() });
@@ -5742,6 +5895,23 @@ function StaffPanelView({ back }) {
                 {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
               </div>
               <div className="bg-white rounded-xl p-5 mb-3">
+                <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>🎉 Aktionsbanner</div>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Eigenes Banner für die Startseite — für Zeiträume wie Stoppelmarkt, Feiertage etc.</p>
+                <label className="flex items-center gap-2 text-xs font-semibold mb-3" style={{ color: GREEN }}>
+                  <input type="checkbox" checked={campaign.active} onChange={(e) => setCampaign({ ...campaign, active: e.target.checked })} />
+                  Banner aktiv
+                </label>
+                <input value={campaign.title} onChange={(e) => setCampaign({ ...campaign, title: e.target.value })} placeholder="Titel (z.B. 🎪 Stoppelmarkt-Woche!)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={campaign.subtitle} onChange={(e) => setCampaign({ ...campaign, subtitle: e.target.value })} placeholder="Untertitel (optional)" className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+                <div className="flex gap-2 mb-3">
+                  <input type="date" value={campaign.startDate} onChange={(e) => setCampaign({ ...campaign, startDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-lg text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input type="date" value={campaign.endDate} onChange={(e) => setCampaign({ ...campaign, endDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-lg text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                </div>
+                <p className="text-[10px] mb-3" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
+                <button onClick={saveCampaign} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                {campaignMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{campaignMsg}</p>}
+              </div>
+              <div className="bg-white rounded-xl p-5 mb-3">
                 <div className="text-sm font-black mb-1.5" style={{ color: GREEN }}>{t('waTemplateLabel')}</div>
                 <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
                 <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
@@ -5822,6 +5992,25 @@ function StaffPanelView({ back }) {
                   <div className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></div>
                   <div className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>💻 Desktop</span><span>{byDevice.desktop || 0}</span></div>
                 </div>
+                {(() => {
+                  const assistantEvents = visits.filter((v) => v.value.event && v.value.event.startsWith('assistant_'));
+                  const byIntent = {};
+                  assistantEvents.forEach((v) => {
+                    const key = v.value.event.replace('assistant_', '');
+                    byIntent[key] = (byIntent[key] || 0) + 1;
+                  });
+                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
+                  const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
+                  if (intentOrder.length === 0) return null;
+                  return (
+                    <div className="bg-white rounded-xl p-4 mt-3">
+                      <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤖 ASSISTENT — MEISTGEFRAGT</div>
+                      {intentOrder.map(([k, c]) => (
+                        <div key={k} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <p className="text-[10px] text-center mt-4" style={{ color: '#a4906c' }}>{t('analyticsNote')}</p>
               </div>
             );
@@ -6162,7 +6351,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                     </div>
                     {item.desc && <div className="text-xs mt-0.5 leading-snug" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</div>}
                   </div>
-                  <div className="flex-shrink-0 text-right">
+                  <div className="flex-shrink-0 text-right flex flex-col items-end gap-1">
                     {item.priceLarge !== undefined ? (
                       <div className="flex flex-col gap-0.5 items-end">
                         <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
@@ -6171,6 +6360,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                     ) : (
                       <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
                     )}
+                    <button onClick={() => speakText(`${mx(tischText(item.name, 'de'), lang)}. ${fmt(item.price)}`, lang)} className="text-sm opacity-50" title="Vorlesen">🔊</button>
                   </div>
                 </div>
               );
