@@ -1879,39 +1879,44 @@ function WeekendComboPromo({ go }) {
 
   return (
     <section id="tagesempfehlung" className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
-      <div className="rounded-2xl overflow-hidden" style={{ background: `linear-gradient(120deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 10px 30px rgba(214,40,40,.3)' }}>
-        <div className="px-6 pt-7 pb-3 text-center">
-          <div className="text-white font-black text-xs tracking-[4px] mb-1.5 animate-pulse">{t('weekendOnlyToday')}</div>
+      <div className="rounded-3xl overflow-hidden relative" style={{ background: `linear-gradient(145deg, ${GREEN}, #0e2a1c 55%, ${CHILI})`, boxShadow: '0 16px 40px rgba(21,56,38,.3)' }}>
+        <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 15% 0%, rgba(255,199,56,.18), transparent 55%)' }} />
+        <div className="px-6 pt-8 pb-4 text-center relative">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-black text-[11px] tracking-[3px] mb-3" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.35)' }}>
+            <span style={{ animation: 'goldGlow 2s ease-in-out infinite', borderRadius: 999 }}>🎉</span> {t('weekendOnlyToday')}
+          </div>
           <div className="text-white font-black text-3xl">{t('weekendOfferTitle')}</div>
         </div>
-        <div className="grid sm:grid-cols-2 gap-5 p-5 pt-2">
+        <div className="grid sm:grid-cols-2 gap-5 p-5 pt-2 relative">
 
           {/* PIZZA CARD — leitet zur echten Pizza-Auswahl */}
-          <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
+          <div className="combo-card rounded-2xl overflow-hidden" style={{ background: '#fff', boxShadow: '0 12px 30px rgba(0,0,0,.25)' }}>
             <div className="relative">
               <img src={FOOD_G2} className="w-full h-56 sm:h-64 object-cover" />
-              <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(PIZZA_COMBO_PRICE)}</div>
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(0,0,0,.35))' }} />
+              <div className="absolute top-3 left-3 px-3.5 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN, boxShadow: '0 4px 14px rgba(0,0,0,.25)' }}>{fmt(PIZZA_COMBO_PRICE)}</div>
             </div>
             <div className="p-4">
               <div className="font-black text-lg mb-1 text-center" style={{ color: GREEN }}>{t('weekendPizzaTitle')}</div>
               <p className="text-xs text-center mb-3" style={{ color: '#8a7c62' }}>{t('weekendPizzaSub')}</p>
-              <button onClick={goToPizzaCombo} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>
+              <button onClick={goToPizzaCombo} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
                 {t('choosePizza')}
               </button>
             </div>
           </div>
 
           {/* DÖNERTELLER CARD */}
-          <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
+          <div className="combo-card rounded-2xl overflow-hidden" style={{ background: '#fff', boxShadow: '0 12px 30px rgba(0,0,0,.25)' }}>
             <div className="relative">
               <img src={DOENER_TELLER_IMG} className="w-full h-56 sm:h-64 object-cover" />
-              <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(DOENER_COMBO.price)}</div>
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(0,0,0,.35))' }} />
+              <div className="absolute top-3 left-3 px-3.5 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN, boxShadow: '0 4px 14px rgba(0,0,0,.25)' }}>{fmt(DOENER_COMBO.price)}</div>
             </div>
             <div className="p-4">
               <div className="font-black text-lg mb-3 text-center" style={{ color: GREEN }}>{DOENER_COMBO.emoji} {DOENER_COMBO.title}</div>
 
               {!openDoener && (
-                <button onClick={() => { setOpenDoener(true); setMeat('haehnchen'); }} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>
+                <button onClick={() => { setOpenDoener(true); setMeat('haehnchen'); }} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
                   {t('chooseArrow')}
                 </button>
               )}
@@ -1936,7 +1941,7 @@ function WeekendComboPromo({ go }) {
           </div>
 
         </div>
-        <div className="pb-5" />
+        <div className="pb-5 relative" />
       </div>
     </section>
   );
@@ -2519,6 +2524,7 @@ function MittagsBanner() {
     return () => clearInterval(t2);
   }, []);
   const day = now.getDay();
+  if (day === 6) return null; // Samstag hat seine eigene Kampagne (Tagesempfehlung)
   const isLunchDay = [1, 3, 4, 5].includes(day);
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
@@ -2531,16 +2537,27 @@ function MittagsBanner() {
     ss = Math.floor((diff % 60000) / 1000);
   }
   return (
-    <section className="py-4" style={{ background: ORANGE }}>
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 flex flex-col items-center justify-center gap-1 text-center" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}{t('lunchOffer')}</span>
-          <span className="text-white text-sm font-semibold opacity-90">
-            {active ? `noch ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}` : t('lunchOfferInactive')}
-          </span>
+    <section className="py-2.5 px-4" style={{ background: `linear-gradient(90deg, #0e2416, ${GREEN} 50%, #0e2416)` }}>
+      <div
+        className="max-w-2xl mx-auto rounded-2xl px-5 py-3 flex items-center gap-3.5"
+        style={{
+          background: active ? `linear-gradient(120deg, ${ORANGE}, #ff8a3d)` : 'rgba(255,246,234,.06)',
+          border: active ? 'none' : '1px solid rgba(255,199,56,.2)',
+          boxShadow: active ? '0 8px 24px rgba(230,90,10,.35)' : 'none',
+        }}
+      >
+        <span className="text-2xl flex-shrink-0" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-black text-sm" style={{ color: active ? '#fff' : GOLD }}>{t('lunchOffer')}</span>
+            <span className="font-black text-sm" style={{ color: active ? '#fff' : CREAM }}>{fmt(9.5)}</span>
+          </div>
+          <div className="text-xs font-semibold mt-0.5" style={{ color: active ? 'rgba(255,255,255,.9)' : '#a89878' }}>
+            {active ? `⏱ noch ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}` : t('lunchOfferInactive')}
+          </div>
         </div>
-        <span className="text-white text-xs font-semibold opacity-85">{t('lunchOfferItems')}</span>
       </div>
+      <p className="text-center text-[10px] font-semibold mt-1.5" style={{ color: '#8a7c62' }}>{t('lunchOfferItems')}</p>
     </section>
   );
 }
