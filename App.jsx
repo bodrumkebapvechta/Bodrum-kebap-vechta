@@ -2401,145 +2401,116 @@ function DistanceWidget({ lang }) {
   );
 }
 
-function DoenerCatchGame({ onClose }) {
-  const [items, setItems] = useState([]);
-  const [score, setScore] = useState(0);
-  const [combo, setCombo] = useState(0);
-  const [popups, setPopups] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(20);
-  const [over, setOver] = useState(false);
+function MemoryMatchGame({ onClose }) {
+  const EMOJIS = ['🥙', '🍕', '🧀', '🍟', '🥗', '🍝'];
+  const shuffle = () => {
+    const pairs = [...EMOJIS, ...EMOJIS].map((emoji, i) => ({ id: i, emoji, flipped: false, matched: false }));
+    for (let i = pairs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+    }
+    return pairs;
+  };
+
+  const [cards, setCards] = useState(shuffle);
+  const [flippedIds, setFlippedIds] = useState([]);
+  const [moves, setMoves] = useState(0);
+  const [locked, setLocked] = useState(false);
+  const [won, setWon] = useState(false);
   const [isNewBest, setIsNewBest] = useState(false);
-  const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem('bk_game_best') || '0', 10); } catch { return 0; } });
-  const boardRef = useRef(null);
-  const idRef = useRef(0);
-  const popIdRef = useRef(0);
+  const [best, setBest] = useState(() => { try { const v = localStorage.getItem('bk_memory_best'); return v ? parseInt(v, 10) : null; } catch { return null; } });
 
-  const EMOJIS = ['🥙', '🍕', '🍟', '🥗', '🍝'];
-  const BAD = '💧';
-  const STAR = '⭐';
+  const matchedCount = cards.filter((c) => c.matched).length;
 
   useEffect(() => {
-    if (over) return;
-    const rate = Math.max(260, 620 - (20 - timeLeft) * 20);
-    const spawn = setInterval(() => {
-      const roll = Math.random();
-      const isBad = roll < 0.16;
-      const isStar = !isBad && roll > 0.92;
-      const id = idRef.current++;
-      const dur = 1.6 + Math.random() * 0.9;
-      setItems((arr) => [...arr, {
-        id,
-        emoji: isBad ? BAD : isStar ? STAR : EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-        bad: isBad,
-        star: isStar,
-        left: 8 + Math.random() * 78,
-        dur,
-      }]);
-      setTimeout(() => setItems((arr) => arr.filter((it) => it.id !== id)), dur * 1000 + 50);
-    }, rate);
-    return () => clearInterval(spawn);
-  }, [over, timeLeft]);
-
-  useEffect(() => {
-    if (over) return;
-    if (timeLeft <= 0) {
-      setOver(true);
+    if (matchedCount === cards.length && cards.length > 0 && !won) {
+      setWon(true);
       setBest((b) => {
-        const nb = Math.max(b, score);
-        if (score > b) setIsNewBest(true);
-        try { localStorage.setItem('bk_game_best', String(nb)); } catch {}
-        return nb;
+        if (b === null || moves < b) {
+          setIsNewBest(true);
+          try { localStorage.setItem('bk_memory_best', String(moves)); } catch {}
+          return moves;
+        }
+        return b;
       });
-      return;
     }
-    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [timeLeft, over, score]);
+  }, [matchedCount]);
 
-  const addPopup = (text, color, x) => {
-    const pid = popIdRef.current++;
-    setPopups((p) => [...p, { id: pid, text, color, x }]);
-    setTimeout(() => setPopups((p) => p.filter((x) => x.id !== pid)), 700);
-  };
+  const flip = (card) => {
+    if (locked || card.flipped || card.matched || flippedIds.length === 2) return;
+    const newFlipped = [...flippedIds, card.id];
+    setCards((cs) => cs.map((c) => (c.id === card.id ? { ...c, flipped: true } : c)));
+    setFlippedIds(newFlipped);
 
-  const tap = (it, e) => {
-    e.stopPropagation();
-    setItems((arr) => arr.filter((x) => x.id !== it.id));
-    if (it.bad) {
-      setCombo(0);
-      setScore((s) => Math.max(0, s - 2));
-      addPopup('−2', CHILI, it.left);
-    } else if (it.star) {
-      setScore((s) => s + 5);
-      addPopup('+5 ⭐', GOLD, it.left);
-    } else {
-      setCombo((c) => {
-        const nc = c + 1;
-        const bonus = nc > 0 && nc % 5 === 0;
-        setScore((s) => s + (bonus ? 3 : 1));
-        addPopup(bonus ? '🔥 Combo +3' : '+1', bonus ? ORANGE : '#34a065', it.left);
-        return nc;
-      });
+    if (newFlipped.length === 2) {
+      setMoves((m) => m + 1);
+      setLocked(true);
+      const [firstId, secondId] = newFlipped;
+      const first = cards.find((c) => c.id === firstId);
+      const second = card;
+      setTimeout(() => {
+        if (first.emoji === second.emoji) {
+          setCards((cs) => cs.map((c) => (c.id === firstId || c.id === secondId) ? { ...c, matched: true } : c));
+        } else {
+          setCards((cs) => cs.map((c) => (c.id === firstId || c.id === secondId) ? { ...c, flipped: false } : c));
+        }
+        setFlippedIds([]);
+        setLocked(false);
+      }, 700);
     }
   };
 
-  const restart = () => { setScore(0); setCombo(0); setTimeLeft(20); setOver(false); setIsNewBest(false); setItems([]); setPopups([]); };
+  const restart = () => { setCards(shuffle()); setFlippedIds([]); setMoves(0); setLocked(false); setWon(false); setIsNewBest(false); };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-5" style={{ background: 'rgba(0,0,0,.7)' }}>
       <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.4)' }}>
         <div className="px-5 py-4 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
-          <div className="text-white font-black text-sm">🥙 Döner-Catch</div>
+          <div className="text-white font-black text-sm">🧠 Kebap-Memory</div>
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}><X size={15} color="#fff" /></button>
         </div>
         <div className="px-5 pt-3 flex items-center justify-between">
-          <span className="font-black text-sm" style={{ color: GREEN }}>⭐ {score}</span>
-          {combo >= 3 && !over && <span className="font-black text-xs px-2 py-0.5 rounded-full text-white" style={{ background: ORANGE }}>🔥 x{combo}</span>}
-          <span className="font-bold text-xs" style={{ color: '#a4906c' }}>🏆 {best}</span>
-          <span className="font-black text-sm" style={{ color: CHILI }}>⏱ {timeLeft}s</span>
+          <span className="font-black text-sm" style={{ color: GREEN }}>🔄 {moves} Züge</span>
+          <span className="font-bold text-xs" style={{ color: '#a4906c' }}>🏆 {best === null ? '—' : best}</span>
         </div>
-        <div ref={boardRef} className="relative mx-4 my-3 rounded-2xl overflow-hidden" style={{ height: 340, background: '#fff', border: '1.5px solid #f0e5cf' }}>
-          {!over && items.map((it) => (
-            <button
-              key={it.id}
-              onClick={(e) => tap(it, e)}
-              className="absolute active:scale-75 transition-transform"
-              style={{
-                left: `${it.left}%`, top: -36,
-                fontSize: it.star ? 34 : 30,
-                filter: it.star ? 'drop-shadow(0 0 6px rgba(255,199,56,.8))' : 'none',
-                animation: `fallDown ${it.dur}s linear forwards, popIn .2s ease-out`,
-              }}
-            >
-              {it.emoji}
-            </button>
-          ))}
-          {!over && popups.map((p) => (
-            <div key={p.id} className="absolute font-black text-sm pointer-events-none" style={{ left: `${p.x}%`, top: '40%', color: p.color, animation: 'floatUp .7s ease-out forwards' }}>{p.text}</div>
-          ))}
-          {over && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5" style={{ background: 'rgba(255,255,255,.97)' }}>
+        <div className="relative mx-4 my-3 rounded-2xl overflow-hidden p-3" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
+          {!won ? (
+            <div className="grid grid-cols-4 gap-2.5">
+              {cards.map((card) => (
+                <button
+                  key={card.id}
+                  onClick={() => flip(card)}
+                  className="aspect-square rounded-xl flex items-center justify-center text-2xl transition-all"
+                  style={{
+                    background: card.matched ? 'rgba(52,160,101,.15)' : card.flipped ? '#fff' : `linear-gradient(135deg, ${GREEN}, #1d4530)`,
+                    border: card.matched ? '2px solid #34a065' : '1.5px solid #f0e5cf',
+                  }}
+                >
+                  {(card.flipped || card.matched) ? card.emoji : ''}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2.5" style={{ minHeight: 280 }}>
               {isNewBest && <div className="absolute inset-0 pointer-events-none">{Array.from({ length: 18 }).map((_, i) => (
                 <span key={i} className="absolute text-lg" style={{ left: `${Math.random() * 100}%`, top: -20, animation: `confettiFall ${1.4 + Math.random()}s ease-in forwards`, animationDelay: `${Math.random() * 0.4}s` }}>{['🎉', '⭐', '🥙', '🎊'][i % 4]}</span>
               ))}</div>}
               <div className="text-4xl">{isNewBest ? '🏆' : '🎉'}</div>
               {isNewBest && <div className="font-black text-sm" style={{ color: ORANGE }}>Neuer Rekord!</div>}
-              <div className="font-black text-lg" style={{ color: GREEN }}>Score: {score}</div>
+              <div className="font-black text-lg" style={{ color: GREEN }}>Geschafft in {moves} Zügen!</div>
               <button onClick={restart} className="px-5 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>Nochmal 🔄</button>
             </div>
           )}
         </div>
-        <p className="text-center text-[11px] font-medium pb-4" style={{ color: '#a4906c' }}>{BAD} = -2 Punkte · {STAR} = +5 Bonus · 5er-Combo = Extra-Punkte</p>
+        <p className="text-center text-[11px] font-medium pb-4" style={{ color: '#a4906c' }}>Finde alle Paare mit möglichst wenigen Zügen!</p>
       </div>
       <style>{`
-        @keyframes fallDown { from { transform: translateY(0); } to { transform: translateY(376px); } }
-        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-        @keyframes floatUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
         @keyframes confettiFall { from { transform: translateY(0) rotate(0deg); opacity: 1; } to { transform: translateY(360px) rotate(360deg); opacity: 0; } }
       `}</style>
     </div>
   );
 }
+
 
 function MittagsBanner() {
   const { t } = React.useContext(LangContext);
@@ -3060,6 +3031,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
+              <button onClick={() => scrollTo('kontakt')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>{t('contactMsgTitle')}</button>
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
@@ -3195,7 +3167,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       })()}
 
       {moodPickerOpen && <MoodPicker onClose={() => setMoodPickerOpen(false)} />}
-      {gameOpen && <DoenerCatchGame onClose={() => setGameOpen(false)} />}
+      {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
@@ -6111,18 +6083,18 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-12" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,199,56,.08), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
+        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,199,56,.08), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
           <div className="w-full max-w-xs">
-            <div className="flex flex-col items-center mb-7">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)`, boxShadow: '0 10px 28px rgba(21,56,38,.35), 0 0 0 4px rgba(255,199,56,.18)' }}>
-                <Lock size={24} color={GOLD} />
+            <div className="flex flex-col items-center mb-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2.5" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)`, boxShadow: '0 10px 28px rgba(21,56,38,.35), 0 0 0 4px rgba(255,199,56,.18)' }}>
+                <Lock size={19} color={GOLD} />
               </div>
-              <div className="font-black text-lg text-center" style={{ color: GREEN }}>{t('titleStaff')}</div>
-              <div className="text-[11px] font-bold tracking-widest mt-1" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
+              <div className="font-black text-base text-center" style={{ color: GREEN }}>{t('titleStaff')}</div>
+              <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-6" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
-              <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === staffPin && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="• • • • • •" className="w-full px-4 py-4 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none mb-4" style={{ background: '#f7f0e2', color: GREEN, border: '1.5px solid #f0e5cf' }} autoFocus />
-              <button onClick={() => { if (pin === staffPin) { setOk(true); unlockAudio(); } }} className="w-full py-4 rounded-2xl font-black text-base" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)' }}>🔓 {t('loginBtn')}</button>
+            <div className="rounded-3xl p-5" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
+              <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === staffPin && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="• • • • • •" className="w-full px-4 py-3.5 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN, border: '1.5px solid #f0e5cf' }} autoFocus />
+              <button onClick={() => { if (pin === staffPin) { setOk(true); unlockAudio(); } }} className="w-full py-3.5 rounded-2xl font-black text-base" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)' }}>🔓 {t('loginBtn')}</button>
             </div>
           </div>
         </div>
