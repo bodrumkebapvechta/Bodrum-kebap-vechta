@@ -113,7 +113,7 @@ const UI = {
   contactMsgTitle: { de: '💬 Schreib uns', en: '💬 Message us', tr: '💬 Bize yazın', ro: '💬 Scrie-ne', nl: '💬 Schrijf ons', sq: '💬 Na shkruaj', ku: '💬 Ji me re binivîse', pl: '💬 Napisz do nas' },
   contactMsgSub: { de: 'Frage, Feedback oder ein Problem? Wir melden uns persönlich zurück.', en: "Question, feedback, or a problem? We'll get back to you personally.", tr: 'Bir soru, geri bildirim ya da bir sorun mu var? Sana kişisel olarak dönüş yaparız.', ro: 'O întrebare, feedback sau o problemă? Îți răspundem personal.', nl: 'Een vraag, feedback of een probleem? We nemen persoonlijk contact met je op.', sq: 'Pyetje, koment apo problem? Do të të kthejmë përgjigje personalisht.', ku: 'Pirsek, ramanek an pirsgirêkek? Em ê bi taybetî bersivê bidin te.', pl: 'Pytanie, opinia lub problem? Odpowiemy osobiście.' },
   contactMsgName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam', sq: 'Emri yt', ku: 'Navê te', pl: 'Twoje imię' },
-  contactMsgPhone: { de: 'Telefon (optional)', en: 'Phone (optional)', tr: 'Telefon (opsiyonel)', ro: 'Telefon (opțional)', nl: 'Telefoon (optioneel)', sq: 'Telefoni (opsional)', ku: 'Telefon (dilxwazî)', pl: 'Telefon (opcjonalnie)' },
+  contactMsgPhone: { de: 'E-Mail (optional)', en: 'Email (optional)', tr: 'E-posta (opsiyonel)', ro: 'E-mail (opțional)', nl: 'E-mail (optioneel)', sq: 'Email (opsional)', ku: 'E-mail (dilxwazî)', pl: 'E-mail (opcjonalnie)' },
   contactMsgMessage: { de: 'Deine Nachricht...', en: 'Your message...', tr: 'Mesajın...', ro: 'Mesajul tău...', nl: 'Je bericht...', sq: 'Mesazhi yt...', ku: 'Peyama te...', pl: 'Twoja wiadomość...' },
   contactMsgSend: { de: 'Senden', en: 'Send', tr: 'Gönder', ro: 'Trimite', nl: 'Verzenden', sq: 'Dërgo', ku: 'Bişîne', pl: 'Wyślij' },
   contactMsgSent: { de: '✅ Danke! Wir melden uns bald bei dir.', en: "✅ Thanks! We'll be in touch soon.", tr: '✅ Teşekkürler! En kısa sürede sana dönüş yapacağız.', ro: '✅ Mulțumim! Te vom contacta în curând.', nl: '✅ Bedankt! We nemen snel contact op.', sq: '✅ Faleminderit! Do të të kontaktojmë së shpejti.', ku: '✅ Spas! Em ê zû têkiliyê daynin.', pl: '✅ Dziękujemy! Wkrótce się odezwiemy.' },
@@ -2288,7 +2288,7 @@ async function translateToGerman(text, sourceLang) {
 
 function ContactMessageForm({ lang, t }) {
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
 
@@ -2298,7 +2298,7 @@ function ContactMessageForm({ lang, t }) {
     try {
       const messageDe = await translateToGerman(message.trim(), lang);
       const key = `contactmsg:${Date.now()}-${makeShortCode(4)}`;
-      await safeSet(key, { name: name.trim(), phone: phone.trim(), message: message.trim(), messageDe, lang, ts: Date.now(), read: false });
+      await safeSet(key, { name: name.trim(), email: email.trim(), message: message.trim(), messageDe, lang, ts: Date.now(), read: false });
 
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -2308,7 +2308,7 @@ function ContactMessageForm({ lang, t }) {
           subject: `Neue Nachricht von der Website — ${name.trim()}`,
           from_name: 'Bodrum Kebap Website',
           name: name.trim(),
-          phone: phone.trim() || '—',
+          ...(email.trim() ? { email: email.trim() } : {}),
           message: messageDe,
           original_language: lang,
           original_message: lang !== 'de' ? message.trim() : undefined,
@@ -2316,7 +2316,7 @@ function ContactMessageForm({ lang, t }) {
       });
       if (!res.ok) throw new Error('failed');
       setStatus('sent');
-      setName(''); setPhone(''); setMessage('');
+      setName(''); setEmail(''); setMessage('');
     } catch {
       setStatus('error');
     }
@@ -2331,7 +2331,7 @@ function ContactMessageForm({ lang, t }) {
       ) : (
         <div className="flex flex-col gap-2.5">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('contactMsgName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('contactMsgPhone')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('contactMsgPhone')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contactMsgMessage')} rows={3} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
           <button onClick={submit} disabled={status === 'sending' || !name.trim() || !message.trim()} className="px-5 py-2.5 rounded-full font-bold text-sm text-white self-start" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: (!name.trim() || !message.trim()) ? 0.5 : 1 }}>
             {status === 'sending' ? '⏳ ...' : t('contactMsgSend')}
@@ -6476,7 +6476,7 @@ function StaffPanelView({ back }) {
                       <span className="font-black text-sm" style={{ color: GREEN }}>{m.value.name}</span>
                       <span className="text-[10px] font-medium" style={{ color: '#a4906c' }}>{new Date(m.value.ts).toLocaleString('de-DE')}</span>
                     </div>
-                    {m.value.phone && <div className="text-xs font-bold mb-1.5" style={{ color: ORANGE }}>📞 {m.value.phone}</div>}
+                    {m.value.email && <div className="text-xs font-bold mb-1.5" style={{ color: ORANGE }}>✉️ {m.value.email}</div>}
                     <p className="text-sm font-medium" style={{ color: GREEN }}>{m.value.messageDe || m.value.message}</p>
                     {m.value.lang && m.value.lang !== 'de' && m.value.message !== m.value.messageDe && (
                       <p className="text-xs font-medium mt-1.5 italic" style={{ color: '#a4906c' }}>Original ({m.value.lang.toUpperCase()}): {m.value.message}</p>
