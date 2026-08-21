@@ -1957,6 +1957,10 @@ function StoppelmarktBanner() {
 }
 
 const ALL_MENU_ITEMS = MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta).map((i) => ({ ...i, number: menuNum(i.id) })));
+function formatItemPriceText(item) {
+  if (item.priceLarge !== undefined) return `22cm ${fmt(item.priceSmall)} / 28cm ${fmt(item.priceLarge)}`;
+  return fmt(item.price);
+}
 
 const ASSISTANT_R = {
   openYes: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Dienstags haben wir Ruhetag.", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're closed on Tuesdays.", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız.", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Marțea suntem închiși.", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. Op dinsdag zijn we gesloten.", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Të martave jemi mbyllur.", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Roja Sêşemê em girtî ne.", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. We wtorki mamy zamknięte." },
@@ -1991,7 +1995,7 @@ function getAssistantReply(qRaw, lang) {
   const numMatch = q.match(/\d+/);
   if (numMatch) {
     const found = ALL_MENU_ITEMS.find((it) => it.number === numMatch[0]);
-    if (found) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', fmt(found.priceLarge !== undefined ? found.priceSmall : found.price)).replace('{desc}', found.desc ? mx(found.desc, lang) : '') };
+    if (found) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', formatItemPriceText(found)).replace('{desc}', found.desc ? mx(found.desc, lang) : '') };
   }
 
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
@@ -2024,8 +2028,8 @@ function getAssistantReply(qRaw, lang) {
   if (q.length > 2) {
     const nameMatch = ALL_MENU_ITEMS.find((it) => it.name.toLowerCase().includes(q) || q.includes(it.name.toLowerCase()));
     if (nameMatch) {
-      if (nameMatch.number) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
-      return { intent: 'item', text: ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', fmt(nameMatch.priceLarge !== undefined ? nameMatch.priceSmall : nameMatch.price)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
+      if (nameMatch.number) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
+      return { intent: 'item', text: ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
     }
   }
   return { intent: 'fallback', text: ar('fallback', lang) };
@@ -6425,7 +6429,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                     ) : (
                       <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
                     )}
-                    <button onClick={() => speakText(`${mx(tischText(item.name, 'de'), lang)}. ${fmt(item.price)}`, lang)} className="text-sm opacity-50" title="Vorlesen">🔊</button>
+                    <button onClick={() => speakText(item.priceLarge !== undefined ? `${mx(tischText(item.name, 'de'), lang)}. 22 cm: ${fmt(item.price)}. 28 cm: ${fmt(item.priceLarge)}` : `${mx(tischText(item.name, 'de'), lang)}. ${fmt(item.price)}`, lang)} className="text-sm opacity-50" title="Vorlesen">🔊</button>
                   </div>
                 </div>
               );
