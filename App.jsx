@@ -16,6 +16,7 @@ const WHATSAPP_NUMBER = '4915210804759';
 
 /* ============ ASSETS ============ */
 const LOGO_ICON = "/logo.png";
+const WEB3FORMS_KEY = "4f411a44-2658-4d04-8eef-801d7060fb48";
 const FOOD_HERO = "/hero.jpg";
 const FOOD_G1 = "/food-g1.jpg";
 const FOOD_G2 = "/food-g2.jpg";
@@ -109,6 +110,14 @@ const UI = {
   assistantTitle: { de: 'Bodrum Assistent', en: 'Bodrum Assistant', tr: 'Bodrum Asistan', ro: 'Asistent Bodrum', nl: 'Bodrum Assistent', sq: 'Asistenti Bodrum', ku: 'Alîkarê Bodrum', pl: 'Asystent Bodrum' },
   assistantGreeting: { de: 'Hallo! 👋 Ich bin der kleine Helfer von Bodrum Kebap. Frag mich nach Öffnungszeiten, Adresse, Preisen oder einer Empfehlung!', en: "Hi! 👋 I'm Bodrum Kebap's little helper. Ask me about hours, address, prices, or a recommendation!", tr: 'Merhaba! 👋 Ben Bodrum Kebap\'ın küçük yardımcısıyım. Açılış saati, adres, fiyat ya da öneri sorabilirsin!', ro: 'Salut! 👋 Sunt micul asistent al Bodrum Kebap. Întreabă-mă despre orar, adresă, prețuri sau o recomandare!', nl: 'Hoi! 👋 Ik ben de kleine helper van Bodrum Kebap. Vraag me naar openingstijden, adres, prijzen of een aanbeveling!', sq: 'Përshëndetje! 👋 Unë jam ndihmësi i vogël i Bodrum Kebap. Më pyet për orarin, adresën, çmimet ose një rekomandim!', ku: 'Silav! 👋 Ez alîkarê piçûk ê Bodrum Kebap im. Ji min bipirse li ser demjimêran, navnîşanê, buhayan an pêşniyarek!', pl: 'Cześć! 👋 Jestem małym asystentem Bodrum Kebap. Zapytaj mnie o godziny, adres, ceny lub polecenie!' },
   assistantPlaceholder: { de: 'Frag mich etwas...', en: 'Ask me something...', tr: 'Bir şey sor...', ro: 'Întreabă-mă ceva...', nl: 'Vraag me iets...', sq: 'Më pyet diçka...', ku: 'Tiştekî ji min bipirse...', pl: 'Zapytaj mnie o coś...' },
+  contactMsgTitle: { de: '💬 Schreib uns', en: '💬 Message us', tr: '💬 Bize yazın', ro: '💬 Scrie-ne', nl: '💬 Schrijf ons', sq: '💬 Na shkruaj', ku: '💬 Ji me re binivîse', pl: '💬 Napisz do nas' },
+  contactMsgSub: { de: 'Frage, Feedback oder ein Problem? Wir melden uns persönlich zurück.', en: "Question, feedback, or a problem? We'll get back to you personally.", tr: 'Bir soru, geri bildirim ya da bir sorun mu var? Sana kişisel olarak dönüş yaparız.', ro: 'O întrebare, feedback sau o problemă? Îți răspundem personal.', nl: 'Een vraag, feedback of een probleem? We nemen persoonlijk contact met je op.', sq: 'Pyetje, koment apo problem? Do të të kthejmë përgjigje personalisht.', ku: 'Pirsek, ramanek an pirsgirêkek? Em ê bi taybetî bersivê bidin te.', pl: 'Pytanie, opinia lub problem? Odpowiemy osobiście.' },
+  contactMsgName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam', sq: 'Emri yt', ku: 'Navê te', pl: 'Twoje imię' },
+  contactMsgPhone: { de: 'Telefon (optional)', en: 'Phone (optional)', tr: 'Telefon (opsiyonel)', ro: 'Telefon (opțional)', nl: 'Telefoon (optioneel)', sq: 'Telefoni (opsional)', ku: 'Telefon (dilxwazî)', pl: 'Telefon (opcjonalnie)' },
+  contactMsgMessage: { de: 'Deine Nachricht...', en: 'Your message...', tr: 'Mesajın...', ro: 'Mesajul tău...', nl: 'Je bericht...', sq: 'Mesazhi yt...', ku: 'Peyama te...', pl: 'Twoja wiadomość...' },
+  contactMsgSend: { de: 'Senden', en: 'Send', tr: 'Gönder', ro: 'Trimite', nl: 'Verzenden', sq: 'Dërgo', ku: 'Bişîne', pl: 'Wyślij' },
+  contactMsgSent: { de: '✅ Danke! Wir melden uns bald bei dir.', en: "✅ Thanks! We'll be in touch soon.", tr: '✅ Teşekkürler! En kısa sürede sana dönüş yapacağız.', ro: '✅ Mulțumim! Te vom contacta în curând.', nl: '✅ Bedankt! We nemen snel contact op.', sq: '✅ Faleminderit! Do të të kontaktojmë së shpejti.', ku: '✅ Spas! Em ê zû têkiliyê daynin.', pl: '✅ Dziękujemy! Wkrótce się odezwiemy.' },
+  contactMsgError: { de: '⚠️ Etwas ist schiefgelaufen. Bitte ruf uns direkt an.', en: '⚠️ Something went wrong. Please call us directly.', tr: '⚠️ Bir şeyler ters gitti. Lütfen bizi direkt ara.', ro: '⚠️ Ceva a mers greșit. Sună-ne direct.', nl: '⚠️ Er ging iets mis. Bel ons alsjeblieft direct.', sq: '⚠️ Diçka shkoi keq. Na telefono direkt.', ku: '⚠️ Tiştek çewt çû. Ji kerema xwe rasterast telefon bike.', pl: '⚠️ Coś poszło nie tak. Zadzwoń do nas bezpośrednio.' },
   analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.', ku: '500 serdanên dawî nîşan dide. Tu daneyên kesane tune, tenê ziman & cureyê amîr.', pl: 'Pokazuje ostatnie 500 odwiedzin. Brak danych osobowych, tylko język i typ urządzenia.'},
   trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.', ku: 'Ji bo dîtina rewşê koda sifarişê binivîse.', pl: 'Wpisz swój kod zamówienia, aby zobaczyć status.'},
   surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!', ku: 'Min ecêbmayî bihêle!', pl: 'Zaskocz mnie!'},
@@ -1180,10 +1189,10 @@ function logVisit(lang) {
     safeSet(key, { ts: Date.now(), lang, device });
   } catch {}
 }
-function logEvent(eventType) {
+function logEvent(eventType, extra) {
   try {
     const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
-    safeSet(key, { ts: Date.now(), event: eventType });
+    safeSet(key, { ts: Date.now(), event: eventType, ...(extra || {}) });
   } catch {}
 }
 
@@ -2088,7 +2097,7 @@ function AIAssistant() {
     const q = (text ?? input).trim();
     if (!q) return;
     const { intent, text: reply } = getAssistantReply(q, lang);
-    logEvent('assistant_' + intent);
+    logEvent('assistant_' + intent, { q: q.slice(0, 200) });
     setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
     setInput('');
   };
@@ -2262,6 +2271,74 @@ function CampaignBanner() {
     <div className="px-5 py-3 text-center" style={{ background: `linear-gradient(90deg, ${GOLD}, #ffdf8a, ${GOLD})`, animation: 'goldGlow 2.2s ease-in-out infinite' }}>
       <span className="font-black text-sm" style={{ color: GREEN }}>{campaign.title}</span>
       {campaign.subtitle && <span className="block text-xs font-semibold mt-0.5" style={{ color: GREEN }}>{campaign.subtitle}</span>}
+    </div>
+  );
+}
+
+async function translateToGerman(text, sourceLang) {
+  if (sourceLang === 'de' || !text.trim()) return text;
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|de`);
+    const j = await res.json();
+    const translated = j?.responseData?.translatedText;
+    if (translated && j.responseStatus === 200) return translated;
+  } catch {}
+  return text; // Fallback: Original, falls Übersetzung fehlschlägt
+}
+
+function ContactMessageForm({ lang, t }) {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+
+  const submit = async () => {
+    if (!name.trim() || !message.trim()) return;
+    setStatus('sending');
+    try {
+      const messageDe = await translateToGerman(message.trim(), lang);
+      const key = `contactmsg:${Date.now()}-${makeShortCode(4)}`;
+      await safeSet(key, { name: name.trim(), phone: phone.trim(), message: message.trim(), messageDe, lang, ts: Date.now(), read: false });
+
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Neue Nachricht von der Website — ${name.trim()}`,
+          from_name: 'Bodrum Kebap Website',
+          name: name.trim(),
+          phone: phone.trim() || '—',
+          message: messageDe,
+          original_language: lang,
+          original_message: lang !== 'de' ? message.trim() : undefined,
+        }),
+      });
+      if (!res.ok) throw new Error('failed');
+      setStatus('sent');
+      setName(''); setPhone(''); setMessage('');
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="mt-8 rounded-2xl p-5" style={{ background: 'rgba(255,246,234,.05)', border: '1px solid rgba(255,246,234,.12)' }}>
+      <div className="text-white font-black text-sm mb-1">{t('contactMsgTitle')}</div>
+      <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('contactMsgSub')}</p>
+      {status === 'sent' ? (
+        <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('contactMsgSent')}</p>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('contactMsgName')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-semibold outline-none" style={{ background: 'rgba(255,255,255,.06)', color: '#fff', border: '1px solid rgba(255,246,234,.15)' }} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('contactMsgPhone')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-semibold outline-none" style={{ background: 'rgba(255,255,255,.06)', color: '#fff', border: '1px solid rgba(255,246,234,.15)' }} />
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contactMsgMessage')} rows={3} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: 'rgba(255,255,255,.06)', color: '#fff', border: '1px solid rgba(255,246,234,.15)' }} />
+          <button onClick={submit} disabled={status === 'sending' || !name.trim() || !message.trim()} className="px-5 py-2.5 rounded-full font-bold text-sm text-white self-start" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: (!name.trim() || !message.trim()) ? 0.5 : 1 }}>
+            {status === 'sending' ? '⏳ ...' : t('contactMsgSend')}
+          </button>
+          {status === 'error' && <p className="text-xs font-bold" style={{ color: '#e08a8a' }}>{t('contactMsgError')}</p>}
+        </div>
+      )}
     </div>
   );
 }
@@ -3160,6 +3237,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               </a>
             </div>
             <DistanceWidget lang={lang} />
+            <ContactMessageForm lang={lang} t={t} />
           </div>
           <div className="rounded-2xl overflow-hidden" style={{ minHeight: 280, boxShadow: '0 10px 30px rgba(21,56,38,.14)' }}>
             <iframe
@@ -5455,6 +5533,7 @@ function StaffPanelView({ back }) {
   const [showTestOrders, setShowTestOrders] = useState(false);
   const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
+  const [contactMessages, setContactMessages] = useState([]);
   const [menuSearch, setMenuSearch] = useState('');
   const [priceOverrides, setPriceOverrides] = useState({});
   const [editingItem, setEditingItem] = useState(null);
@@ -5615,6 +5694,11 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'analytics') {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
+    }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (ok && tab === 'messages') {
+      safeListPrefix('contactmsg:', 50).then((rows) => setContactMessages(rows.sort((a, b) => b.value.ts - a.value.ts)));
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -6302,14 +6386,33 @@ function StaffPanelView({ back }) {
                   });
                   const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
                   const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
+                  const unrecognized = assistantEvents
+                    .filter((v) => v.value.event === 'assistant_fallback' && v.value.q)
+                    .sort((a, b) => b.value.ts - a.value.ts)
+                    .slice(0, 25);
                   if (intentOrder.length === 0) return null;
                   return (
-                    <div className="bg-white rounded-xl p-4 mt-3">
-                      <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤖 ASSISTENT — MEISTGEFRAGT</div>
-                      {intentOrder.map(([k, c]) => (
-                        <div key={k} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></div>
-                      ))}
-                    </div>
+                    <>
+                      <div className="bg-white rounded-xl p-4 mt-3">
+                        <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤖 ASSISTENT — MEISTGEFRAGT</div>
+                        {intentOrder.map(([k, c]) => (
+                          <div key={k} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></div>
+                        ))}
+                      </div>
+                      {unrecognized.length > 0 && (
+                        <div className="bg-white rounded-xl p-4 mt-3">
+                          <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤔 NICHT VERSTANDENE FRAGEN</div>
+                          <div className="flex flex-col gap-1.5">
+                            {unrecognized.map((v) => (
+                              <div key={v.key} className="rounded-lg px-3 py-2" style={{ background: '#f7f0e2' }}>
+                                <div className="text-sm font-semibold" style={{ color: GREEN }}>"{v.value.q}"</div>
+                                <div className="text-[10px] font-medium mt-0.5" style={{ color: '#a4906c' }}>{new Date(v.value.ts).toLocaleString('de-DE')}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   );
                 })()}
                 <p className="text-[10px] text-center mt-4" style={{ color: '#a4906c' }}>{t('analyticsNote')}</p>
@@ -6386,6 +6489,32 @@ function StaffPanelView({ back }) {
               )}
             </div>
           )}
+          {tab === 'messages' && (
+            <div className="px-5">
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💬 NACHRICHTEN</div>
+              {contactMessages.length === 0 && (
+                <div className="text-center py-14 rounded-2xl" style={{ background: '#fff', border: '1.5px dashed #e3d5bd' }}>
+                  <div className="text-5xl mb-3 opacity-70">📭</div>
+                  <p className="text-sm font-semibold" style={{ color: '#8a7c62' }}>Noch keine Nachrichten</p>
+                </div>
+              )}
+              <div className="flex flex-col gap-2.5">
+                {contactMessages.map((m) => (
+                  <div key={m.key} className="bg-white rounded-2xl p-4" style={{ border: '1.5px solid #f0e5cf' }}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-black text-sm" style={{ color: GREEN }}>{m.value.name}</span>
+                      <span className="text-[10px] font-medium" style={{ color: '#a4906c' }}>{new Date(m.value.ts).toLocaleString('de-DE')}</span>
+                    </div>
+                    {m.value.phone && <div className="text-xs font-bold mb-1.5" style={{ color: ORANGE }}>📞 {m.value.phone}</div>}
+                    <p className="text-sm font-medium" style={{ color: GREEN }}>{m.value.messageDe || m.value.message}</p>
+                    {m.value.lang && m.value.lang !== 'de' && m.value.message !== m.value.messageDe && (
+                      <p className="text-xs font-medium mt-1.5 italic" style={{ color: '#a4906c' }}>Original ({m.value.lang.toUpperCase()}): {m.value.message}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {tab === 'photos' && (
             <div className="px-5">
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📷 {t('staffPhotosTab').toUpperCase()}</div>
@@ -6445,11 +6574,12 @@ function StaffPanelView({ back }) {
           )}
 
           <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(10,26,16,.97)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(255,199,56,.18)' }}>
-            <div className="grid grid-cols-6">
+            <div className="grid grid-cols-7">
               {[
                 { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
                 { key: 'wheel', icon: '🎡', label: 'Rad' },
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
+                { key: 'messages', icon: '💬', label: 'Nachrichten' },
                 { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
                 { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                 { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
