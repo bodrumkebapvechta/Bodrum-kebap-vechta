@@ -5139,11 +5139,26 @@ function OrderTrackView({ back, initialAction, onConsumeAction }) {
     </div>
   );
 }
+function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
+  const isOpen = openId === id;
+  return (
+    <div className="rounded-2xl mb-2.5 overflow-hidden" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
+      <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
+        <span className="flex items-center gap-2 font-black text-sm" style={{ color: GREEN }}>{icon} {title}</span>
+        <span className="text-xs" style={{ color: '#a4906c', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▼</span>
+      </button>
+      {isOpen && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
+}
+
 function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
   const [ok, setOk] = useState(false);
   const [staffLookup, setStaffLookup] = useState('');
+  const [lookupOpen, setLookupOpen] = useState(false);
+  const [openSettingsId, setOpenSettingsId] = useState(null);
   useEffect(() => {
     if (ok) {
       safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
@@ -5779,89 +5794,64 @@ function StaffPanelView({ back }) {
           </div>
         </div>
       ) : (
-        <div style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,199,56,.06), transparent 55%), linear-gradient(180deg, #0e2416, #0a1a10 60%, #0e2416)`, minHeight: 'calc(100vh - 70px)' }}>
-          <div className="px-5 pt-4">
-            <div className="rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 8px 24px rgba(0,0,0,.25)' }}>
+        <div style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,199,56,.06), transparent 55%), linear-gradient(180deg, #0e2416, #0a1a10 60%, #0e2416)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96 }}>
+          <div className="px-5 pt-4 flex items-center gap-2.5">
+            <div className="flex-1 rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 8px 24px rgba(0,0,0,.25)' }}>
               <span className="text-xl">👨‍🍳</span>
-              <div>
-                <div className="font-black text-sm" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
-                <div className="text-[11px] font-medium" style={{ color: '#d9cdb4' }}>{t('staffWelcomeSub')}</div>
+              <div className="min-w-0">
+                <div className="font-black text-sm truncate" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
+                <div className="text-[11px] font-medium truncate" style={{ color: '#d9cdb4' }}>{t('staffWelcomeSub')}</div>
               </div>
             </div>
-          </div>
-          <div className="px-5 pt-2.5">
-            <div className="rounded-2xl p-3.5" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
-              <div className="flex items-center gap-1.5 mb-2"><span className="text-sm">🔍</span><div className="font-bold text-xs" style={{ color: GREEN }}>{t('staffQuickLookupTitle')}</div></div>
-              <input value={staffLookup} onChange={(e) => setStaffLookup(e.target.value)} placeholder={t('quickSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-              {staffLookup.trim() && (
-                staffLookupResults.length === 0 ? (
-                  <p className="text-xs font-semibold text-center py-2" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
-                ) : (
-                  <div className="flex flex-col gap-1.5 mt-2">
-                    {staffLookupResults.map((item) => {
-                      const isOut = soldOutIds.includes(item.id);
-                      const priceOv = priceOverrides[item.id];
-                      const priceDisplay = item.priceLarge !== undefined
-                        ? `${fmt(priceOv?.small ?? item.priceSmall)} / ${fmt(priceOv?.large ?? item.priceLarge)}`
-                        : fmt(priceOv?.price ?? item.price);
-                      return (
-                        <div key={item.id} className="rounded-lg p-2.5" style={{ background: '#f7f0e2' }}>
-                          <div className="font-bold text-sm flex items-center gap-1.5" style={{ color: GREEN }}>
-                            {menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)}</span>} {item.name}
-                            {isOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>{t('soldOutBadge')}</span>}
-                          </div>
-                          {item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}
-                          <div className="text-xs font-bold mt-1" style={{ color: CHILI }}>{priceDisplay}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-          <div className="px-5 pt-4 pb-1.5">
-            <div className="text-[10px] font-black tracking-widest" style={{ color: '#a4906c' }}>BEREICHE</div>
-          </div>
-          <div className="px-5 pb-2">
-            <div className="grid grid-cols-2 gap-2.5">
-              {[
-                { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
-                { key: 'wheel', icon: '🎡', label: t('staffWheelCodeTitle') },
-                { key: 'menu', icon: '📋', label: t('staffMenuTab') },
-                { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
-                { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
-                { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
-              ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => setTab(item.key)}
-                  className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl text-left transition-all"
-                  style={tab === item.key
-                    ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 8px 20px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }
-                    : { background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.08)', border: '1.5px solid #f0e5cf' }}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="font-bold text-xs leading-tight">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="px-5 pb-3">
-            <button
-              onClick={() => setTischAdminOpen(true)}
-              className="w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-left"
-              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
-            >
-              <span className="text-2xl">🍽️</span>
-              <div>
-                <div className="font-black text-sm text-white">{t('staffTischMenuTab')}</div>
-                <div className="text-[11px] font-semibold" style={{ color: '#ffe8d1' }}>Eigene Karte für den QR-Tischbildschirm →</div>
-              </div>
+            <button onClick={() => setLookupOpen((v) => !v)} className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={lookupOpen ? { background: GOLD, color: GREEN } : { background: '#fff', color: GREEN, border: '1.5px solid #f0e5cf' }}>
+              <span className="text-lg">🔍</span>
             </button>
           </div>
-          <div className="px-5 pb-1">
-            <div style={{ height: 1, background: 'rgba(255,246,234,.1)' }} />
+
+          {lookupOpen && (
+            <div className="px-5 pt-2.5">
+              <div className="rounded-2xl p-3.5" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
+                <input value={staffLookup} onChange={(e) => setStaffLookup(e.target.value)} placeholder={t('quickSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} autoFocus />
+                {staffLookup.trim() && (
+                  staffLookupResults.length === 0 ? (
+                    <p className="text-xs font-semibold text-center py-2" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
+                  ) : (
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      {staffLookupResults.map((item) => {
+                        const isOut = soldOutIds.includes(item.id);
+                        const priceOv = priceOverrides[item.id];
+                        const priceDisplay = item.priceLarge !== undefined
+                          ? `${fmt(priceOv?.small ?? item.priceSmall)} / ${fmt(priceOv?.large ?? item.priceLarge)}`
+                          : fmt(priceOv?.price ?? item.price);
+                        return (
+                          <div key={item.id} className="rounded-lg p-2.5" style={{ background: '#f7f0e2' }}>
+                            <div className="font-bold text-sm flex items-center gap-1.5" style={{ color: GREEN }}>
+                              {menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)}</span>} {item.name}
+                              {isOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>{t('soldOutBadge')}</span>}
+                            </div>
+                            {item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}
+                            <div className="text-xs font-bold mt-1" style={{ color: CHILI }}>{priceDisplay}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="px-5 pt-3 pb-1">
+            <button
+              onClick={() => setTischAdminOpen(true)}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left"
+              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
+            >
+              <span className="text-xl">🍽️</span>
+              <div className="min-w-0">
+                <div className="font-black text-xs text-white truncate">{t('staffTischMenuTab')} — QR-Tischbildschirm →</div>
+              </div>
+            </button>
           </div>
 
           {tab === 'wheel' && (
@@ -5938,27 +5928,24 @@ function StaffPanelView({ back }) {
           {tab === 'settings' && (
             <div className="px-5">
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🔒 SICHERHEIT</div>
-              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>PIN ändern</div>
+              <SettingsRow id="pin" icon="🔒" title="PIN ändern" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Aktueller PIN gilt bis du ihn hier änderst.</p>
                 <input value={newPin} onChange={(e) => setNewPin(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
                 <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
                 <button onClick={savePin} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
-              </div>
+              </SettingsRow>
 
-              <div className="text-[10px] font-black tracking-widest mb-2 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
-              <div className="bg-white rounded-2xl p-4 mb-2.5" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('dailyBannerLabel')}</div>
+              <div className="text-[10px] font-black tracking-widest mb-2 mt-4 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
+              <SettingsRow id="dailyBanner" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
                 <div className="flex gap-2">
                   <button onClick={saveDailyBanner} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                   <button onClick={clearDailyBanner} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>
                 </div>
                 {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
-              </div>
-              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>🎉 Aktionsbanner</div>
+              </SettingsRow>
+              <SettingsRow id="campaign" icon="🎉" title="Aktionsbanner" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Für Zeiträume wie Stoppelmarkt, Feiertage etc.</p>
                 <label className="flex items-center gap-2 text-xs font-semibold mb-2.5" style={{ color: GREEN }}>
                   <input type="checkbox" checked={campaign.active} onChange={(e) => setCampaign({ ...campaign, active: e.target.checked })} />
@@ -5973,20 +5960,18 @@ function StaffPanelView({ back }) {
                 <p className="text-[10px] mb-2.5" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
                 <button onClick={saveCampaign} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {campaignMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{campaignMsg}</p>}
-              </div>
+              </SettingsRow>
 
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💬 WHATSAPP</div>
-              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>{t('waTemplateLabel')}</div>
+              <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>💬 WHATSAPP</div>
+              <SettingsRow id="waTemplate" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
                 <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
                 <button onClick={saveWaTemplate} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {waTemplateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{waTemplateMsg}</p>}
-              </div>
+              </SettingsRow>
 
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🧪 TESTWERKZEUGE</div>
-              <div className="bg-white rounded-2xl p-4 mb-2.5" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-1" style={{ color: GREEN }}>{t('testOrderLabel')}</div>
+              <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>🧪 TESTWERKZEUGE</div>
+              <SettingsRow id="testOrder" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
                 <button onClick={createTestOrder} className="w-full py-2.5 rounded-lg font-bold text-sm text-white mb-2" style={{ background: ORANGE }}>🧪 {t('testOrderBtn')}</button>
                 <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
@@ -5994,22 +5979,20 @@ function StaffPanelView({ back }) {
                   {t('showTestOrdersLabel')}
                 </label>
                 {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
-              </div>
-              <div className="bg-white rounded-2xl p-4 mb-5" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('notifTestLabel')}</div>
+              </SettingsRow>
+              <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: ORANGE }}>🔔 {t('notifTestBtn')}</button>
-              </div>
+              </SettingsRow>
 
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>⭐ GOOGLE</div>
-              <div className="bg-white rounded-2xl p-4" style={{ border: '1.5px solid #f0e5cf' }}>
-                <div className="text-sm font-black mb-2.5" style={{ color: GREEN }}>{t('googleRatingLabel')}</div>
+              <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>⭐ GOOGLE</div>
+              <SettingsRow id="rating" icon="⭐" title={t('googleRatingLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <div className="flex gap-2 mb-2.5">
                   <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                   <input value={ratingCount} onChange={(e) => setRatingCount(e.target.value)} placeholder="293" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                 </div>
                 <button onClick={saveRating} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {ratingMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{ratingMsg}</p>}
-              </div>
+              </SettingsRow>
             </div>
           )}
           {tab === 'analytics' && (() => {
@@ -6211,6 +6194,30 @@ function StaffPanelView({ back }) {
               </div>
             </div>
           )}
+
+          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(10,26,16,.97)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(255,199,56,.18)' }}>
+            <div className="grid grid-cols-6">
+              {[
+                { key: 'orders', icon: '📦', label: t('staffOrdersTab') },
+                { key: 'wheel', icon: '🎡', label: 'Rad' },
+                { key: 'menu', icon: '📋', label: t('staffMenuTab') },
+                { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
+                { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
+                { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
+              ].map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => { setTab(item.key); setLookupOpen(false); }}
+                  className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-0.5"
+                  style={{ position: 'relative' }}
+                >
+                  {tab === item.key && <div className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full" style={{ width: 24, height: 3, background: GOLD }} />}
+                  <span className="text-lg" style={{ opacity: tab === item.key ? 1 : 0.55 }}>{item.icon}</span>
+                  <span className="font-bold text-center leading-[1.1]" style={{ fontSize: 8.5, color: tab === item.key ? GOLD : 'rgba(217,205,180,.6)' }}>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
