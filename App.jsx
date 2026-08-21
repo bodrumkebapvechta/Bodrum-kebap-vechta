@@ -2327,30 +2327,41 @@ function DistanceWidget({ lang }) {
 function DoenerCatchGame({ onClose }) {
   const [items, setItems] = useState([]);
   const [score, setScore] = useState(0);
+  const [combo, setCombo] = useState(0);
+  const [popups, setPopups] = useState([]);
   const [timeLeft, setTimeLeft] = useState(20);
   const [over, setOver] = useState(false);
+  const [isNewBest, setIsNewBest] = useState(false);
   const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem('bk_game_best') || '0', 10); } catch { return 0; } });
   const boardRef = useRef(null);
   const idRef = useRef(0);
+  const popIdRef = useRef(0);
 
   const EMOJIS = ['🥙', '🍕', '🍟', '🥗', '🍝'];
   const BAD = '💧';
+  const STAR = '⭐';
 
   useEffect(() => {
     if (over) return;
+    const rate = Math.max(260, 620 - (20 - timeLeft) * 20);
     const spawn = setInterval(() => {
-      const isBad = Math.random() < 0.18;
+      const roll = Math.random();
+      const isBad = roll < 0.16;
+      const isStar = !isBad && roll > 0.92;
       const id = idRef.current++;
+      const dur = 1.6 + Math.random() * 0.9;
       setItems((arr) => [...arr, {
         id,
-        emoji: isBad ? BAD : EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+        emoji: isBad ? BAD : isStar ? STAR : EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
         bad: isBad,
+        star: isStar,
         left: 8 + Math.random() * 78,
+        dur,
       }]);
-      setTimeout(() => setItems((arr) => arr.filter((it) => it.id !== id)), 2600);
-    }, 550);
+      setTimeout(() => setItems((arr) => arr.filter((it) => it.id !== id)), dur * 1000 + 50);
+    }, rate);
     return () => clearInterval(spawn);
-  }, [over]);
+  }, [over, timeLeft]);
 
   useEffect(() => {
     if (over) return;
@@ -2358,6 +2369,7 @@ function DoenerCatchGame({ onClose }) {
       setOver(true);
       setBest((b) => {
         const nb = Math.max(b, score);
+        if (score > b) setIsNewBest(true);
         try { localStorage.setItem('bk_game_best', String(nb)); } catch {}
         return nb;
       });
@@ -2367,10 +2379,34 @@ function DoenerCatchGame({ onClose }) {
     return () => clearTimeout(t);
   }, [timeLeft, over, score]);
 
-  const tap = (it) => {
-    setItems((arr) => arr.filter((x) => x.id !== it.id));
-    setScore((s) => Math.max(0, s + (it.bad ? -2 : 1)));
+  const addPopup = (text, color, x) => {
+    const pid = popIdRef.current++;
+    setPopups((p) => [...p, { id: pid, text, color, x }]);
+    setTimeout(() => setPopups((p) => p.filter((x) => x.id !== pid)), 700);
   };
+
+  const tap = (it, e) => {
+    e.stopPropagation();
+    setItems((arr) => arr.filter((x) => x.id !== it.id));
+    if (it.bad) {
+      setCombo(0);
+      setScore((s) => Math.max(0, s - 2));
+      addPopup('−2', CHILI, it.left);
+    } else if (it.star) {
+      setScore((s) => s + 5);
+      addPopup('+5 ⭐', GOLD, it.left);
+    } else {
+      setCombo((c) => {
+        const nc = c + 1;
+        const bonus = nc > 0 && nc % 5 === 0;
+        setScore((s) => s + (bonus ? 3 : 1));
+        addPopup(bonus ? '🔥 Combo +3' : '+1', bonus ? ORANGE : '#34a065', it.left);
+        return nc;
+      });
+    }
+  };
+
+  const restart = () => { setScore(0); setCombo(0); setTimeLeft(20); setOver(false); setIsNewBest(false); setItems([]); setPopups([]); };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-5" style={{ background: 'rgba(0,0,0,.7)' }}>
@@ -2381,26 +2417,49 @@ function DoenerCatchGame({ onClose }) {
         </div>
         <div className="px-5 pt-3 flex items-center justify-between">
           <span className="font-black text-sm" style={{ color: GREEN }}>⭐ {score}</span>
+          {combo >= 3 && !over && <span className="font-black text-xs px-2 py-0.5 rounded-full text-white" style={{ background: ORANGE }}>🔥 x{combo}</span>}
           <span className="font-bold text-xs" style={{ color: '#a4906c' }}>🏆 {best}</span>
           <span className="font-black text-sm" style={{ color: CHILI }}>⏱ {timeLeft}s</span>
         </div>
         <div ref={boardRef} className="relative mx-4 my-3 rounded-2xl overflow-hidden" style={{ height: 340, background: '#fff', border: '1.5px solid #f0e5cf' }}>
           {!over && items.map((it) => (
-            <button key={it.id} onClick={() => tap(it)} className="absolute text-3xl active:scale-90 transition-transform" style={{ left: `${it.left}%`, top: 8, animation: 'fallDown 2.6s linear forwards' }}>
+            <button
+              key={it.id}
+              onClick={(e) => tap(it, e)}
+              className="absolute active:scale-75 transition-transform"
+              style={{
+                left: `${it.left}%`, top: -36,
+                fontSize: it.star ? 34 : 30,
+                filter: it.star ? 'drop-shadow(0 0 6px rgba(255,199,56,.8))' : 'none',
+                animation: `fallDown ${it.dur}s linear forwards, popIn .2s ease-out`,
+              }}
+            >
               {it.emoji}
             </button>
           ))}
+          {!over && popups.map((p) => (
+            <div key={p.id} className="absolute font-black text-sm pointer-events-none" style={{ left: `${p.x}%`, top: '40%', color: p.color, animation: 'floatUp .7s ease-out forwards' }}>{p.text}</div>
+          ))}
           {over && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              <div className="text-4xl">🎉</div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5" style={{ background: 'rgba(255,255,255,.97)' }}>
+              {isNewBest && <div className="absolute inset-0 pointer-events-none">{Array.from({ length: 18 }).map((_, i) => (
+                <span key={i} className="absolute text-lg" style={{ left: `${Math.random() * 100}%`, top: -20, animation: `confettiFall ${1.4 + Math.random()}s ease-in forwards`, animationDelay: `${Math.random() * 0.4}s` }}>{['🎉', '⭐', '🥙', '🎊'][i % 4]}</span>
+              ))}</div>}
+              <div className="text-4xl">{isNewBest ? '🏆' : '🎉'}</div>
+              {isNewBest && <div className="font-black text-sm" style={{ color: ORANGE }}>Neuer Rekord!</div>}
               <div className="font-black text-lg" style={{ color: GREEN }}>Score: {score}</div>
-              <button onClick={() => { setScore(0); setTimeLeft(20); setOver(false); setItems([]); }} className="px-5 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>Nochmal 🔄</button>
+              <button onClick={restart} className="px-5 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>Nochmal 🔄</button>
             </div>
           )}
         </div>
-        <p className="text-center text-[11px] font-medium pb-4" style={{ color: '#a4906c' }}>{BAD} tippen kostet Punkte — vorsichtig!</p>
+        <p className="text-center text-[11px] font-medium pb-4" style={{ color: '#a4906c' }}>{BAD} = -2 Punkte · {STAR} = +5 Bonus · 5er-Combo = Extra-Punkte</p>
       </div>
-      <style>{`@keyframes fallDown { from { transform: translateY(0); } to { transform: translateY(320px); } }`}</style>
+      <style>{`
+        @keyframes fallDown { from { transform: translateY(0); } to { transform: translateY(376px); } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes floatUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
+        @keyframes confettiFall { from { transform: translateY(0) rotate(0deg); opacity: 1; } to { transform: translateY(360px) rotate(360deg); opacity: 0; } }
+      `}</style>
     </div>
   );
 }
@@ -2601,14 +2660,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
     clearTimeout(logoClickTimer.current);
     logoClickTimer.current = setTimeout(() => setLogoClicks(0), 1500);
   };
-  const [darkMode, setDarkMode] = useState(() => { try { return localStorage.getItem('bk_dark') === '1'; } catch { return false; } });
-  const toggleDarkMode = () => {
-    setDarkMode((v) => {
-      const nv = !v;
-      try { localStorage.setItem('bk_dark', nv ? '1' : '0'); } catch {}
-      return nv;
-    });
-  };
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
@@ -2693,7 +2744,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   };
 
   return (
-    <div className={darkMode ? 'dark-mode-root' : ''} style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)' }}>
+    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)' }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
@@ -2709,8 +2760,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes quickOrderPulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.015); } }
         @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
         @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
-        .dark-mode-root { filter: invert(1) hue-rotate(180deg); background: #fff; }
-        .dark-mode-root img, .dark-mode-root video { filter: invert(1) hue-rotate(180deg); }
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
         @keyframes closedBlink { 0%,100%{ opacity:1;} 50%{ opacity:.25;} }
         @keyframes cartBadgePulse { 0%,100%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 0 rgba(230,90,10,.4);} 50%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 8px rgba(230,90,10,0);} }
@@ -2784,9 +2833,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!ORDERING_ENABLED && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
-            <button onClick={toggleDarkMode} className="w-9 h-9 rounded-full flex items-center justify-center text-sm" style={{ background: 'rgba(255,246,234,.12)' }} title="Darkmode">
-              {darkMode ? '☀️' : '🌙'}
-            </button>
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
             <button onClick={() => setNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
               {navOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
