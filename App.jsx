@@ -2323,16 +2323,16 @@ function ContactMessageForm({ lang, t }) {
   };
 
   return (
-    <div className="mt-8 rounded-2xl p-5" style={{ background: 'rgba(255,246,234,.05)', border: '1px solid rgba(255,246,234,.12)' }}>
+    <div id="nachricht" className="mt-8 rounded-2xl p-5" style={{ background: 'rgba(255,246,234,.05)', border: '1px solid rgba(255,246,234,.12)' }}>
       <div className="text-white font-black text-sm mb-1">{t('contactMsgTitle')}</div>
       <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('contactMsgSub')}</p>
       {status === 'sent' ? (
         <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('contactMsgSent')}</p>
       ) : (
         <div className="flex flex-col gap-2.5">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('contactMsgName')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-semibold outline-none" style={{ background: 'rgba(255,255,255,.06)', color: '#fff', border: '1px solid rgba(255,246,234,.15)' }} />
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('contactMsgPhone')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-semibold outline-none" style={{ background: 'rgba(255,255,255,.06)', color: '#fff', border: '1px solid rgba(255,246,234,.15)' }} />
-          <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contactMsgMessage')} rows={3} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: 'rgba(255,255,255,.06)', color: '#fff', border: '1px solid rgba(255,246,234,.15)' }} />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('contactMsgName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('contactMsgPhone')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contactMsgMessage')} rows={3} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
           <button onClick={submit} disabled={status === 'sending' || !name.trim() || !message.trim()} className="px-5 py-2.5 rounded-full font-bold text-sm text-white self-start" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: (!name.trim() || !message.trim()) ? 0.5 : 1 }}>
             {status === 'sending' ? '⏳ ...' : t('contactMsgSend')}
           </button>
@@ -2343,7 +2343,7 @@ function ContactMessageForm({ lang, t }) {
   );
 }
 
-function DistanceWidget({ lang }) {
+function DistanceWidget({ lang, inline }) {
   const [state, setState] = useState('idle'); // idle | loading | done | error
   const [result, setResult] = useState(null);
 
@@ -2380,20 +2380,19 @@ function DistanceWidget({ lang }) {
   };
 
   return (
-    <div className="mt-4 pt-4" style={{ borderTop: '1px solid rgba(255,246,234,.15)' }}>
+    <div className={inline ? 'contents' : ''}>
       {state === 'idle' && (
-        <button onClick={locate} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>
+        <button onClick={locate} className="w-fit flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-sm text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
           📍 {lang === 'de' ? 'Meine Entfernung berechnen' : lang === 'en' ? 'Calculate my distance' : lang === 'tr' ? 'Uzaklığımı hesapla' : lang === 'ro' ? 'Calculează distanța mea' : lang === 'sq' ? 'Llogarit distancën time' : lang === 'ku' ? 'Dûrahiya min hesibîne' : 'Bereken mijn afstand'}
         </button>
       )}
-      {state === 'loading' && <p className="text-xs font-semibold" style={{ color: '#d9cdb4' }}>⏳ {lang === 'de' ? 'Wird berechnet…' : 'Calculating…'}</p>}
-      {state === 'error' && <p className="text-xs font-semibold" style={{ color: '#e08a8a' }}>⚠️ {lang === 'de' ? 'Standort nicht verfügbar' : 'Location not available'}</p>}
+      {state === 'loading' && <p className="text-xs font-semibold self-center px-2" style={{ color: '#7a6a52' }}>⏳ {lang === 'de' ? 'Wird berechnet…' : 'Calculating…'}</p>}
+      {state === 'error' && <p className="text-xs font-semibold self-center px-2" style={{ color: CHILI }}>⚠️ {lang === 'de' ? 'Standort nicht verfügbar' : 'Location not available'}</p>}
       {state === 'done' && result && (
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">📍</span>
+        <div className="w-fit flex items-center gap-2.5 rounded-full px-5 py-3" style={{ background: GOLD }}>
+          <span className="text-lg">📍</span>
           <div>
-            <div className="text-white font-black text-sm">≈ {result.km} km · ≈ {result.minutes} {lang === 'de' ? 'Min. mit dem Auto' : lang === 'en' ? 'min by car' : lang === 'tr' ? 'dk (araçla)' : 'min'}</div>
-            <div className="text-[10px] font-medium" style={{ color: '#a89878' }}>{lang === 'de' ? 'Ungefährer Wert, Luftlinie-basiert' : 'Approximate, straight-line based'}</div>
+            <div className="font-black text-xs" style={{ color: GREEN }}>≈ {result.km} km · ≈ {result.minutes} {lang === 'de' ? 'Min. mit dem Auto' : lang === 'en' ? 'min by car' : lang === 'tr' ? 'dk (araçla)' : 'min'}</div>
           </div>
         </div>
       )}
@@ -3031,7 +3030,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
-              <button onClick={() => scrollTo('kontakt')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>{t('contactMsgTitle')}</button>
+              <button onClick={() => scrollTo('nachricht')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>{t('contactMsgTitle')}</button>
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
@@ -3199,6 +3198,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               >
                 {t('contactRoute')}
               </a>
+              <DistanceWidget lang={lang} inline />
               <a
                 href="https://instagram.com/BodrumKebapVechta"
                 target="_blank" rel="noopener noreferrer"
@@ -3208,7 +3208,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 <Instagram size={16} /> @BodrumKebapVechta
               </a>
             </div>
-            <DistanceWidget lang={lang} />
             <ContactMessageForm lang={lang} t={t} />
           </div>
           <div className="rounded-2xl overflow-hidden" style={{ minHeight: 280, boxShadow: '0 10px 30px rgba(21,56,38,.14)' }}>
