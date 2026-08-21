@@ -2605,21 +2605,17 @@ function MittagsBanner() {
       <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 22px)' }} />
       <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'rgba(255,199,56,.7)' }} />
       <div className="max-w-md mx-auto px-5 relative">
-        <div className="flex items-center gap-3 rounded-2xl px-3.5 py-2.5" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,199,56,.4)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18)' }}>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(150deg, ${GOLD}, #ffdf8a)`, boxShadow: '0 4px 12px rgba(0,0,0,.2), 0 0 0 2px rgba(255,255,255,.3)' }}>
-            <span className="text-lg" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
+        <div className="flex flex-col items-center text-center gap-1.5 rounded-2xl px-4 py-3.5" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,199,56,.4)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18)' }}>
+          <div className="flex items-center gap-2">
+            <span className="text-xl" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
+            <span className="text-white font-black text-base tracking-tight">{t('lunchOffer')}</span>
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-white font-black text-sm tracking-tight">{t('lunchOffer')}</span>
-              <span className="font-black text-[11px] px-2 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 2px 6px rgba(0,0,0,.15)' }}>{fmt(9.5)}</span>
-            </div>
-            <div className="text-white text-xs font-bold mt-0.5 tabular-nums" style={{ opacity: 0.97 }}>
-              {countdownLabel}
-            </div>
+          <div className="font-black text-3xl px-4 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 4px 12px rgba(0,0,0,.2)' }}>{fmt(9.5)}</div>
+          <div className="text-sm font-black mt-0.5 tabular-nums px-3 py-1 rounded-full" style={{ color: '#153826', background: 'rgba(255,255,255,.92)' }}>
+            {countdownLabel}
           </div>
         </div>
-        <p className="text-center text-white text-[10px] font-semibold mt-1.5" style={{ opacity: 0.85 }}>{t('lunchOfferItems')}</p>
+        <p className="text-center text-white text-sm font-bold mt-2" style={{ opacity: 0.95 }}>{t('lunchOfferItems')}</p>
       </div>
     </section>
   );
@@ -3094,7 +3090,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
-            <div className="grid grid-cols-3 gap-2 mt-3">
+            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1.3fr 0.65fr 1.1fr' }}>
               <button onClick={() => scrollTo('tagesempfehlung')} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
               </button>
