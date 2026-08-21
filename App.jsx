@@ -2266,6 +2266,145 @@ function CampaignBanner() {
   );
 }
 
+function DistanceWidget({ lang }) {
+  const [state, setState] = useState('idle'); // idle | loading | done | error
+  const [result, setResult] = useState(null);
+
+  const SHOP_FALLBACK = { lat: 52.7263, lon: 8.2860 }; // Vechta Stadtzentrum, Näherung falls Geocoding fehlschlägt
+
+  const haversineKm = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  };
+
+  const locate = () => {
+    if (!navigator.geolocation) { setState('error'); return; }
+    setState('loading');
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        let shop = SHOP_FALLBACK;
+        try {
+          const r = await fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent('Oyther Straße 37, 49377 Vechta, Germany') + '&limit=1');
+          const j = await r.json();
+          const f = j?.features?.[0];
+          if (f) shop = { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] };
+        } catch {}
+        const km = haversineKm(pos.coords.latitude, pos.coords.longitude, shop.lat, shop.lon);
+        const minutes = Math.max(1, Math.round((km / 32) * 60)); // ~32km/h angenommene Stadtgeschwindigkeit
+        setResult({ km: km.toFixed(1), minutes });
+        setState('done');
+      },
+      () => setState('error'),
+      { timeout: 10000 }
+    );
+  };
+
+  return (
+    <div className="mt-4 pt-4" style={{ borderTop: '1px solid rgba(255,246,234,.15)' }}>
+      {state === 'idle' && (
+        <button onClick={locate} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.1)', color: CREAM, border: '1px solid rgba(255,246,234,.25)' }}>
+          📍 {lang === 'de' ? 'Meine Entfernung berechnen' : lang === 'en' ? 'Calculate my distance' : lang === 'tr' ? 'Uzaklığımı hesapla' : lang === 'ro' ? 'Calculează distanța mea' : lang === 'sq' ? 'Llogarit distancën time' : lang === 'ku' ? 'Dûrahiya min hesibîne' : 'Bereken mijn afstand'}
+        </button>
+      )}
+      {state === 'loading' && <p className="text-xs font-semibold" style={{ color: '#d9cdb4' }}>⏳ {lang === 'de' ? 'Wird berechnet…' : 'Calculating…'}</p>}
+      {state === 'error' && <p className="text-xs font-semibold" style={{ color: '#e08a8a' }}>⚠️ {lang === 'de' ? 'Standort nicht verfügbar' : 'Location not available'}</p>}
+      {state === 'done' && result && (
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">📍</span>
+          <div>
+            <div className="text-white font-black text-sm">≈ {result.km} km · ≈ {result.minutes} {lang === 'de' ? 'Min. mit dem Auto' : lang === 'en' ? 'min by car' : lang === 'tr' ? 'dk (araçla)' : 'min'}</div>
+            <div className="text-[10px] font-medium" style={{ color: '#a89878' }}>{lang === 'de' ? 'Ungefährer Wert, Luftlinie-basiert' : 'Approximate, straight-line based'}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DoenerCatchGame({ onClose }) {
+  const [items, setItems] = useState([]);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(20);
+  const [over, setOver] = useState(false);
+  const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem('bk_game_best') || '0', 10); } catch { return 0; } });
+  const boardRef = useRef(null);
+  const idRef = useRef(0);
+
+  const EMOJIS = ['🥙', '🍕', '🍟', '🥗', '🍝'];
+  const BAD = '💧';
+
+  useEffect(() => {
+    if (over) return;
+    const spawn = setInterval(() => {
+      const isBad = Math.random() < 0.18;
+      const id = idRef.current++;
+      setItems((arr) => [...arr, {
+        id,
+        emoji: isBad ? BAD : EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+        bad: isBad,
+        left: 8 + Math.random() * 78,
+      }]);
+      setTimeout(() => setItems((arr) => arr.filter((it) => it.id !== id)), 2600);
+    }, 550);
+    return () => clearInterval(spawn);
+  }, [over]);
+
+  useEffect(() => {
+    if (over) return;
+    if (timeLeft <= 0) {
+      setOver(true);
+      setBest((b) => {
+        const nb = Math.max(b, score);
+        try { localStorage.setItem('bk_game_best', String(nb)); } catch {}
+        return nb;
+      });
+      return;
+    }
+    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timeLeft, over, score]);
+
+  const tap = (it) => {
+    setItems((arr) => arr.filter((x) => x.id !== it.id));
+    setScore((s) => Math.max(0, s + (it.bad ? -2 : 1)));
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-5" style={{ background: 'rgba(0,0,0,.7)' }}>
+      <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.4)' }}>
+        <div className="px-5 py-4 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
+          <div className="text-white font-black text-sm">🥙 Döner-Catch</div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}><X size={15} color="#fff" /></button>
+        </div>
+        <div className="px-5 pt-3 flex items-center justify-between">
+          <span className="font-black text-sm" style={{ color: GREEN }}>⭐ {score}</span>
+          <span className="font-bold text-xs" style={{ color: '#a4906c' }}>🏆 {best}</span>
+          <span className="font-black text-sm" style={{ color: CHILI }}>⏱ {timeLeft}s</span>
+        </div>
+        <div ref={boardRef} className="relative mx-4 my-3 rounded-2xl overflow-hidden" style={{ height: 340, background: '#fff', border: '1.5px solid #f0e5cf' }}>
+          {!over && items.map((it) => (
+            <button key={it.id} onClick={() => tap(it)} className="absolute text-3xl active:scale-90 transition-transform" style={{ left: `${it.left}%`, top: 8, animation: 'fallDown 2.6s linear forwards' }}>
+              {it.emoji}
+            </button>
+          ))}
+          {over && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <div className="text-4xl">🎉</div>
+              <div className="font-black text-lg" style={{ color: GREEN }}>Score: {score}</div>
+              <button onClick={() => { setScore(0); setTimeLeft(20); setOver(false); setItems([]); }} className="px-5 py-2.5 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>Nochmal 🔄</button>
+            </div>
+          )}
+        </div>
+        <p className="text-center text-[11px] font-medium pb-4" style={{ color: '#a4906c' }}>{BAD} tippen kostet Punkte — vorsichtig!</p>
+      </div>
+      <style>{`@keyframes fallDown { from { transform: translateY(0); } to { transform: translateY(320px); } }`}</style>
+    </div>
+  );
+}
+
 function MittagsBanner() {
   const { t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -2450,6 +2589,26 @@ function DailySpecial({ go }) {
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const { lang, setLang, t } = React.useContext(LangContext);
   const [navOpen, setNavOpen] = useState(false);
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [gameOpen, setGameOpen] = useState(false);
+  const logoClickTimer = useRef(null);
+  const handleLogoClick = () => {
+    setLogoClicks((c) => {
+      const nc = c + 1;
+      if (nc >= 3) { setGameOpen(true); return 0; }
+      return nc;
+    });
+    clearTimeout(logoClickTimer.current);
+    logoClickTimer.current = setTimeout(() => setLogoClicks(0), 1500);
+  };
+  const [darkMode, setDarkMode] = useState(() => { try { return localStorage.getItem('bk_dark') === '1'; } catch { return false; } });
+  const toggleDarkMode = () => {
+    setDarkMode((v) => {
+      const nv = !v;
+      try { localStorage.setItem('bk_dark', nv ? '1' : '0'); } catch {}
+      return nv;
+    });
+  };
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
@@ -2534,7 +2693,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   };
 
   return (
-    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)' }}>
+    <div className={darkMode ? 'dark-mode-root' : ''} style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)' }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
@@ -2550,6 +2709,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes quickOrderPulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.015); } }
         @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
         @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
+        .dark-mode-root { filter: invert(1) hue-rotate(180deg); background: #fff; }
+        .dark-mode-root img, .dark-mode-root video { filter: invert(1) hue-rotate(180deg); }
         @keyframes liveDot { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.7);} }
         @keyframes closedBlink { 0%,100%{ opacity:1;} 50%{ opacity:.25;} }
         @keyframes cartBadgePulse { 0%,100%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 0 rgba(230,90,10,.4);} 50%{ box-shadow:0 4px 14px rgba(21,56,38,.4), 0 0 0 8px rgba(230,90,10,0);} }
@@ -2597,7 +2758,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <header className="sticky top-0 z-40" style={{ background: GREEN }}>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-3.5 flex items-center justify-between">
           <div className="flex items-center flex-wrap gap-2 sm:gap-3">
-            <img src={LOGO_ICON} alt="Bodrum Kebap Vechta" className="w-10 h-10 rounded-full object-contain" style={{ background: CREAM, padding: 3 }} />
+            <img src={LOGO_ICON} alt="Bodrum Kebap Vechta" onClick={handleLogoClick} className="w-10 h-10 rounded-full object-contain cursor-pointer" style={{ background: CREAM, padding: 3 }} />
             <div>
               <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
               <div className="text-[10px] font-bold tracking-[3px]" style={{ color: GOLD }}>VECHTA</div>
@@ -2623,6 +2784,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!ORDERING_ENABLED && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
+            <button onClick={toggleDarkMode} className="w-9 h-9 rounded-full flex items-center justify-center text-sm" style={{ background: 'rgba(255,246,234,.12)' }} title="Darkmode">
+              {darkMode ? '☀️' : '🌙'}
+            </button>
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
             <button onClick={() => setNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
               {navOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
@@ -2908,6 +3072,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       })()}
 
       {moodPickerOpen && <MoodPicker onClose={() => setMoodPickerOpen(false)} />}
+      {gameOpen && <DoenerCatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
@@ -2948,6 +3113,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 <Instagram size={16} /> @BodrumKebapVechta
               </a>
             </div>
+            <DistanceWidget lang={lang} />
           </div>
           <div className="rounded-2xl overflow-hidden" style={{ minHeight: 280, boxShadow: '0 10px 30px rgba(21,56,38,.14)' }}>
             <iframe
