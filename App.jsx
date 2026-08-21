@@ -1850,7 +1850,7 @@ const WEEKEND_MEAT_OPTIONS = [
   { key: 'yaprak', label: 'Yaprak Döner', extra: 2.0 },
 ];
 const DOENER_COMBO = { title: 'Dönerteller + Dose Getränk', price: 12.5, emoji: '🍽️' };
-const PIZZA_COMBO_PRICE = 11.0;
+const PIZZA_COMBO_PRICE = 10.0;
 
 function WeekendComboPromo({ go }) {
   const { t } = React.useContext(LangContext);
