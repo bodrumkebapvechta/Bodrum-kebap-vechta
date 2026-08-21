@@ -1885,18 +1885,18 @@ function WeekendComboPromo({ go, top }) {
             <span className="text-white font-black text-xs tracking-wide">🎉 {t('weekendOnlyToday')}</span>
           </div>
           <div className="grid grid-cols-2 gap-2.5">
-            <button onClick={goToPizzaCombo} className="flex items-center gap-2 rounded-xl p-1.5 text-left" style={{ background: 'rgba(255,255,255,.96)' }}>
-              <img src={FOOD_G2} className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />
+            <button onClick={goToPizzaCombo} className="flex items-center gap-2.5 rounded-xl p-2 text-left" style={{ background: 'rgba(255,255,255,.96)' }}>
+              <img src={FOOD_G2} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
               <div className="min-w-0">
-                <div className="font-black text-[11px] truncate" style={{ color: GREEN }}>{t('weekendPizzaTitle')}</div>
-                <div className="font-black text-sm" style={{ color: ORANGE }}>{fmt(PIZZA_COMBO_PRICE)}</div>
+                <div className="font-black text-xs leading-tight" style={{ color: GREEN }}>{t('weekendPizzaTitle')}</div>
+                <div className="font-black text-base mt-0.5" style={{ color: ORANGE }}>{fmt(PIZZA_COMBO_PRICE)}</div>
               </div>
             </button>
-            <button onClick={() => setOpenDoener((v) => !v)} className="flex items-center gap-2 rounded-xl p-1.5 text-left" style={{ background: 'rgba(255,255,255,.96)' }}>
-              <img src={DOENER_TELLER_IMG} className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />
+            <button onClick={() => setOpenDoener((v) => !v)} className="flex items-center gap-2.5 rounded-xl p-2 text-left" style={{ background: 'rgba(255,255,255,.96)' }}>
+              <img src={DOENER_TELLER_IMG} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
               <div className="min-w-0">
-                <div className="font-black text-[11px] truncate" style={{ color: GREEN }}>{DOENER_COMBO.title}</div>
-                <div className="font-black text-sm" style={{ color: ORANGE }}>{fmt(DOENER_COMBO.price)}</div>
+                <div className="font-black text-xs leading-tight" style={{ color: GREEN }}>{DOENER_COMBO.title}</div>
+                <div className="font-black text-base mt-0.5" style={{ color: ORANGE }}>{fmt(DOENER_COMBO.price)}</div>
               </div>
             </button>
           </div>
@@ -2580,14 +2580,14 @@ function MittagsBanner() {
       <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 22px)' }} />
       <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'rgba(255,199,56,.6)' }} />
       <div className="max-w-md mx-auto px-5 relative">
-        <div className="flex items-center gap-3.5 rounded-2xl px-4 py-3" style={{ background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.18)', backdropFilter: 'blur(2px)' }}>
-          <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: GOLD, boxShadow: '0 4px 12px rgba(0,0,0,.2)' }}>
+        <div className="flex items-center gap-3.5 rounded-2xl px-4 py-3" style={{ background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,199,56,.35)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15)' }}>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(150deg, ${GOLD}, #ffdf8a)`, boxShadow: '0 4px 12px rgba(0,0,0,.2), 0 0 0 2px rgba(255,255,255,.3)' }}>
             <span className="text-xl" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-white font-black text-[15px] tracking-tight">{t('lunchOffer')}</span>
-              <span className="font-black text-xs px-2.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{fmt(9.5)}</span>
+              <span className="font-black text-xs px-2.5 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 2px 6px rgba(0,0,0,.15)' }}>{fmt(9.5)}</span>
             </div>
             <div className="text-white text-xs font-semibold mt-0.5" style={{ opacity: 0.95 }}>
               {active ? `⏱ noch ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}` : t('lunchOfferInactive')}
