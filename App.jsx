@@ -413,6 +413,7 @@ const CATEGORY_IMAGES = {
 const CATEGORY_LABELS = {
   kebap: { de: 'Kebap', en: 'Kebap', tr: 'Kebap', ro: 'Kebap', nl: 'Kebap' },
   pizza: { de: 'Pizza', en: 'Pizza', tr: 'Pizza', ro: 'Pizza', nl: 'Pizza' },
+  familienpizza: { de: 'Familienpizza', en: 'Family Pizza', tr: 'Aile Boyu Pizza', ro: 'Pizza de familie', nl: 'Familiepizza' },
   pizzabrot: { de: 'Pizzabrot & Brötchen', en: 'Pizza Bread & Rolls', tr: 'Pizza Ekmeği & Topları', ro: 'Pâine & Chifle Pizza', nl: 'Pizzabrood & Broodjes' },
   calzone: { de: 'Calzone', en: 'Calzone', tr: 'Calzone', ro: 'Calzone', nl: 'Calzone' },
   baguette: { de: 'Baguette', en: 'Baguette', tr: 'Baget', ro: 'Baghetă', nl: 'Baguette' },
@@ -666,6 +667,9 @@ const MENU = [
     { id: 'p52', name: 'Pizza Oythe', priceSmall: 9.5, priceLarge: 10.5, desc: 'Krabben, Putenschinken, Knoblauch', alg: 'a,i,e,d' },
     { id: 'p53', name: 'Pizza Italia', priceSmall: 9.5, priceLarge: 10.5, desc: 'Brokkoli, Pilzen, Zwiebeln und Weichkäse in Salzlake', alg: 'a,i,e' },
     { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni', alg: 'a,i,e,13' },
+  ]},
+  { key: 'familienpizza', label: 'Familienpizza', items: [
+    { id: 'familienpizza', name: 'Familienpizza Margherita', price: 15.0, desc: '~Ø 40 cm · Grundbelag: Tomatensoße, Oregano, Goudakäse, Mozzarella. Extra: Gemüsebeilage +2,50€ · Fleischbeilage +3,50€ · Steakfleisch +4,50€', alg: 'a,i,e' },
   ]},
   { key: 'pizzabrot', label: 'Pizzabrot & Brötchen', items: [
     { id: 'p56', name: 'Pizzabrot', price: 4.5, alg: 'a,i,e' },
@@ -5664,7 +5668,7 @@ function StaffPanelView({ back }) {
     tischResetForm();
   }
   function tischImportFromMenu() {
-    const emojiMap = { kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥐', baguette: '🥪', ueberbacken: '🧀', rollo: '🌯', nudeln: '🍝', schnitzel: '🍖', salat: '🥗', finger: '🍤', getraenke: '🥤' };
+    const emojiMap = { kebap: '🥙', pizza: '🍕', familienpizza: '🍕', pizzabrot: '🥖', calzone: '🥐', baguette: '🥪', ueberbacken: '🧀', rollo: '🌯', nudeln: '🍝', schnitzel: '🍖', salat: '🥗', finger: '🍤', getraenke: '🥤' };
     const existingCatKeys = new Set(tischMenu.categories.map((c) => c.key));
     const existingItemsById = new Map(tischMenu.items.map((i) => [i.id, i]));
     const newCats = [];
