@@ -669,7 +669,7 @@ const MENU = [
     { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni', alg: 'a,i,e,13' },
   ]},
   { key: 'familienpizza', label: 'Familienpizza', items: [
-    { id: 'familienpizza', name: 'Familienpizza Margherita', price: 15.0, desc: '~Ø 40 cm · Grundbelag: Tomatensoße, Oregano, Goudakäse, Mozzarella. Extra: Gemüsebeilage +2,50€ · Fleischbeilage +3,50€ · Steakfleisch +4,50€', alg: 'a,i,e' },
+    { id: 'familienpizza', name: 'Familienpizza Margherita', price: 15.0, desc: '~Ø 40 cm · Tomatensoße, Oregano, Goudakäse', alg: 'a,i,e', extras: [{ label: 'Gemüse', price: 2.5 }, { label: 'Fleisch', price: 3.5 }, { label: 'Steak', price: 4.5 }], toppingChoices: ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Meeresfrüchte', 'Krabben', 'Paprika', 'Brokkoli', 'Spinat', 'Bolognese', 'Rindersalami', 'Putenschinken', 'Pilze', 'Weichkäse in Salzlake', 'Mozzarella', 'Fleisch vom Drehspieß', 'Türkische Knoblauchwurst (Sucuk)'] },
   ]},
   { key: 'pizzabrot', label: 'Pizzabrot & Brötchen', items: [
     { id: 'p56', name: 'Pizzabrot', price: 4.5, alg: 'a,i,e' },
@@ -5680,7 +5680,7 @@ function StaffPanelView({ back }) {
       cat.items.forEach((it) => {
         if (it.customPizza || it.customPasta) return;
         const id = 'imp-' + it.id;
-        const base = { id, category: catKey, name: it.name, desc: it.desc || '', number: menuNum(it.id), alg: it.alg || '' };
+        const base = { id, category: catKey, name: it.name, desc: it.desc || '', number: menuNum(it.id), alg: it.alg || '', ...(it.extras ? { extras: it.extras } : {}), ...(it.toppingChoices ? { toppingChoices: it.toppingChoices } : {}) };
         if (it.priceLarge !== undefined) { base.price = it.priceSmall; base.priceLarge = it.priceLarge; }
         else base.price = it.price;
         const existing = existingItemsById.get(id);
@@ -5695,7 +5695,15 @@ function StaffPanelView({ back }) {
       });
     });
     if (addedCount === 0 && updatedCount === 0) { setTischMsg('Keine Änderungen.'); return; }
-    saveTischMenu({ categories: [...tischMenu.categories, ...newCats], items: mergedItems });
+    const menuOrder = MENU.map((c) => 'imp-' + c.key);
+    const combinedCats = [...tischMenu.categories, ...newCats].sort((a, b) => {
+      const ia = menuOrder.indexOf(a.key); const ib = menuOrder.indexOf(b.key);
+      if (ia === -1 && ib === -1) return 0;
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+    saveTischMenu({ categories: combinedCats, items: mergedItems });
     setTischMsg(`✅ ${addedCount} neu, ${updatedCount} aktualisiert (Nummern & Allergene ergänzt)`);
   }
   function tischDeleteItem(id) {
@@ -6790,7 +6798,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
       {tischMenu && tischMenu.categories.length > 0 && (
         <>
           {/* Category tabs */}
-          <div className="flex gap-2.5 px-4 py-4 overflow-x-auto sticky top-0 z-10" style={{ background: 'rgba(253,246,232,.94)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e9dcc0' }}>
+          <div className="flex flex-wrap gap-2 px-4 py-3.5 sticky top-0 z-10" style={{ background: 'rgba(253,246,232,.94)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e9dcc0' }}>
             {tischMenu.categories.map((cat) => {
               const active = activeCat === cat.key;
               const color = tischCatColor(cat.key);
@@ -6798,12 +6806,12 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                 <button
                   key={cat.key}
                   onClick={() => { setActiveCat(cat.key); setSearch(''); }}
-                  className="tm-tab flex-shrink-0 px-5 py-3 rounded-2xl font-black text-base whitespace-nowrap flex items-center gap-2"
+                  className="tm-tab px-3.5 py-2 rounded-xl font-black text-sm whitespace-nowrap flex items-center gap-1.5"
                   style={active
-                    ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 8px 18px ${color}55`, transform: 'scale(1.04)' }
+                    ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 6px 14px ${color}55`, transform: 'scale(1.03)' }
                     : { background: '#fff', color: '#7c6d55', border: '1.5px solid #e9dcc0', boxShadow: '0 2px 6px rgba(0,0,0,.04)' }}
                 >
-                  <span className="text-xl">{cat.emoji || '🍽️'}</span>
+                  <span className="text-base">{cat.emoji || '🍽️'}</span>
                   {tischCatLabel(cat, lang)}
                 </button>
               );
@@ -6856,8 +6864,26 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                       {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
                     </div>
                     {item.desc && <div className="text-xs mt-0.5 leading-snug" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</div>}
+                    {item.extras && (
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {item.extras.map((ex) => (
+                          <span key={ex.label} className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}14`, color }}>+ {ex.label} {fmt(ex.price)}</span>
+                        ))}
+                      </div>
+                    )}
+                    {item.toppingChoices && (
+                      <div className="mt-2">
+                        <div className="text-[9px] font-bold mb-1" style={{ color: '#a4906c' }}>Weitere Beläge:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {item.toppingChoices.map((top) => (
+                            <span key={top} className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#f7f0e2', color: '#8a7c62', border: '1px solid #ede0c4' }}>{top}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex-shrink-0 text-right flex flex-col items-end gap-1">
+                    {item.extras && <span className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Grundbelag</span>}
                     {item.priceLarge !== undefined ? (
                       <div className="flex flex-col gap-0.5 items-end">
                         <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${color}18`, color }}><span className="opacity-60 font-bold text-[10px]">22cm</span>{fmt(item.price)}</span>
