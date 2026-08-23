@@ -2031,6 +2031,7 @@ const ASSISTANT_R = {
   orderOn: { de: "🥙 Zum Bestellen tippe oben auf \"Per WhatsApp bestellen\"!", en: '🥙 To order, tap "Order via WhatsApp" at the top!', tr: "🥙 Sipariş vermek için üstteki \"WhatsApp'tan sipariş ver\" butonuna basabilirsin!", ro: "🥙 Pentru a comanda, apasă \"Comandă prin WhatsApp\" sus!", nl: '🥙 Om te bestellen, tik boven op "Bestellen via WhatsApp"!', sq: '🥙 Për të porositur, troko "Porosit me WhatsApp" lart!', ku: '🥙 Bo sifarişê, li jor li ser "Bi WhatsAppê sifariş bike" bitikîne!', pl: '🥙 Aby zamówić, dotknij "Zamów przez WhatsApp" u góry!' },
   orderOff: { de: "📞 Online-Bestellungen sind aktuell nicht möglich, aber du kannst uns ganz einfach anrufen: 04441 / 95 16 104", en: "📞 Online ordering isn't available right now, but you can easily call us: 04441 / 95 16 104", tr: "📞 Şu an online sipariş sistemi kapalı, ama bizi arayarak kolayca sipariş verebilirsin: 04441 / 95 16 104", ro: "📞 Comenzile online nu sunt momentan posibile, dar ne poți suna ușor: 04441 / 95 16 104", nl: "📞 Online bestellen is nu niet mogelijk, maar je kunt ons gewoon bellen: 04441 / 95 16 104", sq: "📞 Porositë online nuk janë të mundshme tani, por mund të na telefononi: 04441 / 95 16 104", ku: "📞 Sifarişên online niha ne gengaz in, lê tu dikarî bi hêsanî telefon bikî: 04441 / 95 16 104", pl: "📞 Zamówienia online są obecnie niedostępne, ale możesz do nas łatwo zadzwonić: 04441 / 95 16 104" },
   noDelivery: { de: "🚫 Nein, wir bieten leider keinen Lieferservice an — nur Abholung. Du kannst deine Bestellung aber persönlich bei uns abholen: 04441 / 95 16 104", en: "🚫 No, we don't offer delivery — pickup only. You can pick up your order in person: 04441 / 95 16 104", tr: "🚫 Hayır, maalesef teslimat hizmetimiz yok — sadece paket servis (gel-al). Siparişini bizzat gelip alabilirsin: 04441 / 95 16 104", ro: "🚫 Nu, din păcate nu oferim livrare — doar ridicare personală. Poți ridica comanda ta: 04441 / 95 16 104", nl: "🚫 Nee, we bieden helaas geen bezorgservice aan — alleen afhalen. Je kunt je bestelling persoonlijk ophalen: 04441 / 95 16 104", sq: "🚫 Jo, fatkeqësisht nuk ofrojmë shërbim dërgese — vetëm marrje personale. Mund ta marrësh porosinë vetë: 04441 / 95 16 104", ku: "🚫 Na, mixabin em karûbarê radestkirinê pêşkêş nakin — tenê hilanîna kesane. Tu dikarî sifarişa xwe bi xwe bistînî: 04441 / 95 16 104", pl: "🚫 Nie, niestety nie oferujemy dostawy — tylko odbiór osobisty. Możesz odebrać zamówienie osobiście: 04441 / 95 16 104" },
+  paymentYes: { de: "✅ Ja, du kannst bei uns mit Karte oder bar bezahlen.", en: "✅ Yes, you can pay by card or cash with us.", tr: "✅ Evet, bizde hem kart hem nakit ödeme yapabilirsin.", ro: "✅ Da, poți plăti cu cardul sau cash la noi.", nl: "✅ Ja, je kunt bij ons met kaart of contant betalen.", sq: "✅ Po, mund të paguash me kartë ose para në dorë tek ne.", ku: "✅ Erê, tu dikarî li cem me bi kart an pere neqid bidî.", pl: "✅ Tak, możesz u nas płacić kartą lub gotówką." },
   recommendPrefix: { de: "🎲 Meine Empfehlung für heute:", en: "🎲 My recommendation for today:", tr: "🎲 Bugün için önerim:", ro: "🎲 Recomandarea mea de azi:", nl: "🎲 Mijn aanbeveling voor vandaag:", sq: "🎲 Rekomandimi im për sot:", ku: "🎲 Pêşniyara min a îro:", pl: "🎲 Moje polecenie na dziś:" },
   enjoy: { de: "Guten Appetit! 😋", en: "Enjoy your meal! 😋", tr: "Afiyet olsun! 😋", ro: "Poftă bună! 😋", nl: "Eet smakelijk! 😋", sq: "Ju bëftë mirë! 😋", ku: "Nûşê te be! 😋", pl: "Smacznego! 😋" },
   menuList: { de: "📋 Unsere Kategorien: Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat. Tippe oben auf \"Speisekarte\" für die komplette Karte.", en: '📋 Our categories: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salad. Tap "Menu" at the top for the full menu.', tr: "📋 Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat kategorilerimiz var — üstteki \"Speisekarte\" butonuyla tüm menüyü görebilirsin.", ro: '📋 Categoriile noastre: Kebap, Pizza, Rollo, Calzone, Baguette, Paste, Șnițel, Salată. Apasă "Meniu" sus pentru meniul complet.', nl: '📋 Onze categorieën: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salade. Tik boven op "Menu" voor de volledige kaart.', sq: '📋 Kategoritë tona: Kebap, Pica, Rollo, Kalcone, Bagetë, Makarona, Shnicel, Sallatë. Troko "Menuja" lart për menynë e plotë.', ku: '📋 Kategoriyên me: Kebap, Pizza, Rollo, Calzone, Baguette, Nûdile, Schnitzel, Selate. Li jor li ser "Menû" bitikîne bo menuya tevahî.', pl: '📋 Nasze kategorie: Kebap, Pizza, Rollo, Calzone, Baguette, Makaron, Sznycel, Sałatka. Dotknij "Menu" u góry, aby zobaczyć pełną kartę.' },
@@ -2074,6 +2075,9 @@ function getAssistantReply(qRaw, lang) {
   }
   if (has('liefer', 'delivery', 'teslimat', 'livrare', 'bezorg', 'dërgesë', 'radestkirin', 'dostawa', 'dostarcz')) {
     return { intent: 'delivery', text: ar('noDelivery', lang) };
+  }
+  if (has('karte', 'kredit', 'ec-karte', 'kartenzahlung', 'card', 'kart ile', 'kart mı', 'kartla', 'bargeld', 'bar bezahl', 'bar zahlen', 'nakit', 'cash', 'kontaktlos', 'contactless', 'girocard')) {
+    return { intent: 'payment', text: ar('paymentYes', lang) };
   }
   if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
     return { intent: 'order', text: ORDERING_ENABLED ? ar('orderOn', lang) : ar('orderOff', lang) };
@@ -2859,12 +2863,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const now = useLiveClock();
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
-  const HERO_IMAGES = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG];
+  const HERO_IMAGES = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos];
   const [heroIdx, setHeroIdx] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setHeroIdx((i) => (i + 1) % HERO_IMAGES.length), 4000);
     return () => clearInterval(iv);
-  }, []);
+  }, [HERO_IMAGES.length]);
   const scrollTo = (id) => {
     setNavOpen(false);
     const el = document.getElementById(id);
@@ -5538,6 +5542,7 @@ function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
   const [ok, setOk] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
   const [staffLookup, setStaffLookup] = useState('');
   const [lookupOpen, setLookupOpen] = useState(false);
   const [openSettingsId, setOpenSettingsId] = useState(null);
@@ -5567,6 +5572,13 @@ function StaffPanelView({ back }) {
   const [newPin2, setNewPin2] = useState('');
   const [pinMsg, setPinMsg] = useState('');
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
+  useEffect(() => {
+    if (!ok && !unlocking && pin.length > 0 && pin === staffPin) {
+      setUnlocking(true);
+      unlockAudio();
+      setTimeout(() => setOk(true), 550);
+    }
+  }, [pin, staffPin, ok, unlocking]);
   const savePin = async () => {
     if (newPin.trim().length < 4) { setPinMsg('PIN muss mind. 4 Ziffern haben'); setTimeout(() => setPinMsg(''), 2500); return; }
     if (newPin !== newPin2) { setPinMsg('PINs stimmen nicht überein'); setTimeout(() => setPinMsg(''), 2500); return; }
@@ -6174,18 +6186,30 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,199,56,.08), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
+        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,59,59,.1), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
           <div className="w-full max-w-xs">
             <div className="flex flex-col items-center mb-4">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2.5" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)`, boxShadow: '0 10px 28px rgba(21,56,38,.35), 0 0 0 4px rgba(255,199,56,.18)' }}>
-                <Lock size={19} color={GOLD} />
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 transition-all duration-500"
+                style={unlocking
+                  ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.15) rotate(-8deg)' }
+                  : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.45), 0 0 0 5px rgba(255,59,59,.18)', animation: 'urgentPulse 2s ease-out infinite' }}
+              >
+                {unlocking ? <span className="text-2xl">🔓</span> : <Lock size={24} color="#fff" />}
               </div>
-              <div className="font-black text-base text-center" style={{ color: GREEN }}>{t('titleStaff')}</div>
+              <div className="font-black text-base text-center" style={{ color: GREEN }}>{unlocking ? '✅ Willkommen!' : t('titleStaff')}</div>
               <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
             </div>
             <div className="rounded-3xl p-5" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
-              <input value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === staffPin && (setOk(true), unlockAudio())} type="password" inputMode="numeric" placeholder="• • • • • •" className="w-full px-4 py-3.5 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN, border: '1.5px solid #f0e5cf' }} autoFocus />
-              <button onClick={() => { if (pin === staffPin) { setOk(true); unlockAudio(); } }} className="w-full py-3.5 rounded-2xl font-black text-base" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)' }}>🔓 {t('loginBtn')}</button>
+              <input
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                type="password" inputMode="numeric" placeholder="• • • • • •"
+                disabled={unlocking}
+                className="w-full px-4 py-3.5 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none"
+                style={{ background: '#f7f0e2', color: GREEN, border: unlocking ? '1.5px solid #34c759' : '1.5px solid #f0e5cf' }}
+                autoFocus
+              />
             </div>
           </div>
         </div>
@@ -6447,7 +6471,7 @@ function StaffPanelView({ back }) {
                     const key = v.value.event.replace('assistant_', '');
                     byIntent[key] = (byIntent[key] || 0) + 1;
                   });
-                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
+                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
                   const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
                   const unrecognized = assistantEvents
                     .filter((v) => v.value.event === 'assistant_fallback' && v.value.q)
