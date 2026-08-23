@@ -2072,7 +2072,7 @@ function getAssistantReply(qRaw, lang) {
   if (has('alerjen', 'allergie', 'allergen', 'zusatzstoffe')) {
     return { intent: 'allergen', text: ar('allergen', lang) };
   }
-  if (has('lieferung', 'liefern', 'delivery', 'teslimat', 'livrare', 'bezorg', 'dërgesë', 'radestkirin', 'dostawa', 'dostarcz')) {
+  if (has('liefer', 'delivery', 'teslimat', 'livrare', 'bezorg', 'dërgesë', 'radestkirin', 'dostawa', 'dostarcz')) {
     return { intent: 'delivery', text: ar('noDelivery', lang) };
   }
   if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
