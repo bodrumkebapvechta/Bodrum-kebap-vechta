@@ -1215,8 +1215,9 @@ async function generateReceiptImage({ items, total, code, name, pickupTime, note
 }
 function logVisit(lang) {
   try {
-    if (sessionStorage.getItem('bk_visit_logged')) return;
-    sessionStorage.setItem('bk_visit_logged', '1');
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    if (localStorage.getItem('bk_visit_day') === today) return;
+    localStorage.setItem('bk_visit_day', today);
     const device = window.innerWidth < 768 ? 'mobile' : 'desktop';
     const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
     safeSet(key, { ts: Date.now(), lang, device });
@@ -2147,7 +2148,8 @@ function getAssistantReply(qRaw, lang) {
   }
   if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag', 'polec')) {
     const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
-    return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}. ${ar('enjoy', lang)}` };
+    const descPart = item.desc ? ` ${mx(item.desc, lang)}.` : '';
+    return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}.${descPart} ${ar('enjoy', lang)}` };
   }
   if (has('menü', 'menu', 'speisekarte', 'karte')) {
     return { intent: 'menu', text: ar('menuList', lang) };
@@ -3190,6 +3192,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
+                target="_blank" rel="noopener noreferrer"
+                onClick={() => logEvent('route')}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs"
+                style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}
+              >
+                📍 {t('contactRoute')}
+              </a>
               <button onClick={() => scrollTo('nachricht')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>{t('contactMsgTitle')}</button>
             </div>
           </div>
