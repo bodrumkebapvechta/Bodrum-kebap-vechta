@@ -383,6 +383,8 @@ const UI = {
   statusClosedRestDay: { de: 'Geschlossen · Ruhetag', en: 'Closed · Rest day', tr: 'Kapalı · Tatil günü', ro: 'Închis · Zi liberă', nl: 'Gesloten · Rustdag' , sq: 'Mbyllur · Ditë pushimi', ku: 'Girtî · Roja Vala', pl: 'Zamknięte · Dzień wolny'},
   statusNotYetOpen: { de: 'Noch geschlossen', en: 'Not open yet', tr: 'Henüz açılmadı', ro: 'Încă închis', nl: 'Nog gesloten' , sq: 'Ende mbyllur', ku: 'Hîn girtî', pl: 'Jeszcze zamknięte'},
   statusClosed: { de: 'Geschlossen', en: 'Closed', tr: 'Kapalı', ro: 'Închis', nl: 'Gesloten' , sq: 'Mbyllur', ku: 'Girtî', pl: 'Zamknięte'},
+  statusOpeningSoon: { de: 'Öffnet bald', en: 'Opening soon', tr: 'Yakında açılıyor', ro: 'Se deschide curând', nl: 'Opent binnenkort', sq: 'Hapet së shpejti', ku: 'Nêzîk vedibe', pl: 'Wkrótce otwarte' },
+  statusClosingSoon: { de: 'Schließt bald', en: 'Closing soon', tr: 'Yakında kapanıyor', ro: 'Se închide curând', nl: 'Sluit binnenkort', sq: 'Mbyllet së shpejti', ku: 'Nêzîk digire', pl: 'Wkrótce zamknięte' },
   sizeLabel: { de: 'GRÖSSE', en: 'SIZE', tr: 'BOYUT', ro: 'MĂRIME', nl: 'FORMAAT' , sq: 'MADHËSIA', ku: 'MEZINAHÎ', pl: 'ROZMIAR'},
   pizzaComboBanner: { de: '🎉 Wochenende-Angebot: Wähle deine 28cm Pizza für {price} inkl. Getränk!', en: '🎉 Weekend deal: Choose your 28cm pizza for {price} incl. drink!', tr: '🎉 Hafta sonu fırsatı: 28cm pizzanı {price} karşılığında içecek dahil seç!', ro: '🎉 Ofertă de weekend: Alege pizza ta de 28cm pentru {price} incl. băutură!', nl: '🎉 Weekendaanbieding: Kies je 28cm pizza voor {price} incl. drankje!' , sq: '🎉 Oferta e fundjavës: Zgjidh picën tënde 28cm për {price} me pije të përfshirë!', ku: '🎉 Pêşniyara Dawiya Hefteyê: Pizzaya xwe ya 28cm ji bo {price} bi vexwarinê ve hilbijêre!', pl: '🎉 Oferta weekendowa: wybierz pizzę 28cm za {price} z napojem w cenie!'},
   leaveOffer: { de: 'Angebot verlassen', en: 'Leave offer', tr: 'Fırsattan çık', ro: 'Părăsește oferta', nl: 'Aanbieding verlaten' , sq: 'Largohu nga oferta', ku: 'Ji pêşniyarê derkeve', pl: 'Opuść ofertę'},
@@ -1822,8 +1824,14 @@ function getOpenStatus(now) {
   const nextOpenAt = (daysAhead) => { const d = new Date(now); d.setDate(d.getDate() + daysAhead); d.setHours(11, 30, 0, 0); return d; };
   if (day === 2) return { open: false, labelKey: 'statusClosedRestDay', nextOpen: nextOpenAt(1) };
   const h = now.getHours() + now.getMinutes() / 60;
-  if (h >= 11.5 && h < 22) return { open: true, labelKey: 'statusOpenNow' };
-  if (h < 11.5) return { open: false, labelKey: 'statusNotYetOpen', nextOpen: nextOpenAt(0) };
+  if (h >= 11.5 && h < 22) {
+    if (h >= 21.5) return { open: true, soon: true, labelKey: 'statusClosingSoon' };
+    return { open: true, labelKey: 'statusOpenNow' };
+  }
+  if (h < 11.5) {
+    if (h >= 11.0) return { open: false, soon: true, labelKey: 'statusOpeningSoon', nextOpen: nextOpenAt(0) };
+    return { open: false, labelKey: 'statusNotYetOpen', nextOpen: nextOpenAt(0) };
+  }
   return { open: false, labelKey: 'statusClosed', nextOpen: nextOpenAt(day === 1 ? 2 : 1) };
 }
 function formatCountdown(ms) {
@@ -2977,9 +2985,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
               <div className="text-[10px] font-bold tracking-[3px]" style={{ color: GOLD }}>VECHTA</div>
             </div>
-            <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: status.open ? 'rgba(255,246,234,.08)' : 'rgba(214,40,40,.16)' }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#4ade80' : '#ff4d4d', animation: status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
-              <span className="text-[10.5px] font-black" style={{ color: status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}{!status.open && status.nextOpen && <span className="opacity-80 font-bold"> · {formatCountdown(status.nextOpen - now)}</span>}</span>
+            <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 sm:px-2.5 py-1 rounded-full" style={{ background: status.soon ? 'rgba(255,199,56,.16)' : status.open ? 'rgba(255,246,234,.08)' : 'rgba(214,40,40,.16)' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.soon ? GOLD : status.open ? '#4ade80' : '#ff4d4d', animation: status.soon ? 'liveDot 1.2s ease-in-out infinite' : status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
+              <span className="text-[10.5px] font-black" style={{ color: status.soon ? GOLD : status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}{!status.open && status.nextOpen && <span className="opacity-80 font-bold"> · {formatCountdown(status.nextOpen - now)}</span>}</span>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
