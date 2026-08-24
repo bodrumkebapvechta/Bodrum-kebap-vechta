@@ -144,6 +144,7 @@ const UI = {
   contactMsgSend: { de: 'Senden', en: 'Send', tr: 'Gönder', ro: 'Trimite', nl: 'Verzenden', sq: 'Dërgo', ku: 'Bişîne', pl: 'Wyślij' },
   contactMsgSent: { de: '✅ Danke! Wir melden uns bald bei dir.', en: "✅ Thanks! We'll be in touch soon.", tr: '✅ Teşekkürler! En kısa sürede sana dönüş yapacağız.', ro: '✅ Mulțumim! Te vom contacta în curând.', nl: '✅ Bedankt! We nemen snel contact op.', sq: '✅ Faleminderit! Do të të kontaktojmë së shpejti.', ku: '✅ Spas! Em ê zû têkiliyê daynin.', pl: '✅ Dziękujemy! Wkrótce się odezwiemy.' },
   contactMsgError: { de: '⚠️ Etwas ist schiefgelaufen. Bitte ruf uns direkt an.', en: '⚠️ Something went wrong. Please call us directly.', tr: '⚠️ Bir şeyler ters gitti. Lütfen bizi direkt ara.', ro: '⚠️ Ceva a mers greșit. Sună-ne direct.', nl: '⚠️ Er ging iets mis. Bel ons alsjeblieft direct.', sq: '⚠️ Diçka shkoi keq. Na telefono direkt.', ku: '⚠️ Tiştek çewt çû. Ji kerema xwe rasterast telefon bike.', pl: '⚠️ Coś poszło nie tak. Zadzwoń do nas bezpośrednio.' },
+  liveViewers: { de: 'schauen gerade', en: 'viewing right now', tr: 'kişi şu an bakıyor', ro: 'privesc chiar acum', nl: 'kijken nu', sq: 'po shikojnë tani', ku: 'niha temaşe dikin', pl: 'ogląda teraz' },
   analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.', ku: '500 serdanên dawî nîşan dide. Tu daneyên kesane tune, tenê ziman & cureyê amîr.', pl: 'Pokazuje ostatnie 500 odwiedzin. Brak danych osobowych, tylko język i typ urządzenia.'},
   trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.', ku: 'Ji bo dîtina rewşê koda sifarişê binivîse.', pl: 'Wpisz swój kod zamówienia, aby zobaczyć status.'},
   surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!', ku: 'Min ecêbmayî bihêle!', pl: 'Zaskocz mnie!'},
@@ -1221,6 +1222,33 @@ function logVisit(lang) {
     safeSet(key, { ts: Date.now(), lang, device });
   } catch {}
 }
+function useLiveViewerCount() {
+  const [count, setCount] = useState(1);
+  const sessionIdRef = useRef(null);
+  useEffect(() => {
+    if (!sessionIdRef.current) {
+      let sid = null;
+      try { sid = sessionStorage.getItem('bk_session_id'); } catch {}
+      if (!sid) { sid = makeShortCode(8); try { sessionStorage.setItem('bk_session_id', sid); } catch {} }
+      sessionIdRef.current = sid;
+    }
+    const beat = () => safeSet(`heartbeat:${sessionIdRef.current}`, { ts: Date.now() });
+    beat();
+    const beatInterval = setInterval(beat, 25000);
+    const readCount = async () => {
+      try {
+        const rows = await safeListPrefix('heartbeat:', 300);
+        const active = rows.filter((r) => Date.now() - r.value.ts < 90000).length;
+        setCount(Math.max(1, active));
+      } catch {}
+    };
+    readCount();
+    const readInterval = setInterval(readCount, 20000);
+    return () => { clearInterval(beatInterval); clearInterval(readInterval); };
+  }, []);
+  return count;
+}
+
 function logEvent(eventType, extra) {
   try {
     const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
@@ -2898,6 +2926,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
     if (lightbox) { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }
   }, [lightbox]);
   const now = useLiveClock();
+  const liveViewers = useLiveViewerCount();
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
   const HERO_IMAGES_RAW = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos].filter((src) => !hiddenPhotos.includes(src));
@@ -3094,7 +3123,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-16 lg:pt-8 lg:pb-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
+            {liveViewers > 1 && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold mb-5" style={{ background: 'rgba(74,222,128,.12)', color: '#4ade80', border: '1px solid rgba(74,222,128,.3)' }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80', animation: 'liveDot 1.6s ease-in-out infinite' }} /> {liveViewers} {t('liveViewers')}
+              </div>
+            )}
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="h-48 sm:h-56" />
@@ -7023,6 +7057,23 @@ export default function App() {
   const [view, setView] = useState(isTischMenu ? 'tischmenu' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  }, []);
+  useEffect(() => {
+    if (document.getElementById('onesignal-sdk')) return;
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    const script = document.createElement('script');
+    script.id = 'onesignal-sdk';
+    script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+    script.defer = true;
+    document.head.appendChild(script);
+    window.OneSignalDeferred.push(async function (OneSignal) {
+      await OneSignal.init({ appId: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f' });
+    });
+  }, []);
   useEffect(() => {
     if (document.getElementById('bk-structured-data')) return;
     const script = document.createElement('script');
