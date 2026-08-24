@@ -678,7 +678,7 @@ const MENU = [
     { id: 'p32', name: 'Pizza Thunfisch', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mit Zwiebeln', alg: 'a,i,e,j' },
     { id: 'p33', name: 'Pizza Steak', priceSmall: 9.0, priceLarge: 10.0, weekend: true, alg: 'a,i,e' },
     { id: 'p34', name: 'Pizza Hawaii', priceSmall: 9.0, priceLarge: 10.0, desc: 'Putenschinken und Ananas', alg: 'a,i,e,13' },
-    { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0, desc: 'Rindersalami, Putenschinken, Pilzen und Ei', alg: 'a,i,e,13' },
+    { id: 'p35', name: 'Pizza Türkei', priceSmall: 10.0, priceLarge: 11.0, desc: 'Türkische Knoblauchwurst, Tomaten und Ei', alg: 'a,i,e,13' },
     { id: 'p36', name: 'Pizza Sucuk', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit türkischer Knoblauchwurst', alg: 'a,i,e,13' },
     { id: 'p37', name: 'Pizza Spezial', priceSmall: 8.5, priceLarge: 9.5, desc: 'Thunfisch, Putenschinken, Ananas und Pilzen', alg: 'a,e,i,j,13' },
     { id: 'p38', name: 'Pizza Vechta', priceSmall: 10.5, priceLarge: 11.5, desc: 'Fleisch vom Drehspieß, Brokkoli, Zwiebeln, Paprika, Hollandaise Soße, Weichkäse in Salzlake', alg: 'a,i,e,15' },
@@ -687,8 +687,8 @@ const MENU = [
     { id: 'p41', name: 'Pizza Vegetarisch', priceSmall: 8.0, priceLarge: 9.0, desc: 'Pilzen, Brokkoli, Paprika und Mais', alg: 'a,i,e' },
     { id: 'p42', name: 'Pizza Mozzarella', priceSmall: 8.5, priceLarge: 9.5, desc: 'Frische Tomaten und Mozzarella', alg: 'a,i,e,13' },
     { id: 'p43', name: 'Pizza Taverna', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Ei', alg: 'a,i,e,13' },
-    { id: 'p44', name: 'Pizza Krabben', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch', alg: 'a,i,e,d' },
-    { id: 'p45', name: 'Pizza Meeresfrüchte', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch', alg: 'a,i,e,d,j' },
+    { id: 'p44', name: 'Pizza Meeresfrüchte', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch', alg: 'a,i,e,d' },
+    { id: 'p45', name: 'Pizza Krabben', priceSmall: 8.5, priceLarge: 9.5, desc: 'Mit Knoblauch', alg: 'a,i,e,d,j' },
     { id: 'p46', name: 'Pizza QuattroStagioni', priceSmall: 9.5, priceLarge: 10.5, desc: 'Rindersalami, Putenschinken, Pilzen und Paprika', alg: 'a,i,e,13' },
     { id: 'p47', name: 'Pizza Vier Käse', priceSmall: 9.0, priceLarge: 10.0, desc: 'Mozzarella, Gorgonzola und Weichkäse', alg: 'a,g,i' },
     { id: 'p48', name: 'Pizza Bolognese', priceSmall: 8.0, priceLarge: 9.0, desc: 'Mit Fleischsoße', alg: 'a,i,e' },
@@ -3196,8 +3196,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
                 target="_blank" rel="noopener noreferrer"
                 onClick={() => logEvent('route')}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs"
-                style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs text-white"
+                style={{ background: `linear-gradient(135deg, #ff3b3b, ${CHILI})`, boxShadow: '0 6px 16px rgba(255,30,30,.4)' }}
               >
                 📍 {t('contactRoute')}
               </a>
