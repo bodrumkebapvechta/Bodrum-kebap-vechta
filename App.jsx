@@ -45,6 +45,32 @@ const FRITZ_SPRITZ_APFEL_IMG = "/fritz-spritz-apfel.jpg";
 const FRITZ_KOLA_IMG = "/fritz-kola.jpg";
 const FRITZ_KOLA_SUPERZERO_IMG = "/fritz-kola-superzero.jpg";
 const FRITZ_MISCHMASCH_IMG = "/fritz-mischmasch.jpg";
+const SITE_PHOTOS = [
+  { src: TERRACE_IMG, label: 'Terrasse' },
+  { src: DOENER_TELLER_IMG, label: 'Döner Teller' },
+  { src: SCHNITZEL_IMG, label: 'Schnitzel' },
+  { src: SPAGHETTI_IMG, label: 'Spaghetti' },
+  { src: FOOD_G1, label: 'Foto 1' },
+  { src: FOOD_G2, label: 'Foto 2' },
+  { src: FOOD_G3, label: 'Foto 3' },
+  { src: FOOD_G4, label: 'Foto 4' },
+  { src: DOENER_SPIESS_IMG, label: 'Döner Spieß' },
+  { src: CALZONE_IMG, label: 'Calzone' },
+  { src: LAHMACUN_IMG, label: 'Lahmacun' },
+  { src: PIZZABROETCHEN_IMG, label: 'Pizzabrötchen' },
+  { src: PENNE_IMG, label: 'Penne' },
+  { src: PIZZA_KAESE_IMG, label: 'Pizza Käse' },
+  { src: FALAFEL_IMG, label: 'Falafel' },
+  { src: SALAT_BUNT_IMG, label: 'Bunter Salat' },
+  { src: BAUERNSALAT_IMG, label: 'Bauernsalat' },
+  { src: NUGGETS_IMG, label: 'Nuggets' },
+  { src: CHICKEN_STRIPS_IMG, label: 'Chicken Strips' },
+  { src: POMMES_IMG, label: 'Pommes' },
+  { src: FRITZ_KOLA_IMG, label: 'Fritz Kola' },
+  { src: FRITZ_LIMO_IMG, label: 'Fritz Limo' },
+  { src: FRITZ_SPRITZ_TRAUBE_IMG, label: 'Fritz Spritz Traube' },
+  { src: FRITZ_MISCHMASCH_IMG, label: 'Fritz Mischmasch' },
+];
 
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl', 'sq', 'ku', 'pl'];
@@ -1608,6 +1634,7 @@ function SplashScreen({ onDone }) {
         @keyframes riseFade { 0%{ transform:translateY(16px); opacity:0; } 100%{ transform:translateY(0); opacity:1; } }
         @keyframes glowPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 0 22px rgba(255,199,56,0);} }
         @keyframes spinSlow { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+        @keyframes spin { from{ transform:rotate(0deg) scale(1);} 50%{ transform:rotate(180deg) scale(1.1);} to{ transform:rotate(360deg) scale(1);} }
         @keyframes shimmerBar { 0%{ background-position:-200px 0;} 100%{ background-position:200px 0;} }
       `}</style>
       <div className="flex flex-col items-center px-8 text-center">
@@ -2813,6 +2840,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
   const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
   useEffect(() => { safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); }); }, []);
+  const [hiddenPhotos, setHiddenPhotos] = useState([]);
+  useEffect(() => { safeGet('siteconfig:hiddenPhotos').then((r) => { if (r) setHiddenPhotos(r); }); }, []);
   const [surpriseRolling, setSurpriseRolling] = useState(false);
   const rollSurprise = () => {
     setSurpriseRolling(true);
@@ -2863,7 +2892,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const now = useLiveClock();
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
-  const HERO_IMAGES = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos];
+  const HERO_IMAGES_RAW = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos].filter((src) => !hiddenPhotos.includes(src));
+  const HERO_IMAGES = HERO_IMAGES_RAW.length > 0 ? HERO_IMAGES_RAW : [TERRACE_IMG];
   const [heroIdx, setHeroIdx] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setHeroIdx((i) => (i + 1) % HERO_IMAGES.length), 4000);
@@ -3189,30 +3219,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>{t('galleryKitchen')}</div>
         <div className="columns-2 lg:columns-4 gap-3 [column-fill:_balance]">
-          <img src={TERRACE_IMG} onClick={() => setLightbox(TERRACE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 220 }} />
-          <img src={DOENER_TELLER_IMG} onClick={() => setLightbox(DOENER_TELLER_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 }} />
-          <img src={SCHNITZEL_IMG} onClick={() => setLightbox(SCHNITZEL_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
-          <img src={SPAGHETTI_IMG} onClick={() => setLightbox(SPAGHETTI_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 240 }} />
-          <img src={FOOD_G1} onClick={() => setLightbox(FOOD_G1)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
-          <img src={FOOD_G2} onClick={() => setLightbox(FOOD_G2)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
-          <img src={FOOD_G3} onClick={() => setLightbox(FOOD_G3)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 }} />
-          <img src={FOOD_G4} onClick={() => setLightbox(FOOD_G4)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
-          <img src={DOENER_SPIESS_IMG} onClick={() => setLightbox(DOENER_SPIESS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 260 }} />
-          <img src={CALZONE_IMG} onClick={() => setLightbox(CALZONE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 180 }} />
-          <img src={LAHMACUN_IMG} onClick={() => setLightbox(LAHMACUN_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
-          <img src={PIZZABROETCHEN_IMG} onClick={() => setLightbox(PIZZABROETCHEN_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 }} />
-          <img src={PENNE_IMG} onClick={() => setLightbox(PENNE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 220 }} />
-          <img src={PIZZA_KAESE_IMG} onClick={() => setLightbox(PIZZA_KAESE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
-          <img src={FALAFEL_IMG} onClick={() => setLightbox(FALAFEL_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
-          <img src={SALAT_BUNT_IMG} onClick={() => setLightbox(SALAT_BUNT_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 240 }} />
-          <img src={BAUERNSALAT_IMG} onClick={() => setLightbox(BAUERNSALAT_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 180 }} />
-          <img src={NUGGETS_IMG} onClick={() => setLightbox(NUGGETS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 200 }} />
-          <img src={CHICKEN_STRIPS_IMG} onClick={() => setLightbox(CHICKEN_STRIPS_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
-          <img src={POMMES_IMG} onClick={() => setLightbox(POMMES_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 170 }} />
-          <img src={FRITZ_KOLA_IMG} onClick={() => setLightbox(FRITZ_KOLA_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 200 }} />
-          <img src={FRITZ_LIMO_IMG} onClick={() => setLightbox(FRITZ_LIMO_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 230 }} />
-          <img src={FRITZ_SPRITZ_TRAUBE_IMG} onClick={() => setLightbox(FRITZ_SPRITZ_TRAUBE_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 }} />
-          <img src={FRITZ_MISCHMASCH_IMG} onClick={() => setLightbox(FRITZ_MISCHMASCH_IMG)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 210 }} />
+          {SITE_PHOTOS.filter((p) => !hiddenPhotos.includes(p.src)).map((p, idx) => (
+            <img key={p.src} src={p.src} onClick={() => setLightbox(p.src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 + (idx % 5) * 22 }} />
+          ))}
           {extraGalleryPhotos.map((src, idx) => (
             <img key={idx} src={src} onClick={() => setLightbox(src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 + (idx % 3) * 25 }} />
           ))}
@@ -5571,12 +5580,15 @@ function StaffPanelView({ back }) {
   const [newPin, setNewPin] = useState('');
   const [newPin2, setNewPin2] = useState('');
   const [pinMsg, setPinMsg] = useState('');
+  const [unlockStage, setUnlockStage] = useState('idle'); // idle | checking | unlocked
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
   useEffect(() => {
     if (!ok && !unlocking && pin.length > 0 && pin === staffPin) {
       setUnlocking(true);
+      setUnlockStage('checking');
       unlockAudio();
-      setTimeout(() => setOk(true), 550);
+      setTimeout(() => setUnlockStage('unlocked'), 700);
+      setTimeout(() => setOk(true), 1700);
     }
   }, [pin, staffPin, ok, unlocking]);
   const savePin = async () => {
@@ -6081,6 +6093,13 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:extraGalleryPhotos', next);
     setExtraGalleryPhotos(next);
   };
+  const [hiddenPhotos, setHiddenPhotos] = useState([]);
+  useEffect(() => { if (ok) safeGet('siteconfig:hiddenPhotos').then((r) => { if (r) setHiddenPhotos(r); }); }, [ok]);
+  const togglePhotoHidden = async (src) => {
+    const next = hiddenPhotos.includes(src) ? hiddenPhotos.filter((s) => s !== src) : [...hiddenPhotos, src];
+    setHiddenPhotos(next);
+    await safeSet('siteconfig:hiddenPhotos', next);
+  };
   const resetPhoto = async () => {
     if (!editingPhotoItem) return;
     const next = { ...photoOverrides };
@@ -6191,13 +6210,15 @@ function StaffPanelView({ back }) {
             <div className="flex flex-col items-center mb-4">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 transition-all duration-500"
-                style={unlocking
+                style={unlockStage === 'unlocked'
                   ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.15) rotate(-8deg)' }
+                  : unlockStage === 'checking'
+                  ? { background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, boxShadow: '0 10px 30px rgba(255,199,56,.5), 0 0 0 5px rgba(255,199,56,.2)', animation: 'spin 0.9s linear infinite' }
                   : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.45), 0 0 0 5px rgba(255,59,59,.18)', animation: 'urgentPulse 2s ease-out infinite' }}
               >
-                {unlocking ? <span className="text-2xl">🔓</span> : <Lock size={24} color="#fff" />}
+                {unlockStage === 'unlocked' ? <span className="text-2xl">🔓</span> : unlockStage === 'checking' ? <span className="text-2xl">🔎</span> : <Lock size={24} color="#fff" />}
               </div>
-              <div className="font-black text-base text-center" style={{ color: GREEN }}>{unlocking ? '✅ Willkommen!' : t('titleStaff')}</div>
+              <div className="font-black text-base text-center" style={{ color: GREEN }}>{unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'checking' ? 'Wird geprüft…' : t('titleStaff')}</div>
               <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
             </div>
             <div className="rounded-3xl p-5" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
@@ -6207,7 +6228,7 @@ function StaffPanelView({ back }) {
                 type="password" inputMode="numeric" placeholder="• • • • • •"
                 disabled={unlocking}
                 className="w-full px-4 py-3.5 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none"
-                style={{ background: '#f7f0e2', color: GREEN, border: unlocking ? '1.5px solid #34c759' : '1.5px solid #f0e5cf' }}
+                style={{ background: '#f7f0e2', color: GREEN, border: unlockStage === 'unlocked' ? '1.5px solid #34c759' : unlockStage === 'checking' ? `1.5px solid ${GOLD}` : '1.5px solid #f0e5cf' }}
                 autoFocus
               />
             </div>
@@ -6639,6 +6660,24 @@ function StaffPanelView({ back }) {
                   {photoSaveMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{photoSaveMsg}</p>}
                 </div>
               )}
+              <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
+                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">👁️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>Foto-Galerie verwalten ({SITE_PHOTOS.length - hiddenPhotos.filter((s) => SITE_PHOTOS.some((p) => p.src === s)).length}/{SITE_PHOTOS.length})</h3></div>
+                <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>Diese Fotos sind fest im Projekt hinterlegt. Du kannst sie nicht löschen, aber ausblenden — sie erscheinen dann nirgends mehr auf der Website (Startseite & Galerie).</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {SITE_PHOTOS.map((p) => {
+                    const hidden = hiddenPhotos.includes(p.src);
+                    return (
+                      <button key={p.src} onClick={() => togglePhotoHidden(p.src)} className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '1', opacity: hidden ? 0.35 : 1 }}>
+                        <img src={p.src} className="w-full h-full object-cover" />
+                        <div className="absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: hidden ? 'rgba(0,0,0,.7)' : 'rgba(52,199,89,.9)' }}>
+                          {hidden ? '🚫' : '👁️'}
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-[9px] font-bold text-white truncate" style={{ background: 'rgba(0,0,0,.6)' }}>{p.label}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
                 <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">🖼️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>{t('independentPhotoTitle')}</h3></div>
                 <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>{t('independentPhotoHint')}</p>
