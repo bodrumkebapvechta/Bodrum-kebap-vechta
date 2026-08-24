@@ -5667,7 +5667,7 @@ function StaffPanelView({ back }) {
       setUnlocking(true);
       setUnlockStage('unlocked');
       unlockAudio();
-      setTimeout(() => setOk(true), 550);
+      setTimeout(() => setOk(true), 900);
     } else if (pin.length >= staffPin.length) {
       setUnlockStage('wrong');
       setTimeout(() => { setPin(''); setUnlockStage('idle'); }, 700);
@@ -6319,7 +6319,7 @@ function StaffPanelView({ back }) {
               </div>
               <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-5" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }}>
+            <div className="rounded-3xl p-5 mt-6" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }}>
               <div className="relative">
                 <input
                   value={pin}
@@ -6366,7 +6366,10 @@ function StaffPanelView({ back }) {
           </div>
         </div>
       ) : (
-        <div className="relative" style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,255,255,.045), transparent 45%), #101614`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
+        <div className="relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.09), transparent 55%), linear-gradient(165deg, #16241c, #1d3527 45%, #17281e)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
+          <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, right: -70, background: 'radial-gradient(circle, rgba(255,199,56,.11), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 10s ease-in-out infinite' }} />
+          <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, top: '40%', left: -80, background: 'radial-gradient(circle, rgba(45,106,79,.2), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 12s ease-in-out infinite reverse' }} />
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
           {tab === 'wheel' && (
             <div className="px-5">
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎡 GEWINNCODE PRÜFEN</div>
