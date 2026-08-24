@@ -5658,20 +5658,19 @@ function StaffPanelView({ back }) {
   const [newPin, setNewPin] = useState('');
   const [newPin2, setNewPin2] = useState('');
   const [pinMsg, setPinMsg] = useState('');
-  const [unlockStage, setUnlockStage] = useState('idle'); // idle | checking | unlocked | wrong
+  const [unlockStage, setUnlockStage] = useState('idle'); // idle | unlocked | wrong
   const [keystroke, setKeystroke] = useState(0);
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
   useEffect(() => {
     if (ok || unlocking || pin.length === 0) return;
     if (pin === staffPin) {
       setUnlocking(true);
-      setUnlockStage('checking');
+      setUnlockStage('unlocked');
       unlockAudio();
-      setTimeout(() => setUnlockStage('unlocked'), 700);
-      setTimeout(() => setOk(true), 1700);
+      setTimeout(() => setOk(true), 550);
     } else if (pin.length >= staffPin.length) {
       setUnlockStage('wrong');
-      setTimeout(() => { setPin(''); setUnlockStage('idle'); }, 900);
+      setTimeout(() => { setPin(''); setUnlockStage('idle'); }, 700);
     }
   }, [pin, staffPin, ok, unlocking]);
   const savePin = async () => {
@@ -6299,129 +6298,77 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.1), transparent 60%), linear-gradient(165deg, #081209, #123420 50%, #0a1a10)` }}>
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 300, height: 300, top: -90, left: -70, background: 'radial-gradient(circle, rgba(255,59,59,.14), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 9s ease-in-out infinite' }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 260, height: 260, bottom: -70, right: -60, background: 'radial-gradient(circle, rgba(255,199,56,.13), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 11s ease-in-out infinite reverse' }} />
-          <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
+        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative" style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,255,255,.04), transparent 45%), #101614` }}>
           <div className="w-full max-w-xs relative">
-            <div className="flex flex-col items-center mb-4">
+            <div className="flex flex-col items-center mb-6">
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 transition-all duration-500"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-all duration-300"
                 style={unlockStage === 'unlocked'
-                  ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.15) rotate(-8deg)' }
-                  : unlockStage === 'checking'
-                  ? { background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, boxShadow: '0 10px 30px rgba(255,199,56,.5), 0 0 0 5px rgba(255,199,56,.2)', animation: 'spin 0.9s linear infinite' }
+                  ? { background: '#1d3f2a', border: '1px solid rgba(52,199,89,.4)' }
                   : unlockStage === 'wrong'
-                  ? { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.6), 0 0 0 6px rgba(255,59,59,.3)', animation: 'shakeX .4s ease' }
-                  : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
+                  ? { background: '#3a1616', border: '1px solid rgba(255,77,77,.4)', animation: 'shakeX .4s ease' }
+                  : { background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)' }}
               >
-                {unlockStage === 'unlocked' ? <span className="text-2xl">🔓</span> : unlockStage === 'checking' ? <span className="text-2xl">🔎</span> : unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : <Lock size={24} color="#fff" />}
+                {unlockStage === 'unlocked' ? <Check size={22} color="#4ade80" strokeWidth={3} /> : unlockStage === 'wrong' ? <span className="text-lg" style={{ color: '#ff6b6b' }}>✕</span> : <Lock size={20} color="rgba(255,255,255,.65)" />}
               </div>
-              <div className="font-black text-base text-center flex items-center gap-1" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : unlockStage === 'wrong' ? '#ff8080' : '#fff' }}>
-                {unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'wrong' ? '❌ Falscher PIN' : unlockStage === 'checking' ? (
-                  <span className="flex items-center gap-1">Wird geprüft<span style={{ animation: 'checkingDots 1.2s steps(1) infinite' }}>…</span></span>
-                ) : t('titleStaff')}
+              <div className="font-bold text-[15px] text-center" style={{ color: unlockStage === 'unlocked' ? '#4ade80' : unlockStage === 'wrong' ? '#ff8080' : 'rgba(255,255,255,.92)' }}>
+                {unlockStage === 'unlocked' ? 'Willkommen zurück' : unlockStage === 'wrong' ? 'Falscher PIN' : t('titleStaff')}
               </div>
-              <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
+              <div className="text-[10px] font-semibold tracking-[0.15em] mt-1" style={{ color: 'rgba(255,255,255,.35)' }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-5" style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }}>
-              <div className="relative">
-                <input
-                  value={pin}
-                  onChange={(e) => {
-                    const v = e.target.value.replace(/\D/g, '').slice(0, 6);
-                    if (v.length > pin.length) setKeystroke((k) => k + 1);
-                    setPin(v);
-                  }}
-                  type="tel" inputMode="numeric" maxLength={6}
-                  disabled={unlocking}
-                  className="absolute inset-0 w-full h-full opacity-0"
-                  style={{ zIndex: 2 }}
-                  autoFocus
-                />
-                <div className="flex items-center justify-center gap-2 pointer-events-none" style={{ animation: unlockStage === 'wrong' ? 'shakeX .4s ease' : 'none' }}>
-                  {Array.from({ length: 6 }).map((_, i) => {
-                    const filled = i < pin.length;
-                    const isActive = i === pin.length - 1;
-                    const boxColor = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : unlockStage === 'checking' ? GOLD : filled ? GOLD : 'rgba(255,255,255,.22)';
-                    return (
-                      <div
-                        key={isActive ? `box-${i}-${keystroke}` : `box-${i}`}
-                        className="w-10 h-12 rounded-xl flex items-center justify-center"
-                        style={{
-                          background: filled ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.04)',
-                          backdropFilter: 'blur(8px)',
-                          border: `1.5px solid ${boxColor}`,
-                          boxShadow: filled ? `inset 0 1px 0 rgba(255,255,255,.25), 0 0 14px ${unlockStage === 'unlocked' ? 'rgba(52,199,89,.4)' : unlockStage === 'wrong' ? 'rgba(255,77,77,.4)' : 'rgba(255,199,56,.3)'}` : 'inset 0 1px 0 rgba(255,255,255,.08)',
-                          transition: 'border-color .3s, background .3s',
-                          animation: isActive && unlockStage === 'idle' ? 'pinBoxPop .4s cubic-bezier(.34,1.56,.64,1)' : 'none',
-                        }}
-                      >
-                        {unlockStage === 'unlocked' ? (
-                          <Check size={22} color="#34c759" strokeWidth={4} />
-                        ) : filled ? (
-                          <span className="w-2 h-2 rounded-full" style={{ background: unlockStage === 'wrong' ? '#ff4d4d' : GOLD }} />
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
+            <div className="relative">
+              <input
+                value={pin}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, '').slice(0, 6);
+                  if (v.length > pin.length) setKeystroke((k) => k + 1);
+                  setPin(v);
+                }}
+                type="tel" inputMode="numeric" maxLength={6}
+                disabled={unlocking}
+                className="absolute inset-0 w-full h-full opacity-0"
+                style={{ zIndex: 2 }}
+                autoFocus
+              />
+              <div className="flex items-center justify-center gap-2 pointer-events-none" style={{ animation: unlockStage === 'wrong' ? 'shakeX .4s ease' : 'none' }}>
+                {Array.from({ length: 6 }).map((_, i) => {
+                  const filled = i < pin.length;
+                  const isActive = i === pin.length - 1;
+                  const boxColor = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : filled ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.14)';
+                  return (
+                    <div
+                      key={isActive ? `box-${i}-${keystroke}` : `box-${i}`}
+                      className="w-10 h-12 rounded-xl flex items-center justify-center"
+                      style={{
+                        background: unlockStage === 'unlocked' ? 'rgba(52,199,89,.1)' : unlockStage === 'wrong' ? 'rgba(255,77,77,.1)' : filled ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.02)',
+                        border: `1.5px solid ${boxColor}`,
+                        transition: 'border-color .2s, background .2s',
+                        animation: isActive && unlockStage === 'idle' ? 'pinBoxPop .35s cubic-bezier(.34,1.56,.64,1)' : 'none',
+                      }}
+                    >
+                      {unlockStage === 'unlocked' ? (
+                        <Check size={18} color="#4ade80" strokeWidth={3.5} />
+                      ) : filled ? (
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: unlockStage === 'wrong' ? '#ff4d4d' : 'rgba(255,255,255,.75)' }} />
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
-              {pin.length > 0 && unlockStage === 'idle' && (
-                <button
-                  onClick={() => setPin((p) => p.slice(0, -1))}
-                  className="mx-auto mt-4 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold"
-                  style={{ background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.75)', border: '1px solid rgba(255,255,255,.15)' }}
-                >
-                  ⌫ Löschen
-                </button>
-              )}
             </div>
+            {pin.length > 0 && unlockStage === 'idle' && (
+              <button
+                onClick={() => setPin((p) => p.slice(0, -1))}
+                className="mx-auto mt-5 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold"
+                style={{ background: 'rgba(255,255,255,.05)', color: 'rgba(255,255,255,.5)', border: '1px solid rgba(255,255,255,.1)' }}
+              >
+                ⌫ Löschen
+              </button>
+            )}
           </div>
         </div>
       ) : (
-        <div className="relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.08), transparent 55%), linear-gradient(165deg, #081209, #123420 45%, #0a1a10)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96 }}>
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, right: -70, background: 'radial-gradient(circle, rgba(255,199,56,.1), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 10s ease-in-out infinite' }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, top: '40%', left: -80, background: 'radial-gradient(circle, rgba(45,106,79,.18), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 12s ease-in-out infinite reverse' }} />
-          <div className="px-5 pt-4 flex items-center justify-end gap-2.5">
-            <button onClick={() => setLookupOpen((v) => !v)} className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={lookupOpen ? { background: GOLD, color: GREEN } : { background: 'rgba(255,255,255,.08)', color: '#fff', border: '1.5px solid rgba(255,255,255,.15)' }}>
-              <span className="text-lg">🔍</span>
-            </button>
-          </div>
-
-          {lookupOpen && (
-            <div className="px-5 pt-2.5">
-              <div className="rounded-2xl p-3.5" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
-                <input value={staffLookup} onChange={(e) => setStaffLookup(e.target.value)} placeholder={t('quickSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} autoFocus />
-                {staffLookup.trim() && (
-                  staffLookupResults.length === 0 ? (
-                    <p className="text-xs font-semibold text-center py-2" style={{ color: '#a4906c' }}>{t('quickSearchNoResults')}</p>
-                  ) : (
-                    <div className="flex flex-col gap-1.5 mt-2">
-                      {staffLookupResults.map((item) => {
-                        const isOut = soldOutIds.includes(item.id);
-                        const priceOv = priceOverrides[item.id];
-                        const priceDisplay = item.priceLarge !== undefined
-                          ? `${fmt(priceOv?.small ?? item.priceSmall)} / ${fmt(priceOv?.large ?? item.priceLarge)}`
-                          : fmt(priceOv?.price ?? item.price);
-                        return (
-                          <div key={item.id} className="rounded-lg p-2.5" style={{ background: '#f7f0e2' }}>
-                            <div className="font-bold text-sm flex items-center gap-1.5" style={{ color: GREEN }}>
-                              {menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)}</span>} {item.name}
-                              {isOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>{t('soldOutBadge')}</span>}
-                            </div>
-                            {item.desc && <div className="text-[11px] font-medium mt-0.5" style={{ color: '#8a7c62' }}>{item.desc}</div>}
-                            <div className="text-xs font-bold mt-1" style={{ color: CHILI }}>{priceDisplay}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          )}
-
+        <div className="relative" style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,255,255,.045), transparent 45%), #101614`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96 }}>
           {tab === 'wheel' && (
             <div className="px-5">
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎡 GEWINNCODE PRÜFEN</div>
@@ -6836,7 +6783,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
 
-          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(255,255,255,.12)', backdropFilter: 'blur(22px) saturate(1.7)', WebkitBackdropFilter: 'blur(22px) saturate(1.7)', borderTop: '1px solid rgba(255,255,255,.22)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.25), 0 -8px 24px rgba(0,0,0,.15)' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(255,255,255,.2)', backdropFilter: 'blur(24px) saturate(1.8)', WebkitBackdropFilter: 'blur(24px) saturate(1.8)', borderTop: '1px solid rgba(255,255,255,.3)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.35), 0 -8px 24px rgba(0,0,0,.18)' }}>
             <div className="grid grid-cols-5">
               {[
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
