@@ -1666,6 +1666,7 @@ function SplashScreen({ onDone }) {
         @keyframes glowPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 0 22px rgba(255,199,56,0);} }
         @keyframes spinSlow { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
         @keyframes spin { from{ transform:rotate(0deg) scale(1);} 50%{ transform:rotate(180deg) scale(1.1);} to{ transform:rotate(360deg) scale(1);} }
+        @keyframes pinBoxPop { 0%{ transform:translateY(0) scale(1); } 35%{ transform:translateY(-12px) scale(1.08); } 100%{ transform:translateY(0) scale(1); } }
         @keyframes shimmerBar { 0%{ background-position:-200px 0;} 100%{ background-position:200px 0;} }
       `}</style>
       <div className="flex flex-col items-center px-8 text-center">
@@ -3068,44 +3069,44 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         </div>
         {navOpen && (
-          <div className="fixed inset-0 z-50 md:hidden flex flex-col" style={{ background: `radial-gradient(circle at 85% 0%, rgba(255,199,56,.1), transparent 50%), linear-gradient(165deg, #0e2416, #0a1a10 65%, #153826)`, animation: 'pageFade .3s ease-out' }}>
+          <div className="fixed inset-0 z-50 md:hidden flex flex-col" style={{ background: `radial-gradient(circle at 85% 0%, rgba(255,199,56,.12), transparent 50%), rgba(10,24,15,.6)`, backdropFilter: 'blur(22px) saturate(1.5)', WebkitBackdropFilter: 'blur(22px) saturate(1.5)', animation: 'pageFade .3s ease-out' }}>
             <div className="flex items-center justify-between px-6 pt-6 pb-2">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}><Flame size={18} color="#fff" /></div>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.4)' }}><Flame size={18} color="#fff" /></div>
                 <div>
                   <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
                   <div className="font-bold text-[10px] tracking-widest" style={{ color: GOLD }}>VECHTA</div>
                 </div>
               </div>
-              <button onClick={() => setNavOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.1)' }}>
+              <button onClick={() => setNavOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.18)' }}>
                 <X size={18} color="#fff" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 pt-6 flex flex-col gap-1">
+            <div className="flex-1 overflow-y-auto px-6 pt-6 flex flex-col gap-2.5">
               {[
                 { onClick: () => (ORDERING_ENABLED ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
                 { onClick: () => scrollTo('kontakt'), icon: '📍', label: t('navContact') },
               ].map((item, i) => (
-                <button key={i} onClick={item.onClick} className="flex items-center gap-4 py-4" style={{ borderBottom: '1px solid rgba(255,246,234,.08)' }}>
-                  <span className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: 'rgba(255,199,56,.1)' }}>{item.icon}</span>
+                <button key={i} onClick={item.onClick} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
+                  <span className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>{item.icon}</span>
                   <span className="font-bold text-base text-white">{item.label}</span>
                   <ArrowRight size={16} color="rgba(255,246,234,.35)" className="ml-auto" />
                 </button>
               ))}
-              <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 py-4" style={{ borderBottom: '1px solid rgba(255,246,234,.08)' }}>
-                <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,199,56,.1)' }}><Instagram size={17} color={GOLD} /></span>
+              <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
+                <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}><Instagram size={17} color={GOLD} /></span>
                 <span className="font-bold text-base text-white">@BodrumKebapVechta</span>
                 <ArrowRight size={16} color="rgba(255,246,234,.35)" className="ml-auto" />
               </a>
-              <button onClick={() => go('staff')} className="flex items-center gap-4 py-4">
-                <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,.06)' }}><Lock size={15} color="rgba(217,205,180,.7)" /></span>
+              <button onClick={() => go('staff')} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.04)' }}>
+                <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.06)' }}><Lock size={15} color="rgba(217,205,180,.7)" /></span>
                 <span className="font-semibold text-sm" style={{ color: 'rgba(217,205,180,.7)' }}>{t('navStaffArea')}</span>
               </button>
               {installPrompt && (
-                <button onClick={onInstall} className="flex items-center gap-4 py-4">
-                  <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,199,56,.1)' }}>📲</span>
+                <button onClick={onInstall} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,199,56,.08)' }}>
+                  <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>📲</span>
                   <span className="font-semibold text-sm" style={{ color: GOLD }}>{t('installAppBtn')}</span>
                 </button>
               )}
@@ -6282,8 +6283,10 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(circle at 50% 15%, rgba(255,59,59,.14), transparent 55%), linear-gradient(180deg, #0e2416, #0a1a10 60%, #0e2416)` }}>
-          <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
+        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `linear-gradient(160deg, #0a1a10, #153826 45%, #0e2416)` }}>
+          <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, left: -60, background: 'radial-gradient(circle, rgba(255,59,59,.16), transparent 70%)', filter: 'blur(10px)', animation: 'softFloat 8s ease-in-out infinite' }} />
+          <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, bottom: -60, right: -50, background: 'radial-gradient(circle, rgba(255,199,56,.14), transparent 70%)', filter: 'blur(10px)', animation: 'softFloat 10s ease-in-out infinite reverse' }} />
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
           <div className="w-full max-w-xs relative">
             <div className="flex flex-col items-center mb-4">
               <div
@@ -6299,7 +6302,7 @@ function StaffPanelView({ back }) {
               <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : '#fff' }}>{unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'checking' ? 'Wird geprüft…' : t('titleStaff')}</div>
               <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-5" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(6px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.12), 0 20px 50px rgba(0,0,0,.35)' }}>
+            <div className="rounded-3xl p-5" style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }}>
               <div className="relative">
                 <input
                   value={pin}
@@ -6313,15 +6316,19 @@ function StaffPanelView({ back }) {
                 <div className="flex items-center justify-center gap-2 pointer-events-none">
                   {Array.from({ length: 6 }).map((_, i) => {
                     const filled = i < pin.length;
-                    const boxColor = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'checking' ? GOLD : filled ? GOLD : 'rgba(255,255,255,.2)';
+                    const isActive = i === pin.length - 1;
+                    const boxColor = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'checking' ? GOLD : filled ? GOLD : 'rgba(255,255,255,.22)';
                     return (
                       <div
-                        key={i}
-                        className="w-10 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                        key={isActive ? `box-${i}-${pin.length}` : `box-${i}`}
+                        className="w-10 h-12 rounded-xl flex items-center justify-center"
                         style={{
-                          background: filled ? 'rgba(52,199,89,.08)' : 'rgba(255,255,255,.04)',
+                          background: filled ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.04)',
+                          backdropFilter: 'blur(8px)',
                           border: `1.5px solid ${boxColor}`,
-                          boxShadow: filled ? `0 0 14px ${unlockStage === 'unlocked' ? 'rgba(52,199,89,.4)' : 'rgba(255,199,56,.3)'}` : 'none',
+                          boxShadow: filled ? `inset 0 1px 0 rgba(255,255,255,.25), 0 0 14px ${unlockStage === 'unlocked' ? 'rgba(52,199,89,.4)' : 'rgba(255,199,56,.3)'}` : 'inset 0 1px 0 rgba(255,255,255,.08)',
+                          transition: 'border-color .3s, background .3s',
+                          animation: isActive && unlockStage === 'idle' ? 'pinBoxPop .38s cubic-bezier(.34,1.56,.64,1)' : 'none',
                         }}
                       >
                         {unlockStage === 'unlocked' ? (
