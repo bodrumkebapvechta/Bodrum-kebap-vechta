@@ -1666,9 +1666,6 @@ function SplashScreen({ onDone }) {
         @keyframes glowPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 0 22px rgba(255,199,56,0);} }
         @keyframes spinSlow { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
         @keyframes spin { from{ transform:rotate(0deg) scale(1);} 50%{ transform:rotate(180deg) scale(1.1);} to{ transform:rotate(360deg) scale(1);} }
-        @keyframes pinBoxPop { 0%{ transform:translateY(0) scale(1); } 35%{ transform:translateY(-12px) scale(1.08); } 100%{ transform:translateY(0) scale(1); } }
-        @keyframes shakeX { 0%,100%{ transform:translateX(0); } 20%{ transform:translateX(-8px); } 40%{ transform:translateX(8px); } 60%{ transform:translateX(-6px); } 80%{ transform:translateX(6px); } }
-        @keyframes checkingDots { 0%{ opacity:.2; } 50%{ opacity:1; } 100%{ opacity:.2; } }
         @keyframes shimmerBar { 0%{ background-position:-200px 0;} 100%{ background-position:200px 0;} }
       `}</style>
       <div className="flex flex-col items-center px-8 text-center">
@@ -1893,6 +1890,7 @@ function parsePickupTimeToday(pickupTimeStr) {
 
 function getGreeting(now) {
   const h = now.getHours();
+  if (h < 5) return 'Noch wach? 🌙';
   if (h < 11) return 'Guten Morgen! ☀️';
   if (h < 14) return 'Mahlzeit! 🥙';
   if (h < 18) return 'Schönen Nachmittag! 👋';
@@ -5870,7 +5868,18 @@ function StaffPanelView({ back }) {
   }, [ok, tab]);
   useEffect(() => {
     if (ok && tab === 'messages') {
-      safeListPrefix('contactmsg:', 50).then((rows) => setContactMessages(rows.sort((a, b) => b.value.ts - a.value.ts)));
+      safeListPrefix('contactmsg:', 200).then((rows) => {
+        const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+        const fresh = [];
+        rows.forEach((r) => {
+          if (r.value.ts < todayStart.getTime()) {
+            safeDeleteKey(r.key);
+          } else {
+            fresh.push(r);
+          }
+        });
+        setContactMessages(fresh.sort((a, b) => b.value.ts - a.value.ts));
+      });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -6371,16 +6380,11 @@ function StaffPanelView({ back }) {
           </div>
         </div>
       ) : (
-        <div style={{ background: `radial-gradient(circle at 50% 0%, rgba(255,199,56,.06), transparent 55%), linear-gradient(180deg, #0e2416, #0a1a10 60%, #0e2416)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96 }}>
-          <div className="px-5 pt-4 flex items-center gap-2.5">
-            <div className="flex-1 rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 8px 24px rgba(0,0,0,.25)' }}>
-              <span className="text-xl">👨‍🍳</span>
-              <div className="min-w-0">
-                <div className="font-black text-sm truncate" style={{ color: GOLD }}>{t('staffWelcomeTitle')}</div>
-                <div className="text-[11px] font-medium truncate" style={{ color: '#d9cdb4' }}>{t('staffWelcomeSub')}</div>
-              </div>
-            </div>
-            <button onClick={() => setLookupOpen((v) => !v)} className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={lookupOpen ? { background: GOLD, color: GREEN } : { background: '#fff', color: GREEN, border: '1.5px solid #f0e5cf' }}>
+        <div className="relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.08), transparent 55%), linear-gradient(165deg, #081209, #123420 45%, #0a1a10)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96 }}>
+          <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, right: -70, background: 'radial-gradient(circle, rgba(255,199,56,.1), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 10s ease-in-out infinite' }} />
+          <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, top: '40%', left: -80, background: 'radial-gradient(circle, rgba(45,106,79,.18), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 12s ease-in-out infinite reverse' }} />
+          <div className="px-5 pt-4 flex items-center justify-end gap-2.5">
+            <button onClick={() => setLookupOpen((v) => !v)} className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={lookupOpen ? { background: GOLD, color: GREEN } : { background: 'rgba(255,255,255,.08)', color: '#fff', border: '1.5px solid rgba(255,255,255,.15)' }}>
               <span className="text-lg">🔍</span>
             </button>
           </div>
@@ -6417,19 +6421,6 @@ function StaffPanelView({ back }) {
               </div>
             </div>
           )}
-
-          <div className="px-5 pt-3 pb-1">
-            <button
-              onClick={() => setTischAdminOpen(true)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left"
-              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
-            >
-              <span className="text-xl">🍽️</span>
-              <div className="min-w-0">
-                <div className="font-black text-xs text-white truncate">{t('staffTischMenuTab')} — QR-Tischbildschirm →</div>
-              </div>
-            </button>
-          </div>
 
           {tab === 'wheel' && (
             <div className="px-5">
@@ -6665,6 +6656,16 @@ function StaffPanelView({ back }) {
           })()}
           {tab === 'menu' && (
             <div className="px-5">
+              <button
+                onClick={() => setTischAdminOpen(true)}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left mb-4"
+                style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
+              >
+                <span className="text-xl">🍽️</span>
+                <div className="min-w-0">
+                  <div className="font-black text-xs text-white truncate">{t('staffTischMenuTab')} — QR-Tischbildschirm →</div>
+                </div>
+              </button>
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
               <button onClick={toggleChickenSoldOut} className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl mb-3" style={chickenSoldOut ? { background: CHILI } : { background: '#fff', border: '1.5px solid #f0e5cf' }}>
                 <span className="flex items-center gap-2 font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>🍗 {t('chickenSoldOutLabel')}</span>
@@ -6835,7 +6836,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
 
-          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(10,24,15,.55)', backdropFilter: 'blur(20px) saturate(1.6)', WebkitBackdropFilter: 'blur(20px) saturate(1.6)', borderTop: '1px solid rgba(255,199,56,.22)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.08)' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(255,255,255,.12)', backdropFilter: 'blur(22px) saturate(1.7)', WebkitBackdropFilter: 'blur(22px) saturate(1.7)', borderTop: '1px solid rgba(255,255,255,.22)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.25), 0 -8px 24px rgba(0,0,0,.15)' }}>
             <div className="grid grid-cols-5">
               {[
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
@@ -7289,6 +7290,12 @@ export default function App() {
         @keyframes cartBump { 0%{ transform: scale(1); } 30%{ transform: scale(1.18); } 55%{ transform: scale(.94); } 100%{ transform: scale(1); } }
         @keyframes shimmerGold { 0%{ background-position: -200% 0; } 100%{ background-position: 200% 0; } }
         @keyframes softFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-6px); } }
+        @keyframes pinBoxPop { 0%{ transform:translateY(0) scale(1); } 35%{ transform:translateY(-12px) scale(1.08); } 100%{ transform:translateY(0) scale(1); } }
+        @keyframes shakeX { 0%,100%{ transform:translateX(0); } 20%{ transform:translateX(-8px); } 40%{ transform:translateX(8px); } 60%{ transform:translateX(-6px); } 80%{ transform:translateX(6px); } }
+        @keyframes checkingDots { 0%{ opacity:.2; } 50%{ opacity:1; } 100%{ opacity:.2; } }
+        @keyframes urgentPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(214,40,40,.55);} 50%{ box-shadow:0 0 0 10px rgba(214,40,40,0);} }
+        @keyframes spin { from{ transform:rotate(0deg) scale(1);} 50%{ transform:rotate(180deg) scale(1.1);} to{ transform:rotate(360deg) scale(1);} }
+        @keyframes goldGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 14px 4px rgba(255,199,56,.35);} }
         @keyframes resultPop { 0%{ opacity:0; transform: translateY(8px) scale(.96); } 100%{ opacity:1; transform: translateY(0) scale(1); } }
         @keyframes qtyPop { 0%{ transform: scale(.6); opacity:.4; } 60%{ transform: scale(1.2); } 100%{ transform: scale(1); opacity:1; } }
         button, a { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, opacity .18s ease; }
