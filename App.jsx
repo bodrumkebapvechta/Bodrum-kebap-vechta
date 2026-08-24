@@ -6205,8 +6205,9 @@ function StaffPanelView({ back }) {
       <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4" style={{ background: `radial-gradient(circle at 50% 20%, rgba(255,59,59,.1), transparent 60%), linear-gradient(180deg, ${CREAM}, #f2e6cc)` }}>
-          <div className="w-full max-w-xs">
+        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(circle at 50% 15%, rgba(255,59,59,.14), transparent 55%), linear-gradient(180deg, #0e2416, #0a1a10 60%, #0e2416)` }}>
+          <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
+          <div className="w-full max-w-xs relative">
             <div className="flex flex-col items-center mb-4">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 transition-all duration-500"
@@ -6214,21 +6215,21 @@ function StaffPanelView({ back }) {
                   ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.15) rotate(-8deg)' }
                   : unlockStage === 'checking'
                   ? { background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, boxShadow: '0 10px 30px rgba(255,199,56,.5), 0 0 0 5px rgba(255,199,56,.2)', animation: 'spin 0.9s linear infinite' }
-                  : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.45), 0 0 0 5px rgba(255,59,59,.18)', animation: 'urgentPulse 2s ease-out infinite' }}
+                  : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
               >
                 {unlockStage === 'unlocked' ? <span className="text-2xl">🔓</span> : unlockStage === 'checking' ? <span className="text-2xl">🔎</span> : <Lock size={24} color="#fff" />}
               </div>
-              <div className="font-black text-base text-center" style={{ color: GREEN }}>{unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'checking' ? 'Wird geprüft…' : t('titleStaff')}</div>
-              <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: '#a4906c' }}>NUR FÜR PERSONAL</div>
+              <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : '#fff' }}>{unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'checking' ? 'Wird geprüft…' : t('titleStaff')}</div>
+              <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-5" style={{ background: '#fff', boxShadow: '0 16px 40px rgba(21,56,38,.14)', border: '1px solid #f0e5cf' }}>
+            <div className="rounded-3xl p-5" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(6px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.12), 0 20px 50px rgba(0,0,0,.35)' }}>
               <input
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
                 type="password" inputMode="numeric" placeholder="• • • • • •"
                 disabled={unlocking}
                 className="w-full px-4 py-3.5 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none"
-                style={{ background: '#f7f0e2', color: GREEN, border: unlockStage === 'unlocked' ? '1.5px solid #34c759' : unlockStage === 'checking' ? `1.5px solid ${GOLD}` : '1.5px solid #f0e5cf' }}
+                style={{ background: 'rgba(255,255,255,.95)', color: GREEN, border: unlockStage === 'unlocked' ? '1.5px solid #34c759' : unlockStage === 'checking' ? `1.5px solid ${GOLD}` : '1.5px solid transparent' }}
                 autoFocus
               />
             </div>
