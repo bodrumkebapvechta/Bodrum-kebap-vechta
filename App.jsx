@@ -2336,6 +2336,11 @@ function MoodPicker({ onClose }) {
   const { lang } = React.useContext(LangContext);
   const [result, setResult] = useState(null);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
   const pick = (moodKey) => {
     let pool = SURPRISE_ITEMS;
     if (moodKey === 'light') {
@@ -2348,16 +2353,33 @@ function MoodPicker({ onClose }) {
     setResult(pool[Math.floor(Math.random() * pool.length)]);
   };
 
-  return (
-    <ConfigModal onClose={onClose}>
-      <div className="p-6 text-center" style={{ minHeight: 320 }}>
+  return ReactDOM.createPortal(
+    <div
+      className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-6"
+      style={{ background: 'radial-gradient(circle at 50% 20%, rgba(255,199,56,.1), transparent 55%), rgba(21,56,38,.5)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', zIndex: 150, animation: 'modalBgFade .35s ease' }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto relative"
+        style={{
+          background: 'rgba(255,255,255,.42)',
+          backdropFilter: 'blur(26px) saturate(1.6)',
+          WebkitBackdropFilter: 'blur(26px) saturate(1.6)',
+          border: '1px solid rgba(255,255,255,.55)',
+          boxShadow: '0 30px 70px rgba(21,56,38,.35), inset 0 1px 0 rgba(255,255,255,.7), inset 0 0 40px rgba(255,255,255,.15)',
+          animation: 'modalCardUp .4s cubic-bezier(.25,.46,.45,.94)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="absolute top-0 left-0 right-0 h-24 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,.5), transparent)' }} />
+        <div className="p-6 text-center relative" style={{ minHeight: 320 }}>
         {!result ? (
           <>
             <div className="text-4xl mb-3">🎯</div>
             <h3 className="font-black text-lg mb-6" style={{ color: GREEN }}>{mr('title', lang)}</h3>
             <div className="grid grid-cols-2 gap-3">
               {['meat', 'light', 'dough', 'surprise'].map((k) => (
-                <button key={k} onClick={() => pick(k)} className="py-4 rounded-2xl font-bold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{mr(k, lang)}</button>
+                <button key={k} onClick={() => pick(k)} className="py-4 rounded-2xl font-bold text-sm" style={{ background: 'rgba(255,255,255,.55)', color: GREEN, border: '1px solid rgba(255,255,255,.6)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8)' }}>{mr(k, lang)}</button>
               ))}
             </div>
           </>
@@ -2366,18 +2388,20 @@ function MoodPicker({ onClose }) {
             <div className="text-4xl mb-2">🎯</div>
             <h3 className="font-black text-lg mb-4" style={{ color: GREEN }}>{mr('result', lang)}</h3>
             {result.img && (
-              <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: result.imgContain ? '#f7f0e2' : 'transparent' }}>
+              <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: result.imgContain ? 'rgba(255,255,255,.4)' : 'transparent' }}>
                 <img src={result.img} alt={result.name} className={result.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
               </div>
             )}
             <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(result.name, lang)}</div>
-            {result.desc && <p className="text-xs font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(result.desc, lang)}</p>}
+            {result.desc && <p className="text-xs font-medium mb-2" style={{ color: '#5a4f3a' }}>{mx(result.desc, lang)}</p>}
             <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(result.price)}</div>
-            <button onClick={() => setResult(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{mr('again', lang)}</button>
+            <button onClick={() => setResult(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: 'rgba(255,255,255,.55)', color: GREEN, border: '1px solid rgba(255,255,255,.6)' }}>{mr('again', lang)}</button>
           </>
         )}
+        </div>
       </div>
-    </ConfigModal>
+    </div>,
+    document.body
   );
 }
 
@@ -6276,15 +6300,40 @@ function StaffPanelView({ back }) {
               <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
             </div>
             <div className="rounded-3xl p-5" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(6px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.12), 0 20px 50px rgba(0,0,0,.35)' }}>
-              <input
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                type="password" inputMode="numeric" placeholder="• • • • • •"
-                disabled={unlocking}
-                className="w-full px-4 py-3.5 rounded-2xl text-2xl font-black tracking-[0.35em] text-center outline-none"
-                style={{ background: 'rgba(255,255,255,.95)', color: GREEN, border: unlockStage === 'unlocked' ? '1.5px solid #34c759' : unlockStage === 'checking' ? `1.5px solid ${GOLD}` : '1.5px solid transparent' }}
-                autoFocus
-              />
+              <div className="relative">
+                <input
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  type="tel" inputMode="numeric" maxLength={6}
+                  disabled={unlocking}
+                  className="absolute inset-0 w-full h-full opacity-0"
+                  style={{ zIndex: 2 }}
+                  autoFocus
+                />
+                <div className="flex items-center justify-center gap-2 pointer-events-none">
+                  {Array.from({ length: 6 }).map((_, i) => {
+                    const filled = i < pin.length;
+                    const boxColor = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'checking' ? GOLD : filled ? GOLD : 'rgba(255,255,255,.2)';
+                    return (
+                      <div
+                        key={i}
+                        className="w-10 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                        style={{
+                          background: filled ? 'rgba(52,199,89,.08)' : 'rgba(255,255,255,.04)',
+                          border: `1.5px solid ${boxColor}`,
+                          boxShadow: filled ? `0 0 14px ${unlockStage === 'unlocked' ? 'rgba(52,199,89,.4)' : 'rgba(255,199,56,.3)'}` : 'none',
+                        }}
+                      >
+                        {unlockStage === 'unlocked' ? (
+                          <span className="text-lg" style={{ color: '#34c759' }}>✓</span>
+                        ) : filled ? (
+                          <span className="w-2 h-2 rounded-full" style={{ background: GOLD }} />
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </div>
