@@ -6303,7 +6303,7 @@ function StaffPanelView({ back }) {
           <div className="absolute rounded-full pointer-events-none" style={{ width: 260, height: 260, bottom: -70, right: -60, background: 'radial-gradient(circle, rgba(255,199,56,.13), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 11s ease-in-out infinite reverse' }} />
           <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
           <div className="w-full max-w-xs relative">
-            <div className="flex flex-col items-center mb-4">
+            <div className="flex flex-col items-center mb-4 mt-8">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 transition-all duration-500"
                 style={unlockStage === 'unlocked'
@@ -6312,7 +6312,7 @@ function StaffPanelView({ back }) {
                   ? { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.6), 0 0 0 6px rgba(255,59,59,.3)', animation: 'shakeX .4s ease' }
                   : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
               >
-                {unlockStage === 'unlocked' ? <span className="text-2xl">🔓</span> : unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : <Lock size={24} color="#fff" />}
+                {unlockStage === 'unlocked' ? <span className="text-2xl">🔓</span> : unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : <span className="text-3xl">🔒</span>}
               </div>
               <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : unlockStage === 'wrong' ? '#ff8080' : '#fff' }}>
                 {unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'wrong' ? '❌ Falscher PIN' : t('titleStaff')}
@@ -6784,7 +6784,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
 
-          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(255,255,255,.2)', backdropFilter: 'blur(24px) saturate(1.8)', WebkitBackdropFilter: 'blur(24px) saturate(1.8)', borderTop: '1px solid rgba(255,255,255,.3)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.35), 0 -8px 24px rgba(0,0,0,.18)' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(253,246,232,.28)', backdropFilter: 'blur(24px) saturate(1.8)', WebkitBackdropFilter: 'blur(24px) saturate(1.8)', borderTop: '1px solid rgba(253,246,232,.35)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.35), 0 -8px 24px rgba(0,0,0,.18)' }}>
             <div className="grid grid-cols-5">
               {[
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
