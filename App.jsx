@@ -6870,6 +6870,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [activeCat, setActiveCat] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [photoOverrides, setPhotoOverrides] = useState({});
+  useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
 
   useEffect(() => {
     safeGet('siteconfig:tischMenu').then((r) => {
@@ -7040,14 +7042,15 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
             )}
             {displayedItems.map((item, idx) => {
               const color = tischCatColor(item.category);
+              const resolvedImg = item.img || photoOverrides[item.id.replace(/^imp-/, '')] || '';
               return (
                 <div
                   key={item.id}
                   className="tm-card bg-white rounded-2xl p-3.5 flex items-center gap-3.5"
                   style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 8) * 0.05}s` }}
                 >
-                  {item.img ? (
-                    <img src={item.img} alt="" className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0" />
+                  {resolvedImg ? (
+                    <img src={resolvedImg} alt="" className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0" />
                   ) : (
                     <div className="w-[68px] h-[68px] rounded-xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }}>
                       🍽️
