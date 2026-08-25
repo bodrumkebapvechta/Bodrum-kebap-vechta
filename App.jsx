@@ -5625,25 +5625,29 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   );
 }
 
-function CastleWatermark({ style }) {
+function TischBgSlideshow() {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setIdx((i) => (i + 1) % SITE_PHOTOS.length), 10000);
+    return () => clearInterval(iv);
+  }, []);
   return (
-    <svg viewBox="0 0 400 220" style={{ position: 'absolute', pointerEvents: 'none', ...style }} preserveAspectRatio="xMidYMax slice">
-      <g fill="none" stroke={GOLD} strokeWidth="1.4" strokeLinejoin="round">
-        {/* Hauptmauer mit Zinnen */}
-        <path d="M40 200 V120 H55 V108 H70 V120 H85 V108 H100 V120 H115 V108 H130 V120 H145 V108 H160 V120 H175 V108 H190 V120 H205 V108 H220 V120 H235 V108 H250 V120 H265 V108 H280 V120 H295 V108 H310 V120 H325 V108 H340 V120 H360 V200 Z" />
-        {/* Linker Turm */}
-        <path d="M60 200 V90 H75 V78 H90 V90 H105 V78 H120 V90 H135 V200" />
-        {/* Rechter Turm */}
-        <path d="M265 200 V90 H280 V78 H295 V90 H310 V78 H325 V90 H340 V200" />
-        {/* Mittleres Tor */}
-        <path d="M175 200 V150 A25 25 0 0 1 225 150 V200" />
-        {/* Fenster */}
-        <circle cx="97" cy="140" r="3" />
-        <circle cx="303" cy="140" r="3" />
-        <circle cx="150" cy="140" r="3" />
-        <circle cx="250" cy="140" r="3" />
-      </g>
-    </svg>
+    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+      {SITE_PHOTOS.map((p, i) => (
+        <div
+          key={p.src}
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url('${p.src}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: i === idx ? 0.07 : 0,
+            transition: 'opacity 2.5s ease-in-out',
+          }}
+        />
+      ))}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', mixBlendMode: 'overlay' }} />
+    </div>
   );
 }
 
@@ -6912,7 +6916,9 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const displayedItems = searchResults !== null ? searchResults : activeItems;
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(circle at 15% 0%, rgba(255,199,56,.08), transparent 45%), radial-gradient(rgba(21,56,38,.055) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: 'auto, 24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: '#f7f0e2', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <TischBgSlideshow />
+      <div className="relative" style={{ zIndex: 1 }}>
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
@@ -6929,7 +6935,6 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
       <div className="relative px-5 pt-7 pb-4 overflow-hidden" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
         <div className="absolute -top-8 -right-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.18), transparent 70%)' }} />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
-        <CastleWatermark style={{ bottom: -30, right: -40, width: 260, height: 160, opacity: 0.16 }} />
         <div className="relative flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {back && (
@@ -7121,6 +7126,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
+      </div>
     </div>
   );
 }
