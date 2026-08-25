@@ -6152,13 +6152,13 @@ function StaffPanelView({ back }) {
     setEditingPhotoItem(item);
     setEditPhotoUrl(photoOverrides[item.id] || item.img || '');
   };
-  const savePhoto = async () => {
+  const savePhoto = () => {
     if (!editingPhotoItem || !editPhotoUrl.trim()) return;
     const next = { ...photoOverrides, [editingPhotoItem.id]: editPhotoUrl.trim() };
-    await safeSet('siteconfig:photoOverrides', next);
     setPhotoOverrides(next);
     setPhotoSaveMsg(t('savedMsg'));
-    setTimeout(() => setPhotoSaveMsg(''), 2500);
+    setTimeout(() => setPhotoSaveMsg(''), 2000);
+    safeSet('siteconfig:photoOverrides', next);
   };
   const applyPhotoToCategory = async () => {
     if (!editingPhotoItem || !editPhotoUrl.trim()) return;
@@ -6199,30 +6199,39 @@ function StaffPanelView({ back }) {
       const dataUrl = await compressImageFile(file);
       setEditPhotoUrl(dataUrl);
       const next = { ...photoOverrides, [editingPhotoItem.id]: dataUrl };
-      await safeSet('siteconfig:photoOverrides', next);
       setPhotoOverrides(next);
       setPhotoSaveMsg(t('savedMsg'));
-      setTimeout(() => setPhotoSaveMsg(''), 2500);
+      setTimeout(() => setPhotoSaveMsg(''), 2000);
+      safeSet('siteconfig:photoOverrides', next);
     } catch {}
     setPhotoUploadBusy(false);
   };
   const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
   const [galleryUploadBusy, setGalleryUploadBusy] = useState(false);
+  const [galleryPreview, setGalleryPreview] = useState('');
+  const [galleryMsg, setGalleryMsg] = useState('');
   const handleGalleryFileUpload = async (file) => {
     if (!file) return;
     setGalleryUploadBusy(true);
     try {
       const dataUrl = await compressImageFile(file, 1000, 0.75);
-      const next = [...extraGalleryPhotos, dataUrl];
-      await safeSet('siteconfig:extraGalleryPhotos', next);
-      setExtraGalleryPhotos(next);
+      setGalleryPreview(dataUrl);
     } catch {}
     setGalleryUploadBusy(false);
   };
-  const removeGalleryPhoto = async (idx) => {
-    const next = extraGalleryPhotos.filter((_, i) => i !== idx);
-    await safeSet('siteconfig:extraGalleryPhotos', next);
+  const saveGalleryPhoto = () => {
+    if (!galleryPreview) return;
+    const next = [...extraGalleryPhotos, galleryPreview];
     setExtraGalleryPhotos(next);
+    setGalleryPreview('');
+    setGalleryMsg(t('savedMsg'));
+    setTimeout(() => setGalleryMsg(''), 2000);
+    safeSet('siteconfig:extraGalleryPhotos', next);
+  };
+  const removeGalleryPhoto = (idx) => {
+    const next = extraGalleryPhotos.filter((_, i) => i !== idx);
+    setExtraGalleryPhotos(next);
+    safeSet('siteconfig:extraGalleryPhotos', next);
   };
   const [hiddenPhotos, setHiddenPhotos] = useState([]);
   useEffect(() => { if (ok) safeGet('siteconfig:hiddenPhotos').then((r) => { if (r) setHiddenPhotos(r); }); }, [ok]);
@@ -6231,15 +6240,15 @@ function StaffPanelView({ back }) {
     setHiddenPhotos(next);
     await safeSet('siteconfig:hiddenPhotos', next);
   };
-  const resetPhoto = async () => {
+  const resetPhoto = () => {
     if (!editingPhotoItem) return;
     const next = { ...photoOverrides };
     delete next[editingPhotoItem.id];
-    await safeSet('siteconfig:photoOverrides', next);
     setPhotoOverrides(next);
     setEditPhotoUrl('');
     setPhotoSaveMsg('🗑️ ' + t('deletedMsg'));
-    setTimeout(() => { setPhotoSaveMsg(''); setEditingPhotoItem(null); }, 1400);
+    setTimeout(() => { setPhotoSaveMsg(''); setEditingPhotoItem(null); }, 900);
+    safeSet('siteconfig:photoOverrides', next);
   };
 
   const wheelSearch = async () => {
@@ -6811,10 +6820,20 @@ function StaffPanelView({ back }) {
               <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
                 <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">🖼️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>{t('independentPhotoTitle')}</h3></div>
                 <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>{t('independentPhotoHint')}</p>
-                <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-4 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
+                <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
                   <span className="text-base">📷</span> {galleryUploadBusy ? '…' : t('uploadGalleryPhotoBtn')}
                   <input type="file" accept="image/*" className="hidden" disabled={galleryUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleGalleryFileUpload(f); e.target.value = ''; }} />
                 </label>
+                {galleryPreview && (
+                  <div className="bg-white rounded-xl p-3 mb-4">
+                    <img src={galleryPreview} alt="" className="w-full h-40 object-cover rounded-lg mb-3" />
+                    <div className="flex gap-2">
+                      <button onClick={saveGalleryPhoto} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                      <button onClick={() => setGalleryPreview('')} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+                    </div>
+                    {galleryMsg && <div className="text-center text-sm font-bold mt-3 py-2 rounded-lg" style={{ background: '#e8f5ec', color: '#1d6b3a' }}>{galleryMsg}</div>}
+                  </div>
+                )}
                 {extraGalleryPhotos.length > 0 && (
                   <div className="grid grid-cols-3 gap-2">
                     {extraGalleryPhotos.map((src, idx) => (
