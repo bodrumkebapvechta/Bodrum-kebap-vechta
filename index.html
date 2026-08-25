@@ -1,32 +1,1895 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bodrum Kebap Vechta | Kebap, Pizza, Rollo & mehr</title>
-    <meta name="description" content="Bodrum Kebap Vechta - Schnellrestaurant mit Wohlfühlambiente. Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel & Salat. 100% Halal, täglich frisch." />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/png" href="/icon-192.png" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
-    <meta name="theme-color" content="#153826" />
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berlin Döner Osnabrück — Kollegienwall 1a</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Inter:wght@400;500;600;700;800&display=swap');
 
-    <!-- Open Graph / Facebook, WhatsApp, Instagram -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://bodrumkebapvechta.de" />
-    <meta property="og:title" content="Bodrum Kebap Vechta | Kebap, Pizza, Rollo & mehr" />
-    <meta property="og:description" content="Schnellrestaurant mit Wohlfühlambiente in Vechta. Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel & Salat. 100% Halal, täglich frisch zubereitet." />
-    <meta property="og:image" content="https://bodrumkebapvechta.de/hero.jpg" />
-    <meta property="og:locale" content="de_DE" />
-    <meta property="og:site_name" content="Bodrum Kebap Vechta" />
+:root{
+  --ink:#0a0a0f;
+  --ink-2:#131319;
+  --panel:#17171f;
+  --concrete:#1b1b22;
+  --brick:#9a3b2c;
+  --brick-deep:#6e2a20;
+  --teal:#12817d;
+  --teal-deep:#0d5f5c;
+  --red:#d81e26;
+  --red-hi:#ff3b30;
+  --amber:#f2a93b;
+  --chalk:#f4efe2;
+  --muted:#b9b2a3;
+  --line: rgba(244,239,226,0.14);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 800px at 10% -10%, rgba(154,59,44,0.10), transparent 60%),
+    radial-gradient(1000px 700px at 100% 0%, rgba(18,129,125,0.10), transparent 55%),
+    var(--ink);
+  color:var(--chalk);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  position:relative;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bodrum Kebap Vechta | Kebap, Pizza, Rollo & mehr" />
-    <meta name="twitter:description" content="Schnellrestaurant mit Wohlfühlambiente in Vechta. 100% Halal, täglich frisch zubereitet." />
-    <meta name="twitter:image" content="https://bodrumkebapvechta.de/hero.jpg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/main.jsx"></script>
-  </body>
+h1,h2,h3{
+  font-family:'Anton',sans-serif;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  line-height:0.98;
+  margin:0;
+  font-weight:400;
+}
+.eyebrow{
+  font-family:'Permanent Marker',cursive;
+  color:var(--amber);
+  font-size:1.05rem;
+  display:inline-block;
+  transform:rotate(-2deg);
+  margin-bottom:10px;
+}
+
+/* ---------- STICKER / STAMP ---------- */
+.stamp{
+  position:absolute;width:110px;height:110px;border-radius:50%;
+  border:3px dashed var(--amber);color:var(--amber);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:'Permanent Marker',cursive;font-size:0.78rem;line-height:1.15;
+  transform:rotate(-12deg);opacity:0.9;pointer-events:none;
+  background:rgba(10,10,15,0.35);backdrop-filter:blur(1px);
+  z-index:3;
+}
+
+/* ---------- NAV ---------- */
+header.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,10,15,0.85);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:1180px;margin:0 auto;padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;gap:14px;
+}
+.nav-left{display:flex;align-items:center;gap:16px;}
+.nav-brand{
+  font-family:'Anton',sans-serif;
+  font-size:1.25rem;
+  letter-spacing:0.5px;
+  display:flex;align-items:center;gap:10px;
+  white-space:nowrap;
+}
+.nav-brand span{color:var(--red);}
+.nav-logo-img{width:54px;height:54px;border-radius:8px;object-fit:cover;box-shadow:0 2px 10px rgba(0,0,0,0.5);}
+.nav-links{display:flex;gap:24px;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;}
+.nav-links a{opacity:0.82;transition:opacity .2s, color .2s;position:relative;}
+.nav-links a:hover{opacity:1;color:var(--amber);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-toggle{display:none;background:none;border:none;color:var(--chalk);font-size:2.2rem;cursor:pointer;line-height:1;padding:4px 6px;}
+.status-bar{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:7px 14px;font-size:0.76rem;font-weight:700;letter-spacing:0.03em;
+  border-top:1px solid var(--line);
+  background:rgba(255,255,255,0.02);
+  text-transform:uppercase;
+}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;box-shadow:0 0 0 3px rgba(255,255,255,0.05);}
+.status-bar.open .status-dot{background:#3ecf8e;box-shadow:0 0 0 3px rgba(62,207,142,0.18);}
+.status-bar.open #statusText{color:#7fe3b4;}
+.status-bar.closing .status-dot{background:var(--amber);box-shadow:0 0 0 3px rgba(242,169,59,0.18);}
+.status-bar.closing #statusText{color:var(--amber);}
+.status-bar.closed .status-dot{background:var(--red-hi);box-shadow:0 0 0 3px rgba(255,106,74,0.18);}
+.status-bar.closed #statusText{color:#ffb3a0;}
+.lang-trigger{position:relative;}
+.lang-trigger-btn{
+  background:var(--panel);border:1px solid var(--line);color:var(--chalk);
+  padding:9px 12px;border-radius:20px;font-size:0.95rem;cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:.2s;font-family:inherit;
+}
+.lang-trigger-btn:hover{border-color:var(--amber);}
+.lang-trigger-btn .caret{font-size:0.65rem;color:var(--muted);}
+.lang-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:8px;display:flex;flex-direction:column;gap:2px;min-width:150px;
+  box-shadow:0 20px 45px rgba(0,0,0,0.5);
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .2s ease, transform .2s ease, visibility .2s;
+  z-index:200;
+}
+.lang-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+.lang-opt{
+  background:none;border:none;color:var(--chalk);text-align:left;
+  padding:10px 12px;border-radius:6px;font-size:0.85rem;cursor:pointer;font-family:inherit;
+  transition:.15s;
+}
+.lang-opt:hover{background:var(--ink);color:var(--amber);}
+.lang-opt.active{color:var(--amber);font-weight:700;}
+#cookieBar{
+  position:fixed;left:16px;right:16px;bottom:16px;z-index:500;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:18px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  box-shadow:0 20px 50px rgba(0,0,0,0.5);
+  animation:cookieIn .4s ease;
+  max-width:720px;margin:0 auto;
+}
+#cookieBar p{margin:0;font-size:0.82rem;color:var(--muted);line-height:1.5;flex:1;min-width:220px;}
+#cookieBar button{
+  background:var(--red);color:var(--chalk);border:none;padding:11px 22px;border-radius:20px;
+  font-weight:700;font-size:0.82rem;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.2s;
+}
+#cookieBar button:hover{background:var(--red-hi);}
+#cookieBar.hide{opacity:0;transform:translateY(20px);transition:opacity .4s ease, transform .4s ease;}
+@keyframes cookieIn{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.order-trigger-btn{
+  background:var(--red);color:var(--chalk);padding:10px 18px;border-radius:3px;
+  font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
+  border:2px solid var(--red);transition:.2s;cursor:pointer;font-family:inherit;
+}
+.order-trigger-btn:hover{background:transparent;color:var(--red-hi);border-color:var(--red-hi);}
+
+/* ---------- BESTELLEN MODAL ---------- */
+.order-modal-overlay{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(6,6,10,0.8);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;visibility:hidden;transition:opacity .25s ease, visibility .25s;
+}
+.order-modal-overlay.open{opacity:1;visibility:visible;}
+.order-modal{
+  width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);
+  border-radius:18px;padding:38px 28px 32px;text-align:center;position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  transform:translateY(16px) scale(0.98);transition:transform .25s ease;
+}
+.order-modal-overlay.open .order-modal{transform:translateY(0) scale(1);}
+.order-modal-close{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:1.7rem;line-height:1;cursor:pointer;padding:6px;
+}
+.order-modal-close:hover{color:var(--chalk);}
+.order-modal-tagline{
+  color:var(--red-hi);font-weight:800;text-transform:uppercase;
+  font-size:0.78rem;letter-spacing:0.06em;margin-bottom:8px;
+}
+.order-modal-title{
+  font-family:'Anton',sans-serif;text-transform:uppercase;
+  font-size:1.6rem;margin:0 0 30px;letter-spacing:0.4px;
+}
+.order-modal-list{display:flex;flex-direction:column;gap:22px;align-items:center;}
+.order-modal-item{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;text-decoration:none;}
+.order-modal-icon{
+  width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.7rem;box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+.order-modal-item.lieferando .order-modal-icon{background:#FF8C00;}
+.order-modal-item.wolt .order-modal-icon{background:#00D4FF;}
+.order-modal-item.uber .order-modal-icon{background:#00D26A;}
+.order-modal-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  padding:15px;border-radius:8px;font-weight:800;text-transform:uppercase;
+  font-size:0.88rem;letter-spacing:0.03em;transition:transform .15s ease, filter .15s ease;
+}
+.order-modal-item.lieferando .order-modal-btn{background:#FF8C00;color:#1a0d00;box-shadow:0 4px 18px rgba(255,140,0,0.4);}
+.order-modal-item.wolt .order-modal-btn{background:#00D4FF;color:#00232b;box-shadow:0 4px 18px rgba(0,212,255,0.4);}
+.order-modal-item.uber .order-modal-btn{background:#00D26A;color:#04240f;box-shadow:0 4px 18px rgba(0,210,106,0.4);}
+.order-modal-item:hover .order-modal-btn{transform:translateY(-2px);filter:brightness(1.08);}
+.order-modal-btn .arrow{transition:transform .2s;}
+.order-modal-item:hover .order-modal-btn .arrow{transform:translateX(4px);}
+@media (max-width:900px){
+  .nav-links{
+    display:flex;flex-direction:column;gap:0;
+    position:absolute;top:100%;left:0;right:0;
+    background:var(--ink-2);border-bottom:1px solid var(--line);
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
+  }
+  .nav-links.open{max-height:360px;overflow-y:auto;}
+  .nav-links a{padding:16px 28px;border-bottom:1px solid var(--line);opacity:1;}
+  .nav-toggle{display:block;}
+  .nav-brand{font-size:1rem;gap:6px;}
+  .nav-logo-img{width:40px;height:40px;}
+  .nav-inner{padding:12px 14px;gap:8px;}
+  .nav-right{gap:6px;}
+  .order-trigger-btn{padding:8px 12px;font-size:0.68rem;}
+  .lang-trigger-btn{padding:7px 8px;font-size:0.85rem;gap:3px;}
+  .lang-trigger-btn .caret{display:none;}
+  .nav-toggle{font-size:2rem;padding:2px 4px;}
+}
+
+/* ---------- HERO (photo cycler from master array) ---------- */
+.hero{
+  position:relative;min-height:100svh;display:flex;align-items:flex-end;
+  overflow:hidden;
+}
+.hero-slide{
+  position:absolute;inset:0;background-size:cover;background-position:center 5%;
+  opacity:0;transition:opacity 1.6s ease;
+  filter:grayscale(0.05) contrast(1.05) saturate(1.15) brightness(1.08);
+}
+.hero-slide.active{opacity:1;}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:
+    linear-gradient(180deg, rgba(8,8,13,0.18) 0%, rgba(8,8,13,0.38) 45%, rgba(8,8,13,0.94) 92%),
+    linear-gradient(100deg, rgba(154,59,44,0.16), rgba(18,129,125,0.12) 60%);
+  mix-blend-mode:multiply;
+}
+.hero-overlay2{position:absolute;inset:0;z-index:1;background:rgba(8,8,13,0.08);}
+.hero-inner{
+  width:100%;padding:152px 28px 70px;max-width:1180px;margin:0 auto;
+  position:relative;z-index:2;
+}
+.hero-logo{max-width:380px;width:60%;margin-bottom:6px;filter:drop-shadow(0 8px 30px rgba(0,0,0,0.6));}
+.hero-logo-spacer{height:230px;}
+.hero h1.sr{position:absolute;left:-9999px;}
+.hero-sub{
+  font-size:1.08rem;color:var(--chalk);max-width:520px;line-height:1.55;
+  margin:18px 0 30px;opacity:0.92;
+}
+.hero-sub b{color:var(--amber);}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px;}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;font-weight:700;font-size:0.86rem;
+  text-transform:uppercase;letter-spacing:0.06em;border-radius:3px;
+  border:2px solid transparent;transition:transform .15s ease, background .2s, color .2s, border-color .2s;
+  cursor:pointer;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn-primary{background:var(--red);color:#100;box-shadow:0 4px 18px rgba(225,75,50,0.5);}
+.btn-primary:hover{background:var(--red-hi);box-shadow:0 4px 20px rgba(255,106,74,0.6);}
+.btn-outline{border-color:var(--chalk);color:var(--chalk);}
+.btn-outline:hover{background:var(--chalk);color:var(--ink);}
+.hero-stats{display:flex;gap:34px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:22px;}
+.hero-stat b{display:block;font-family:'Anton',sans-serif;font-size:1.5rem;color:var(--chalk);}
+.hero-stat span{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+
+/* ---------- MARQUEE ---------- */
+.marquee-band{
+  background:repeating-linear-gradient(-45deg, var(--brick-deep), var(--brick-deep) 26px, var(--brick) 26px, var(--brick) 52px);
+  overflow:hidden;border-top:4px solid var(--ink);border-bottom:4px solid var(--ink);
+  position:relative;z-index:2;
+}
+.marquee-track{
+  display:flex;white-space:nowrap;
+  animation:scrollLeft 34s linear infinite;
+  width:max-content;
+}
+.marquee-track span{
+  font-family:'Anton',sans-serif;font-size:1.5rem;text-transform:uppercase;
+  padding:16px 26px;color:var(--chalk);letter-spacing:1px;
+  text-shadow:2px 2px 0 rgba(0,0,0,0.35);
+}
+.marquee-track span:nth-child(odd){color:var(--amber);}
+@keyframes scrollLeft{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+@media (prefers-reduced-motion: reduce){ .marquee-track{animation:none;} .hero-slide{transition:none;} }
+
+/* ---------- SECTION GENERIC ---------- */
+section{padding:100px 0;position:relative;}
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head h2{font-size:2.6rem;margin-top:8px;}
+.section-head p{color:var(--muted);font-size:1.02rem;line-height:1.6;margin-top:16px;}
+
+/* torn poster divider between sections */
+.torn-top{position:relative;}
+.torn-top:before{
+  content:"";position:absolute;top:-1px;left:0;right:0;height:16px;z-index:3;
+  background:var(--ink);
+  clip-path:polygon(0% 100%,3% 15%,7% 100%,11% 25%,15% 100%,19% 10%,23% 100%,27% 35%,31% 100%,35% 5%,39% 100%,43% 30%,47% 100%,51% 15%,55% 100%,59% 40%,63% 100%,67% 10%,71% 100%,75% 25%,79% 100%,83% 15%,87% 100%,91% 35%,95% 100%,100% 20%,100% 0%,0% 0%);
+}
+
+/* ---------- BESTELLEN ---------- */
+.order{background:var(--ink-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.order-inner{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;}
+.order-text h2{font-size:1.9rem;}
+.order-text p{color:var(--muted);margin-top:8px;}
+.order-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.order-btn{
+  display:flex;align-items:center;gap:10px;
+  border:none;font-family:inherit;cursor:pointer;
+  padding:14px 22px;border-radius:6px;
+  font-weight:800;font-size:0.92rem;text-transform:uppercase;letter-spacing:.03em;
+  transition:.2s;
+}
+.order-btn:hover{transform:translateY(-2px);filter:brightness(1.08);}
+.order-btn.lieferando{background:#FF8000;color:#1a0d00;}
+.order-btn.wolt{background:#00C2E8;color:#00232b;}
+.order-btn.uber{background:#06C167;color:#04240f;}
+
+/* ---------- UBER UNS ---------- */
+.story{background:var(--ink-2);position:relative;overflow:hidden;}
+.story-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;}
+.story-text p{color:#d9d3c4;line-height:1.75;font-size:1.02rem;margin:0 0 18px;}
+.story-text ul{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px;}
+.story-text li{display:flex;gap:12px;font-size:0.96rem;color:var(--chalk);align-items:flex-start;}
+.story-text li:before{content:"—";color:var(--amber);font-weight:700;}
+
+.wall-frames{position:relative;height:480px;}
+.wpost{
+  position:absolute;overflow:hidden;background:var(--chalk);
+  box-shadow:0 22px 45px rgba(0,0,0,0.6);
+  clip-path:polygon(1% 3%,22% 0%,48% 2%,71% 0%,99% 4%,100% 30%,98% 55%,100% 78%,97% 100%,68% 98%,40% 100%,15% 97%,0% 100%,2% 70%,0% 42%);
+}
+.wpost .frame-slide{
+  position:absolute;inset:6px;background-size:cover;background-position:center 8%;
+  opacity:0;transition:opacity 1.4s ease;
+  filter:grayscale(0.3) contrast(1.15) saturate(1.05);
+}
+.wpost .frame-slide.active{opacity:1;}
+.wpost:after{
+  content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%) rotate(-3deg);
+  width:70px;height:26px;background:rgba(244,239,226,0.55);
+  box-shadow:0 2px 4px rgba(0,0,0,0.3);
+}
+.wpost.f1{top:0;left:0;width:58%;height:280px;transform:rotate(-5deg);z-index:2;}
+.wpost.f2{bottom:0;right:0;width:54%;height:260px;transform:rotate(4deg);z-index:1;}
+
+/* ---------- MENU ---------- */
+.menu{background:var(--ink);}
+.menu-board{
+  background:var(--panel);
+  border:3px solid var(--brick-deep);
+  border-radius:6px;
+  padding:50px 44px;
+  position:relative;
+  box-shadow:0 0 0 1px rgba(242,169,59,0.15), 0 30px 60px rgba(0,0,0,0.5);
+}
+.menu-board:before{
+  content:"";position:absolute;inset:10px;border:1px solid rgba(242,169,59,0.25);border-radius:3px;pointer-events:none;
+}
+.menu-cols{display:grid;grid-template-columns:1fr 1fr;gap:50px;}
+.menu-col h3{color:var(--amber);font-size:1.3rem;margin-bottom:22px;letter-spacing:1px;border-bottom:2px solid var(--brick);padding-bottom:10px;}
+.menu-row{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:0.98rem;}
+.menu-row small{display:block;color:var(--muted);font-size:0.78rem;font-weight:400;margin-top:2px;}
+.menu-row b{font-family:'Anton',sans-serif;font-weight:400;color:var(--chalk);white-space:nowrap;}
+.menu-row-photo{width:38px;height:38px;border-radius:5px;object-fit:cover;margin-right:10px;flex-shrink:0;}
+.menu-row-left{display:flex;align-items:center;}
+.menu-note{margin-top:28px;padding:18px 20px;background:rgba(225,75,50,0.12);border-left:3px solid var(--red);border-radius:0 4px 4px 0;font-size:0.9rem;color:#f6d3c6;}
+.sauces{margin-top:30px;font-size:0.92rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px 8px;align-items:center;}
+.sauces b{color:var(--chalk);}
+.sauce-chip{background:var(--ink);border:1px solid var(--line);padding:5px 12px;border-radius:20px;font-size:0.82rem;}
+.legal{margin-top:22px;font-size:0.72rem;color:#726c60;line-height:1.6;}
+
+/* ---------- GALLERY ---------- */
+.gallery{background:var(--ink-2);}
+.gal-grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:120px;gap:10px;}
+.gal-grid figure{margin:0;overflow:hidden;border-radius:4px;position:relative;}
+.gal-grid img{width:100%;height:100%;object-fit:cover;object-position:center 20%;transition:opacity .35s ease, transform .5s ease, filter .5s ease;filter:grayscale(0.05) saturate(1.1);cursor:pointer;}
+.gal-grid figure:hover img{transform:scale(1.08);filter:saturate(1.2);}
+.gal-grid figure:after{
+  content:attr(data-label);position:absolute;left:0;right:0;bottom:0;padding:10px 12px 8px;
+  font-family:'Permanent Marker',cursive;font-size:0.78rem;
+  background:linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+  color:var(--chalk);opacity:0;transition:opacity .3s;
+}
+.gal-grid figure:hover:after{opacity:1;}
+.g1{grid-column:span 3;grid-row:span 2;}
+.g2{grid-column:span 3;grid-row:span 2;}
+.g3{grid-column:span 2;grid-row:span 2;}
+.g4{grid-column:span 2;grid-row:span 2;}
+.g5{grid-column:span 2;grid-row:span 2;}
+
+.lightbox{
+  position:fixed;inset:0;background:rgba(5,5,8,0.94);z-index:1000;
+  display:none;align-items:center;justify-content:center;
+}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:88vw;max-height:82vh;border-radius:6px;box-shadow:0 30px 70px rgba(0,0,0,0.6);}
+.lb-close{
+  position:absolute;top:22px;right:28px;background:none;border:none;color:var(--chalk);
+  font-size:2.2rem;cursor:pointer;line-height:1;
+}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);
+  border:none;color:var(--chalk);font-size:2.4rem;width:56px;height:56px;border-radius:50%;
+  cursor:pointer;transition:.2s;
+}
+.lb-nav:hover{background:rgba(255,255,255,0.18);}
+.lb-prev{left:16px;}
+.lb-next{right:16px;}
+@media (max-width:700px){
+  .lb-nav{width:44px;height:44px;font-size:1.8rem;}
+}
+
+.staff-modal{
+  position:fixed;inset:0;background:rgba(5,5,8,0.85);z-index:1100;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.staff-modal.open{display:flex;}
+.staff-modal-inner{
+  position:relative;width:100%;max-width:900px;height:88vh;
+  background:#0a0a0f;border-radius:12px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+}
+.staff-modal-inner iframe{width:100%;height:100%;border:none;display:block;}
+.staff-modal-close{
+  position:absolute;top:10px;right:14px;z-index:2;background:rgba(0,0,0,0.5);
+  border:none;color:#f4efe2;font-size:1.8rem;width:38px;height:38px;border-radius:50%;
+  cursor:pointer;line-height:1;
+}
+.staff-modal-close:hover{background:rgba(0,0,0,0.75);}
+@media (max-width:700px){
+  .staff-modal{padding:0;}
+  .staff-modal-inner{max-width:100%;height:100%;border-radius:0;}
+}
+
+/* ---------- REVIEWS ---------- */
+.reviews{background:var(--brick-deep);position:relative;overflow:hidden;}
+.reviews:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 40px);}
+.reviews-inner{position:relative;display:flex;align-items:center;gap:50px;flex-wrap:wrap;}
+.rating-badge{background:var(--ink);padding:26px 34px;border-radius:6px;text-align:center;min-width:180px;border:2px solid var(--amber);}
+.rating-badge .num{font-family:'Anton',sans-serif;font-size:2.6rem;color:var(--amber);}
+.rating-badge .stars{color:var(--amber);letter-spacing:3px;margin:4px 0;}
+.rating-badge .count{font-size:0.78rem;color:var(--muted);text-transform:uppercase;}
+.reviews-text{flex:1;min-width:280px;}
+.reviews-text p{font-size:1.2rem;line-height:1.6;color:#fbe9df;font-weight:500;}
+.reviews-text span{display:block;margin-top:14px;font-family:'Permanent Marker',cursive;color:var(--amber);font-size:1rem;}
+
+/* ---------- STANDORT ---------- */
+.standort{background:var(--ink);}
+
+/* ---------- KONTAKT ---------- */
+.kontakt{background:var(--ink-2);border-top:1px solid var(--line);}
+.kontakt-form{max-width:600px;display:flex;flex-direction:column;gap:14px;}
+.kontakt-row{display:flex;gap:14px;flex-wrap:wrap;}
+.kontakt-row .kontakt-input{flex:1;min-width:220px;}
+.kontakt-input{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  padding:14px 16px;color:var(--chalk);font-family:inherit;font-size:0.95rem;resize:vertical;
+}
+.kontakt-input:focus{outline:none;border-color:var(--red-hi);}
+.kontakt-msg{font-size:0.88rem;margin-top:4px;}
+.kontakt-msg.ok{color:#7fd8d3;}
+.kontakt-msg.err{color:#ffb3a0;}
+#announceBar{
+  position:fixed;top:0;left:0;right:0;z-index:150;
+  background:var(--amber);color:#1a0d00;font-weight:700;font-size:0.88rem;
+  padding:12px 20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:16px;
+}
+#announceBar button{background:none;border:none;color:#1a0d00;font-size:1.3rem;cursor:pointer;line-height:1;}
+
+/* ---------- CHAT ASSISTANT (rule-based, no external AI needed) ---------- */
+.chat-fab{
+  position:fixed;bottom:22px;right:22px;z-index:900;
+  width:58px;height:58px;border-radius:50%;background:var(--teal);border:none;
+  font-size:1.6rem;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  transition:transform .2s;
+}
+.chat-fab:hover{transform:scale(1.08);}
+.chat-widget{
+  position:fixed;bottom:22px;right:22px;z-index:901;
+  width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 100px);
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  display:none;flex-direction:column;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,0.6);
+}
+.chat-widget.open{display:flex;}
+.chat-head{
+  background:var(--teal-deep);color:var(--chalk);padding:14px 16px;font-weight:700;font-size:0.92rem;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.chat-head button{background:none;border:none;color:var(--chalk);font-size:1.4rem;cursor:pointer;line-height:1;}
+.chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{max-width:82%;padding:10px 13px;border-radius:12px;font-size:0.88rem;line-height:1.45;}
+.chat-msg.bot{background:var(--ink);color:var(--chalk);align-self:flex-start;border-bottom-left-radius:2px;}
+.chat-msg.user{background:var(--teal);color:var(--chalk);align-self:flex-end;border-bottom-right-radius:2px;}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px;}
+.chat-chip{
+  background:var(--ink);border:1px solid var(--line);color:var(--chalk);
+  padding:7px 12px;border-radius:14px;font-size:0.76rem;cursor:pointer;font-family:inherit;
+  transition:.2s;white-space:nowrap;
+}
+.chat-chip:hover{border-color:var(--amber);color:var(--amber);}
+.chat-form{display:flex;border-top:1px solid var(--line);}
+.chat-form input{
+  flex:1;background:var(--ink);border:none;padding:13px 14px;color:var(--chalk);font-family:inherit;font-size:0.88rem;
+}
+.chat-form input:focus{outline:none;}
+.chat-form button{background:var(--teal);border:none;color:var(--chalk);width:48px;font-size:1.1rem;cursor:pointer;}
+@media (max-width:480px){
+  .chat-widget{right:16px;left:16px;width:auto;bottom:16px;}
+  .chat-fab{right:16px;bottom:16px;}
+}
+.std-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.std-card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:34px;}
+.std-card h3{font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--red-hi);margin-bottom:18px;letter-spacing:0.5px;}
+.std-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);font-size:0.94rem;}
+.std-row span:first-child{color:var(--muted);}
+.std-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;}
+.pin-graphic{width:34px;height:34px;border-radius:50% 50% 50% 0;background:var(--red);transform:rotate(-45deg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.pin-graphic:after{content:"";width:12px;height:12px;background:var(--ink);border-radius:50%;transform:rotate(45deg);}
+
+/* ---------- PERSONEL GİRİŞİ ---------- */
+/* ---------- FOOTER ---------- */
+footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--line);}
+.foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.foot-brand{display:flex;align-items:center;gap:12px;font-family:'Anton',sans-serif;font-size:1.1rem;}
+.foot-links{display:flex;gap:22px;font-size:0.85rem;color:var(--muted);flex-wrap:wrap;}
+.foot-links a:hover{color:var(--amber);}
+.foot-bottom{margin-top:30px;padding-top:22px;border-top:1px solid var(--line);font-size:0.76rem;color:#6c6a63;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .story-grid, .std-grid, .staff-grid{grid-template-columns:1fr;}
+  .wall-frames{height:360px;margin-top:20px;}
+  .menu-cols{grid-template-columns:1fr;gap:10px;}
+  .gal-grid{grid-template-columns:repeat(2,1fr);}
+  .g1,.g2,.g3,.g4,.g5{grid-column:span 1;}
+  .section-head h2{font-size:2rem;}
+  .hero-logo{width:80%;max-width:280px;}
+  .order-inner{flex-direction:column;align-items:flex-start;}
+  .stamp{width:82px;height:82px;font-size:0.6rem;}
+}
+
+/* ---------- INTRO SPRAY ANIMATION ---------- */
+#intro{
+  position:fixed;inset:0;z-index:999;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .6s ease .2s, visibility .6s ease .2s;
+  /* Failsafe: if JS never runs (slow/restricted in-app browsers), this
+     CSS-only animation forces the intro away on its own after 4s so the
+     site is never permanently blocked. */
+  animation:introFailsafe 0.01s ease 4s forwards;
+}
+@keyframes introFailsafe{
+  to{opacity:0;visibility:hidden;pointer-events:none;}
+}
+#intro.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.intro-wrap{position:relative;width:90vw;max-width:640px;text-align:center;}
+.intro-can{position:absolute;top:-46px;left:-10%;font-size:2rem;animation:canMove 1.8s cubic-bezier(.65,0,.35,1) forwards;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));}
+@keyframes canMove{0%{left:-10%; transform:rotate(-8deg);}15%{transform:rotate(6deg);}50%{left:46%; transform:rotate(-6deg);}85%{transform:rotate(6deg);}100%{left:96%; transform:rotate(-4deg);}}
+.intro-text{
+  font-family:'Anton',sans-serif;font-size:clamp(2.2rem, 8vw, 4.2rem);color:var(--chalk);letter-spacing:2px;
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 0%,transparent 0%);
+  mask-image:linear-gradient(90deg,#000 0%,#000 0%,transparent 0%);
+  animation:sprayReveal 1.8s cubic-bezier(.65,0,.35,1) forwards;position:relative;
+  filter: drop-shadow(0 0 14px rgba(242,169,59,0));
+}
+@keyframes sprayReveal{
+  0%{ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 0%,transparent 2%); mask-image:linear-gradient(90deg,#000 0%,#000 0%,transparent 2%); filter:drop-shadow(0 0 0px rgba(242,169,59,0));}
+  60%{filter:drop-shadow(0 0 18px rgba(242,169,59,0.55));}
+  100%{ -webkit-mask-image:linear-gradient(90deg,#000 100%,#000 100%,transparent 100%); mask-image:linear-gradient(90deg,#000 100%,#000 100%,transparent 100%); filter:drop-shadow(0 0 0px rgba(242,169,59,0));}
+}
+.intro-sub{font-family:'Permanent Marker',cursive;color:var(--red-hi);font-size:1rem;margin-top:10px;opacity:0; animation:fadeUp .7s ease 1.7s forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@media (prefers-reduced-motion: reduce){
+  #intro{transition:none;} .intro-can,.intro-text,.intro-sub{animation:none !important;}
+  .intro-text{-webkit-mask-image:none;mask-image:none;} .intro-sub{opacity:1;}
+}
+
+/* ---------- STREET-STYLE ACCENTS ---------- */
+.graffiti-tag{
+  font-family:'Permanent Marker',cursive;
+  position:absolute;pointer-events:none;user-select:none;z-index:3;
+  text-shadow:2px 2px 0 rgba(0,0,0,0.4), -1px -1px 0 rgba(255,255,255,0.06);
+  white-space:nowrap;
+  transition:opacity .5s ease;
+}
+.tag-underline{position:relative;display:inline-block;}
+.tag-underline svg{position:absolute;left:0;bottom:-10px;width:100%;height:14px;overflow:visible;}
+.tag-underline path{fill:none;stroke:var(--red);stroke-width:5;stroke-linecap:round;stroke-dasharray:300;stroke-dashoffset:300;}
+.tag-underline.drawn path{animation:drawStroke 0.9s ease forwards;animation-delay:var(--d,0s);}
+@keyframes drawStroke{to{stroke-dashoffset:0;}}
+</style>
+</head>
+<body>
+
+<div id="intro" aria-hidden="true">
+  <div class="intro-wrap">
+    <span class="intro-can">🖌️</span>
+    <div class="intro-text">BERLIN DÖNER</div>
+    <div class="intro-sub">Ein Stück Berlin in der Mitte von Osnabrück</div>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <div class="nav-brand"><img class="nav-logo-img" src="images/logo.jpg" alt="Berlin Döner Logo">BERLIN <span>DÖNER</span></div>
+      <div class="lang-trigger">
+        <button class="lang-trigger-btn" id="langToggle" type="button" aria-expanded="false">
+          <span id="langFlag">🇩🇪</span><span class="caret">▾</span>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-opt" type="button" data-lang="de">🇩🇪 Deutsch</button>
+          <button class="lang-opt" type="button" data-lang="en">🇬🇧 English</button>
+          <button class="lang-opt" type="button" data-lang="tr">🇹🇷 Türkçe</button>
+          <button class="lang-opt" type="button" data-lang="ro">🇷🇴 Română</button>
+        </div>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="#story" data-i18n="navAbout">Über uns</a>
+      <a href="#menu" data-i18n="navMenu">Speisekarte</a>
+      <a href="#galerie" data-i18n="navGallery">Galerie</a>
+      <a href="#bestellen" id="navOrderLink" data-i18n="navOrder">Bestellen</a>
+      <a href="#standort" data-i18n="navLocation">Standort</a>
+      <a href="#kontakt" data-i18n="navContact">Kontakt</a>
+      <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
+    </nav>
+    <div class="nav-right">
+      <button class="order-trigger-btn" id="orderModalOpen" type="button" data-i18n="navOrder">Bestellen</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
+    </div>
+  </div>
+  <div id="statusBar" class="status-bar">
+    <span id="statusDot" class="status-dot"></span>
+    <span id="statusText">—</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-slide active" id="heroA"></div>
+  <div class="hero-slide" id="heroB"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-overlay2"></div>
+  <div class="stamp" style="top:120px; right:6%;">100%<br>KREUZBERG<br>STYLE</div>
+  <div class="graffiti-tag" style="top:200px; left:4%; font-size:1.6rem; color:var(--red-hi); transform:rotate(-4deg);">Kiekste wa?</div>
+  <div class="graffiti-tag" style="top:90px; left:38%; font-size:1.1rem; color:var(--teal); transform:rotate(3deg);">Kiez-Liebe ♥</div>
+  <div class="hero-inner">
+    <h1 class="sr">Berlin Döner Osnabrück</h1>
+    <div class="hero-logo-spacer"></div>
+    <p class="hero-sub" data-i18n-html="heroSub">Kalb-, Hähnchen- und <b>Steakspieße</b> nach Berliner Art, <b>hausgemachte Soßen</b> und ein Laden, der aussieht, als wäre ein Stück Kreuzberg direkt am Kollegienwall gelandet.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=Kollegienwall+1a+49074+Osnabr%C3%BCck" target="_blank" rel="noopener" data-i18n="btnRoute">Route planen</a>
+      <a class="btn btn-outline" href="#menu" data-i18n="navMenu">Speisekarte</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><b>4,5 ★</b><span data-i18n="statReviews">1.179 Google-Bewertungen</span></div>
+      <div class="hero-stat"><b>🕌 Helal</b><span>100% Helal-Fleisch</span></div>
+      <div class="hero-stat"><b>Kollegienwall 1a</b><span data-i18n="statDowntown">Innenstadt Osnabrück</span></div>
+      <div class="hero-stat"><b>Bis 05:00</b><span data-i18n="statFriSat">Freitag &amp; Samstag</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-band">
+  <div class="marquee-track">
+    <span>BERLIN OHNE GRAFFITI IST MÜNCHEN</span>
+    <span>SEIT TAG EINS IN OSNABRÜCK</span>
+    <span>ECHT KREUZBERG</span>
+    <span>100% BERLIN</span>
+    <span>BERLIN OHNE GRAFFITI IST MÜNCHEN</span>
+    <span>SEIT TAG EINS IN OSNABRÜCK</span>
+    <span>ECHT KREUZBERG</span>
+    <span>100% BERLIN</span>
+  </div>
+</div>
+
+<section class="order torn-top" id="bestellen">
+  <div class="wrap order-inner">
+    <div class="order-text">
+      <div class="eyebrow" data-i18n="orderEyebrow">Nach Hause bestellt</div>
+      <h2 data-i18n="orderTitle">Bring Berlin zu dir.</h2>
+      <p data-i18n="orderSub">Wähl deine Plattform — wir packen den Rest.</p>
+    </div>
+    <div class="order-btns">
+      <button class="order-btn lieferando" type="button" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin">Lieferando</button>
+      <button class="order-btn wolt" type="button" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D">Wolt</button>
+      <button class="order-btn uber" type="button" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ">Uber Eats</button>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story">
+  <div class="graffiti-tag" style="top:20px; right:2%; font-size:6.5rem; color:rgba(244,239,226,0.05); transform:rotate(-6deg); z-index:0;">BÄRLIN</div>
+  <div class="wrap story-grid">
+    <div class="story-text">
+      <div class="eyebrow">Kiekste wa?</div>
+      <div class="section-head" style="margin-bottom:0;">
+        <h2 class="tag-underline" data-draw><span data-i18n="storyTitle">Kreuzberg zieht um.</span>
+          <svg viewBox="0 0 220 14" preserveAspectRatio="none"><path d="M2,8 C60,2 160,12 218,6"/></svg>
+        </h2>
+        <p data-i18n="storyP1">Kein Laden von der Stange. Bei uns hängt Berlin an der Wand — Graffiti, alte Fotos, ehrliche Sprüche. Und in der Küche steht das, worum es eigentlich geht.</p>
+      </div>
+      <p style="margin-top:28px;" data-i18n="storyP2">Unsere Kalb-, Hähnchen- und Steakspieße sind erster Qualität und werden frisch vom Spieß geschnitten — direkt vor euch, nicht aus der Warmhaltebox. Dazu hausgemachte Soßen, die auch wirklich auf einen Döner gehören, und ein junges Team, das euren Hunger auf einen richtig guten Döner ernst nimmt.</p>
+      <ul>
+        <li data-i18n="storyLi1">Kalb-, Hähnchen- &amp; Steakspieße, täglich frisch geschnitten</li>
+        <li data-i18n="storyLi2">100% Helal-Fleisch</li>
+        <li data-i18n="storyLi3">Hausgemachte Soßen: Knoblauch, Kräuter, Scharf, Joppie</li>
+        <li data-i18n="storyLi4">Berliner Interieur — jede Wand hat was zu erzählen</li>
+      </ul>
+    </div>
+    <div class="wall-frames">
+      <div class="wpost f1"><div class="frame-slide active" id="frameA1"></div><div class="frame-slide" id="frameA2"></div></div>
+      <div class="wpost f2"><div class="frame-slide active" id="frameB1"></div><div class="frame-slide" id="frameB2"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="graffiti-tag" style="top:24px; left:3%; font-size:1.2rem; color:var(--amber); transform:rotate(-3deg); z-index:0;">Lecker, wa?</div>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="menuEyebrow">Die Karte</div>
+      <h2 class="tag-underline" data-draw><span data-i18n="menuTitle">Was auf den Spieß kommt.</span>
+        <svg viewBox="0 0 260 14" preserveAspectRatio="none"><path d="M2,10 C80,2 190,14 258,4"/></svg>
+      </h2>
+      <p data-i18n="menuSub">Alle Preise wie an der Theke — keine Überraschungen, kein Kleingedrucktes im Warenkorb.</p>
+      <p style="margin-top:10px;color:var(--amber);font-weight:600;" data-i18n="menuHalalNote">🕌 100% Helal-Fleisch · Jetzt auch mit Steak-Fleisch erhältlich</p>
+    </div>
+    <div class="menu-board">
+      <div class="menu-cols">
+        <div class="menu-col">
+          <h3 data-i18n="menuColTaschen">Taschen</h3>
+          <div class="menu-row-list" id="menuListTaschen">
+          <div class="menu-row"><span>Steak Tasche</span><b>10,00 €</b></div>
+          <div class="menu-row"><span>Kebap Tasche</span><b>8,00 €</b></div>
+          <div class="menu-row"><span>Chicken-Gemüse Tasche</span><b>8,00 €</b></div>
+          <div class="menu-row"><span>Veggie Tasche<small>mit gebratenem Gemüse</small></span><b>8,00 €</b></div>
+          <div class="menu-row"><span>Falafel Tasche</span><b>8,00 €</b></div>
+          <div class="menu-row"><span>Chilli-Cheese Tasche</span><b>8,00 €</b></div>
+          <div class="menu-row"><span>Lahmacun<small>mit Dönerfleisch</small></span><b>10,00 €</b></div>
+          </div>
+        </div>
+        <div class="menu-col">
+          <h3 data-i18n="menuColKlassiker">Klassiker &amp; Extras</h3>
+          <div class="menu-row-list" id="menuListKlassiker">
+          <div class="menu-row"><span>Berliner Teller</span><b>13,00 €</b></div>
+          <div class="menu-row"><span>Dürüm</span><b>9,00 €</b></div>
+          <div class="menu-row"><span>Portion Pommes</span><b>4,00 €</b></div>
+          <div class="menu-row"><span>Chilli-Cheese Nuggets</span><b>4,00 €</b></div>
+          <div class="menu-row"><span>Kebap Box</span><b>8,00 €</b></div>
+          <div class="menu-row"><span>Chicken Wings</span><b>5,00 €</b></div>
+          <div class="menu-row"><span>Chicken Strips</span><b>5,00 €</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-note"><b>Chicken Mix</b> — <span data-i18n="menuChickenMix">3× Wings, 3× Strips, 2× Filetstreifen. Für den großen Hunger.</span></div>
+      <div class="sauces">
+        <b data-i18n="menuSaucesLabel">Soßen:</b>
+        <span class="sauce-chip">Knoblauch</span>
+        <span class="sauce-chip">Kräuter</span>
+        <span class="sauce-chip">Scharf</span>
+        <span class="sauce-chip">Joppie</span>
+        <span class="sauce-chip">Chilli-Cheese</span>
+      </div>
+      <p class="legal">Zusatzstoffe: 2 mit Farbstoff, 3 Phosphat, 9 mit Süßungsmittel. Allergene: a Glutenhaltiges Getreideerzeugnis (Weizen), c Eier, f Soja, g Milch, j Senf, k Sesam, m Laktose, n Sellerie, o Maisstärke.</p>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="galerie">
+  <div class="graffiti-tag" style="top:24px; right:4%; font-size:1.2rem; color:var(--red-hi); transform:rotate(4deg); z-index:0;">100% Kiez</div>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="galleryEyebrow">Frisch vom Spieß</div>
+      <h2 class="tag-underline" data-draw><span data-i18n="galleryTitle">So sieht's aus, bevor's im Brot landet.</span>
+        <svg viewBox="0 0 320 14" preserveAspectRatio="none"><path d="M2,7 C100,1 230,13 318,5"/></svg>
+      </h2>
+    </div>
+    <p style="color:var(--muted);margin-top:14px;font-size:0.85rem;" data-i18n="galleryNote">Die Bilder wechseln von selbst — zum Vergrößern antippen.</p>
+    <div class="gal-grid" id="galGrid">
+      <figure class="g1" id="gTile0"><img src="images/gal_slicing.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g2" id="gTile1"><img src="images/gal_durum.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g3" id="gTile2"><img src="images/gal_wrap.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g4" id="gTile3"><img src="images/gal_fries.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g5" id="gTile4"><img src="images/gal_counter.jpg" alt="Impressionen aus dem Laden"></figure>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Schließen">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Vorheriges Bild">&#8249;</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Nächstes Bild">&#8250;</button>
+</div>
+
+<div class="staff-modal" id="staffModal">
+  <div class="staff-modal-inner">
+    <button class="staff-modal-close" id="staffModalClose" type="button" aria-label="Schließen">&times;</button>
+    <iframe id="staffModalFrame" src="" title="Personal-Bereich"></iframe>
+  </div>
+</div>
+
+<div class="order-modal-overlay" id="orderModalOverlay">
+  <div class="order-modal" role="dialog" aria-modal="true" aria-label="Bestellen">
+    <button class="order-modal-close" id="orderModalClose" type="button" aria-label="Schließen">&times;</button>
+    <div class="order-modal-tagline" data-i18n="orderModalTag">Dein Döner, dein Genuss!</div>
+    <h2 class="order-modal-title" data-i18n="orderModalTitle">Jetzt bestellen!</h2>
+    <div class="order-modal-list">
+      <a class="order-modal-item lieferando" href="https://www.lieferando.de/speisekarte/made-in-baerlin" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin" target="_blank" rel="noopener">
+        <span class="order-modal-icon">🍽️</span>
+        <span class="order-modal-btn">Lieferando <span class="arrow">→</span></span>
+      </a>
+      <a class="order-modal-item wolt" href="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" target="_blank" rel="noopener">
+        <span class="order-modal-icon">🛵</span>
+        <span class="order-modal-btn">Wolt <span class="arrow">→</span></span>
+      </a>
+      <a class="order-modal-item uber" href="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ" target="_blank" rel="noopener">
+        <span class="order-modal-icon">🍔</span>
+        <span class="order-modal-btn">Uber Eats <span class="arrow">→</span></span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<button class="chat-fab" id="chatFab" type="button" aria-label="Assistent öffnen">🤖</button>
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-head">
+    <span data-i18n="chatHeader">🤖 Berlin Döner Assistent</span>
+    <button type="button" id="chatClose" aria-label="Schließen">&times;</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-suggestions" id="chatSuggestions"></div>
+  <form class="chat-form" id="chatForm">
+    <input type="text" id="chatInput" data-i18n-placeholder="chatPlaceholder" placeholder="Frag mich etwas…" autocomplete="off">
+    <button type="submit">➤</button>
+  </form>
+</div>
+
+<section class="reviews">
+  <div class="wrap reviews-inner">
+    <div class="rating-badge">
+      <div class="num">4,5</div>
+      <div class="stars">★★★★★</div>
+      <div class="count" data-i18n="reviewsCount">1.179 Bewertungen</div>
+    </div>
+    <div class="reviews-text">
+      <p data-i18n="reviewsText">Gäste heben besonders das saftige, frisch gewürzte Fleisch, das knusprige Brot und die hausgemachten Soßen hervor — dazu ein freundliches Team und schneller Service.</p>
+      <span data-i18n="reviewsSource">— Zusammengefasst aus Google-Bewertungen</span>
+    </div>
+  </div>
+</section>
+
+<section class="standort" id="standort">
+  <div class="wrap std-grid">
+    <div>
+      <div class="eyebrow" data-i18n="locEyebrow">Vorbeikommen</div>
+      <h2 style="font-size:2.4rem;margin-bottom:20px;" data-i18n="locTitle">Mitten in der City.</h2>
+      <p style="color:var(--muted);line-height:1.7;" data-i18n="locP">Direkt am Kollegienwall, ein paar Schritte vom ZOB und der Innenstadt entfernt. Parkplätze gibt's bei Galeria Kaufhof, ganz in der Nähe.</p>
+      <div class="std-actions">
+        <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=Kollegienwall+1a+49074+Osnabr%C3%BCck" target="_blank" rel="noopener" data-i18n="btnRouteMaps">Route in Google Maps</a>
+      </div>
+    </div>
+    <div class="std-card">
+      <span class="pin-graphic"></span>
+      <h3>Kollegienwall 1a, 49074 Osnabrück</h3>
+      <div class="std-row"><span data-i18n="dayMoDo">Mo – Do</span><span id="hoursMoDo">11:00 – 23:00</span></div>
+      <div class="std-row"><span data-i18n="dayFrSa">Fr – Sa</span><span id="hoursFrSa">11:00 – 05:00</span></div>
+      <div class="std-row"><span data-i18n="daySo">So</span><span id="hoursSo">11:00 – 23:00</span></div>
+      <div class="std-row" style="border-bottom:none;"><span>Instagram</span><span>@berlindoener_os</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="kontakt" id="kontakt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="contactEyebrow">Direkt an uns</div>
+      <h2 style="font-size:2.2rem;" data-i18n="contactTitle">Was auf dem Herzen?</h2>
+      <p style="color:var(--muted);" data-i18n="contactSub">Lob, Kritik, Fragen zu einer Bestellung oder einfach nur Hallo sagen — schreibt uns.</p>
+    </div>
+    <form class="kontakt-form" id="kontaktForm">
+      <div class="kontakt-row">
+        <input type="text" id="kName" data-i18n-placeholder="contactNamePh" placeholder="Dein Name" required class="kontakt-input">
+        <input type="email" id="kEmail" data-i18n-placeholder="contactEmailPh" placeholder="Deine E-Mail" required class="kontakt-input">
+      </div>
+      <textarea id="kMessage" data-i18n-placeholder="contactMsgPh" placeholder="Deine Nachricht..." required class="kontakt-input" rows="5"></textarea>
+      <button type="submit" class="btn btn-primary" id="kSubmitBtn" data-i18n="contactSubmit">Nachricht senden</button>
+      <div id="kMsg" class="kontakt-msg"></div>
+    </form>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <div class="foot-brand">BERLIN <span style="color:var(--red);">DÖNER</span></div>
+      <div class="foot-links">
+        <a href="#menu" data-i18n="navMenu">Speisekarte</a>
+        <a href="#kontakt" data-i18n="navContact">Kontakt</a>
+        <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
+        <button class="foot-order-link" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Lieferando</button>
+        <button class="foot-order-link" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Wolt</button>
+        <button class="foot-order-link" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Uber Eats</button>
+        <a href="https://www.instagram.com/berlindoener_os/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© Berlin Döner Osnabrück · Kollegienwall 1a, 49074 Osnabrück · <a href="impressum.html" style="color:inherit;text-decoration:underline;">Impressum</a> · <a href="datenschutz.html" style="color:inherit;text-decoration:underline;">Datenschutz</a></span>
+      <span data-i18n="footerTagline">Ein Stück Berlin in der Mitte von Osnabrück</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG — replace these two lines with your own project's
+// values (Supabase Dashboard → Project Settings → API), then this
+// entire site works on ANY static host (GitHub Pages, Netlify, etc.)
+// with zero backend code of your own to maintain.
+// ============================================================
+const SUPABASE_URL = 'https://owgmnwwuvxxdpkrkconw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CJ9D7FawNaOuKoqEeX05Ow_01-tdJ25';
+// Optional — free real-email delivery for the contact form via web3forms.com.
+// Leave as-is to skip email (messages are still saved and visible in the staff panel).
+const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY';
+
+async function safeGet(key) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}&select=value`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.length ? rows[0].value : null;
+  } catch { return null; }
+}
+async function safeSet(key, value) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+    });
+    return res.ok;
+  } catch { return false; }
+}
+async function safeListPrefix(prefix, limit = 100) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=${limit}`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
+// ---- Live opening hours: staff can update these, everyone sees them ----
+window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:00 – 23:00' };
+(function(){
+  safeGet('hours').then(v => {
+    if(!v) return;
+    if(v.moDo) document.getElementById('hoursMoDo').textContent = v.moDo;
+    if(v.frSa) document.getElementById('hoursFrSa').textContent = v.frSa;
+    if(v.so) document.getElementById('hoursSo').textContent = v.so;
+    window.__bdHours = { moDo: v.moDo || window.__bdHours.moDo, frSa: v.frSa || window.__bdHours.frSa, so: v.so || window.__bdHours.so };
+    updateStatusBar();
+  });
+})();
+
+// ---- Open/closed status bar (below nav): computes live from __bdHours ----
+function getHoursStringForDate(d){
+  const wd = d.getDay(); // 0=Sun..6=Sat
+  const h = window.__bdHours || {};
+  if(wd >= 1 && wd <= 4) return h.moDo;
+  if(wd === 5 || wd === 6) return h.frSa;
+  return h.so;
+}
+function parseHourRange(str){
+  if(!str) return null;
+  const parts = String(str).split(/[–—-]/).map(s => s.trim());
+  if(parts.length < 2) return null;
+  const o = parts[0].split(':').map(Number);
+  const c = parts[1].split(':').map(Number);
+  if([o[0],o[1],c[0],c[1]].some(n => isNaN(n))) return null;
+  return { openMin: o[0]*60 + o[1], closeMin: c[0]*60 + c[1] };
+}
+function buildSession(baseDate, rangeStr){
+  const r = parseHourRange(rangeStr);
+  if(!r) return null;
+  const start = new Date(baseDate); start.setHours(0,0,0,0); start.setMinutes(r.openMin);
+  const end = new Date(baseDate); end.setHours(0,0,0,0); end.setMinutes(r.closeMin);
+  if(r.closeMin <= r.openMin) end.setDate(end.getDate() + 1); // overnight (e.g. Fr–Sa bis 05:00)
+  return { start, end };
+}
+function updateStatusBar(){
+  const bar = document.getElementById('statusBar');
+  const textEl = document.getElementById('statusText');
+  if(!bar || !textEl) return;
+  let lang = 'de';
+  try { lang = localStorage.getItem('bd_lang') || 'de'; } catch(e){}
+  const now = new Date();
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  const sessions = [
+    buildSession(yesterday, getHoursStringForDate(yesterday)),
+    buildSession(now, getHoursStringForDate(now)),
+  ].filter(Boolean);
+  let active = null;
+  for(const s of sessions){ if(now >= s.start && now < s.end){ active = s; break; } }
+  bar.classList.remove('open','closing','closed');
+  if(active){
+    const minsLeft = Math.round((active.end - now) / 60000);
+    if(minsLeft <= 30){
+      bar.classList.add('closing');
+      textEl.textContent = (I18N.statusClosingSoon[lang] || I18N.statusClosingSoon.de).replace('{m}', Math.max(minsLeft,1));
+    } else {
+      bar.classList.add('open');
+      textEl.textContent = I18N.statusOpen[lang] || I18N.statusOpen.de;
+    }
+  } else {
+    bar.classList.add('closed');
+    textEl.textContent = I18N.statusClosed[lang] || I18N.statusClosed.de;
+  }
+}
+document.addEventListener('DOMContentLoaded', updateStatusBar);
+document.querySelectorAll('.lang-opt').forEach(btn => btn.addEventListener('click', () => setTimeout(updateStatusBar, 0)));
+setInterval(updateStatusBar, 60000);
+// Deferred (not called synchronously here) because I18N is declared further down
+// in this same script — an immediate call would throw "Cannot access I18N before
+// initialization" and silently kill every script that runs after it.
+setTimeout(updateStatusBar, 0);
+
+// ---- Live announcement banner: staff can post a temporary message ----
+(function(){
+  safeGet('announcement').then(v => {
+    if(!v || !v.active || !v.text) return;
+    const bar = document.createElement('div');
+    bar.id = 'announceBar';
+    bar.innerHTML = '<span>📣 ' + v.text.replace(/</g,'&lt;') + '</span><button type="button" aria-label="Schließen">&times;</button>';
+    document.body.appendChild(bar);
+    const nav = document.querySelector('.nav');
+    function pushNavDown(){ if(nav) nav.style.top = bar.offsetHeight + 'px'; }
+    pushNavDown();
+    window.addEventListener('resize', pushNavDown);
+    bar.querySelector('button').addEventListener('click', () => {
+      bar.remove();
+      if(nav) nav.style.top = '0';
+    });
+  });
+})();
+
+// ---- Simple assistant (rule-based FAQ, no external AI service required) ----
+(function(){
+  const fab = document.getElementById('chatFab');
+  const widget = document.getElementById('chatWidget');
+  const closeBtn = document.getElementById('chatClose');
+  const body = document.getElementById('chatBody');
+  const suggestionsEl = document.getElementById('chatSuggestions');
+  const form = document.getElementById('chatForm');
+  const input = document.getElementById('chatInput');
+  if(!fab) return;
+
+  function getLang(){
+    try { return localStorage.getItem('bd_lang') || 'de'; } catch(e){ return 'de'; }
+  }
+
+  function renderSuggestions(){
+    if(!suggestionsEl) return;
+    const lang = getLang();
+    const keys = ['chatSuggestion1','chatSuggestion2','chatSuggestion3','chatSuggestion4','chatSuggestion5','chatSuggestion6'];
+    suggestionsEl.innerHTML = '';
+    keys.forEach(key => {
+      const text = (I18N[key] && (I18N[key][lang] || I18N[key].de)) || key;
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chat-chip';
+      chip.textContent = text;
+      chip.addEventListener('click', () => sendMessage(text));
+      suggestionsEl.appendChild(chip);
+    });
+  }
+
+  function addMsg(text, who){
+    const el = document.createElement('div');
+    el.className = 'chat-msg ' + who;
+    el.textContent = text;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function bumpFaqCounter(key){
+    try {
+      const k = 'bd_faq_' + key;
+      const cur = parseInt(localStorage.getItem(k) || '0', 10) || 0;
+      localStorage.setItem(k, String(cur + 1));
+    } catch(e){}
+  }
+
+  function logUnanswered(question){
+    try {
+      const key = 'unanswered:' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      if(typeof safeSet === 'function') safeSet(key, { question, ts: Date.now() });
+    } catch(e){}
+  }
+
+  let greeted = false;
+  function openChat(){
+    widget.classList.add('open');
+    if(!greeted){
+      greeted = true;
+      const lang = getLang();
+      addMsg((I18N.chatGreeting[lang] || I18N.chatGreeting.de), 'bot');
+      renderSuggestions();
+    }
+  }
+  fab.addEventListener('click', openChat);
+  closeBtn.addEventListener('click', () => widget.classList.remove('open'));
+
+  function answer(raw){
+    const q = raw.toLowerCase();
+    const h = window.__bdHours || {};
+    const lang = getLang();
+    const t = (key) => (I18N[key] && (I18N[key][lang] || I18N[key].de)) || '';
+
+    if(/(öffnung|offen|geöffnet|geschlossen|uhrzeit|wann.*auf|zeiten|opening|hours|open|closed|çalışma|saat|açık|kapalı|program|orar|deschis|închis)/.test(q)){
+      bumpFaqCounter('hours');
+      return `${t('botHoursIntro')}\nMo–Do: ${h.moDo}\nFr–Sa: ${h.frSa}\nSo: ${h.so}`;
+    }
+    if(/(adresse|wo seid|standort|anfahrt|wo liegt|wo ist|parken|parkplatz|address|where.*you|location|adres|nerede|konum|park|adresă|unde sunteți|locație)/.test(q)){
+      bumpFaqCounter('address');
+      if(/(park)/.test(q)) return t('botParking');
+      return t('botAddress');
+    }
+    if(/(liefer|lieferando|wolt|uber ?eats|bestell|deliver|order|teslimat|sipariş|livr|comand)/.test(q)){
+      bumpFaqCounter('delivery');
+      return t('botDelivery');
+    }
+    if(/(speisekarte|menü|karte|preis|kostet|was gibt|menu|price|cost|fiyat|ne var|meniu|preț|cât costă)/.test(q)){
+      bumpFaqCounter('menu');
+      return t('botMenu');
+    }
+    if(/(helal|halal)/.test(q)){
+      bumpFaqCounter('halal');
+      return t('botHalal');
+    }
+    if(/(vegetarisch|vegan|veggie|fleischlos|vegetarian|vejetaryen|vejeteryan|vegetarian)/.test(q)){
+      bumpFaqCounter('veggie');
+      return t('botVeggie');
+    }
+    if(/(bar ?zahlen|karte zahlen|kartenzahlung|ec[- ]?karte|zahlung|bezahlen|paypal|cash|pay by card|payment|nakit|ödeme|kart.*ödeme|plată|numerar|card)/.test(q)){
+      bumpFaqCounter('payment');
+      return t('botPayment');
+    }
+    if(/(catering|event|feier|firmenfeier|geburtstag|gruppe|party|birthday|group|etkinlik|parti|doğum günü|grup|eveniment|petrecere|grup)/.test(q)){
+      bumpFaqCounter('catering');
+      return t('botCatering');
+    }
+    if(/(job|arbeit|bewerbung|mitarbeiter gesucht|aushilfe|career|hiring|iş|başvuru|çalışan ar|angajare|loc de muncă)/.test(q)){
+      bumpFaqCounter('jobs');
+      return t('botJobs');
+    }
+    if(/(kontakt|erreichen|anrufen|telefon|email|e-mail|contact|phone|call|iletişim|telefon|arama|contact|telefon|sunați)/.test(q)){
+      bumpFaqCounter('contact');
+      return t('botContact');
+    }
+    if(/(hallo|hi|hey|moin|guten tag|hello|merhaba|selam|salut|bună)/.test(q)){
+      bumpFaqCounter('greeting');
+      return t('botGreetingReply');
+    }
+    if(/(danke|thx|dankeschön|thanks|thank you|teşekkür|sağol|mulțumesc)/.test(q)){
+      return t('botThanks');
+    }
+    bumpFaqCounter('unmatched');
+    logUnanswered(raw);
+    return t('botFallback');
+  }
+
+  function sendMessage(val){
+    if(!val) return;
+    addMsg(val, 'user');
+    setTimeout(() => addMsg(answer(val), 'bot'), 400);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = input.value.trim();
+    if(!val) return;
+    addMsg(val, 'user');
+    input.value = '';
+    setTimeout(() => addMsg(answer(val), 'bot'), 400);
+  });
+})();
+
+// ---- Contact form: saves to Supabase (staff panel) and emails via web3forms if configured ----
+(function(){
+  const form = document.getElementById('kontaktForm');
+  if(!form) return;
+  const msgEl = document.getElementById('kMsg');
+  const btn = document.getElementById('kSubmitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('kName').value.trim();
+    const email = document.getElementById('kEmail').value.trim();
+    const message = document.getElementById('kMessage').value.trim();
+    if(!name || !email || !message) return;
+
+    btn.disabled = true;
+    let lang = 'de';
+    try { lang = localStorage.getItem('bd_lang') || 'de'; } catch(e){}
+    msgEl.textContent = I18N.contactSending[lang] || I18N.contactSending.de;
+    msgEl.className = 'kontakt-msg';
+
+    const key = 'contactmsg:' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const saved = await safeSet(key, { name, email, message, ts: Date.now() });
+
+    let emailed = true;
+    if(WEB3FORMS_KEY && WEB3FORMS_KEY !== 'YOUR_WEB3FORMS_KEY'){
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: 'Neue Nachricht von der Website — ' + name,
+            from_name: 'Berlin Döner Website',
+            name, email, message,
+          }),
+        });
+        emailed = res.ok;
+      } catch(err) { emailed = false; }
+    }
+
+    btn.disabled = false;
+    if(saved){
+      msgEl.textContent = I18N.contactSuccess[lang] || I18N.contactSuccess.de;
+      msgEl.className = 'kontakt-msg ok';
+      form.reset();
+    } else {
+      msgEl.textContent = I18N.contactError[lang] || I18N.contactError.de;
+      msgEl.className = 'kontakt-msg err';
+    }
+  });
+})();
+
+// ---- Live menu: fetch staff-edited prices/items so ALL visitors see updates ----
+// Falls back silently to the prices already written into this page if the
+// function isn't reachable yet (e.g. right after first deploy).
+(function(){
+  function euro(n){
+    const num = typeof n === 'number' ? n : parseFloat(String(n).replace(',', '.'));
+    if (isNaN(num)) return n;
+    return num.toFixed(2).replace('.', ',') + ' €';
+  }
+
+  function renderColumn(listEl, items){
+    if(!listEl) return;
+    listEl.innerHTML = '';
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'menu-row';
+      const left = document.createElement('span');
+      left.className = 'menu-row-left';
+      if(item.photo){
+        const img = document.createElement('img');
+        img.src = item.photo;
+        img.className = 'menu-row-photo';
+        img.alt = item.name;
+        left.appendChild(img);
+      }
+      const textWrap = document.createElement('span');
+      textWrap.textContent = item.name;
+      if(item.note){
+        const small = document.createElement('small');
+        small.textContent = item.note;
+        textWrap.appendChild(small);
+      }
+      left.appendChild(textWrap);
+      const priceEl = document.createElement('b');
+      priceEl.textContent = euro(item.price);
+      row.appendChild(left);
+      row.appendChild(priceEl);
+      listEl.appendChild(row);
+    });
+  }
+
+  safeGet('menu').then(v => {
+    if(!v || !Array.isArray(v.items) || !v.items.length) return; // keep static fallback
+    const taschen = v.items.filter(i => i.category === 'Taschen');
+    const klassiker = v.items.filter(i => i.category !== 'Taschen');
+    renderColumn(document.getElementById('menuListTaschen'), taschen);
+    renderColumn(document.getElementById('menuListKlassiker'), klassiker);
+  });
+})();
+
+// ---- Personal (staff) area opens in an in-page window instead of a new tab ----
+(function(){
+  const modal = document.getElementById('staffModal');
+  const frame = document.getElementById('staffModalFrame');
+  const closeBtn = document.getElementById('staffModalClose');
+  if(!modal) return;
+
+  function openStaffModal(){
+    frame.src = 'personal.html';
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeStaffModal(){
+    modal.classList.remove('open');
+    frame.src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.staff-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      openStaffModal();
+    });
+  });
+  closeBtn.addEventListener('click', closeStaffModal);
+  modal.addEventListener('click', (e) => { if(e.target === modal) closeStaffModal(); });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && modal.classList.contains('open')) closeStaffModal();
+  });
+})();
+
+const PHOTOS = ["images/ph00.jpg", "images/ph01.jpg", "images/ph02.jpg", "images/ph03.jpg", "images/ph04.jpg", "images/ph05.jpg", "images/ph06.jpg", "images/ph07.jpg", "images/ph08.jpg", "images/ph09.jpg", "images/ph10.jpg", "images/ph11.jpg", "images/ph12.jpg", "images/ph13.jpg", "images/ph14.jpg", "images/ph15.jpg", "images/ph16.jpg", "images/ph17.jpg", "images/ph18.jpg", "images/ph19.jpg", "images/ph20.jpg", "images/ph21.jpg", "images/ph22.jpg", "images/ph23.jpg", "images/ph24.jpg", "images/ph25.jpg", "images/ph26.jpg", "images/ph27.jpg", "images/ph28.jpg", "images/ph29.jpg", "images/ph30.jpg", "images/ph31.jpg", "images/ph32.jpg", "images/ph33.jpg", "images/ph34.jpg", "images/ph35.jpg", "images/ph36.jpg", "images/ph37.jpg", "images/ph38.jpg", "images/ph39.jpg", "images/ph40.jpg", "images/ph41.jpg", "images/ph42.jpg", "images/ph43.jpg", "images/ph44.jpg", "images/ph45.jpg", "images/ph46.jpg", "images/ph47.jpg", "images/ph48.jpg", "images/ph49.jpg", "images/ph50.jpg", "images/ph51.jpg", "images/ph52.jpg", "images/ph53.jpg", "images/ph54.jpg", "images/ph55.jpg"];
+
+// ---- Rotating 5-tile gallery (cycles through ALL site photos every 4s) + lightbox ----
+function initGalleryLightbox(){
+  const tiles = ['gTile0','gTile1','gTile2','gTile3','gTile4']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  if(!tiles.length || !PHOTOS || !PHOTOS.length) return;
+
+  // Preload every photo once so swapping src never shows a blank/invisible frame.
+  PHOTOS.forEach(src => { const im = new Image(); im.src = src; });
+
+  const state = tiles.map((tile, i) => ({
+    tile,
+    img: tile.querySelector('img'),
+    index: Math.floor((PHOTOS.length / tiles.length) * i),
+  }));
+
+  state.forEach(s => {
+    s.tile.style.cursor = 'pointer';
+    s.tile.addEventListener('click', () => openLightbox(s.index));
+  });
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const POS_CSS = { top: 'center 0%', center: 'center center', bottom: 'center 100%' };
+  function applyPos(imgEl, src){
+    const posKey = window.__bdPhotoPositions && window.__bdPhotoPositions[src];
+    imgEl.style.objectPosition = POS_CSS[posKey] || '';
+  }
+  state.forEach(s => applyPos(s.img, PHOTOS[s.index]));
+  if(!reduce){
+    setInterval(() => {
+      state.forEach(s => {
+        s.index = (s.index + tiles.length) % PHOTOS.length;
+        s.img.style.opacity = '0';
+        setTimeout(() => {
+          s.img.src = PHOTOS[s.index];
+          applyPos(s.img, PHOTOS[s.index]);
+          s.img.style.opacity = '1';
+        }, 350);
+      });
+    }, 4000);
+  }
+
+  let currentIndex = 0;
+  function openLightbox(i){
+    currentIndex = i;
+    lbImg.src = PHOTOS[i];
+    lightbox.classList.add('open');
+  }
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+  function showNext(){ currentIndex = (currentIndex + 1) % PHOTOS.length; lbImg.src = PHOTOS[currentIndex]; }
+  function showPrev(){ currentIndex = (currentIndex - 1 + PHOTOS.length) % PHOTOS.length; lbImg.src = PHOTOS[currentIndex]; }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbNext').addEventListener('click', showNext);
+  document.getElementById('lbPrev').addEventListener('click', showPrev);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if(!lightbox.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowRight') showNext();
+    if(e.key === 'ArrowLeft') showPrev();
+  });
+}
+
+function openOrder(url){
+  if(window.__bdTrackOrderClick){ window.__bdTrackOrderClick(url); }
+  const w = window.open(url, '_blank');
+  if(w){ w.opener = null; } else { window.location.href = url; }
+}
+document.querySelectorAll('[data-url]').forEach(el=>{
+  el.addEventListener('click', (e)=>{
+    e.preventDefault();
+    openOrder(el.getAttribute('data-url'));
+  });
+});
+
+// Intro spray animation gate
+(function(){
+  var intro = document.getElementById('intro');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.body.style.overflow = 'hidden';
+  var dur = reduce ? 0 : 2200;
+  setTimeout(function(){
+    intro.classList.add('hide');
+    document.body.style.overflow = '';
+  }, dur);
+})();
+
+// Mobile nav toggle
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.querySelector('.nav-links');
+navToggle.addEventListener('click', ()=>{
+  const isOpen = navLinks.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', isOpen);
+  navToggle.textContent = isOpen ? '✕' : '☰';
+});
+document.querySelectorAll('.nav-links a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    navLinks.classList.remove('open');
+    navToggle.textContent = '☰';
+  });
+});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const id = a.getAttribute('href');
+    const el = document.querySelector(id);
+    if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth'}); }
+  });
+});
+
+// ---- i18n: multi-language support (DE / EN / TR / RO) ----
+const I18N = {
+  navAbout:    { de:"Über uns", en:"About us", tr:"Hakkımızda", ro:"Despre noi" },
+  navMenu:     { de:"Speisekarte", en:"Menu", tr:"Menü", ro:"Meniu" },
+  navGallery:  { de:"Galerie", en:"Gallery", tr:"Galeri", ro:"Galerie" },
+  navOrder:    { de:"Bestellen", en:"Order", tr:"Sipariş Ver", ro:"Comandă" },
+  navLocation: { de:"Standort", en:"Location", tr:"Konum", ro:"Locație" },
+  navContact:  { de:"Kontakt", en:"Contact", tr:"İletişim", ro:"Contact" },
+  navStaff:    { de:"Personal", en:"Staff", tr:"Personel", ro:"Personal" },
+  heroSub: {
+    de:'Kalb-, Hähnchen- und <b>Steakspieße</b> nach Berliner Art, <b>hausgemachte Soßen</b> und ein Laden, der aussieht, als wäre ein Stück Kreuzberg direkt am Kollegienwall gelandet.',
+    en:'Veal, chicken and <b>steak skewers</b> Berlin-style, <b>homemade sauces</b>, and a shop that looks like a piece of Kreuzberg landed right on Kollegienwall.',
+    tr:'Berlin usulü dana, tavuk ve <b>steak şiş</b>, <b>ev yapımı soslar</b> ve sanki Kreuzberg\'den bir parça Kollegienwall\'a düşmüş gibi bir dükkan.',
+    ro:'Frigărui de vițel, pui și <b>steak</b> în stil berlinez, <b>sosuri de casă</b>, și un local care arată de parcă o bucată din Kreuzberg a aterizat pe Kollegienwall.'
+  },
+  btnRoute:     { de:"Route planen", en:"Get directions", tr:"Yol Tarifi Al", ro:"Vezi traseul" },
+  statReviews:  { de:"1.179 Google-Bewertungen", en:"1,179 Google reviews", tr:"1.179 Google değerlendirmesi", ro:"1.179 recenzii Google" },
+  statDowntown: { de:"Innenstadt Osnabrück", en:"Osnabrück city centre", tr:"Osnabrück şehir merkezi", ro:"Centrul orașului Osnabrück" },
+  statFriSat:   { de:"Freitag & Samstag", en:"Friday & Saturday", tr:"Cuma & Cumartesi", ro:"Vineri & Sâmbătă" },
+  orderEyebrow: { de:"Nach Hause bestellt", en:"Delivered to your door", tr:"Eve Sipariş", ro:"Livrare la domiciliu" },
+  orderTitle:   { de:"Bring Berlin zu dir.", en:"Bring Berlin to you.", tr:"Berlin'i evine getir.", ro:"Adu Berlinul la tine." },
+  orderSub:     { de:"Wähl deine Plattform — wir packen den Rest.", en:"Choose your platform — we'll handle the rest.", tr:"Platformunu seç — gerisini biz hallederiz.", ro:"Alege platforma — restul e treaba noastră." },
+  storyP1: {
+    de:"Kein Laden von der Stange. Bei uns hängt Berlin an der Wand — Graffiti, alte Fotos, ehrliche Sprüche. Und in der Küche steht das, worum es eigentlich geht.",
+    en:"Not a shop off the shelf. Berlin hangs on our walls here — graffiti, old photos, honest sayings. And in the kitchen is what it's really all about.",
+    tr:"Sıradan bir dükkan değil. Duvarlarımızda Berlin asılı — grafiti, eski fotoğraflar, samimi sözler. Mutfakta ise asıl mesele var.",
+    ro:"Nu un local oarecare. La noi Berlinul atârnă pe pereți — graffiti, poze vechi, vorbe sincere. Iar în bucătărie e ce contează cu adevărat."
+  },
+  storyP2: {
+    de:"Unsere Kalb-, Hähnchen- und Steakspieße sind erster Qualität und werden frisch vom Spieß geschnitten — direkt vor euch, nicht aus der Warmhaltebox. Dazu hausgemachte Soßen, die auch wirklich auf einen Döner gehören, und ein junges Team, das euren Hunger auf einen richtig guten Döner ernst nimmt.",
+    en:"Our veal, chicken and steak skewers are top quality, freshly sliced right in front of you — not from a warming box. Plus homemade sauces that truly belong on a döner, and a young team that takes your craving for a really good döner seriously.",
+    tr:"Dana, tavuk ve steak şişlerimiz birinci kalite ve önünüzde taze kesiliyor — sıcak tutma kutusundan değil. Ayrıca dönere gerçekten yakışan ev yapımı soslar ve iyi bir döner isteğinizi ciddiye alan genç bir ekip.",
+    ro:"Frigăruile noastre de vițel, pui și vită sunt de calitate superioară și tăiate proaspăt chiar în fața ta — nu dintr-o cutie de menținere la cald. Plus sosuri de casă care chiar merg la un döner, și o echipă tânără care ia în serios pofta ta de un döner cu adevărat bun."
+  },
+  storyLi1: { de:"Kalb-, Hähnchen- & Steakspieße, täglich frisch geschnitten", en:"Veal, chicken & steak skewers, freshly sliced daily", tr:"Dana, tavuk & steak şiş, her gün taze kesilir", ro:"Frigărui de vițel, pui & vită, tăiate proaspăt zilnic" },
+  storyLi2: { de:"100% Helal-Fleisch", en:"100% Halal meat", tr:"%100 Helal Et", ro:"100% carne Halal" },
+  storyLi3: { de:"Hausgemachte Soßen: Knoblauch, Kräuter, Scharf, Joppie", en:"Homemade sauces: garlic, herb, hot, joppie", tr:"Ev yapımı soslar: sarımsak, otlu, acı, joppie", ro:"Sosuri de casă: usturoi, verdeață, iute, joppie" },
+  storyLi4: { de:"Berliner Interieur — jede Wand hat was zu erzählen", en:"Berlin interior — every wall has a story to tell", tr:"Berlin tarzı iç mekan — her duvarın anlatacağı bir hikaye var", ro:"Interior berlinez — fiecare perete are o poveste" },
+  menuSub: { de:"Alle Preise wie an der Theke — keine Überraschungen, kein Kleingedrucktes im Warenkorb.", en:"All prices as at the counter — no surprises, no fine print.", tr:"Tüm fiyatlar tezgahtaki gibi — sürpriz yok, küçük yazı yok.", ro:"Toate prețurile ca la tejghea — fără surprize, fără scris mărunt." },
+  menuHalalNote: { de:"🕌 100% Helal-Fleisch · Jetzt auch mit Steak-Fleisch erhältlich", en:"🕌 100% Halal meat · Now also available with steak", tr:"🕌 %100 Helal Et · Artık steak etiyle de mevcut", ro:"🕌 100% carne Halal · Acum disponibil și cu vită" },
+  menuColTaschen:    { de:"Taschen", en:"Pockets", tr:"Cepler", ro:"Buzunare" },
+  menuColKlassiker:  { de:"Klassiker & Extras", en:"Classics & Extras", tr:"Klasikler & Ekstralar", ro:"Clasice & Extra" },
+  menuChickenMix:    { de:"3× Wings, 3× Strips, 2× Filetstreifen. Für den großen Hunger.", en:"3× wings, 3× strips, 2× fillet strips. For a big appetite.", tr:"3× Kanat, 3× Strip, 2× Fileto şerit. Büyük iştah için.", ro:"3× aripioare, 3× strips, 2× fâșii de fileu. Pentru foame mare." },
+  menuSaucesLabel:   { de:"Soßen:", en:"Sauces:", tr:"Soslar:", ro:"Sosuri:" },
+  locP: {
+    de:"Direkt am Kollegienwall, ein paar Schritte vom ZOB und der Innenstadt entfernt. Parkplätze gibt's bei Galeria Kaufhof, ganz in der Nähe.",
+    en:"Right on Kollegienwall, a few steps from the central bus station and downtown. Parking is available nearby at Galeria Kaufhof.",
+    tr:"Kollegienwall üzerinde, otobüs terminaline ve şehir merkezine birkaç adım mesafede. Yakındaki Galeria Kaufhof'ta otopark mevcut.",
+    ro:"Chiar pe Kollegienwall, la câțiva pași de autogară și de centru. Parcare disponibilă în apropiere, la Galeria Kaufhof."
+  },
+  btnRouteMaps: { de:"Route in Google Maps", en:"Directions on Google Maps", tr:"Google Haritalar'da Yol Tarifi", ro:"Traseu pe Google Maps" },
+  footerTagline: { de:"Ein Stück Berlin in der Mitte von Osnabrück", en:"A piece of Berlin in the heart of Osnabrück", tr:"Osnabrück'ün ortasında bir parça Berlin", ro:"O bucată din Berlin în inima Osnabrück-ului" },
+  cookieText: {
+    de:"Diese Website verwendet lokale Speicherung (z. B. Sprachwahl) und anonyme Besucherstatistiken auf diesem Gerät. Keine Weitergabe an Dritte.",
+    en:"This website uses local storage (e.g. language choice) and anonymous visitor statistics on this device. No data is shared with third parties.",
+    tr:"Bu site yerel depolama (örn. dil seçimi) ve bu cihazda anonim ziyaretçi istatistikleri kullanır. Veriler üçüncü taraflarla paylaşılmaz.",
+    ro:"Acest site folosește stocare locală (ex. alegerea limbii) și statistici anonime de vizitatori pe acest dispozitiv. Fără partajare cu terți."
+  },
+  cookieAccept: { de:"Verstanden", en:"Got it", tr:"Anladım", ro:"Am înțeles" },
+  statusOpen: { de:"Jetzt geöffnet", en:"Open now", tr:"Şu an açık", ro:"Deschis acum" },
+  statusClosingSoon: { de:"Schließt in {m} Min.", en:"Closing in {m} min", tr:"{m} dk sonra kapanıyor", ro:"Se închide în {m} min" },
+  statusClosed: { de:"Geschlossen", en:"Closed", tr:"Şu an kapalı", ro:"Închis" },
+
+  menuEyebrow: { de:"Die Karte", en:"The Menu", tr:"Menü", ro:"Meniul" },
+  menuTitle: { de:"Was auf den Spieß kommt.", en:"What goes on the skewer.", tr:"Şişe ne gidiyor.", ro:"Ce se pune pe frigare." },
+  galleryEyebrow: { de:"Frisch vom Spieß", en:"Fresh off the skewer", tr:"Şişten taze", ro:"Proaspăt de pe frigare" },
+  galleryTitle: { de:"So sieht's aus, bevor's im Brot landet.", en:"This is what it looks like before it lands in the bread.", tr:"Ekmeğe girmeden önce böyle görünüyor.", ro:"Așa arată înainte să ajungă în pâine." },
+  galleryNote: { de:"Die Bilder wechseln von selbst — zum Vergrößern antippen.", en:"The photos change automatically — tap to enlarge.", tr:"Fotoğraflar kendiliğinden değişir — büyütmek için dokun.", ro:"Fotografiile se schimbă automat — atinge pentru a mări." },
+
+  chatHeader: { de:"🤖 Berlin Döner Assistent", en:"🤖 Berlin Döner Assistant", tr:"🤖 Berlin Döner Asistanı", ro:"🤖 Asistent Berlin Döner" },
+  chatPlaceholder: { de:"Frag mich etwas…", en:"Ask me something…", tr:"Bana bir şey sor…", ro:"Întreabă-mă ceva…" },
+  chatGreeting: {
+    de:"Hey! 👋 Ich bin der Berlin-Döner-Assistent. Frag mich nach Öffnungszeiten, Adresse, der Speisekarte, Lieferoptionen und mehr.",
+    en:"Hey! 👋 I'm the Berlin Döner assistant. Ask me about opening hours, the address, the menu, delivery options and more.",
+    tr:"Selam! 👋 Ben Berlin Döner asistanıyım. Çalışma saatleri, adres, menü, teslimat seçenekleri ve daha fazlası hakkında bana soru sorabilirsin.",
+    ro:"Salut! 👋 Sunt asistentul Berlin Döner. Întreabă-mă despre orele de deschidere, adresă, meniu, opțiuni de livrare și multe altele."
+  },
+  chatSuggestion1: { de:"Öffnungszeiten", en:"Opening hours", tr:"Çalışma saatleri", ro:"Program" },
+  chatSuggestion2: { de:"Wo seid ihr?", en:"Where are you?", tr:"Nerede bulunuyorsunuz?", ro:"Unde sunteți?" },
+  chatSuggestion3: { de:"Liefert ihr?", en:"Do you deliver?", tr:"Teslimat yapıyor musunuz?", ro:"Livrați?" },
+  chatSuggestion4: { de:"Ist das Fleisch Helal?", en:"Is the meat Halal?", tr:"Et helal mi?", ro:"Carnea este Halal?" },
+  chatSuggestion5: { de:"Habt ihr vegetarisch?", en:"Do you have vegetarian?", tr:"Vejetaryen seçeneğiniz var mı?", ro:"Aveți opțiuni vegetariene?" },
+  chatSuggestion6: { de:"Kann man bar zahlen?", en:"Can I pay cash?", tr:"Nakit ödeme yapılabilir mi?", ro:"Se poate plăti cash?" },
+
+  reviewsCount: { de:"1.179 Bewertungen", en:"1,179 reviews", tr:"1.179 değerlendirme", ro:"1.179 recenzii" },
+  reviewsText: {
+    de:"Gäste heben besonders das saftige, frisch gewürzte Fleisch, das knusprige Brot und die hausgemachten Soßen hervor — dazu ein freundliches Team und schneller Service.",
+    en:"Guests especially highlight the juicy, freshly seasoned meat, the crispy bread and the homemade sauces — plus a friendly team and fast service.",
+    tr:"Misafirler özellikle sulu, taze baharatlanmış eti, çıtır ekmeği ve ev yapımı sosları öne çıkarıyor — ayrıca güler yüzlü ekip ve hızlı servis.",
+    ro:"Clienții evidențiază în special carnea suculentă, condimentată proaspăt, pâinea crocantă și sosurile de casă — plus o echipă prietenoasă și servire rapidă."
+  },
+  reviewsSource: { de:"— Zusammengefasst aus Google-Bewertungen", en:"— Summarized from Google reviews", tr:"— Google değerlendirmelerinden özetlenmiştir", ro:"— Rezumat din recenziile Google" },
+
+  locEyebrow: { de:"Vorbeikommen", en:"Visit us", tr:"Bize uğrayın", ro:"Vizitează-ne" },
+  locTitle: { de:"Mitten in der City.", en:"Right in the city center.", tr:"Şehrin tam ortasında.", ro:"Chiar în centrul orașului." },
+  dayMoDo: { de:"Mo – Do", en:"Mon – Thu", tr:"Pzt – Per", ro:"Lun – Joi" },
+  dayFrSa: { de:"Fr – Sa", en:"Fri – Sat", tr:"Cum – Cmt", ro:"Vin – Sâm" },
+  daySo: { de:"So", en:"Sun", tr:"Paz", ro:"Dum" },
+
+  contactEyebrow: { de:"Direkt an uns", en:"Straight to us", tr:"Doğrudan bize", ro:"Direct la noi" },
+  contactTitle: { de:"Was auf dem Herzen?", en:"What's on your mind?", tr:"Aklında ne var?", ro:"Ce ai pe suflet?" },
+  contactSub: { de:"Lob, Kritik, Fragen zu einer Bestellung oder einfach nur Hallo sagen — schreibt uns.", en:"Praise, criticism, questions about an order, or just to say hi — write to us.", tr:"Övgü, eleştiri, siparişle ilgili sorular ya da sadece merhaba demek için — bize yazın.", ro:"Laude, critici, întrebări despre o comandă sau doar ca să spui salut — scrie-ne." },
+  contactNamePh: { de:"Dein Name", en:"Your name", tr:"Adınız", ro:"Numele tău" },
+  contactEmailPh: { de:"Deine E-Mail", en:"Your email", tr:"E-postanız", ro:"Emailul tău" },
+  contactMsgPh: { de:"Deine Nachricht...", en:"Your message...", tr:"Mesajınız...", ro:"Mesajul tău..." },
+  contactSubmit: { de:"Nachricht senden", en:"Send message", tr:"Mesaj gönder", ro:"Trimite mesaj" },
+  contactSending: { de:"Wird gesendet …", en:"Sending …", tr:"Gönderiliyor …", ro:"Se trimite …" },
+  contactSuccess: { de:"✅ Danke! Deine Nachricht ist angekommen.", en:"✅ Thanks! Your message has arrived.", tr:"✅ Teşekkürler! Mesajınız ulaştı.", ro:"✅ Mulțumim! Mesajul tău a ajuns." },
+  contactError: { de:"❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.", en:"❌ Could not be sent. Please try again later.", tr:"❌ Gönderilemedi. Lütfen daha sonra tekrar deneyin.", ro:"❌ Nu a putut fi trimis. Încearcă din nou mai târziu." },
+
+  storyTitle: { de:"Kreuzberg zieht um.", en:"Kreuzberg is moving in.", tr:"Kreuzberg taşınıyor.", ro:"Kreuzberg se mută." },
+
+  orderModalTag: { de:"Dein Döner, dein Genuss!", en:"Your döner, your pleasure!", tr:"Senin dönerin, senin keyfin!", ro:"Döner-ul tău, plăcerea ta!" },
+  orderModalTitle: { de:"Jetzt bestellen!", en:"Order now!", tr:"Şimdi sipariş ver!", ro:"Comandă acum!" },
+
+  botHoursIntro: { de:"Unsere Öffnungszeiten:", en:"Our opening hours:", tr:"Çalışma saatlerimiz:", ro:"Programul nostru:" },
+  botParking: {
+    de:"Parkplätze gibt es ganz in der Nähe bei Galeria Kaufhof, nur ein paar Schritte entfernt.",
+    en:"Parking is available very close by at Galeria Kaufhof, just a few steps away.",
+    tr:"Otopark, sadece birkaç adım ötedeki Galeria Kaufhof'un yanında bulunuyor.",
+    ro:"Parcare este disponibilă foarte aproape, la Galeria Kaufhof, la câțiva pași."
+  },
+  botAddress: {
+    de:"Wir sind am Kollegienwall 1a, 49074 Osnabrück — mitten in der Innenstadt, ein paar Schritte vom ZOB entfernt.",
+    en:"We're at Kollegienwall 1a, 49074 Osnabrück — right in the city center, a few steps from the central bus station.",
+    tr:"Kollegienwall 1a, 49074 Osnabrück adresindeyiz — şehir merkezinde, otogara birkaç adım mesafede.",
+    ro:"Ne găsești pe Kollegienwall 1a, 49074 Osnabrück — chiar în centrul orașului, la câțiva pași de autogară."
+  },
+  botDelivery: {
+    de:'Bestellen könnt ihr über Lieferando, Wolt oder Uber Eats — die Buttons findet ihr oben rechts unter "Bestellen".',
+    en:'You can order via Lieferando, Wolt or Uber Eats — you\'ll find the buttons at the top right under "Order".',
+    tr:'Lieferando, Wolt veya Uber Eats üzerinden sipariş verebilirsiniz — butonları sağ üstte "Sipariş Ver" altında bulabilirsiniz.',
+    ro:'Poți comanda prin Lieferando, Wolt sau Uber Eats — găsești butoanele sus, în dreapta, sub „Comandă”.'
+  },
+  botMenu: {
+    de:'Unsere Klassiker: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) und mehr. Die volle Karte gibt\'s weiter oben im Bereich "Speisekarte".',
+    en:'Our classics: Steak Tasche (€10), Kebap Tasche (€8), Berliner Teller (€13), Dürüm (€9) and more. The full menu is further up in the "Menu" section.',
+    tr:'Klasiklerimiz: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) ve daha fazlası. Tam menüyü yukarıdaki "Menü" bölümünde bulabilirsiniz.',
+    ro:'Clasicele noastre: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) și multe altele. Meniul complet este mai sus, în secțiunea „Meniu”.'
+  },
+  botHalal: { de:"Ja, unser Fleisch ist zu 100% Helal. 🕌", en:"Yes, our meat is 100% Halal. 🕌", tr:"Evet, etimiz %100 helal. 🕌", ro:"Da, carnea noastră este 100% Halal. 🕌" },
+  botVeggie: {
+    de:"Wir haben eine Veggie Tasche mit gebratenem Gemüse und eine Falafel Tasche für alle ohne Fleisch.",
+    en:"We have a Veggie Tasche with fried vegetables and a Falafel Tasche for everyone who skips meat.",
+    tr:"Et yemeyenler için kızarmış sebzeli Veggie Tasche ve Falafel Tasche seçeneklerimiz var.",
+    ro:"Avem o Veggie Tasche cu legume prăjite și o Falafel Tasche pentru cei care nu mănâncă carne."
+  },
+  botPayment: {
+    de:"Bei uns im Laden könnt ihr sowohl bar als auch mit Karte zahlen. Bei Lieferando, Wolt und Uber Eats gelten deren eigene Zahlungsoptionen.",
+    en:"In our shop you can pay both cash and by card. On Lieferando, Wolt and Uber Eats their own payment options apply.",
+    tr:"Dükkanımızda hem nakit hem kartla ödeme yapabilirsiniz. Lieferando, Wolt ve Uber Eats'te ise kendi ödeme seçenekleri geçerlidir.",
+    ro:"În local poți plăti atât cash, cât și cu cardul. Pe Lieferando, Wolt și Uber Eats se aplică opțiunile lor proprii de plată."
+  },
+  botCatering: {
+    de:"Für größere Bestellungen oder Feiern schreibt uns am besten direkt über das Kontaktformular weiter unten — wir finden eine Lösung.",
+    en:"For bigger orders or celebrations, best write to us directly via the contact form further down — we'll find a solution.",
+    tr:"Büyük siparişler veya kutlamalar için aşağıdaki iletişim formundan bize doğrudan yazın — bir çözüm buluruz.",
+    ro:"Pentru comenzi mai mari sau petreceri, scrie-ne direct prin formularul de contact mai jos — găsim o soluție."
+  },
+  botJobs: {
+    de:"Aktuell bitte über das Kontaktformular weiter unten anfragen — dort erreicht ihr uns direkt.",
+    en:"Please get in touch via the contact form further down for now — that reaches us directly.",
+    tr:"Şimdilik lütfen aşağıdaki iletişim formundan bize ulaşın — doğrudan bize ulaşır.",
+    ro:"Te rugăm să ne contactezi prin formularul de contact de mai jos — ajunge direct la noi."
+  },
+  botContact: {
+    de:"Am einfachsten über das Kontaktformular weiter unten auf der Seite — oder über Instagram @berlindoener_os.",
+    en:"Easiest via the contact form further down the page — or via Instagram @berlindoener_os.",
+    tr:"En kolayı sayfanın aşağısındaki iletişim formu — ya da Instagram @berlindoener_os.",
+    ro:"Cel mai simplu prin formularul de contact de mai jos pe pagină — sau prin Instagram @berlindoener_os."
+  },
+  botGreetingReply: {
+    de:"Hallo! Wie kann ich helfen? Frag mich z. B. nach Öffnungszeiten oder der Speisekarte.",
+    en:"Hello! How can I help? Ask me e.g. about opening hours or the menu.",
+    tr:"Merhaba! Nasıl yardımcı olabilirim? Örneğin çalışma saatleri veya menü hakkında sorabilirsin.",
+    ro:"Salut! Cum te pot ajuta? Întreabă-mă de exemplu despre program sau meniu."
+  },
+  botThanks: { de:"Gerne! 😊 Guten Hunger!", en:"You're welcome! 😊 Enjoy your meal!", tr:"Rica ederim! 😊 Afiyet olsun!", ro:"Cu plăcere! 😊 Poftă bună!" },
+  botFallback: {
+    de:'Das habe ich nicht ganz verstanden — versuch es z. B. mit "Öffnungszeiten", "Adresse" oder "Speisekarte". Für alles andere hilft dir gerne das Kontaktformular weiter unten weiter.',
+    en:'I didn\'t quite understand that — try e.g. "opening hours", "address" or "menu". For anything else, the contact form further down is happy to help.',
+    tr:'Bunu tam anlayamadım — örneğin "çalışma saatleri", "adres" veya "menü" diyerek dene. Başka her şey için aşağıdaki iletişim formu yardımcı olur.',
+    ro:'Nu am înțeles exact — încearcă de exemplu „program”, „adresă” sau „meniu”. Pentru orice altceva, formularul de contact de mai jos te poate ajuta.'
+  },
+};
+
+(function(){
+  const LANG_KEY = 'bd_lang';
+  let currentLang = 'de';
+  try { currentLang = localStorage.getItem(LANG_KEY) || 'de'; } catch(e){}
+
+  const FLAGS = { de:'🇩🇪', en:'🇬🇧', tr:'🇹🇷', ro:'🇷🇴' };
+
+  function applyLang(lang){
+    currentLang = lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch(e){}
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(I18N[key] && I18N[key][lang]) el.textContent = I18N[key][lang];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-html');
+      if(I18N[key] && I18N[key][lang]) el.innerHTML = I18N[key][lang];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(I18N[key] && I18N[key][lang]) el.setAttribute('placeholder', I18N[key][lang]);
+    });
+    const flagEl = document.getElementById('langFlag');
+    if(flagEl) flagEl.textContent = FLAGS[lang] || '🇩🇪';
+    document.querySelectorAll('.lang-opt').forEach(btn=>{
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+    document.documentElement.setAttribute('lang', lang);
+  }
+
+  const langToggle = document.getElementById('langToggle');
+  const langDropdown = document.getElementById('langDropdown');
+  if(langToggle && langDropdown){
+    langToggle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const isOpen = langDropdown.classList.toggle('open');
+      langToggle.setAttribute('aria-expanded', isOpen);
+    });
+    document.addEventListener('click', ()=>{ langDropdown.classList.remove('open'); });
+    langDropdown.addEventListener('click', e=> e.stopPropagation());
+    document.querySelectorAll('.lang-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=> applyLang(btn.getAttribute('data-lang')));
+    });
+  }
+
+  applyLang(currentLang);
+})();
+
+// ---- Cookie consent banner ----
+(function(){
+  const KEY = 'bd_cookie_ok';
+  let accepted = false;
+  try { accepted = localStorage.getItem(KEY) === '1'; } catch(e){}
+  if(accepted) return;
+
+  const bar = document.createElement('div');
+  bar.id = 'cookieBar';
+  bar.innerHTML =
+    '<p id="cookieText"></p>' +
+    '<button id="cookieAcceptBtn" type="button"></button>';
+  document.body.appendChild(bar);
+
+  function refreshText(){
+    let lang = 'de';
+    try { lang = localStorage.getItem('bd_lang') || 'de'; } catch(e){}
+    document.getElementById('cookieText').textContent = (I18N.cookieText[lang] || I18N.cookieText.de);
+    document.getElementById('cookieAcceptBtn').textContent = (I18N.cookieAccept[lang] || I18N.cookieAccept.de);
+  }
+  refreshText();
+  document.querySelectorAll('.lang-opt').forEach(btn=>{
+    btn.addEventListener('click', refreshText);
+  });
+
+  document.getElementById('cookieAcceptBtn').addEventListener('click', ()=>{
+    try { localStorage.setItem(KEY, '1'); } catch(e){}
+    bar.classList.add('hide');
+    setTimeout(()=> bar.remove(), 400);
+  });
+})();
+
+// Bestellen modal (opens on nav link + nav trigger button; closes on X, overlay click, or Escape)
+(function(){
+  const overlay = document.getElementById('orderModalOverlay');
+  const openBtn = document.getElementById('orderModalOpen');
+  const navLink = document.getElementById('navOrderLink');
+  const closeBtn = document.getElementById('orderModalClose');
+  if(!overlay) return;
+
+  function openModal(e){
+    if(e) e.preventDefault();
+    overlay.classList.add('open');
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+  }
+
+  if(openBtn) openBtn.addEventListener('click', openModal);
+  if(navLink) navLink.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+})();
+
+// Lightweight stats tracking (feeds the separate personal.html staff dashboard via localStorage)
+(function(){
+  function getNum(key){
+    try { return parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch(e){ return 0; }
+  }
+  function setNum(key, val){
+    try { localStorage.setItem(key, String(val)); } catch(e){}
+  }
+  try {
+    setNum('bd_pageviews', getNum('bd_pageviews') + 1);
+    localStorage.setItem('bd_lastvisit_prev', localStorage.getItem('bd_lastvisit_current') || '—');
+    localStorage.setItem('bd_lastvisit_current', new Date().toLocaleString('de-DE'));
+
+    // Device breakdown (rough heuristic — good enough for a staff overview, not exact analytics)
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 900;
+    setNum(isMobile ? 'bd_device_mobile' : 'bd_device_desktop', getNum(isMobile ? 'bd_device_mobile' : 'bd_device_desktop') + 1);
+
+    // Language breakdown (counts the language active on THIS pageview)
+    const curLang = localStorage.getItem('bd_lang') || 'de';
+    setNum('bd_lang_count_' + curLang, getNum('bd_lang_count_' + curLang) + 1);
+  } catch(e){}
+
+  window.__bdTrackOrderClick = function(url){
+    let key = null;
+    if(url.indexOf('lieferando') !== -1) key = 'bd_click_lieferando';
+    else if(url.indexOf('wolt') !== -1) key = 'bd_click_wolt';
+    else if(url.indexOf('ubereats') !== -1) key = 'bd_click_uber';
+    if(key) setNum(key, getNum(key) + 1);
+  };
+
+  document.querySelectorAll('a[href*="google.com/maps"]').forEach(a => {
+    a.addEventListener('click', () => setNum('bd_click_route', getNum('bd_click_route') + 1));
+  });
+})();
+
+
+// ---- Graffiti tag text cycler: swaps between authentic Kiez phrases ----
+(function(){
+  const PHRASES = [
+    "Kiekste wa?", "Kiez-Liebe ♥", "Lecker, wa?", "100% Kiez",
+    "Echt Kreuzberg", "Berlin ist hier", "Janz jroß", "Alles jut?",
+    "Bock auf Döner?", "Immer lecker", "100% Berlin", "Kreuzberg forever",
+    "Sei dabei!", "Frisch vom Spieß", "Ohne Chichi", "Wie in Berlin"
+  ];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tags = document.querySelectorAll('.graffiti-tag');
+  tags.forEach((el, idx) => {
+    if (reduce) return;
+    let used = el.textContent.trim();
+    setInterval(() => {
+      let next;
+      do { next = PHRASES[Math.floor(Math.random()*PHRASES.length)]; } while (next === used);
+      used = next;
+      el.style.opacity = '0';
+      setTimeout(() => { el.textContent = next; el.style.opacity = '1'; }, 500);
+    }, 4500 + idx * 900);
+  });
+})();
+
+// ---- Master photo cycler: drives HERO + both wall frames from the SAME array ----
+function initMasterCycler(){
+  if(!PHOTOS || !PHOTOS.length) return;
+  // Menu-board photo is great for the full gallery grid but not as an atmospheric
+  // rotating background (text-heavy, prices may not match the live menu).
+  const MOOD_PHOTOS = PHOTOS.filter(p => !p.endsWith('ph00.jpg'));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const POS_CSS = { top: 'center 0%', center: 'center center', bottom: 'center 100%' };
+
+  function makeCycler(elA, elB, startIndex, isBg){
+    let i = startIndex % MOOD_PHOTOS.length;
+    let showingA = true;
+    function paint(el, idx){
+      const src = MOOD_PHOTOS[idx];
+      el.style.backgroundImage = `url('${src}')`;
+      const posKey = window.__bdPhotoPositions && window.__bdPhotoPositions[src];
+      el.style.backgroundPosition = POS_CSS[posKey] || '';
+    }
+    paint(elA, i);
+    if(reduce) return;
+    return function tick(){
+      i = (i+1) % MOOD_PHOTOS.length;
+      const nextEl = showingA ? elB : elA;
+      const curEl = showingA ? elA : elB;
+      paint(nextEl, i);
+      nextEl.classList.add('active');
+      curEl.classList.remove('active');
+      showingA = !showingA;
+    };
+  }
+
+  const heroTick = makeCycler(document.getElementById('heroA'), document.getElementById('heroB'), 0, true);
+  const f1Tick = makeCycler(document.getElementById('frameA1'), document.getElementById('frameA2'), Math.floor(MOOD_PHOTOS.length*0.33), false);
+  const f2Tick = makeCycler(document.getElementById('frameB1'), document.getElementById('frameB2'), Math.floor(MOOD_PHOTOS.length*0.66), false);
+
+  if(!reduce){
+    setInterval(()=>{ heroTick && heroTick(); }, 7000);
+    setInterval(()=>{ f1Tick && f1Tick(); }, 7000);
+    setInterval(()=>{ f2Tick && f2Tick(); }, 7000);
+  }
+}
+
+// ---- Bootstrap: pull staff-added gallery photos + hide/position settings from ----
+// Supabase, THEN start the cyclers (so staff changes in personal.html take effect)
+window.__bdPhotoPositions = {};
+(async function(){
+  try {
+    const [extra, hiddenData, posData] = await Promise.all([
+      safeGet('gallery_extra'),
+      safeGet('gallery_hidden'),
+      safeGet('gallery_position'),
+    ]);
+    if(extra && Array.isArray(extra.items)){
+      extra.items.forEach(it => { if(it && it.dataUrl) PHOTOS.push(it.dataUrl); });
+    }
+    if(posData && posData.positions && typeof posData.positions === 'object'){
+      window.__bdPhotoPositions = posData.positions;
+    }
+    if(hiddenData && Array.isArray(hiddenData.hidden) && hiddenData.hidden.length){
+      const hiddenSet = new Set(hiddenData.hidden);
+      const kept = PHOTOS.filter(p => !hiddenSet.has(p));
+      PHOTOS.length = 0;
+      PHOTOS.push(...kept);
+    }
+  } catch(e){}
+  initGalleryLightbox();
+  initMasterCycler();
+})();
+
+// Spray underline draw (staggered on load, plus re-trigger on scroll into view)
+(function(){
+  const els = document.querySelectorAll('[data-draw]');
+  els.forEach((e,idx)=>{ e.style.setProperty('--d', (idx*0.15)+'s'); });
+  if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('drawn')); return; }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){ en.target.classList.add('drawn'); io.unobserve(en.target); }
+    });
+  }, {threshold:0.15, rootMargin:'0px 0px -10% 0px'});
+  els.forEach(e=>io.observe(e));
+})();
+</script>
+
+</body>
 </html>
