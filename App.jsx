@@ -5625,6 +5625,41 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   );
 }
 
+function AnimatedLock({ open }) {
+  return (
+    <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="lockBodyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff6df" />
+          <stop offset="45%" stopColor="#ffe27a" />
+          <stop offset="100%" stopColor="#d4a017" />
+        </linearGradient>
+        <linearGradient id="lockShackleGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#f3f3f3" />
+          <stop offset="50%" stopColor="#c9c9c9" />
+          <stop offset="100%" stopColor="#8f8f8f" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M10 16 V10.5 A7 7 0 0 1 24 10.5 V16"
+        fill="none"
+        stroke="url(#lockShackleGrad)"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+        style={{
+          transformOrigin: '10px 16px',
+          transform: open ? 'rotate(-42deg) translate(-1.5px, -4px)' : 'rotate(0deg)',
+          transition: 'transform .55s cubic-bezier(.34,1.56,.64,1)',
+        }}
+      />
+      <rect x="5.5" y="15" width="23" height="15.5" rx="4.5" fill="url(#lockBodyGrad)" stroke="rgba(0,0,0,.15)" strokeWidth="0.5" />
+      <rect x="5.5" y="15" width="23" height="5" rx="4.5" fill="rgba(255,255,255,.5)" />
+      <circle cx="17" cy="21" r="2.1" fill="#5c4413" />
+      <rect x="15.9" y="22.2" width="2.2" height="4" rx="1" fill="#5c4413" />
+    </svg>
+  );
+}
+
 function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
@@ -6312,7 +6347,7 @@ function StaffPanelView({ back }) {
                   ? { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.6), 0 0 0 6px rgba(255,59,59,.3)', animation: 'shakeX .4s ease' }
                   : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
               >
-                {unlockStage === 'unlocked' ? <span className="text-2xl">🔓</span> : unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : <span className="text-3xl">🔒</span>}
+                {unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : <AnimatedLock open={unlockStage === 'unlocked'} />}
               </div>
               <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : unlockStage === 'wrong' ? '#ff8080' : '#fff' }}>
                 {unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'wrong' ? '❌ Falscher PIN' : t('titleStaff')}
@@ -6642,7 +6677,7 @@ function StaffPanelView({ back }) {
               </div>
               <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingItem && menuSearchResults.map((item) => (
-                <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left bg-white rounded-xl p-3.5 mb-2 flex items-center justify-between shadow-sm">
+                <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left rounded-2xl p-3.5 mb-2.5 flex items-center justify-between" style={{ background: '#fff', border: '1px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
                   <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{item.name}{priceOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
                   <span className="text-xs font-semibold" style={{ color: CHILI }}>{item.priceLarge !== undefined ? `${fmt(item.priceSmall)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</span>
                 </button>
@@ -6784,7 +6819,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
 
-          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(253,246,232,.28)', backdropFilter: 'blur(24px) saturate(1.8)', WebkitBackdropFilter: 'blur(24px) saturate(1.8)', borderTop: '1px solid rgba(253,246,232,.35)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.35), 0 -8px 24px rgba(0,0,0,.18)' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: '#faf3e4', borderTop: '1px solid #f0e5cf', boxShadow: '0 -8px 24px rgba(0,0,0,.18)' }}>
             <div className="grid grid-cols-5">
               {[
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
@@ -6799,9 +6834,9 @@ function StaffPanelView({ back }) {
                   className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-0.5"
                   style={{ position: 'relative' }}
                 >
-                  {tab === item.key && <div className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full" style={{ width: 24, height: 3, background: GOLD }} />}
+                  {tab === item.key && <div className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full" style={{ width: 24, height: 3, background: ORANGE }} />}
                   <span className="text-lg" style={{ opacity: tab === item.key ? 1 : 0.55 }}>{item.icon}</span>
-                  <span className="font-bold text-center leading-[1.1]" style={{ fontSize: 8.5, color: tab === item.key ? GOLD : 'rgba(217,205,180,.6)' }}>{item.label}</span>
+                  <span className="font-bold text-center leading-[1.1]" style={{ fontSize: 8.5, color: tab === item.key ? ORANGE : '#a4906c' }}>{item.label}</span>
                 </button>
               ))}
             </div>
