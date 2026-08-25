@@ -5625,63 +5625,24 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   );
 }
 
-function TischBgSlideshow() {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const iv = setInterval(() => setIdx((i) => (i + 1) % SITE_PHOTOS.length), 10000);
-    return () => clearInterval(iv);
-  }, []);
-  return (
-    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-      {SITE_PHOTOS.map((p, i) => (
-        <div
-          key={p.src}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url('${p.src}')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: i === idx ? 0.07 : 0,
-            transition: 'opacity 2.5s ease-in-out',
-          }}
-        />
-      ))}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', mixBlendMode: 'overlay' }} />
-    </div>
-  );
-}
-
 function AnimatedLock({ open }) {
   return (
-    <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible', transform: open ? 'translateY(-3px)' : 'translateY(0)', transition: 'transform .8s cubic-bezier(.34,1.4,.64,1)' }}>
-      <defs>
-        <linearGradient id="lockBodyGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fff6df" />
-          <stop offset="45%" stopColor="#ffe27a" />
-          <stop offset="100%" stopColor="#d4a017" />
-        </linearGradient>
-        <linearGradient id="lockShackleGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#f3f3f3" />
-          <stop offset="50%" stopColor="#c9c9c9" />
-          <stop offset="100%" stopColor="#8f8f8f" />
-        </linearGradient>
-      </defs>
+    <svg width="30" height="30" viewBox="0 0 34 34" style={{ overflow: 'visible' }}>
       <path
-        d="M10 16 V10.5 A7 7 0 0 1 24 10.5 V16"
+        d="M22 15.5 V11 A6 6 0 0 0 10 11 V15.5"
         fill="none"
-        stroke="url(#lockShackleGrad)"
-        strokeWidth="3.4"
+        stroke="#fff"
+        strokeWidth="3.6"
         strokeLinecap="round"
         style={{
-          transformOrigin: '17px 16px',
-          transform: open ? 'translateY(-7px) rotate(140deg)' : 'translateY(0) rotate(0deg)',
+          transformOrigin: '22px 15.5px',
+          transform: open ? 'rotate(115deg)' : 'rotate(0deg)',
           transition: 'transform .8s cubic-bezier(.34,1.4,.64,1)',
         }}
       />
-      <rect x="5.5" y="15" width="23" height="15.5" rx="4.5" fill="url(#lockBodyGrad)" stroke="rgba(0,0,0,.15)" strokeWidth="0.5" />
-      <rect x="5.5" y="15" width="23" height="5" rx="4.5" fill="rgba(255,255,255,.5)" />
-      <circle cx="17" cy="21" r="2.1" fill="#5c4413" />
-      <rect x="15.9" y="22.2" width="2.2" height="4" rx="1" fill="#5c4413" />
+      <rect x="7" y="14.5" width="20" height="15" rx="4.5" fill="#fff" />
+      <circle cx="17" cy="20.5" r="1.9" fill="#153826" opacity="0.55" />
+      <rect x="16" y="21.6" width="2" height="3.6" rx="1" fill="#153826" opacity="0.55" />
     </svg>
   );
 }
@@ -6916,8 +6877,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const displayedItems = searchResults !== null ? searchResults : activeItems;
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: '#f7f0e2', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-      <TischBgSlideshow />
+    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: '#eaf3ec', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <div className="relative" style={{ zIndex: 1 }}>
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
