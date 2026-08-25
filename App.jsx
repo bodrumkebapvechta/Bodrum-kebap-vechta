@@ -1286,7 +1286,8 @@ function wheelConicGradient() {
 
 /* ============ SHARED UI ============ */
 function TopBar({ onHome, title, dark = true }) {
-  const { t, go, globalNavOpen, setGlobalNavOpen, lang, setLang } = React.useContext(LangContext);
+  const { t, go, lang, setLang } = React.useContext(LangContext);
+  const [globalNavOpen, setGlobalNavOpen] = useState(false);
   return (
     <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-4">
       <div className="flex items-center gap-3">
@@ -3417,7 +3418,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
 /* ============ WHATSAPP ORDER ============ */
 function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart, cartOpen, setCartOpen, go }) {
-  const { lang, setLang, t, installPrompt, onInstall, globalNavOpen, setGlobalNavOpen } = React.useContext(LangContext);
+  const { lang, setLang, t, installPrompt, onInstall } = React.useContext(LangContext);
+  const [globalNavOpen, setGlobalNavOpen] = useState(false);
   const initialTab = initialAction?.pizzaComboMode ? 'pizza' : (initialAction?.categoryMode || MENU[0].key);
   const [tab, setTab] = useState(initialTab);
   const [catImgIdx, setCatImgIdx] = useState(0);
@@ -5627,22 +5629,30 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
 
 function AnimatedLock({ open }) {
   return (
-    <svg width="30" height="30" viewBox="0 0 34 34" style={{ overflow: 'visible' }}>
+    <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="lockBodyGrad2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#e9e9e9" />
+        </linearGradient>
+      </defs>
       <path
         d="M22 15.5 V11 A6 6 0 0 0 10 11 V15.5"
         fill="none"
         stroke="#fff"
-        strokeWidth="3.6"
+        strokeWidth="4.6"
         strokeLinecap="round"
         style={{
           transformOrigin: '22px 15.5px',
           transform: open ? 'rotate(115deg)' : 'rotate(0deg)',
           transition: 'transform .8s cubic-bezier(.34,1.4,.64,1)',
+          filter: 'drop-shadow(0 1px 1px rgba(0,0,0,.25))',
         }}
       />
-      <rect x="7" y="14.5" width="20" height="15" rx="4.5" fill="#fff" />
-      <circle cx="17" cy="20.5" r="1.9" fill="#153826" opacity="0.55" />
-      <rect x="16" y="21.6" width="2" height="3.6" rx="1" fill="#153826" opacity="0.55" />
+      <rect x="6.5" y="14.5" width="21" height="16" rx="5" fill="url(#lockBodyGrad2)" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,.2))' }} />
+      <rect x="6.5" y="14.5" width="21" height="6" rx="5" fill="rgba(255,255,255,.9)" />
+      <circle cx="17" cy="21" r="2.1" fill="#153826" opacity="0.6" />
+      <rect x="15.9" y="22.2" width="2.2" height="4" rx="1" fill="#153826" opacity="0.6" />
     </svg>
   );
 }
@@ -6844,7 +6854,8 @@ function tischCatColor(key) {
 }
 
 function TischMenuView({ back, initialAction, onConsumeAction }) {
-  const { lang, setLang, t, go, globalNavOpen, setGlobalNavOpen } = React.useContext(LangContext);
+  const { lang, setLang, t, go } = React.useContext(LangContext);
+  const [globalNavOpen, setGlobalNavOpen] = useState(false);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
   const [activeCat, setActiveCat] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);
@@ -7177,7 +7188,6 @@ export default function App() {
     document.head.appendChild(script);
   }, []);
   const langCtx = useLang();
-  const [globalNavOpen, setGlobalNavOpen] = useState(false);
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
@@ -7213,7 +7223,7 @@ export default function App() {
 
   if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
-  const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall, go, globalNavOpen, setGlobalNavOpen };
+  const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall, go };
   const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
   const installHelpModal = showInstallHelp && ReactDOM.createPortal(
     <ConfigModal onClose={() => setShowInstallHelp(false)}>
