@@ -5627,7 +5627,7 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
 
 function AnimatedLock({ open }) {
   return (
-    <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible' }}>
+    <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible', transform: open ? 'translateY(-3px)' : 'translateY(0)', transition: 'transform .8s cubic-bezier(.34,1.4,.64,1)' }}>
       <defs>
         <linearGradient id="lockBodyGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#fff6df" />
@@ -5647,9 +5647,9 @@ function AnimatedLock({ open }) {
         strokeWidth="3.4"
         strokeLinecap="round"
         style={{
-          transformOrigin: '10px 16px',
-          transform: open ? 'rotate(-42deg) translate(-1.5px, -4px)' : 'rotate(0deg)',
-          transition: 'transform .55s cubic-bezier(.34,1.56,.64,1)',
+          transformOrigin: '17px 16px',
+          transform: open ? 'translateY(-7px) rotate(140deg)' : 'translateY(0) rotate(0deg)',
+          transition: 'transform .8s cubic-bezier(.34,1.4,.64,1)',
         }}
       />
       <rect x="5.5" y="15" width="23" height="15.5" rx="4.5" fill="url(#lockBodyGrad)" stroke="rgba(0,0,0,.15)" strokeWidth="0.5" />
@@ -6340,9 +6340,9 @@ function StaffPanelView({ back }) {
           <div className="w-full max-w-xs relative">
             <div className="flex flex-col items-center mb-4 mt-8">
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 transition-all duration-500"
+                className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5"
                 style={unlockStage === 'unlocked'
-                  ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.15) rotate(-8deg)' }
+                  ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.1)', transition: 'all .8s cubic-bezier(.34,1.4,.64,1)' }
                   : unlockStage === 'wrong'
                   ? { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.6), 0 0 0 6px rgba(255,59,59,.3)', animation: 'shakeX .4s ease' }
                   : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
@@ -6890,7 +6890,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const displayedItems = searchResults !== null ? searchResults : activeItems;
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(rgba(21,56,38,.06) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: '24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+    <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(circle at 15% 0%, rgba(255,199,56,.08), transparent 45%), radial-gradient(rgba(21,56,38,.055) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: 'auto, 24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
@@ -6983,24 +6983,27 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
       {tischMenu && tischMenu.categories.length > 0 && (
         <>
           {/* Category tabs */}
-          <div className="flex flex-wrap gap-2 px-4 py-3.5 sticky top-0 z-10" style={{ background: 'rgba(253,246,232,.94)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e9dcc0' }}>
-            {tischMenu.categories.map((cat) => {
-              const active = activeCat === cat.key;
-              const color = tischCatColor(cat.key);
-              return (
-                <button
-                  key={cat.key}
-                  onClick={() => { setActiveCat(cat.key); setSearch(''); }}
-                  className="tm-tab px-3.5 py-2 rounded-xl font-black text-sm whitespace-nowrap flex items-center gap-1.5"
-                  style={active
-                    ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 6px 14px ${color}55`, transform: 'scale(1.03)' }
-                    : { background: '#fff', color: '#7c6d55', border: '1.5px solid #e9dcc0', boxShadow: '0 2px 6px rgba(0,0,0,.04)' }}
-                >
-                  <span className="text-base">{cat.emoji || '🍽️'}</span>
-                  {tischCatLabel(cat, lang)}
-                </button>
-              );
-            })}
+          <div className="relative sticky top-0 z-10" style={{ background: 'rgba(253,246,232,.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e9dcc0' }}>
+            <div className="flex gap-2 px-4 py-3 overflow-x-auto" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+              {tischMenu.categories.map((cat) => {
+                const active = activeCat === cat.key;
+                const color = tischCatColor(cat.key);
+                return (
+                  <button
+                    key={cat.key}
+                    onClick={() => { setActiveCat(cat.key); setSearch(''); }}
+                    className="tm-tab flex-shrink-0 px-3 py-1.5 rounded-full font-bold text-xs whitespace-nowrap flex items-center gap-1"
+                    style={active
+                      ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 4px 10px ${color}44` }
+                      : { background: '#fff', color: '#7c6d55', border: '1px solid #e9dcc0' }}
+                  >
+                    <span className="text-sm">{cat.emoji || '🍽️'}</span>
+                    {tischCatLabel(cat, lang)}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="absolute top-0 right-0 bottom-0 w-8 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(253,246,232,.95))' }} />
           </div>
 
           <div className="px-5 pt-3">
