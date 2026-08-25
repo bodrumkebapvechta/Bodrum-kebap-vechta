@@ -479,8 +479,8 @@ function LanguageSwitcher({ lang, setLang, dark }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-bold" style={dark ? { background: 'rgba(255,246,234,.1)', color: '#fff' } : { background: '#f0e5cf', color: GREEN }}>
-        <span>{LANG_FLAGS[lang]}</span><span className="hidden sm:inline">{LANG_NAMES[lang]}</span>
+      <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-2 px-3.5 py-2.5 rounded-full text-sm font-bold" style={dark ? { background: 'rgba(255,246,234,.1)', color: '#fff' } : { background: '#f0e5cf', color: GREEN }}>
+        <span className="text-base">{LANG_FLAGS[lang]}</span><span className="hidden sm:inline">{LANG_NAMES[lang]}</span>
       </button>
       {open && (
         <>
@@ -6903,7 +6903,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
       `}</style>
 
       {/* Header */}
-      <div className="relative px-5 pt-7 pb-4 overflow-hidden" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+      <div className="relative px-5 pt-7 pb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
         <div className="absolute -top-8 -right-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.18), transparent 70%)' }} />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
         <div className="relative flex items-center justify-between gap-3">
@@ -6924,8 +6924,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
           <div className="flex items-center gap-2">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
             <div className="relative">
-              <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,0.12)' }}>
-                {globalNavOpen ? <X size={17} color="#fff" /> : <MenuIcon size={17} color="#fff" />}
+              <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.45)' }}>
+                {globalNavOpen ? <X size={19} color="#fff" /> : <MenuIcon size={19} color="#fff" />}
               </button>
               {globalNavOpen && (
                 <>
