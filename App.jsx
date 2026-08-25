@@ -1305,8 +1305,8 @@ function TopBar({ onHome, title, dark = true }) {
         </div>
       </div>
       <div className="relative flex-shrink-0">
-        <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: dark ? 'rgba(255,246,234,0.12)' : '#f0e5cf' }}>
-          {globalNavOpen ? <X size={18} color={dark ? CREAM : GREEN} /> : <MenuIcon size={18} color={dark ? CREAM : GREEN} />}
+        <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.45)' }}>
+          {globalNavOpen ? <X size={19} color="#fff" /> : <MenuIcon size={19} color="#fff" />}
         </button>
         {globalNavOpen && (
           <>
@@ -3064,8 +3064,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
-            <button onClick={() => setNavOpen((v) => !v)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
-              {navOpen ? <X size={18} color="#fff" /> : <MenuIcon size={18} color="#fff" />}
+            <button onClick={() => setNavOpen((v) => !v)} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.45)' }}>
+              {navOpen ? <X size={19} color="#fff" /> : <MenuIcon size={19} color="#fff" />}
             </button>
           </div>
         </div>
@@ -4028,8 +4028,8 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                 <div className="text-white font-extrabold text-sm">{drawerView === 'wheel' ? t('wheelTitle') : drawerView === 'upsell' ? t('upsellTitle') : drawerView === 'upsell2' ? t('drinksTitle') : drawerView === 'sent' ? t('orderSentTitle') : t('cartTitle')}</div>
               </div>
               <div className="relative flex-shrink-0">
-                <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.12)' }}>
-                  {globalNavOpen ? <X size={16} color="#fff" /> : <MenuIcon size={16} color="#fff" />}
+                <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.45)' }}>
+                  {globalNavOpen ? <X size={19} color="#fff" /> : <MenuIcon size={19} color="#fff" />}
                 </button>
                 {globalNavOpen && (
                   <>
