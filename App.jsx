@@ -5625,6 +5625,28 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   );
 }
 
+function CastleWatermark({ style }) {
+  return (
+    <svg viewBox="0 0 400 220" style={{ position: 'absolute', pointerEvents: 'none', ...style }} preserveAspectRatio="xMidYMax slice">
+      <g fill="none" stroke={GOLD} strokeWidth="1.4" strokeLinejoin="round">
+        {/* Hauptmauer mit Zinnen */}
+        <path d="M40 200 V120 H55 V108 H70 V120 H85 V108 H100 V120 H115 V108 H130 V120 H145 V108 H160 V120 H175 V108 H190 V120 H205 V108 H220 V120 H235 V108 H250 V120 H265 V108 H280 V120 H295 V108 H310 V120 H325 V108 H340 V120 H360 V200 Z" />
+        {/* Linker Turm */}
+        <path d="M60 200 V90 H75 V78 H90 V90 H105 V78 H120 V90 H135 V200" />
+        {/* Rechter Turm */}
+        <path d="M265 200 V90 H280 V78 H295 V90 H310 V78 H325 V90 H340 V200" />
+        {/* Mittleres Tor */}
+        <path d="M175 200 V150 A25 25 0 0 1 225 150 V200" />
+        {/* Fenster */}
+        <circle cx="97" cy="140" r="3" />
+        <circle cx="303" cy="140" r="3" />
+        <circle cx="150" cy="140" r="3" />
+        <circle cx="250" cy="140" r="3" />
+      </g>
+    </svg>
+  );
+}
+
 function AnimatedLock({ open }) {
   return (
     <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible', transform: open ? 'translateY(-3px)' : 'translateY(0)', transition: 'transform .8s cubic-bezier(.34,1.4,.64,1)' }}>
@@ -6891,6 +6913,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(circle at 15% 0%, rgba(255,199,56,.08), transparent 45%), radial-gradient(rgba(21,56,38,.055) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: 'auto, 24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <CastleWatermark style={{ top: 260, left: '50%', transform: 'translateX(-50%)', width: '160vw', maxWidth: 1000, height: 420, opacity: 0.06, zIndex: 0 }} />
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
