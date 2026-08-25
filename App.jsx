@@ -6913,7 +6913,6 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: 'linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundImage: 'radial-gradient(circle at 15% 0%, rgba(255,199,56,.08), transparent 45%), radial-gradient(rgba(21,56,38,.055) 1.4px, transparent 1.4px), linear-gradient(180deg, #fdf6e8 0%, #f7f0e2 100%)', backgroundSize: 'auto, 24px 24px, 100% 100%', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-      <CastleWatermark style={{ top: 260, left: '50%', transform: 'translateX(-50%)', width: '160vw', maxWidth: 1000, height: 420, opacity: 0.06, zIndex: 0 }} />
       <style>{`
         @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
@@ -6927,9 +6926,10 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
       `}</style>
 
       {/* Header */}
-      <div className="relative px-5 pt-7 pb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
+      <div className="relative px-5 pt-7 pb-4 overflow-hidden" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
         <div className="absolute -top-8 -right-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.18), transparent 70%)' }} />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.18), transparent 70%)' }} />
+        <CastleWatermark style={{ bottom: -30, right: -40, width: 260, height: 160, opacity: 0.16 }} />
         <div className="relative flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {back && (
