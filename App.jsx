@@ -197,6 +197,7 @@ const UI = {
   googleRatingLabel: { de: 'Google-Bewertung (Punkte, Anzahl)', en: 'Google rating (score, count)', tr: 'Google puanı (puan, adet)', ro: 'Rating Google (scor, număr)', nl: 'Google-beoordeling (score, aantal)' , sq: 'Vlerësimi Google (pikë, numër)', ku: 'Nirxandina Google (xal, hejmar)', pl: 'Ocena Google (punkty, liczba)'},
   saveBtn: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan' , sq: 'Ruaj', ku: 'Tomar bike', pl: 'Zapisz'},
   savedMsg: { de: '✓ Gespeichert', en: '✓ Saved', tr: '✓ Kaydedildi', ro: '✓ Salvat', nl: '✓ Opgeslagen' , sq: '✓ U ruajt', ku: '✓ Hat tomarkirin', pl: '✓ Zapisano'},
+  deletedMsg: { de: 'Gelöscht', en: 'Deleted', tr: 'Silindi', ro: 'Șters', nl: 'Verwijderd', sq: 'U fshi', ku: 'Hat jêbirin', pl: 'Usunięto' },
   welcomeBackMsg: { de: '👋 Wir haben dich vermisst! Schön, dass du wieder da bist.', en: '👋 We missed you! Great to have you back.', tr: '👋 Seni özledik! Tekrar hoş geldin.', ro: '👋 Ne-a fost dor de tine! Bine ai revenit.', nl: '👋 We hebben je gemist! Fijn dat je er weer bent.' , sq: '👋 Na ka munguar! Mirë se erdhe përsëri.', ku: '👋 Me bêriya te kir! Xweş e ku tu vegeriyayî.', pl: '👋 Tęskniliśmy za Tobą! Miło, że znów tu jesteś.'},
   favoritesTitle: { de: 'DEINE FAVORITEN', en: 'YOUR FAVOURITES', tr: 'FAVORİLERİN', ro: 'FAVORITELE TALE', nl: 'JOUW FAVORIETEN' , sq: 'FAVORITET E TUA', ku: 'BIJARTEYÊN TE', pl: 'TWOJE ULUBIONE'},
   orderNow: { de: 'Jetzt bestellen', en: 'Order now', tr: 'Şimdi sipariş ver', ro: 'Comandă acum', nl: 'Nu bestellen' , sq: 'Porosit tani', ku: 'Niha sifariş bide', pl: 'Zamów teraz'},
@@ -6236,7 +6237,9 @@ function StaffPanelView({ back }) {
     delete next[editingPhotoItem.id];
     await safeSet('siteconfig:photoOverrides', next);
     setPhotoOverrides(next);
-    setEditingPhotoItem(null);
+    setEditPhotoUrl('');
+    setPhotoSaveMsg('🗑️ ' + t('deletedMsg'));
+    setTimeout(() => { setPhotoSaveMsg(''); setEditingPhotoItem(null); }, 1400);
   };
 
   const wheelSearch = async () => {
@@ -6781,10 +6784,10 @@ function StaffPanelView({ back }) {
                   )}
                   <div className="flex gap-2">
                     <button onClick={savePhoto} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
-                    {photoOverrides[editingPhotoItem.id] && <button onClick={resetPhoto} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>}
+                    {photoOverrides[editingPhotoItem.id] && <button onClick={resetPhoto} className="px-4 py-2.5 rounded-lg font-bold text-sm flex items-center gap-1.5" style={{ background: '#f7e2e2', color: CHILI }}>🗑️ {t('resetBtn')}</button>}
                     <button onClick={() => setEditingPhotoItem(null)} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
                   </div>
-                  {photoSaveMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{photoSaveMsg}</p>}
+                  {photoSaveMsg && <div className="text-center text-sm font-bold mt-3 py-2 rounded-lg" style={{ background: '#e8f5ec', color: '#1d6b3a' }}>{photoSaveMsg}</div>}
                 </div>
               )}
               <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
