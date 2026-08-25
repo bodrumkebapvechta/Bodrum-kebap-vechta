@@ -5692,6 +5692,7 @@ function StaffPanelView({ back }) {
   const [pinMsg, setPinMsg] = useState('');
   const [unlockStage, setUnlockStage] = useState('idle'); // idle | unlocked | wrong
   const [keystroke, setKeystroke] = useState(0);
+  const [lastLoginAt, setLastLoginAt] = useState(null);
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
   useEffect(() => {
     if (ok || unlocking || pin.length === 0) return;
@@ -5699,6 +5700,10 @@ function StaffPanelView({ back }) {
       setUnlocking(true);
       setUnlockStage('unlocked');
       unlockAudio();
+      safeGet('siteconfig:lastStaffLogin').then((r) => {
+        if (r && r.ts) setLastLoginAt(r.ts);
+        safeSet('siteconfig:lastStaffLogin', { ts: Date.now() });
+      });
       setTimeout(() => setOk(true), 900);
     } else if (pin.length >= staffPin.length) {
       setUnlockStage('wrong');
@@ -6402,6 +6407,11 @@ function StaffPanelView({ back }) {
           <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, right: -70, background: 'radial-gradient(circle, rgba(255,199,56,.11), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 10s ease-in-out infinite' }} />
           <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, top: '40%', left: -80, background: 'radial-gradient(circle, rgba(45,106,79,.2), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 12s ease-in-out infinite reverse' }} />
           <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
+          {lastLoginAt && (
+            <div className="px-5 pb-3 text-center">
+              <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,.45)' }}>🕐 Letzter Zugang: {new Date(lastLoginAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} Uhr</span>
+            </div>
+          )}
           {tab === 'wheel' && (
             <div className="px-5">
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎡 GEWINNCODE PRÜFEN</div>
