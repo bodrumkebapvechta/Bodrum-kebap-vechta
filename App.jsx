@@ -476,24 +476,49 @@ function useLang() {
   return { lang, setLang: changeLang, t };
 }
 
+const LANG_COLORS = { de: '#e6b800', en: '#e65a0a', tr: '#d62828', ro: '#2d6a4f', nl: '#e65a0a', sq: '#153826', ku: '#ffc738', pl: '#d62828' };
+
 function LanguageSwitcher({ lang, setLang, dark }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-2 px-3.5 py-2.5 rounded-full text-sm font-bold" style={dark ? { background: 'rgba(255,246,234,.1)', color: '#fff' } : { background: '#f0e5cf', color: GREEN }}>
+      <button onClick={() => setOpen(true)} className="flex items-center gap-2 px-3.5 py-2.5 rounded-full text-sm font-bold" style={dark ? { background: 'rgba(255,246,234,.1)', color: '#fff' } : { background: '#f0e5cf', color: GREEN }}>
         <span className="text-base">{LANG_FLAGS[lang]}</span><span className="hidden sm:inline">{LANG_NAMES[lang]}</span>
       </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1.5 py-1.5 rounded-xl shadow-xl z-50 min-w-[150px]" style={{ background: '#fff' }}>
-            {LANGS.map((l) => (
-              <button key={l} onClick={() => { setLang(l); setOpen(false); }} className="w-full flex items-center gap-2 px-3.5 py-2 text-left text-xs font-bold" style={{ color: l === lang ? ORANGE : GREEN, background: l === lang ? '#fdecd4' : 'transparent' }}>
-                <span>{LANG_FLAGS[l]}</span> {LANG_NAMES[l]}
-              </button>
-            ))}
+      {open && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={() => setOpen(false)}>
+          <div
+            className="w-full max-w-xs rounded-3xl p-5"
+            style={{ background: '#12181a', border: '1px solid rgba(255,255,255,.08)', boxShadow: '0 30px 70px rgba(0,0,0,.5)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center font-black text-base text-white mb-4">🌐 Sprache wählen</div>
+            <div className="flex flex-col gap-2.5">
+              {LANGS.map((l) => {
+                const color = LANG_COLORS[l] || ORANGE;
+                const active = l === lang;
+                return (
+                  <button
+                    key={l}
+                    onClick={() => { setLang(l); setOpen(false); }}
+                    className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-bold text-base"
+                    style={{
+                      background: active ? color : 'rgba(255,255,255,.06)',
+                      color: active ? '#fff' : 'rgba(255,255,255,.85)',
+                      boxShadow: active ? `0 0 22px ${color}66` : 'none',
+                      border: active ? 'none' : '1px solid rgba(255,255,255,.1)',
+                    }}
+                  >
+                    <span className="text-2xl">{LANG_FLAGS[l]}</span>
+                    <span className="flex-1 text-left">{LANG_NAMES[l]}</span>
+                    <ArrowRight size={17} color={active ? '#fff' : 'rgba(255,255,255,.4)'} />
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -1296,8 +1321,8 @@ function TopBar({ onHome, title, dark = true }) {
           <ArrowLeft size={18} color={dark ? CREAM : GREEN} />
         </button>
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
-            <Flame size={18} color="#fff" />
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: ORANGE }}>
+            <img src={LOGO_ICON} alt="" className="w-full h-full object-cover" />
           </div>
           <div>
             <div className="font-extrabold text-sm leading-tight tracking-wide" style={{ color: dark ? '#fff' : GREEN }}>BODRUM KEBAP</div>
@@ -1660,13 +1685,22 @@ function SplashScreen({ onDone }) {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, [onDone]);
 
-  const embers = React.useMemo(() => Array.from({ length: 14 }).map((_, i) => ({
-    left: 8 + Math.random() * 84,
-    delay: Math.random() * 2.2,
-    duration: 2.2 + Math.random() * 1.6,
-    drift: (Math.random() - 0.5) * 60,
-    size: 3 + Math.random() * 4,
-  })), []);
+  const embers = React.useMemo(() => [
+    ...Array.from({ length: 14 }).map(() => ({
+      left: 8 + Math.random() * 84,
+      delay: Math.random() * 2.2,
+      duration: 2.2 + Math.random() * 1.6,
+      drift: (Math.random() - 0.5) * 60,
+      size: 3 + Math.random() * 4,
+    })),
+    ...Array.from({ length: 8 }).map(() => ({
+      left: 38 + Math.random() * 24,
+      delay: Math.random() * 1.6,
+      duration: 1.6 + Math.random() * 1.2,
+      drift: (Math.random() - 0.5) * 30,
+      size: 2.5 + Math.random() * 3,
+    })),
+  ], []);
 
   return (
     <div className="min-h-screen w-full flex justify-center items-center relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% 100%, rgba(230,90,10,.35), transparent 60%), linear-gradient(180deg, #0a1a10, ${GREEN})` }} onClick={onDone}>
@@ -2826,10 +2860,16 @@ function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
   const [photoOverrides, setPhotoOverrides] = useState({});
+  const [tischPhotos, setTischPhotos] = useState({});
   const [priceOverrides, setPriceOverrides] = useState({});
   const [soldOutIds, setSoldOutIds] = useState([]);
   useEffect(() => {
     safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+    safeListPrefix('tischphoto:', 500).then((rows) => {
+      const map = {};
+      rows.forEach((r) => { if (r.value?.url) map[r.key.replace(/^tischphoto:/, '')] = r.value.url; });
+      setTischPhotos(map);
+    });
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
     safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
   }, []);
@@ -2881,7 +2921,7 @@ function DailySpecial({ go }) {
       <div className="grid sm:grid-cols-2 gap-4">
         {entry.items.map((item, i) => {
           const menuMatch = findMenuItemByName(item.name);
-          const overrideImg = menuMatch ? photoOverrides[menuMatch.id] : null;
+          const overrideImg = menuMatch ? (photoOverrides[menuMatch.id] || tischPhotos['imp-' + menuMatch.id] || tischPhotos[menuMatch.id]) : null;
           const priceOv = menuMatch ? priceOverrides[menuMatch.id] : null;
           const overridePrice = priceOv ? (priceOv.price !== undefined ? priceOv.price : priceOv.large) : null;
           const isSoldOut = menuMatch ? soldOutIds.includes(menuMatch.id) : false;
@@ -2923,7 +2963,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   useEffect(() => {
     safeGet('siteconfig:soldOut').then((r) => { if (r) setHomeSoldOutIds(r); });
     safeGet('siteconfig:priceOverrides').then((r) => { if (r) setHomePriceOverrides(r); });
-    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setHomePhotoOverrides(r); });
+    safeGet('siteconfig:photoOverrides').then((r) => { if (r) setHomePhotoOverrides((prev) => ({ ...r, ...prev })); });
+    safeListPrefix('tischphoto:', 500).then((rows) => {
+      const map = {};
+      rows.forEach((r) => { if (r.value?.url) { const id = r.key.replace(/^tischphoto:/, '').replace(/^imp-/, ''); map[id] = r.value.url; } });
+      setHomePhotoOverrides((prev) => ({ ...map, ...prev }));
+    });
   }, []);
   const HOME_EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(homePriceOverrides, homePhotoOverrides, homeSoldOutIds), [homePriceOverrides, homePhotoOverrides, homeSoldOutIds]);
   const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
@@ -2985,7 +3030,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
   const HERO_IMAGES_RAW = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos].filter((src) => !hiddenPhotos.includes(src));
-  const HERO_IMAGES = HERO_IMAGES_RAW.length > 0 ? HERO_IMAGES_RAW : [TERRACE_IMG];
+  const HERO_IMAGES_UNSHUFFLED = HERO_IMAGES_RAW.length > 0 ? HERO_IMAGES_RAW : [TERRACE_IMG];
+  const HERO_IMAGES = useMemo(() => {
+    const arr = [...HERO_IMAGES_UNSHUFFLED];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [HERO_IMAGES_UNSHUFFLED.length]);
   const [heroIdx, setHeroIdx] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setHeroIdx((i) => (i + 1) % HERO_IMAGES.length), 4000);
@@ -3100,7 +3153,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="fixed inset-0 z-50 md:hidden flex flex-col" style={{ background: `radial-gradient(circle at 85% 0%, rgba(255,199,56,.12), transparent 50%), rgba(10,24,15,.6)`, backdropFilter: 'blur(22px) saturate(1.5)', WebkitBackdropFilter: 'blur(22px) saturate(1.5)', animation: 'pageFade .3s ease-out' }}>
             <div className="flex items-center justify-between px-6 pt-6 pb-2">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.4)' }}><Flame size={18} color="#fff" /></div>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.4)' }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
                 <div>
                   <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
                   <div className="font-bold text-[10px] tracking-widest" style={{ color: GOLD }}>VECHTA</div>
@@ -3149,7 +3202,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         )}
       </header>
       <CampaignBanner />
-      {now.getDay() === 6 ? <WeekendComboPromo go={go} top /> : <MittagsBanner />}
+      {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
       {dailyBanner && (
         <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
           📣 {dailyBanner}
@@ -3432,7 +3485,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <img src={LOGO_ICON} alt="logo" className="w-8 h-8 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
             <span className="text-white font-black text-xs">BODRUM KEBAP VECHTA</span>
           </div>
-          <span className="text-[11px] font-medium" style={{ color: '#6b5a3e' }}>© 2026 Bodrum Kebap Vechta</span>
+          <span className="text-[11px] font-medium" style={{ color: '#6b5a3e' }}>© 2019 Bodrum Kebap Vechta</span>
           <div className="flex items-center gap-4">
             <button onClick={() => go('impressum')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>{t('footerImpressum')}</button>
             <button onClick={() => go('datenschutz')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>{t('footerDatenschutz')}</button>
@@ -7029,7 +7082,6 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
   const [tischPhotos, setTischPhotos] = useState({});
-  const fetchedPhotoIdsRef = useRef(new Set());
 
   useEffect(() => {
     safeGet('siteconfig:tischMenu').then((r) => {
@@ -7058,17 +7110,12 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const displayedItems = searchResults !== null ? searchResults : activeItems;
 
   useEffect(() => {
-    const toFetch = displayedItems
-      .map((it) => it.id.replace(/^imp-/, ''))
-      .filter((id) => !fetchedPhotoIdsRef.current.has(id));
-    if (toFetch.length === 0) return;
-    toFetch.forEach((id) => fetchedPhotoIdsRef.current.add(id));
-    toFetch.forEach((id) => {
-      safeGet('tischphoto:' + id).then((r) => {
-        if (r && r.url) setTischPhotos((prev) => ({ ...prev, [id]: r.url }));
-      });
+    safeListPrefix('tischphoto:', 500).then((rows) => {
+      const map = {};
+      rows.forEach((r) => { if (r.value?.url) map[r.key.replace(/^tischphoto:/, '')] = r.value.url; });
+      setTischPhotos(map);
     });
-  }, [displayedItems]);
+  }, []);
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: '#eaf3ec', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
@@ -7096,8 +7143,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                 <ArrowLeft size={17} color="#fff" />
               </button>
             )}
-            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.5)', animation: 'tmFlicker 2.4s ease-in-out infinite' }}>
-              <Flame size={20} color="#fff" />
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.5)' }}>
+              <img src={LOGO_ICON} alt="" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
