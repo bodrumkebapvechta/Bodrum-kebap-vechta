@@ -5800,14 +5800,38 @@ function StaffPanelView({ back }) {
   const [tischItemPriceLarge, setTischItemPriceLarge] = useState('');
   const [tischItemImg, setTischItemImg] = useState('');
   const [tischPhotos, setTischPhotos] = useState({});
-  useEffect(() => { safeGet('siteconfig:tischPhotos').then((r) => { if (r) setTischPhotos(r); }); }, []);
   const [tischEditingId, setTischEditingId] = useState(null);
   const [tischUploadBusy, setTischUploadBusy] = useState(false);
   const [tischAdminOpen, setTischAdminOpen] = useState(false);
   const [tischMsg, setTischMsg] = useState('');
 
   useEffect(() => {
-    if (ok) safeGet('siteconfig:tischMenu').then((r) => { if (r) setTischMenu(r); });
+    if (!ok) return;
+    Promise.all([safeGet('siteconfig:tischMenu'), safeGet('siteconfig:tischPhotos')]).then(([menuData, photosData]) => {
+      if (!menuData) return;
+      const existingPhotos = photosData || {};
+      const migratedPhotos = { ...existingPhotos };
+      let changed = false;
+      const lightenedItems = menuData.items.map((it) => {
+        if (it.img && it.img.startsWith('data:image') && !migratedPhotos[it.id]) {
+          migratedPhotos[it.id] = it.img;
+          changed = true;
+          const next = { ...it };
+          delete next.img;
+          return next;
+        }
+        return it;
+      });
+      setTischMenu(menuData);
+      setTischPhotos(existingPhotos);
+      if (changed) {
+        const lightenedMenu = { ...menuData, items: lightenedItems };
+        setTischMenu(lightenedMenu);
+        setTischPhotos(migratedPhotos);
+        safeSet('siteconfig:tischPhotos', migratedPhotos);
+        safeSet('siteconfig:tischMenu', lightenedMenu);
+      }
+    });
   }, [ok]);
 
   const tischSaveQueueRef = useRef(Promise.resolve());
@@ -6878,27 +6902,9 @@ function StaffPanelView({ back }) {
                 </div>
               )}
               <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
-                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">👁️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>Foto-Galerie verwalten ({SITE_PHOTOS.length - hiddenPhotos.filter((s) => SITE_PHOTOS.some((p) => p.src === s)).length}/{SITE_PHOTOS.length})</h3></div>
-                <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>Diese Fotos sind fest im Projekt hinterlegt. Du kannst sie nicht löschen, aber ausblenden — sie erscheinen dann nirgends mehr auf der Website (Startseite & Galerie).</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {SITE_PHOTOS.map((p) => {
-                    const hidden = hiddenPhotos.includes(p.src);
-                    return (
-                      <button key={p.src} onClick={() => togglePhotoHidden(p.src)} className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '1', opacity: hidden ? 0.35 : 1 }}>
-                        <img src={p.src} className="w-full h-full object-cover" />
-                        <div className="absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: hidden ? 'rgba(0,0,0,.7)' : 'rgba(52,199,89,.9)' }}>
-                          {hidden ? '🚫' : '👁️'}
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-[9px] font-bold text-white truncate" style={{ background: 'rgba(0,0,0,.6)' }}>{p.label}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
-                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">🖼️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>{t('independentPhotoTitle')}</h3></div>
-                <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>{t('independentPhotoHint')}</p>
-                <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
+                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">👁️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>Foto-Galerie verwalten ({SITE_PHOTOS.length - hiddenPhotos.filter((s) => SITE_PHOTOS.some((p) => p.src === s)).length + extraGalleryPhotos.length}/{SITE_PHOTOS.length + extraGalleryPhotos.length})</h3></div>
+                <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>Feste Fotos kannst du nicht löschen, nur ausblenden. Eigene hochgeladene Fotos (mit ✕) kannst du direkt löschen.</p>
+                <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-4 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
                   <span className="text-base">📷</span> {galleryUploadBusy ? '…' : t('uploadGalleryPhotoBtn')}
                   <input type="file" accept="image/*" className="hidden" disabled={galleryUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleGalleryFileUpload(f); e.target.value = ''; }} />
                 </label>
@@ -6912,16 +6918,27 @@ function StaffPanelView({ back }) {
                     {galleryMsg && <div className="text-center text-sm font-bold mt-3 py-2 rounded-lg" style={{ background: '#e8f5ec', color: '#1d6b3a' }}>{galleryMsg}</div>}
                   </div>
                 )}
-                {extraGalleryPhotos.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
-                    {extraGalleryPhotos.map((src, idx) => (
-                      <div key={idx} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '1' }}>
-                        <img src={src} alt="" className="w-full h-full object-cover" />
-                        <button onClick={() => removeGalleryPhoto(idx)} className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.75)' }}><X size={13} color="#fff" /></button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className="grid grid-cols-3 gap-2">
+                  {extraGalleryPhotos.map((src, idx) => (
+                    <div key={'custom-' + idx} className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '1' }}>
+                      <img src={src} className="w-full h-full object-cover" />
+                      <button onClick={() => removeGalleryPhoto(idx)} className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.75)' }}><X size={13} color="#fff" /></button>
+                      <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-[9px] font-bold text-white truncate" style={{ background: 'rgba(0,0,0,.6)' }}>Eigenes Foto</div>
+                    </div>
+                  ))}
+                  {SITE_PHOTOS.map((p) => {
+                    const hidden = hiddenPhotos.includes(p.src);
+                    return (
+                      <button key={p.src} onClick={() => togglePhotoHidden(p.src)} className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '1', opacity: hidden ? 0.35 : 1 }}>
+                        <img src={p.src} className="w-full h-full object-cover" />
+                        <div className="absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: hidden ? 'rgba(0,0,0,.7)' : 'rgba(52,199,89,.9)' }}>
+                          {hidden ? '🚫' : '👁️'}
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-[9px] font-bold text-white truncate" style={{ background: 'rgba(0,0,0,.6)' }}>{p.label}</div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
