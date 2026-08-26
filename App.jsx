@@ -6891,22 +6891,40 @@ function StaffPanelView({ back }) {
           )}
 
           <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: '#faf3e4', borderTop: '1px solid #f0e5cf', boxShadow: '0 -8px 24px rgba(0,0,0,.18)' }}>
-            <div className="grid grid-cols-5">
+            <div className="relative flex items-center justify-around" style={{ height: 66 }}>
               {[
-                { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                 { key: 'messages', icon: '💬', label: 'Nachrichten' },
                 { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
+              ].map((item) => (
+                <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full">
+                  <span className="text-lg" style={{ opacity: tab === item.key ? 1 : 0.5 }}>{item.icon}</span>
+                  <span className="font-bold text-center leading-[1.1]" style={{ fontSize: 8.5, color: tab === item.key ? ORANGE : '#a4906c' }}>{item.label}</span>
+                </button>
+              ))}
+
+              <div className="flex-1 flex items-center justify-center" style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setTab('menu'); setLookupOpen(false); }}
+                  className="rounded-full flex items-center justify-center"
+                  style={{
+                    width: 58, height: 58,
+                    position: 'absolute', top: -26,
+                    background: tab === 'menu' ? `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` : GREEN,
+                    boxShadow: tab === 'menu' ? '0 8px 20px rgba(230,90,10,.5)' : '0 6px 16px rgba(21,56,38,.35)',
+                    border: '5px solid #faf3e4',
+                    transition: 'background .2s, box-shadow .2s',
+                  }}
+                >
+                  <span className="text-2xl">📋</span>
+                </button>
+              </div>
+
+              {[
                 { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                 { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
               ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => { setTab(item.key); setLookupOpen(false); }}
-                  className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-0.5"
-                  style={{ position: 'relative' }}
-                >
-                  {tab === item.key && <div className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full" style={{ width: 24, height: 3, background: ORANGE }} />}
-                  <span className="text-lg" style={{ opacity: tab === item.key ? 1 : 0.55 }}>{item.icon}</span>
+                <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full">
+                  <span className="text-lg" style={{ opacity: tab === item.key ? 1 : 0.5 }}>{item.icon}</span>
                   <span className="font-bold text-center leading-[1.1]" style={{ fontSize: 8.5, color: tab === item.key ? ORANGE : '#a4906c' }}>{item.label}</span>
                 </button>
               ))}
