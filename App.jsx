@@ -6167,6 +6167,10 @@ function StaffPanelView({ back }) {
     }));
     return out.slice(0, 12);
   }, [photoSearch]);
+  const photoSaveQueueRef = useRef(Promise.resolve());
+  const queuePhotoOverridesSave = (next) => {
+    photoSaveQueueRef.current = photoSaveQueueRef.current.then(() => safeSet('siteconfig:photoOverrides', next)).catch(() => {});
+  };
   const selectPhotoItem = (item) => {
     setEditingPhotoItem(item);
     setEditPhotoUrl(photoOverrides[item.id] || item.img || '');
@@ -6177,18 +6181,18 @@ function StaffPanelView({ back }) {
     setPhotoOverrides(next);
     setPhotoSaveMsg(t('savedMsg'));
     setTimeout(() => setPhotoSaveMsg(''), 2000);
-    safeSet('siteconfig:photoOverrides', next);
+    queuePhotoOverridesSave(next);
   };
-  const applyPhotoToCategory = async () => {
+  const applyPhotoToCategory = () => {
     if (!editingPhotoItem || !editPhotoUrl.trim()) return;
     const cat = MENU.find((c) => c.items.some((i) => i.id === editingPhotoItem.id));
     if (!cat) return;
     const next = { ...photoOverrides };
     cat.items.forEach((i) => { next[i.id] = editPhotoUrl.trim(); });
-    await safeSet('siteconfig:photoOverrides', next);
     setPhotoOverrides(next);
     setPhotoSaveMsg(t('photoAppliedCategoryMsg').replace('{count}', String(cat.items.length)));
     setTimeout(() => setPhotoSaveMsg(''), 3000);
+    queuePhotoOverridesSave(next);
   };
   const [photoUploadBusy, setPhotoUploadBusy] = useState(false);
   const compressImageFile = (file, maxW = 900, quality = 0.78) => new Promise((resolve, reject) => {
@@ -6221,7 +6225,7 @@ function StaffPanelView({ back }) {
       setPhotoOverrides(next);
       setPhotoSaveMsg(t('savedMsg'));
       setTimeout(() => setPhotoSaveMsg(''), 2000);
-      safeSet('siteconfig:photoOverrides', next);
+      queuePhotoOverridesSave(next);
     } catch {}
     setPhotoUploadBusy(false);
   };
@@ -6267,7 +6271,7 @@ function StaffPanelView({ back }) {
     setEditPhotoUrl('');
     setPhotoSaveMsg('🗑️ ' + t('deletedMsg'));
     setTimeout(() => { setPhotoSaveMsg(''); setEditingPhotoItem(null); }, 900);
-    safeSet('siteconfig:photoOverrides', next);
+    queuePhotoOverridesSave(next);
   };
 
   const wheelSearch = async () => {
