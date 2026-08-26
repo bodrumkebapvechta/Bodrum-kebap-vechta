@@ -6805,6 +6805,24 @@ function StaffPanelView({ back }) {
                     <div className="flex-1 h-px" style={{ background: '#e3d5bd' }} />
                   </div>
                   <input value={editPhotoUrl} onChange={(e) => setEditPhotoUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex-1 h-px" style={{ background: '#e3d5bd' }} />
+                    <span className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('orLabel')}</span>
+                    <div className="flex-1 h-px" style={{ background: '#e3d5bd' }} />
+                  </div>
+                  <div className="text-[11px] font-bold mb-2" style={{ color: '#a4906c' }}>📁 Aus der Galerie wählen</div>
+                  <div className="flex gap-2 overflow-x-auto mb-4 pb-1">
+                    {[...SITE_PHOTOS.map((p) => p.src), ...extraGalleryPhotos].map((src, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setEditPhotoUrl(src)}
+                        className="flex-shrink-0 rounded-lg overflow-hidden"
+                        style={{ width: 56, height: 56, border: editPhotoUrl === src ? `2.5px solid ${ORANGE}` : '2.5px solid transparent' }}
+                      >
+                        <img src={src} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
                   {editPhotoUrl.trim() && (
                     <button onClick={applyPhotoToCategory} className="w-full mb-4 text-left px-3.5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>
                       <span className="text-sm">🔁</span> {t('applyToCategoryBtn')}
