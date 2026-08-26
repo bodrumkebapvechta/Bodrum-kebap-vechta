@@ -477,6 +477,7 @@ function useLang() {
 }
 
 const LANG_COLORS = { de: '#e6b800', en: '#e65a0a', tr: '#d62828', ro: '#2d6a4f', nl: '#e65a0a', sq: '#153826', ku: '#ffc738', pl: '#d62828' };
+const CHOOSE_LANG_TITLE = { de: '🌐 Sprache wählen', en: '🌐 Choose language', tr: '🌐 Dil seç', ro: '🌐 Alege limba', nl: '🌐 Kies taal', sq: '🌐 Zgjidh gjuhën', ku: '🌐 Ziman hilbijêre', pl: '🌐 Wybierz język' };
 
 function LanguageSwitcher({ lang, setLang, dark }) {
   const [open, setOpen] = useState(false);
@@ -489,10 +490,10 @@ function LanguageSwitcher({ lang, setLang, dark }) {
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={() => setOpen(false)}>
           <div
             className="w-full max-w-xs rounded-3xl p-5"
-            style={{ background: '#12181a', border: '1px solid rgba(255,255,255,.08)', boxShadow: '0 30px 70px rgba(0,0,0,.5)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+            style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 30px 70px rgba(21,56,38,.5)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="text-center font-black text-base text-white mb-4">🌐 Sprache wählen</div>
+            <div className="text-center font-black text-base mb-4" style={{ color: GOLD }}>{CHOOSE_LANG_TITLE[lang] || CHOOSE_LANG_TITLE.de}</div>
             <div className="flex flex-col gap-2.5">
               {LANGS.map((l) => {
                 const color = LANG_COLORS[l] || ORANGE;
@@ -503,15 +504,15 @@ function LanguageSwitcher({ lang, setLang, dark }) {
                     onClick={() => { setLang(l); setOpen(false); }}
                     className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-bold text-base"
                     style={{
-                      background: active ? color : 'rgba(255,255,255,.06)',
-                      color: active ? '#fff' : 'rgba(255,255,255,.85)',
+                      background: active ? color : 'rgba(255,246,234,.08)',
+                      color: active ? '#fff' : 'rgba(255,246,234,.85)',
                       boxShadow: active ? `0 0 22px ${color}66` : 'none',
-                      border: active ? 'none' : '1px solid rgba(255,255,255,.1)',
+                      border: active ? 'none' : '1px solid rgba(255,246,234,.14)',
                     }}
                   >
                     <span className="text-2xl">{LANG_FLAGS[l]}</span>
                     <span className="flex-1 text-left">{LANG_NAMES[l]}</span>
-                    <ArrowRight size={17} color={active ? '#fff' : 'rgba(255,255,255,.4)'} />
+                    <ArrowRight size={17} color={active ? '#fff' : 'rgba(255,246,234,.4)'} />
                   </button>
                 );
               })}
@@ -971,15 +972,26 @@ function todayKey() { return new Date().toISOString().slice(0, 10); }
 const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
 
+const kvCache = new Map();
+const kvInflight = new Map();
 async function safeGet(key) {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}&select=value`, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-    });
-    if (!res.ok) return null;
-    const rows = await res.json();
-    return rows.length ? rows[0].value : null;
-  } catch { return null; }
+  if (kvCache.has(key)) return kvCache.get(key);
+  if (kvInflight.has(key)) return kvInflight.get(key);
+  const p = (async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}&select=value`, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+      });
+      if (!res.ok) return null;
+      const rows = await res.json();
+      const value = rows.length ? rows[0].value : null;
+      kvCache.set(key, value);
+      return value;
+    } catch { return null; }
+    finally { kvInflight.delete(key); }
+  })();
+  kvInflight.set(key, p);
+  return p;
 }
 function tischText(val, lang) {
   if (!val) return '';
@@ -1006,6 +1018,7 @@ async function safeSet(key, value) {
       },
       body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
     });
+    if (res.ok) kvCache.set(key, value);
     return res.ok;
   } catch { return false; }
 }
@@ -1034,6 +1047,7 @@ async function safeDeleteKey(key) {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, Prefer: 'return=representation' },
     });
     if (!res.ok) return false;
+    kvCache.delete(key);
     const body = await res.json().catch(() => []);
     return Array.isArray(body) && body.length > 0;
   } catch { return false; }
@@ -1408,6 +1422,7 @@ function buildSurpriseItems(effectiveMenu) {
       cat: cat.key,
       desc: i.desc || '',
       soldOut: i.soldOut || false,
+      alg: i.alg || '',
     })));
 }
 const SURPRISE_ITEMS = buildSurpriseItems(MENU);
@@ -2395,9 +2410,10 @@ function isVegItem(name) {
   return n.includes('vegetarisch') || n.includes('falafel') || n.includes('veggie') || n.includes('salat (') || n.includes('salat)') || n.includes(' salat');
 }
 
-function MoodPicker({ onClose }) {
+function MoodPicker({ onClose, items }) {
   const { lang } = React.useContext(LangContext);
   const [result, setResult] = useState(null);
+  const pool0 = items && items.length ? items : SURPRISE_ITEMS;
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -2405,14 +2421,14 @@ function MoodPicker({ onClose }) {
   }, []);
 
   const pick = (moodKey) => {
-    let pool = SURPRISE_ITEMS;
+    let pool = pool0;
     if (moodKey === 'light') {
-      pool = SURPRISE_ITEMS.filter((it) => it.cat === 'salat' || isVegItem(it.name));
+      pool = pool0.filter((it) => it.cat === 'salat' || isVegItem(it.name));
     } else if (moodKey === 'meat' || moodKey === 'dough') {
       const cats = MOOD_CATS[moodKey];
-      pool = SURPRISE_ITEMS.filter((it) => cats.includes(it.cat) && !isVegItem(it.name));
+      pool = pool0.filter((it) => cats.includes(it.cat) && !isVegItem(it.name));
     }
-    if (pool.length === 0) pool = SURPRISE_ITEMS;
+    if (pool.length === 0) pool = pool0;
     setResult(pool[Math.floor(Math.random() * pool.length)]);
   };
 
@@ -2455,7 +2471,7 @@ function MoodPicker({ onClose }) {
                 <img src={result.img} alt={result.name} className={result.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
               </div>
             )}
-            <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(result.name, lang)}</div>
+            <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(result.name, lang)}<AllergenTag alg={result.alg} /></div>
             {result.desc && <p className="text-xs font-medium mb-2" style={{ color: '#5a4f3a' }}>{mx(result.desc, lang)}</p>}
             <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>{fmt(result.price)}</div>
             <button onClick={() => setResult(null)} className="w-full py-3 rounded-xl font-semibold text-sm" style={{ background: 'rgba(255,255,255,.55)', color: GREEN, border: '1px solid rgba(255,255,255,.6)' }}>{mr('again', lang)}</button>
@@ -2800,7 +2816,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
     <div className="daily-card rounded-2xl overflow-hidden flex flex-col" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
       <div className="overflow-hidden"><img src={item.imgSrc} className="daily-card-img w-full h-40 object-cover" /></div>
       <div className="p-5 flex flex-col flex-1">
-        <div className="text-white font-black text-lg mb-1">{mx(item.name, lang)}</div>
+        <div className="text-white font-black text-lg mb-1">{mx(item.name, lang)}<AllergenTag alg={item.alg} /></div>
         <div className="text-xs font-medium mb-3" style={{ color: '#d9cdb4' }}>{mx(item.desc, lang)}</div>
 
         <div className="mt-auto flex items-center gap-3">
@@ -2927,7 +2943,7 @@ function DailySpecial({ go }) {
           const isSoldOut = menuMatch ? soldOutIds.includes(menuMatch.id) : false;
           return (
           <div key={i} style={{ animation: `cardIn .6s cubic-bezier(.22,1,.36,1) ${i * 0.12}s both` }}>
-            <DailySpecialCard item={{ ...item, price: overridePrice !== null && overridePrice !== undefined ? overridePrice : item.price, imgSrc: overrideImg || imgMap[item.img], soldOut: isSoldOut }} isLunchWindow={isLunchWindow} go={go} />
+            <DailySpecialCard item={{ ...item, price: overridePrice !== null && overridePrice !== undefined ? overridePrice : item.price, imgSrc: overrideImg || imgMap[item.img], soldOut: isSoldOut, alg: menuMatch?.alg }} isLunchWindow={isLunchWindow} go={go} />
           </div>
           );
         })}
@@ -3093,7 +3109,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         .hero-float{ animation: floatY 4.5s ease-in-out infinite; }
         .hero-float2{ animation: floatY2 5.5s ease-in-out infinite; }
       `}</style>
-      <div className="h-1.5 w-full" style={{ background: `repeating-linear-gradient(115deg, ${ORANGE} 0 22px, ${GOLD} 22px 44px, ${CHILI} 44px 66px)` }} />
 
       {/* Dekoration für sehr breite Bildschirme */}
       <div className="hidden 2xl:flex flex-col items-center gap-12 fixed left-8 top-1/3 opacity-80 pointer-events-none z-0">
@@ -3202,6 +3217,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         )}
       </header>
       <CampaignBanner />
+      <MittagsBanner />
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
       {dailyBanner && (
         <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
@@ -3403,7 +3419,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               {!surpriseRolling && isLunchOffer && (
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-[11px] mb-2" style={{ background: ORANGE, color: '#fff' }}>🍽️ {t('lunchOffer')}</div>
               )}
-              <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}{surpriseItem.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
+              <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(surpriseItem.name, lang)}<AllergenTag alg={surpriseItem.alg} />{surpriseItem.weekend && <span className="ml-1.5 text-[9px] font-black px-1.5 py-0.5 rounded-full align-middle" style={{ background: CHILI, color: '#fff' }}>NUR FR+SA+SO</span>}</div>
               {surpriseItem.desc && <p className="text-xs font-medium mb-2" style={{ color: '#8a7c62' }}>{mx(surpriseItem.desc, lang)}</p>}
               <div className="font-bold text-lg mb-6" style={{ color: CHILI }}>
                 {fmt(isLunchOffer ? 9.5 : surpriseItem.price)}
@@ -3421,7 +3437,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         );
       })()}
 
-      {moodPickerOpen && <MoodPicker onClose={() => setMoodPickerOpen(false)} />}
+      {moodPickerOpen && <MoodPicker onClose={() => setMoodPickerOpen(false)} items={HOME_SURPRISE_ITEMS} />}
       {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
