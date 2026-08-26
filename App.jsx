@@ -971,6 +971,20 @@ function normalizePhone(raw) { return raw.replace(/[^\d+]/g, ''); }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
+const STORAGE_BUCKET = 'menu-photos';
+async function uploadImageToStorage(dataUrl, keyHint) {
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    const path = `${(keyHint || 'photo').replace(/[^a-z0-9-]/gi, '_')}-${Date.now()}.jpg`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'image/jpeg' },
+      body: blob,
+    });
+    if (!res.ok) return null;
+    return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+  } catch { return null; }
+}
 
 const kvCache = new Map();
 const kvInflight = new Map();
@@ -1022,13 +1036,18 @@ async function safeSet(key, value) {
     return res.ok;
   } catch { return false; }
 }
+const kvListCache = new Map();
 async function safeListPrefix(prefix, limit = 20) {
+  const cacheKey = `${prefix}|${limit}`;
+  if (prefix === 'tischphoto:' && kvListCache.has(cacheKey)) return kvListCache.get(cacheKey);
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=${limit}`, {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!res.ok) return [];
-    return await res.json();
+    const rows = await res.json();
+    if (prefix === 'tischphoto:') kvListCache.set(cacheKey, rows);
+    return rows;
   } catch { return []; }
 }
 async function safeListPrefixOldest(prefix, limit = 2000) {
@@ -5938,7 +5957,7 @@ function StaffPanelView({ back }) {
   }
   const tischPhotoSaveQueueRef = useRef(Promise.resolve());
   function queueTischPhotoSave(itemId, url) {
-    tischPhotoSaveQueueRef.current = tischPhotoSaveQueueRef.current.then(() => safeSet('tischphoto:' + itemId, { url })).catch(() => {});
+    tischPhotoSaveQueueRef.current = tischPhotoSaveQueueRef.current.then(() => safeSet('tischphoto:' + itemId, { url })).then(() => kvListCache.clear()).catch(() => {});
   }
   function tischSaveItem() {
     const price = parseFloat(tischItemPrice.replace(',', '.'));
@@ -6020,7 +6039,8 @@ function StaffPanelView({ back }) {
     setTischUploadBusy(true);
     try {
       const dataUrl = await compressImageFile(file, 900, 0.78);
-      setTischItemImg(dataUrl);
+      const publicUrl = await uploadImageToStorage(dataUrl, tischEditingId || 'tisch');
+      setTischItemImg(publicUrl || dataUrl); // falls back to base64 only if the Storage upload failed
     } catch {}
     setTischUploadBusy(false);
   }
@@ -6306,6 +6326,57 @@ function StaffPanelView({ back }) {
   const queuePhotoOverridesSave = (next) => {
     photoSaveQueueRef.current = photoSaveQueueRef.current.then(() => safeSet('siteconfig:photoOverrides', next)).catch(() => {});
   };
+  const [migrateBusy, setMigrateBusy] = useState(false);
+  const [migrateMsg, setMigrateMsg] = useState('');
+  async function migrateOldPhotosToStorage() {
+    setMigrateBusy(true);
+    setMigrateMsg('Läuft…');
+    let migrated = 0, failed = 0;
+    try {
+      const overrides = await safeGet('siteconfig:photoOverrides') || {};
+      const nextOverrides = { ...overrides };
+      let overridesChanged = false;
+      for (const [id, val] of Object.entries(overrides)) {
+        if (typeof val === 'string' && val.startsWith('data:image')) {
+          const url = await uploadImageToStorage(val, id);
+          if (url) { nextOverrides[id] = url; overridesChanged = true; migrated++; }
+          else failed++;
+        }
+      }
+      if (overridesChanged) { await safeSet('siteconfig:photoOverrides', nextOverrides); setPhotoOverrides(nextOverrides); }
+
+      const rows = await safeListPrefix('tischphoto:', 500);
+      for (const row of rows) {
+        const val = row.value?.url;
+        if (typeof val === 'string' && val.startsWith('data:image')) {
+          const id = row.key.replace(/^tischphoto:/, '');
+          const url = await uploadImageToStorage(val, id);
+          if (url) { await safeSet('tischphoto:' + id, { url }); migrated++; }
+          else failed++;
+        }
+      }
+      kvListCache.clear();
+
+      const gallery = await safeGet('siteconfig:extraGalleryPhotos') || [];
+      let galleryChanged = false;
+      const nextGallery = [];
+      for (const val of gallery) {
+        if (typeof val === 'string' && val.startsWith('data:image')) {
+          const url = await uploadImageToStorage(val, 'gallery');
+          if (url) { nextGallery.push(url); galleryChanged = true; migrated++; }
+          else { nextGallery.push(val); failed++; }
+        } else {
+          nextGallery.push(val);
+        }
+      }
+      if (galleryChanged) { await safeSet('siteconfig:extraGalleryPhotos', nextGallery); setExtraGalleryPhotos(nextGallery); }
+
+      setMigrateMsg(migrated === 0 && failed === 0 ? '✅ Nichts zu tun — alle Fotos sind bereits schnell.' : `✅ ${migrated} Foto(s) migriert${failed ? `, ${failed} fehlgeschlagen` : ''}`);
+    } catch {
+      setMigrateMsg('⚠️ Fehler — bitte nochmal versuchen');
+    }
+    setMigrateBusy(false);
+  }
   const selectPhotoItem = (item) => {
     setEditingPhotoItem(item);
     setEditPhotoUrl(photoOverrides[item.id] || item.img || '');
@@ -6355,8 +6426,10 @@ function StaffPanelView({ back }) {
     setPhotoUploadBusy(true);
     try {
       const dataUrl = await compressImageFile(file);
-      setEditPhotoUrl(dataUrl);
-      const next = { ...photoOverrides, [editingPhotoItem.id]: dataUrl };
+      const publicUrl = await uploadImageToStorage(dataUrl, editingPhotoItem.id);
+      const finalUrl = publicUrl || dataUrl; // falls back to base64 only if the Storage upload failed
+      setEditPhotoUrl(finalUrl);
+      const next = { ...photoOverrides, [editingPhotoItem.id]: finalUrl };
       setPhotoOverrides(next);
       setPhotoSaveMsg(t('savedMsg'));
       setTimeout(() => setPhotoSaveMsg(''), 2000);
@@ -6373,7 +6446,8 @@ function StaffPanelView({ back }) {
     setGalleryUploadBusy(true);
     try {
       const dataUrl = await compressImageFile(file, 1000, 0.75);
-      setGalleryPreview(dataUrl);
+      const publicUrl = await uploadImageToStorage(dataUrl, 'gallery');
+      setGalleryPreview(publicUrl || dataUrl); // falls back to base64 only if the Storage upload failed
     } catch {}
     setGalleryUploadBusy(false);
   };
@@ -6489,7 +6563,7 @@ function StaffPanelView({ back }) {
                 <input type="file" accept="image/*" className="hidden" disabled={tischUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) tischHandleImageUpload(f); e.target.value = ''; }} />
               </label>
               <div className="flex gap-2">
-                <button onClick={tischSaveItem} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                <button onClick={tischSaveItem} disabled={tischUploadBusy} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN }}>{tischUploadBusy ? '…' : t('saveBtn')}</button>
                 {tischEditingId && <button onClick={tischResetForm} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>}
               </div>
               {tischMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{tischMsg}</p>}
@@ -6662,6 +6736,13 @@ function StaffPanelView({ back }) {
                 <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
                 <button onClick={savePin} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
+              </SettingsRow>
+
+              <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>📸 FOTOS</div>
+              <SettingsRow id="migratePhotos" icon="🚀" title="Alte Fotos beschleunigen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Verschiebt alle bisher hochgeladenen Fotos in den schnellen Speicher (Storage). Einmal antippen genügt — kann ein paar Minuten dauern, du kannst währenddessen weiterarbeiten.</p>
+                <button onClick={migrateOldPhotosToStorage} disabled={migrateBusy} className="w-full py-2.5 rounded-lg font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN }}>{migrateBusy ? '…' : 'Jetzt migrieren'}</button>
+                {migrateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{migrateMsg}</p>}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
@@ -7285,7 +7366,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                   style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 8) * 0.05}s` }}
                 >
                   {resolvedImg ? (
-                    <img src={resolvedImg} alt="" onClick={() => setTmLightbox(resolvedImg)} className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0 cursor-pointer" />
+                    <img src={resolvedImg} alt="" loading="lazy" onClick={() => setTmLightbox(resolvedImg)} className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0 cursor-pointer" />
                   ) : (
                     <div className="w-[68px] h-[68px] rounded-xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }}>
                       🍽️
