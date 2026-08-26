@@ -2099,6 +2099,7 @@ const ASSISTANT_R = {
   orderOff: { de: "📞 Online-Bestellungen sind aktuell nicht möglich, aber du kannst uns ganz einfach anrufen: 04441 / 95 16 104", en: "📞 Online ordering isn't available right now, but you can easily call us: 04441 / 95 16 104", tr: "📞 Şu an online sipariş sistemi kapalı, ama bizi arayarak kolayca sipariş verebilirsin: 04441 / 95 16 104", ro: "📞 Comenzile online nu sunt momentan posibile, dar ne poți suna ușor: 04441 / 95 16 104", nl: "📞 Online bestellen is nu niet mogelijk, maar je kunt ons gewoon bellen: 04441 / 95 16 104", sq: "📞 Porositë online nuk janë të mundshme tani, por mund të na telefononi: 04441 / 95 16 104", ku: "📞 Sifarişên online niha ne gengaz in, lê tu dikarî bi hêsanî telefon bikî: 04441 / 95 16 104", pl: "📞 Zamówienia online są obecnie niedostępne, ale możesz do nas łatwo zadzwonić: 04441 / 95 16 104" },
   noDelivery: { de: "🚫 Nein, wir bieten leider keinen Lieferservice an — nur Abholung. Du kannst deine Bestellung aber persönlich bei uns abholen: 04441 / 95 16 104", en: "🚫 No, we don't offer delivery — pickup only. You can pick up your order in person: 04441 / 95 16 104", tr: "🚫 Hayır, maalesef teslimat hizmetimiz yok — sadece paket servis (gel-al). Siparişini bizzat gelip alabilirsin: 04441 / 95 16 104", ro: "🚫 Nu, din păcate nu oferim livrare — doar ridicare personală. Poți ridica comanda ta: 04441 / 95 16 104", nl: "🚫 Nee, we bieden helaas geen bezorgservice aan — alleen afhalen. Je kunt je bestelling persoonlijk ophalen: 04441 / 95 16 104", sq: "🚫 Jo, fatkeqësisht nuk ofrojmë shërbim dërgese — vetëm marrje personale. Mund ta marrësh porosinë vetë: 04441 / 95 16 104", ku: "🚫 Na, mixabin em karûbarê radestkirinê pêşkêş nakin — tenê hilanîna kesane. Tu dikarî sifarişa xwe bi xwe bistînî: 04441 / 95 16 104", pl: "🚫 Nie, niestety nie oferujemy dostawy — tylko odbiór osobisty. Możesz odebrać zamówienie osobiście: 04441 / 95 16 104" },
   paymentYes: { de: "✅ Ja, du kannst bei uns mit Karte oder bar bezahlen.", en: "✅ Yes, you can pay by card or cash with us.", tr: "✅ Evet, bizde hem kart hem nakit ödeme yapabilirsin.", ro: "✅ Da, poți plăti cu cardul sau cash la noi.", nl: "✅ Ja, je kunt bij ons met kaart of contant betalen.", sq: "✅ Po, mund të paguash me kartë ose para në dorë tek ne.", ku: "✅ Erê, tu dikarî li cem me bi kart an pere neqid bidî.", pl: "✅ Tak, możesz u nas płacić kartą lub gotówką." },
+  steakAvailability: { de: "🥩 Steakfleisch gibt es bei uns nur Freitag, Samstag und Sonntag (+2,00 € Aufpreis).", en: "🥩 Steak is only available Friday, Saturday and Sunday (+€2.00 surcharge).", tr: "🥩 Steak eti bizde sadece Cuma, Cumartesi ve Pazar günleri var (+2,00 € ek ücretle).", ro: "🥩 Carnea de vită (steak) este disponibilă doar vineri, sâmbătă și duminică (+2,00 € suprataxă).", nl: "🥩 Steak is bij ons alleen op vrijdag, zaterdag en zondag verkrijgbaar (+€2,00 toeslag).", sq: "🥩 Mishi steak ka vetëm të premten, të shtunën dhe të dielën (+2,00 € shtesë).", ku: "🥩 Goştê steak tenê roja Îni, Şemî û Yekşemê heye (+2,00 € zêde).", pl: "🥩 Stek jest dostępny tylko w piątek, sobotę i niedzielę (+2,00 € dopłaty)." },
   recommendPrefix: { de: "🎲 Meine Empfehlung für heute:", en: "🎲 My recommendation for today:", tr: "🎲 Bugün için önerim:", ro: "🎲 Recomandarea mea de azi:", nl: "🎲 Mijn aanbeveling voor vandaag:", sq: "🎲 Rekomandimi im për sot:", ku: "🎲 Pêşniyara min a îro:", pl: "🎲 Moje polecenie na dziś:" },
   enjoy: { de: "Guten Appetit! 😋", en: "Enjoy your meal! 😋", tr: "Afiyet olsun! 😋", ro: "Poftă bună! 😋", nl: "Eet smakelijk! 😋", sq: "Ju bëftë mirë! 😋", ku: "Nûşê te be! 😋", pl: "Smacznego! 😋" },
   menuList: { de: "📋 Unsere Kategorien: Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat. Tippe oben auf \"Speisekarte\" für die komplette Karte.", en: '📋 Our categories: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salad. Tap "Menu" at the top for the full menu.', tr: "📋 Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat kategorilerimiz var — üstteki \"Speisekarte\" butonuyla tüm menüyü görebilirsin.", ro: '📋 Categoriile noastre: Kebap, Pizza, Rollo, Calzone, Baguette, Paste, Șnițel, Salată. Apasă "Meniu" sus pentru meniul complet.', nl: '📋 Onze categorieën: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salade. Tik boven op "Menu" voor de volledige kaart.', sq: '📋 Kategoritë tona: Kebap, Pica, Rollo, Kalcone, Bagetë, Makarona, Shnicel, Sallatë. Troko "Menuja" lart për menynë e plotë.', ku: '📋 Kategoriyên me: Kebap, Pizza, Rollo, Calzone, Baguette, Nûdile, Schnitzel, Selate. Li jor li ser "Menû" bitikîne bo menuya tevahî.', pl: '📋 Nasze kategorie: Kebap, Pizza, Rollo, Calzone, Baguette, Makaron, Sznycel, Sałatka. Dotknij "Menu" u góry, aby zobaczyć pełną kartę.' },
@@ -2142,6 +2143,9 @@ function getAssistantReply(qRaw, lang) {
   }
   if (has('liefer', 'delivery', 'teslimat', 'livrare', 'bezorg', 'dërgesë', 'radestkirin', 'dostawa', 'dostarcz')) {
     return { intent: 'delivery', text: ar('noDelivery', lang) };
+  }
+  if (has('steak', 'steakfleisch')) {
+    return { intent: 'steak', text: ar('steakAvailability', lang) };
   }
   if (has('karte', 'kredit', 'ec-karte', 'kartenzahlung', 'card', 'kart ile', 'kart mı', 'kartla', 'bargeld', 'bar bezahl', 'bar zahlen', 'nakit', 'cash', 'kontaktlos', 'contactless', 'girocard')) {
     return { intent: 'payment', text: ar('paymentYes', lang) };
@@ -6621,7 +6625,7 @@ function StaffPanelView({ back }) {
                     const key = v.value.event.replace('assistant_', '');
                     byIntent[key] = (byIntent[key] || 0) + 1;
                   });
-                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
+                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
                   const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
                   const unrecognized = assistantEvents
                     .filter((v) => v.value.event === 'assistant_fallback' && v.value.q)
@@ -6892,6 +6896,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [activeCat, setActiveCat] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [tmLightbox, setTmLightbox] = useState(null);
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
 
@@ -7072,7 +7077,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                   style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 8) * 0.05}s` }}
                 >
                   {resolvedImg ? (
-                    <img src={resolvedImg} alt="" className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0" />
+                    <img src={resolvedImg} alt="" onClick={() => setTmLightbox(resolvedImg)} className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0 cursor-pointer" />
                   ) : (
                     <div className="w-[68px] h-[68px] rounded-xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }}>
                       🍽️
@@ -7132,6 +7137,12 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
+      {tmLightbox && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.85)' }} onClick={() => setTmLightbox(null)}>
+          <img src={tmLightbox} alt="" className="max-w-full max-h-full rounded-2xl" style={{ animation: 'modalCardUp .3s ease' }} />
+          <button onClick={() => setTmLightbox(null)} className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,.15)' }}><X size={20} color="#fff" /></button>
+        </div>
+      )}
       </div>
     </div>
   );
