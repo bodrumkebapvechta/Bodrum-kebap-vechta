@@ -1653,29 +1653,51 @@ function WheelWidget({ onWin, compact }) {
 function SplashScreen({ onDone }) {
   const [stage, setStage] = useState(0);
   useEffect(() => {
-    const t1 = setTimeout(() => setStage(1), 120);
-    const t2 = setTimeout(() => setStage(2), 700);
-    const t3 = setTimeout(() => setStage(3), 1300);
+    const t1 = setTimeout(() => setStage(1), 150);
+    const t2 = setTimeout(() => setStage(2), 750);
+    const t3 = setTimeout(() => setStage(3), 1350);
     const t4 = setTimeout(() => onDone(), 2500);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, [onDone]);
 
+  const embers = React.useMemo(() => Array.from({ length: 14 }).map((_, i) => ({
+    left: 8 + Math.random() * 84,
+    delay: Math.random() * 2.2,
+    duration: 2.2 + Math.random() * 1.6,
+    drift: (Math.random() - 0.5) * 60,
+    size: 3 + Math.random() * 4,
+  })), []);
+
   return (
-    <div className="min-h-screen w-full flex justify-center items-center" style={{ background: GREEN }} onClick={onDone}>
+    <div className="min-h-screen w-full flex justify-center items-center relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% 100%, rgba(230,90,10,.35), transparent 60%), linear-gradient(180deg, #0a1a10, ${GREEN})` }} onClick={onDone}>
       <style>{`
-        @keyframes popIn { 0%{ transform:scale(.4) rotate(-15deg); opacity:0; } 60%{ transform:scale(1.08) rotate(4deg); opacity:1; } 100%{ transform:scale(1) rotate(0deg); opacity:1; } }
+        @keyframes ignite { 0%{ transform:scale(.15); opacity:0; filter:brightness(3.5); box-shadow:0 0 0 0 rgba(255,140,0,0); } 45%{ transform:scale(1.18); opacity:1; filter:brightness(2); box-shadow:0 0 70px 24px rgba(255,140,0,.75); } 100%{ transform:scale(1); opacity:1; filter:brightness(1); box-shadow:0 0 34px 8px rgba(255,140,0,.45); } }
+        @keyframes flarePulse { 0%,100%{ box-shadow:0 0 34px 8px rgba(255,140,0,.45);} 50%{ box-shadow:0 0 44px 14px rgba(255,180,60,.55);} }
         @keyframes riseFade { 0%{ transform:translateY(16px); opacity:0; } 100%{ transform:translateY(0); opacity:1; } }
-        @keyframes glowPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.45);} 50%{ box-shadow:0 0 0 22px rgba(255,199,56,0);} }
-        @keyframes spinSlow { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
-        @keyframes spin { from{ transform:rotate(0deg) scale(1);} 50%{ transform:rotate(180deg) scale(1.1);} to{ transform:rotate(360deg) scale(1);} }
         @keyframes shimmerBar { 0%{ background-position:-200px 0;} 100%{ background-position:200px 0;} }
+        @keyframes emberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-360px) translateX(var(--drift)); opacity:0; } }
       `}</style>
-      <div className="flex flex-col items-center px-8 text-center">
+
+      {embers.map((e, i) => (
         <div
-          className="rounded-full flex items-center justify-center mb-6 relative"
+          key={i}
           style={{
-            width: 108, height: 108, background: CREAM,
-            animation: stage >= 1 ? 'popIn .7s cubic-bezier(.34,1.56,.64,1) forwards, glowPulse 2.4s ease-out 0.7s infinite' : 'none',
+            position: 'absolute', bottom: 0, left: `${e.left}%`,
+            width: e.size, height: e.size, borderRadius: '50%',
+            background: i % 2 === 0 ? GOLD : ORANGE,
+            boxShadow: `0 0 6px 2px ${i % 2 === 0 ? 'rgba(255,199,56,.8)' : 'rgba(230,90,10,.8)'}`,
+            animation: `emberFloat ${e.duration}s ease-in ${e.delay}s infinite`,
+            '--drift': `${e.drift}px`,
+          }}
+        />
+      ))}
+
+      <div className="flex flex-col items-center px-8 text-center relative">
+        <div
+          className="rounded-full flex items-center justify-center mb-6"
+          style={{
+            width: 108, height: 108, background: `linear-gradient(135deg, ${CREAM}, #fff)`,
+            animation: stage >= 1 ? 'ignite .8s cubic-bezier(.22,1,.36,1) forwards, flarePulse 2s ease-in-out .8s infinite' : 'none',
             opacity: stage >= 1 ? 1 : 0,
           }}
         >
@@ -5777,6 +5799,8 @@ function StaffPanelView({ back }) {
   const [tischItemPrice, setTischItemPrice] = useState('');
   const [tischItemPriceLarge, setTischItemPriceLarge] = useState('');
   const [tischItemImg, setTischItemImg] = useState('');
+  const [tischPhotos, setTischPhotos] = useState({});
+  useEffect(() => { safeGet('siteconfig:tischPhotos').then((r) => { if (r) setTischPhotos(r); }); }, []);
   const [tischEditingId, setTischEditingId] = useState(null);
   const [tischUploadBusy, setTischUploadBusy] = useState(false);
   const [tischAdminOpen, setTischAdminOpen] = useState(false);
@@ -5811,25 +5835,37 @@ function StaffPanelView({ back }) {
     setTischItemName(typeof item.name === 'string' ? item.name : (item.name?.de || ''));
     setTischItemDesc(typeof item.desc === 'string' ? item.desc : (item.desc?.de || ''));
     setTischItemPrice(String(item.price)); setTischItemPriceLarge(item.priceLarge !== undefined ? String(item.priceLarge) : '');
-    setTischItemImg(item.img || '');
+    setTischItemImg(tischPhotos[item.id] || item.img || '');
+  }
+  const tischPhotoSaveQueueRef = useRef(Promise.resolve());
+  function queueTischPhotosSave(next) {
+    tischPhotoSaveQueueRef.current = tischPhotoSaveQueueRef.current.then(() => safeSet('siteconfig:tischPhotos', next)).catch(() => {});
   }
   function tischSaveItem() {
     const price = parseFloat(tischItemPrice.replace(',', '.'));
     if (!tischItemCat || !tischItemName.trim() || isNaN(price)) { setTischMsg('⚠️ Kategorie, Name und Preis erforderlich'); return; }
     const priceLargeVal = tischItemPriceLarge.trim() ? parseFloat(tischItemPriceLarge.replace(',', '.')) : undefined;
     let items;
+    let itemId = tischEditingId;
     if (tischEditingId) {
       items = tischMenu.items.map((i) => {
         if (i.id !== tischEditingId) return i;
-        const next = { ...i, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, img: tischItemImg };
+        const next = { ...i, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price };
+        delete next.img; // Fotos liegen jetzt getrennt in siteconfig:tischPhotos, nicht mehr im Menü-Datensatz
         if (priceLargeVal !== undefined) next.priceLarge = priceLargeVal; else delete next.priceLarge;
         return next;
       });
     } else {
       const id = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      const newItem = { id, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, img: tischItemImg, soldOut: false };
+      itemId = id;
+      const newItem = { id, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, soldOut: false };
       if (priceLargeVal !== undefined) newItem.priceLarge = priceLargeVal;
       items = [...tischMenu.items, newItem];
+    }
+    if (tischItemImg && tischItemImg.trim()) {
+      const nextPhotos = { ...tischPhotos, [itemId]: tischItemImg.trim() };
+      setTischPhotos(nextPhotos);
+      queueTischPhotosSave(nextPhotos);
     }
     saveTischMenu({ ...tischMenu, items });
     setTischMsg('✅ Gespeichert (auf Deutsch — sag mir im Chat Bescheid, wenn ich es in alle Sprachen übersetzen soll)');
@@ -6322,7 +6358,7 @@ function StaffPanelView({ back }) {
                 <div className="font-black text-xs mb-2" style={{ color: '#a4906c' }}>{cat.emoji} {tischText(cat.label, 'de')}</div>
                 {catItems.map((item) => (
                   <div key={item.id} className="bg-white rounded-xl p-3 mb-2 flex items-center gap-2.5">
-                    {item.img && <img src={item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
+                    {(tischPhotos[item.id] || item.img) && <img src={tischPhotos[item.id] || item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-sm" style={{ color: GREEN }}>{item.number && <span className="text-[10px] font-black mr-1" style={{ color: ORANGE }}>#{item.number}</span>}{tischText(item.name, 'de')}{item.alg && <sup className="ml-0.5 font-semibold" style={{ fontSize: '9px', color: '#a4906c' }}>{item.alg}</sup>} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
                       <div className="text-xs font-bold" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `22cm ${fmt(item.price)} / 28cm ${fmt(item.priceLarge)}` : fmt(item.price)}</div>
@@ -6970,6 +7006,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [tmLightbox, setTmLightbox] = useState(null);
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
+  const [tischPhotos, setTischPhotos] = useState({});
+  useEffect(() => { safeGet('siteconfig:tischPhotos').then((r) => { if (r) setTischPhotos(r); }); }, []);
 
   useEffect(() => {
     safeGet('siteconfig:tischMenu').then((r) => {
@@ -7140,7 +7178,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
             )}
             {displayedItems.map((item, idx) => {
               const color = tischCatColor(item.category);
-              const resolvedImg = item.img || photoOverrides[item.id.replace(/^imp-/, '')] || '';
+              const originalId = item.id.replace(/^imp-/, '');
+              const resolvedImg = tischPhotos[originalId] || tischPhotos[item.id] || item.img || photoOverrides[originalId] || '';
               return (
                 <div
                   key={item.id}
