@@ -5807,29 +5807,35 @@ function StaffPanelView({ back }) {
 
   useEffect(() => {
     if (!ok) return;
-    Promise.all([safeGet('siteconfig:tischMenu'), safeGet('siteconfig:tischPhotos')]).then(([menuData, photosData]) => {
+    Promise.all([safeGet('siteconfig:tischMenu'), safeGet('siteconfig:tischPhotos'), safeListPrefix('tischphoto:', 500)]).then(([menuData, legacyBlob, rows]) => {
       if (!menuData) return;
-      const existingPhotos = photosData || {};
-      const migratedPhotos = { ...existingPhotos };
+      const photoMap = {};
+      rows.forEach((r) => { if (r.value?.url) photoMap[r.key.replace(/^tischphoto:/, '')] = r.value.url; });
+      const legacy = legacyBlob || {};
       let changed = false;
+      // Fotos, die noch im alten Sammel-Blob liegen, einzeln nachziehen
+      Object.keys(legacy).forEach((id) => {
+        if (!photoMap[id]) { photoMap[id] = legacy[id]; changed = true; queueTischPhotoSave(id, legacy[id]); }
+      });
+      // Fotos, die noch direkt im Menü-Datensatz eingebettet sind, herauslösen
       const lightenedItems = menuData.items.map((it) => {
-        if (it.img && it.img.startsWith('data:image') && !migratedPhotos[it.id]) {
-          migratedPhotos[it.id] = it.img;
+        if (it.img && it.img.startsWith('data:image') && !photoMap[it.id]) {
+          photoMap[it.id] = it.img;
           changed = true;
+          queueTischPhotoSave(it.id, it.img);
           const next = { ...it };
           delete next.img;
           return next;
         }
         return it;
       });
-      setTischMenu(menuData);
-      setTischPhotos(existingPhotos);
+      setTischPhotos(photoMap);
       if (changed) {
         const lightenedMenu = { ...menuData, items: lightenedItems };
         setTischMenu(lightenedMenu);
-        setTischPhotos(migratedPhotos);
-        safeSet('siteconfig:tischPhotos', migratedPhotos);
-        safeSet('siteconfig:tischMenu', lightenedMenu);
+        saveTischMenu(lightenedMenu);
+      } else {
+        setTischMenu(menuData);
       }
     });
   }, [ok]);
@@ -5862,8 +5868,8 @@ function StaffPanelView({ back }) {
     setTischItemImg(tischPhotos[item.id] || item.img || '');
   }
   const tischPhotoSaveQueueRef = useRef(Promise.resolve());
-  function queueTischPhotosSave(next) {
-    tischPhotoSaveQueueRef.current = tischPhotoSaveQueueRef.current.then(() => safeSet('siteconfig:tischPhotos', next)).catch(() => {});
+  function queueTischPhotoSave(itemId, url) {
+    tischPhotoSaveQueueRef.current = tischPhotoSaveQueueRef.current.then(() => safeSet('tischphoto:' + itemId, { url })).catch(() => {});
   }
   function tischSaveItem() {
     const price = parseFloat(tischItemPrice.replace(',', '.'));
@@ -5875,7 +5881,7 @@ function StaffPanelView({ back }) {
       items = tischMenu.items.map((i) => {
         if (i.id !== tischEditingId) return i;
         const next = { ...i, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price };
-        delete next.img; // Fotos liegen jetzt getrennt in siteconfig:tischPhotos, nicht mehr im Menü-Datensatz
+        delete next.img; // Fotos liegen jetzt einzeln unter tischphoto:{id}, nicht mehr im Menü-Datensatz
         if (priceLargeVal !== undefined) next.priceLarge = priceLargeVal; else delete next.priceLarge;
         return next;
       });
@@ -5887,9 +5893,8 @@ function StaffPanelView({ back }) {
       items = [...tischMenu.items, newItem];
     }
     if (tischItemImg && tischItemImg.trim()) {
-      const nextPhotos = { ...tischPhotos, [itemId]: tischItemImg.trim() };
-      setTischPhotos(nextPhotos);
-      queueTischPhotosSave(nextPhotos);
+      setTischPhotos((prev) => ({ ...prev, [itemId]: tischItemImg.trim() }));
+      queueTischPhotoSave(itemId, tischItemImg.trim());
     }
     saveTischMenu({ ...tischMenu, items });
     setTischMsg('✅ Gespeichert (auf Deutsch — sag mir im Chat Bescheid, wenn ich es in alle Sprachen übersetzen soll)');
@@ -7024,7 +7029,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
   const [tischPhotos, setTischPhotos] = useState({});
-  useEffect(() => { safeGet('siteconfig:tischPhotos').then((r) => { if (r) setTischPhotos(r); }); }, []);
+  const fetchedPhotoIdsRef = useRef(new Set());
 
   useEffect(() => {
     safeGet('siteconfig:tischMenu').then((r) => {
@@ -7051,6 +7056,19 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   }, [tischMenu, search, lang]);
 
   const displayedItems = searchResults !== null ? searchResults : activeItems;
+
+  useEffect(() => {
+    const toFetch = displayedItems
+      .map((it) => it.id.replace(/^imp-/, ''))
+      .filter((id) => !fetchedPhotoIdsRef.current.has(id));
+    if (toFetch.length === 0) return;
+    toFetch.forEach((id) => fetchedPhotoIdsRef.current.add(id));
+    toFetch.forEach((id) => {
+      safeGet('tischphoto:' + id).then((r) => {
+        if (r && r.url) setTischPhotos((prev) => ({ ...prev, [id]: r.url }));
+      });
+    });
+  }, [displayedItems]);
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: '#eaf3ec', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
