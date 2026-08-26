@@ -5786,9 +5786,10 @@ function StaffPanelView({ back }) {
     if (ok) safeGet('siteconfig:tischMenu').then((r) => { if (r) setTischMenu(r); });
   }, [ok]);
 
-  async function saveTischMenu(next) {
+  const tischSaveQueueRef = useRef(Promise.resolve());
+  function saveTischMenu(next) {
     setTischMenu(next);
-    await safeSet('siteconfig:tischMenu', next);
+    tischSaveQueueRef.current = tischSaveQueueRef.current.then(() => safeSet('siteconfig:tischMenu', next)).catch(() => {});
   }
   function tischAddCategory() {
     const label = tischNewCatName.trim();
