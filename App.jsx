@@ -6904,7 +6904,8 @@ function StaffPanelView({ back }) {
               >
                 <span className="text-xl">🍽️</span>
                 <div className="min-w-0">
-                  <div className="font-black text-xs text-white truncate">{t('staffTischMenuTab')} — QR-Tischbildschirm →</div>
+                  <div className="font-black text-xs text-white truncate">🍽️ Speisekarte bearbeiten →</div>
+                  <div className="text-[10px] text-white/80 truncate">Preise, Namen, Fotos, neue Produkte, löschen</div>
                 </div>
               </button>
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
@@ -7402,11 +7403,11 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                     {item.extras && <span className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Grundbelag</span>}
                     {item.priceLarge !== undefined ? (
                       <div className="flex flex-col gap-0.5 items-end">
-                        <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${color}18`, color }}><span className="opacity-60 font-bold text-[10px]">22cm</span>{fmt(item.price)}</span>
-                        <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${color}18`, color }}><span className="opacity-60 font-bold text-[10px]">28cm</span>{fmt(item.priceLarge)}</span>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}><span className="opacity-70 font-bold text-[10px]">22cm</span>{fmt(item.price)}</span>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}><span className="opacity-70 font-bold text-[10px]">28cm</span>{fmt(item.priceLarge)}</span>
                       </div>
                     ) : (
-                      <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: `${color}18`, color }}>{fmt(item.price)}</span>
+                      <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}>{fmt(item.price)}</span>
                     )}
                     <button onClick={() => speakText(item.priceLarge !== undefined ? `${mx(tischText(item.name, 'de'), lang)}. 22 cm: ${fmt(item.price)}. 28 cm: ${fmt(item.priceLarge)}` : `${mx(tischText(item.name, 'de'), lang)}. ${fmt(item.price)}`, lang)} className="text-sm opacity-50" title="Vorlesen">🔊</button>
                   </div>
