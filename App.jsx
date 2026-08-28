@@ -5922,6 +5922,21 @@ function StaffPanelView({ back }) {
   const [unlockStage, setUnlockStage] = useState('idle'); // idle | unlocked | wrong
   const [keystroke, setKeystroke] = useState(0);
   const [lastLoginAt, setLastLoginAt] = useState(null);
+  const [rememberChoice, setRememberChoice] = useState(null); // null | '10m' | '1h' | 'today'
+  const [checkingRemember, setCheckingRemember] = useState(true);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('bk_staff_remember_v1');
+      if (!raw) { setCheckingRemember(false); return; }
+      const data = JSON.parse(raw);
+      if (!data.until || data.until < Date.now()) { localStorage.removeItem('bk_staff_remember_v1'); setCheckingRemember(false); return; }
+      safeGet('siteconfig:staffSessionEpoch').then((epoch) => {
+        const serverEpoch = epoch || 0;
+        if (data.epoch === serverEpoch) { setOk(true); } else { localStorage.removeItem('bk_staff_remember_v1'); }
+        setCheckingRemember(false);
+      }).catch(() => setCheckingRemember(false));
+    } catch { setCheckingRemember(false); }
+  }, []);
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
   useEffect(() => {
     if (ok || unlocking || pin.length === 0) return;
@@ -5933,6 +5948,12 @@ function StaffPanelView({ back }) {
         if (r && r.ts) setLastLoginAt(r.ts);
         safeSet('siteconfig:lastStaffLogin', { ts: Date.now() });
       });
+      if (rememberChoice) {
+        const durationMs = rememberChoice === '10m' ? 10 * 60 * 1000 : rememberChoice === '1h' ? 60 * 60 * 1000 : (() => { const end = new Date(); end.setHours(23, 59, 59, 999); return end.getTime() - Date.now(); })();
+        safeGet('siteconfig:staffSessionEpoch').then((epoch) => {
+          localStorage.setItem('bk_staff_remember_v1', JSON.stringify({ until: Date.now() + durationMs, epoch: epoch || 0 }));
+        }).catch(() => {});
+      }
       setTimeout(() => setOk(true), 900);
     } else if (pin.length >= staffPin.length) {
       setUnlockStage('wrong');
@@ -5947,6 +5968,14 @@ function StaffPanelView({ back }) {
     setNewPin(''); setNewPin2('');
     setPinMsg(t('savedMsg'));
     setTimeout(() => setPinMsg(''), 2500);
+  };
+  const [logoutAllMsg, setLogoutAllMsg] = useState('');
+  const logoutAllDevices = async () => {
+    const newEpoch = Date.now();
+    await safeSet('siteconfig:staffSessionEpoch', newEpoch);
+    localStorage.removeItem('bk_staff_remember_v1');
+    setLogoutAllMsg('✅ Alle gemerkten Geräte wurden abgemeldet');
+    setTimeout(() => setLogoutAllMsg(''), 3000);
   };
   const [ratingScore, setRatingScore] = useState('4.6');
   const [ratingCount, setRatingCount] = useState('293');
@@ -6599,6 +6628,10 @@ function StaffPanelView({ back }) {
     await safeSet(`spincode:${c}`, updated); setWheelResult(updated); setRedeemMsg(t('redeemedMsg'));
   };
 
+  if (checkingRemember) {
+    return <div style={{ minHeight: '100vh', background: GREEN }} />;
+  }
+
   if (ok && tischAdminOpen) {
     return (
       <div className="pb-10" style={{ background: CREAM, minHeight: '100vh' }}>
@@ -6793,6 +6826,24 @@ function StaffPanelView({ back }) {
                   })}
                 </div>
               </div>
+
+              <div className="mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,.1)' }}>
+                <button onClick={() => setRememberChoice(rememberChoice ? null : '1h')} className="w-full flex items-center gap-2.5 mb-2.5" disabled={unlocking}>
+                  <div className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: rememberChoice ? GOLD : 'rgba(255,255,255,.08)', border: rememberChoice ? 'none' : '1.5px solid rgba(255,255,255,.25)' }}>
+                    {rememberChoice && <Check size={13} color={GREEN} strokeWidth={3.5} />}
+                  </div>
+                  <span className="text-xs font-bold" style={{ color: 'rgba(255,255,255,.85)' }}>Auf diesem Gerät merken</span>
+                </button>
+                {rememberChoice && (
+                  <div className="flex gap-1.5">
+                    {[{ id: '10m', label: '10 Min' }, { id: '1h', label: '1 Stunde' }, { id: 'today', label: 'Heute' }].map((opt) => (
+                      <button key={opt.id} onClick={() => setRememberChoice(opt.id)} className="flex-1 py-2 rounded-lg text-[11px] font-bold" style={rememberChoice === opt.id ? { background: GOLD, color: GREEN } : { background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.6)' }}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -6885,6 +6936,12 @@ function StaffPanelView({ back }) {
                 <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
                 <button onClick={savePin} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                 {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
+              </SettingsRow>
+
+              <SettingsRow id="logoutAll" icon="📴" title="Alle Geräte abmelden" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Meldet sofort jedes Gerät ab, das mit „Auf diesem Gerät merken" gemerkt wurde — auch dieses hier. Nützlich, wenn ein Handy verloren geht oder du dich versehentlich auf einem fremden Gerät gemerkt hast.</p>
+                <button onClick={logoutAllDevices} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: CHILI }}>Jetzt alle abmelden</button>
+                {logoutAllMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{logoutAllMsg}</p>}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>📸 FOTOS</div>
