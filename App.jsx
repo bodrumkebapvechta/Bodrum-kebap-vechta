@@ -2921,6 +2921,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
               <span className="text-white font-black text-base tracking-tight">{t('lunchOffer')}</span>
             </div>
             <div className="font-black text-3xl px-4 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 4px 12px rgba(0,0,0,.2)' }}>{fmt(9.5)}</div>
+            <div className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,.85)' }}>Montag–Freitag · 11:30–14:00</div>
             {showCountdown && (
               <div className="text-sm font-black mt-0.5 tabular-nums px-3 py-1 rounded-full" style={{ color: '#153826', background: 'rgba(255,255,255,.92)' }}>
                 {countdownLabel}
