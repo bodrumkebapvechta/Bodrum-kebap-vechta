@@ -2875,7 +2875,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const active = isLunchDay && now >= start && now <= end;
-  const isBlackout = day === 0 || (day === 5 && now >= end); // Sonntag, oder Freitag nach 14:00 — Countdown pausiert bis Montag
+  const isBlackout = day === 0 || (day === 5 && now >= end); // Sonntag, oder Freitag ab 14:00 — Countdown pausiert bis Montag 00:00
   const showCountdown = !isBlackout;
 
   const getNextStart = () => {
@@ -2893,7 +2893,8 @@ function MittagsBanner({ menu, onPhotoClick }) {
     const diff = end.getTime() - now.getTime();
     const hh = Math.floor(diff / 3600000);
     const mm = Math.floor((diff % 3600000) / 60000);
-    countdownLabel = hh > 0 ? `⏱ noch ${hh} Std ${mm} Min` : `⏱ noch ${mm} Min`;
+    const ss = Math.floor((diff % 60000) / 1000);
+    countdownLabel = `⏱ noch ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}`;
   } else if (showCountdown) {
     const next = getNextStart();
     if (next) {
