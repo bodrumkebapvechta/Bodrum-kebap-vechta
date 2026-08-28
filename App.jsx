@@ -2837,10 +2837,25 @@ function MemoryMatchGame({ onClose }) {
 function MittagsBanner() {
   const { t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
+  const [sidePhotos, setSidePhotos] = useState(null);
+  const [photoIdx, setPhotoIdx] = useState(0);
   useEffect(() => {
     const t2 = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t2);
   }, []);
+  useEffect(() => {
+    safeGet('siteconfig:mittagsSidePhotos').then((r) => {
+      if (r) {
+        const urls = ['pizza', 'salat', 'nudeln', 'schnitzel'].map((k) => r[k]).filter(Boolean);
+        if (urls.length) setSidePhotos(urls);
+      }
+    });
+  }, []);
+  useEffect(() => {
+    if (!sidePhotos || sidePhotos.length < 2) return;
+    const iv = setInterval(() => setPhotoIdx((i) => (i + 1) % sidePhotos.length), 3500);
+    return () => clearInterval(iv);
+  }, [sidePhotos]);
   const day = now.getDay();
   if (day === 6) return null; // Samstag hat seine eigene Kampagne (Tagesempfehlung)
   const isLunchDay = [1, 3, 4, 5].includes(day);
@@ -2884,15 +2899,27 @@ function MittagsBanner() {
       <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 22px)' }} />
       <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'rgba(255,199,56,.7)' }} />
       <div className="max-w-md mx-auto px-5 relative">
-        <div className="flex flex-col items-center text-center gap-1.5 rounded-2xl px-4 py-3.5" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,199,56,.4)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18)' }}>
-          <div className="flex items-center gap-2">
-            <span className="text-xl" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
-            <span className="text-white font-black text-base tracking-tight">{t('lunchOffer')}</span>
+        <div className="flex items-center gap-2.5">
+          {sidePhotos && (
+            <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ width: 54, height: 54, boxShadow: '0 6px 16px rgba(0,0,0,.25)', border: '2px solid rgba(255,255,255,.5)' }}>
+              <img key={`l-${photoIdx}`} src={sidePhotos[photoIdx % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
+            </div>
+          )}
+          <div className="flex-1 flex flex-col items-center text-center gap-1.5 rounded-2xl px-4 py-3.5" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,199,56,.4)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18)' }}>
+            <div className="flex items-center gap-2">
+              <span className="text-xl" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
+              <span className="text-white font-black text-base tracking-tight">{t('lunchOffer')}</span>
+            </div>
+            <div className="font-black text-3xl px-4 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 4px 12px rgba(0,0,0,.2)' }}>{fmt(9.5)}</div>
+            <div className="text-sm font-black mt-0.5 tabular-nums px-3 py-1 rounded-full" style={{ color: '#153826', background: 'rgba(255,255,255,.92)' }}>
+              {countdownLabel}
+            </div>
           </div>
-          <div className="font-black text-3xl px-4 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 4px 12px rgba(0,0,0,.2)' }}>{fmt(9.5)}</div>
-          <div className="text-sm font-black mt-0.5 tabular-nums px-3 py-1 rounded-full" style={{ color: '#153826', background: 'rgba(255,255,255,.92)' }}>
-            {countdownLabel}
-          </div>
+          {sidePhotos && (
+            <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ width: 54, height: 54, boxShadow: '0 6px 16px rgba(0,0,0,.25)', border: '2px solid rgba(255,255,255,.5)' }}>
+              <img key={`r-${photoIdx}`} src={sidePhotos[(photoIdx + Math.ceil(sidePhotos.length / 2)) % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
+            </div>
+          )}
         </div>
         <p className="text-center text-white text-sm font-bold mt-2" style={{ opacity: 0.95 }}>{t('lunchOfferItems')}</p>
       </div>
@@ -3320,7 +3347,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
       {dailyBanner && (
         <div className="mx-4 mt-3 mb-1 rounded-2xl overflow-hidden" style={{ background: GREEN, boxShadow: '0 10px 28px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }}>
-          {dailyBanner.img && <img src={dailyBanner.img} alt="" className="w-full h-40 object-cover" />}
+          {dailyBanner.img && <img src={dailyBanner.img} alt="" onClick={() => setLightbox(dailyBanner.img)} className="w-full h-40 object-cover cursor-pointer" />}
           <div className="flex items-center gap-2.5 px-4 py-3.5">
             <span className="text-xl flex-shrink-0">📣</span>
             <span className="font-bold text-sm" style={{ color: GOLD }}>{dailyBanner.text}</span>
@@ -5929,6 +5956,9 @@ function StaffPanelView({ back }) {
     if (ok) {
       safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
       safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIdsStaff(r); });
+      safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
+      safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); });
+      safeGet('siteconfig:mittagsSidePhotos').then((r) => { if (r) setMittagsSidePhotos({ pizza: '', salat: '', nudeln: '', schnitzel: '', ...r }); });
     }
   }, [ok]);
   const staffLookupResults = useMemo(() => {
@@ -6027,6 +6057,7 @@ function StaffPanelView({ back }) {
   const [dailyBannerHours, setDailyBannerHours] = useState('0');
   const [dailyBannerUploadBusy, setDailyBannerUploadBusy] = useState(false);
   const [dailyBannerMsg, setDailyBannerMsg] = useState('');
+  const [mittagsSidePhotos, setMittagsSidePhotos] = useState({ pizza: '', salat: '', nudeln: '', schnitzel: '' });
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
@@ -6399,6 +6430,11 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:rating', { score, count });
     setRatingMsg(t('savedMsg'));
     setTimeout(() => setRatingMsg(''), 2500);
+  };
+  const saveMittagsPhoto = async (cat, url) => {
+    const next = { ...mittagsSidePhotos, [cat]: url };
+    setMittagsSidePhotos(next);
+    await safeSet('siteconfig:mittagsSidePhotos', next);
   };
   const saveDailyBanner = async () => {
     const days = parseFloat(dailyBannerDays) || 0;
@@ -7013,6 +7049,43 @@ function StaffPanelView({ back }) {
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Verschiebt alle bisher hochgeladenen Fotos in den schnellen Speicher (Storage). Einmal antippen genügt — kann ein paar Minuten dauern, du kannst währenddessen weiterarbeiten.</p>
                 <button onClick={migrateOldPhotosToStorage} disabled={migrateBusy} className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{migrateBusy ? '…' : 'Jetzt migrieren'}</button>
                 {migrateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{migrateMsg}</p>}
+              </SettingsRow>
+
+              <SettingsRow id="mittagsPhotos" icon="🖼️" title="Mittagsangebot – Seitenfotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Wähle je Kategorie ein Foto — sie wechseln alle paar Sekunden links und rechts neben dem Mittagsangebot-Banner.</p>
+                {[
+                  { key: 'pizza', label: '🍕 Pizza', catKey: 'pizza', gallery: true },
+                  { key: 'salat', label: '🥗 Salat', catKey: 'salat', gallery: false },
+                  { key: 'nudeln', label: '🍝 Nudelngericht', catKey: 'nudeln', gallery: false },
+                  { key: 'schnitzel', label: '🍖 Schnitzel', catKey: 'schnitzel', gallery: false },
+                ].map((row) => {
+                  const cat = MENU.find((c) => c.key === row.catKey);
+                  const candidates = (cat?.items || [])
+                    .map((item) => ({ id: item.id, name: item.name, url: photoOverrides[item.id] || item.img }))
+                    .filter((c) => c.url);
+                  const current = mittagsSidePhotos[row.key];
+                  return (
+                    <div key={row.key} className="mb-4">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-xs font-black" style={{ color: GREEN }}>{row.label}</span>
+                        {current && <img src={current} alt="" className="w-6 h-6 rounded-full object-cover" style={{ border: `2px solid ${GOLD}` }} />}
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+                        {candidates.length === 0 && <p className="text-[10px] font-semibold" style={{ color: '#c4b697' }}>Keine Fotos in dieser Kategorie — zuerst in „Speisekarte bearbeiten" Fotos hinzufügen.</p>}
+                        {candidates.map((c) => (
+                          <button key={c.id} onClick={() => saveMittagsPhoto(row.key, c.url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 52, height: 52, border: current === c.url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
+                            <img src={c.url} alt="" className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                        {row.gallery && extraGalleryPhotos.map((url, i) => (
+                          <button key={`g${i}`} onClick={() => saveMittagsPhoto(row.key, url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 52, height: 52, border: current === url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
+                            <img src={url} alt="" className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
