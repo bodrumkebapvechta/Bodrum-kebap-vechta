@@ -3087,8 +3087,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   }, []);
   const HOME_EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(homePriceOverrides, homePhotoOverrides, homeSoldOutIds), [homePriceOverrides, homePhotoOverrides, homeSoldOutIds]);
   const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
-  const [dailyBanner, setDailyBanner] = useState('');
-  useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBanner(r.text); }); }, []);
+  const [dailyBanner, setDailyBanner] = useState(null);
+  useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text && (!r.expiresAt || r.expiresAt > Date.now())) setDailyBanner(r); }); }, []);
   const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
   useEffect(() => { safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); }); }, []);
   const [hiddenPhotos, setHiddenPhotos] = useState([]);
@@ -3319,8 +3319,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <MittagsBanner />
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
       {dailyBanner && (
-        <div className="py-2.5 px-5 text-center text-sm font-bold" style={{ background: GREEN, color: GOLD }}>
-          📣 {dailyBanner}
+        <div className="mx-4 mt-3 mb-1 rounded-2xl overflow-hidden" style={{ background: GREEN, boxShadow: '0 10px 28px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }}>
+          {dailyBanner.img && <img src={dailyBanner.img} alt="" className="w-full h-40 object-cover" />}
+          <div className="flex items-center gap-2.5 px-4 py-3.5">
+            <span className="text-xl flex-shrink-0">📣</span>
+            <span className="font-bold text-sm" style={{ color: GOLD }}>{dailyBanner.text}</span>
+          </div>
         </div>
       )}
       {showWelcomeBack && (
@@ -5827,10 +5831,10 @@ function OrderTrackView({ back, initialAction, onConsumeAction }) {
 function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   const isOpen = openId === id;
   return (
-    <div className="rounded-2xl mb-2.5 overflow-hidden" style={{ background: '#fff', border: '1.5px solid #f0e5cf' }}>
+    <div className="rounded-2xl mb-2.5 overflow-hidden" style={{ background: '#fff', border: `1.5px solid ${isOpen ? '#e9d19a' : '#f0e5cf'}`, boxShadow: isOpen ? '0 6px 18px rgba(21,56,38,.08)' : '0 2px 6px rgba(21,56,38,.04)', transition: 'box-shadow .2s, border-color .2s' }}>
       <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
         <span className="flex items-center gap-2 font-black text-sm" style={{ color: GREEN }}>{icon} {title}</span>
-        <span className="text-xs" style={{ color: '#a4906c', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▼</span>
+        <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px]" style={{ background: isOpen ? GOLD : '#f7f0e2', color: GREEN, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s, background .2s' }}>▼</span>
       </button>
       {isOpen && <div className="px-4 pb-4">{children}</div>}
     </div>
@@ -6018,6 +6022,10 @@ function StaffPanelView({ back }) {
   const [ratingCount, setRatingCount] = useState('293');
   const [ratingMsg, setRatingMsg] = useState('');
   const [dailyBannerText, setDailyBannerText] = useState('');
+  const [dailyBannerImg, setDailyBannerImg] = useState('');
+  const [dailyBannerDays, setDailyBannerDays] = useState('1');
+  const [dailyBannerHours, setDailyBannerHours] = useState('0');
+  const [dailyBannerUploadBusy, setDailyBannerUploadBusy] = useState(false);
   const [dailyBannerMsg, setDailyBannerMsg] = useState('');
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
@@ -6238,7 +6246,15 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'settings') {
       safeGet('siteconfig:rating').then((r) => { if (r) { setRatingScore(String(r.score)); setRatingCount(String(r.count)); } });
-      safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text) setDailyBannerText(r.text); });
+      safeGet('siteconfig:dailyBanner').then((r) => {
+        if (r && r.text) setDailyBannerText(r.text);
+        if (r && r.img) setDailyBannerImg(r.img);
+        if (r && r.expiresAt) {
+          const remainingMs = Math.max(0, r.expiresAt - Date.now());
+          setDailyBannerDays(String(Math.floor(remainingMs / (24 * 3600 * 1000))));
+          setDailyBannerHours(String(Math.round((remainingMs % (24 * 3600 * 1000)) / 3600000)));
+        }
+      });
       safeGet('siteconfig:waTemplate').then((r) => { if (r && r.text) setWaTemplateText(r.text); });
       safeGet('siteconfig:campaign').then((r) => { if (r) setCampaign(r); });
     }
@@ -6385,13 +6401,27 @@ function StaffPanelView({ back }) {
     setTimeout(() => setRatingMsg(''), 2500);
   };
   const saveDailyBanner = async () => {
-    await safeSet('siteconfig:dailyBanner', { text: dailyBannerText.trim(), updatedAt: Date.now() });
+    const days = parseFloat(dailyBannerDays) || 0;
+    const hours = parseFloat(dailyBannerHours) || 0;
+    const durationMs = (days * 24 + hours) * 3600 * 1000;
+    const expiresAt = durationMs > 0 ? Date.now() + durationMs : null;
+    await safeSet('siteconfig:dailyBanner', { text: dailyBannerText.trim(), img: dailyBannerImg || '', expiresAt, updatedAt: Date.now() });
     setDailyBannerMsg(t('savedMsg'));
     setTimeout(() => setDailyBannerMsg(''), 2500);
   };
   const clearDailyBanner = async () => {
-    setDailyBannerText('');
-    await safeSet('siteconfig:dailyBanner', { text: '', updatedAt: Date.now() });
+    setDailyBannerText(''); setDailyBannerImg(''); setDailyBannerDays('1'); setDailyBannerHours('0');
+    await safeSet('siteconfig:dailyBanner', { text: '', img: '', expiresAt: null, updatedAt: Date.now() });
+  };
+  const handleDailyBannerUpload = async (file) => {
+    if (!file) return;
+    setDailyBannerUploadBusy(true);
+    try {
+      const dataUrl = await compressImageFile(file, 1000, 0.78);
+      const publicUrl = await uploadImageToStorage(dataUrl, 'ankuendigung');
+      setDailyBannerImg(publicUrl || dataUrl);
+    } catch {}
+    setDailyBannerUploadBusy(false);
   };
   const saveCampaign = async () => {
     await safeSet('siteconfig:campaign', campaign);
@@ -6966,31 +6996,47 @@ function StaffPanelView({ back }) {
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🔒 SICHERHEIT</div>
               <SettingsRow id="pin" icon="🔒" title="PIN ändern" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Aktueller PIN gilt bis du ihn hier änderst.</p>
-                <input value={newPin} onChange={(e) => setNewPin(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
-                <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
-                <button onClick={savePin} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                <input value={newPin} onChange={(e) => setNewPin(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
+                <button onClick={savePin} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
                 {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
               </SettingsRow>
 
               <SettingsRow id="logoutAll" icon="📴" title="Alle Geräte abmelden" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Meldet sofort jedes Gerät ab, das mit „Auf diesem Gerät merken" gemerkt wurde — auch dieses hier. Nützlich, wenn ein Handy verloren geht oder du dich versehentlich auf einem fremden Gerät gemerkt hast.</p>
-                <button onClick={logoutAllDevices} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: CHILI }}>Jetzt alle abmelden</button>
+                <button onClick={logoutAllDevices} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: CHILI, boxShadow: '0 6px 16px rgba(214,40,40,.25)' }}>Jetzt alle abmelden</button>
                 {logoutAllMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{logoutAllMsg}</p>}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>📸 FOTOS</div>
               <SettingsRow id="migratePhotos" icon="🚀" title="Alte Fotos beschleunigen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Verschiebt alle bisher hochgeladenen Fotos in den schnellen Speicher (Storage). Einmal antippen genügt — kann ein paar Minuten dauern, du kannst währenddessen weiterarbeiten.</p>
-                <button onClick={migrateOldPhotosToStorage} disabled={migrateBusy} className="w-full py-2.5 rounded-lg font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN }}>{migrateBusy ? '…' : 'Jetzt migrieren'}</button>
+                <button onClick={migrateOldPhotosToStorage} disabled={migrateBusy} className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{migrateBusy ? '…' : 'Jetzt migrieren'}</button>
                 {migrateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{migrateMsg}</p>}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
               <SettingsRow id="dailyBanner" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
+                {dailyBannerImg && <img src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
+                <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white mb-2.5 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: dailyBannerUploadBusy ? 0.6 : 1 }}>
+                  <span className="text-base">📷</span> {dailyBannerUploadBusy ? '…' : 'Foto hinzufügen (optional)'}
+                  <input type="file" accept="image/*" className="hidden" disabled={dailyBannerUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleDailyBannerUpload(f); e.target.value = ''; }} />
+                </label>
+                <div className="text-[10px] font-black mb-1.5" style={{ color: '#a4906c' }}>WIE LANGE AUF DER STARTSEITE ZEIGEN?</div>
+                <div className="flex gap-2 mb-2.5">
+                  <div className="flex-1">
+                    <input type="number" min="0" value={dailyBannerDays} onChange={(e) => setDailyBannerDays(e.target.value)} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <div className="text-[10px] font-bold text-center mt-1" style={{ color: '#a4906c' }}>Tage</div>
+                  </div>
+                  <div className="flex-1">
+                    <input type="number" min="0" max="23" value={dailyBannerHours} onChange={(e) => setDailyBannerHours(e.target.value)} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <div className="text-[10px] font-bold text-center mt-1" style={{ color: '#a4906c' }}>Stunden</div>
+                  </div>
+                </div>
                 <div className="flex gap-2">
-                  <button onClick={saveDailyBanner} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
-                  <button onClick={clearDailyBanner} className="px-4 py-2.5 rounded-lg font-bold text-sm" style={{ background: '#f7e2e2', color: CHILI }}>{t('resetBtn')}</button>
+                  <button onClick={saveDailyBanner} className="flex-1 py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
+                  <button onClick={clearDailyBanner} className="px-5 py-3 rounded-xl font-bold text-sm" style={{ background: '#fff', color: CHILI, border: '1.5px solid #f2c9c9' }}>{t('resetBtn')}</button>
                 </div>
                 {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
               </SettingsRow>
@@ -7000,29 +7046,29 @@ function StaffPanelView({ back }) {
                   <input type="checkbox" checked={campaign.active} onChange={(e) => setCampaign({ ...campaign, active: e.target.checked })} />
                   Banner aktiv
                 </label>
-                <input value={campaign.title} onChange={(e) => setCampaign({ ...campaign, title: e.target.value })} placeholder="Titel (z.B. 🎪 Stoppelmarkt-Woche!)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-                <input value={campaign.subtitle} onChange={(e) => setCampaign({ ...campaign, subtitle: e.target.value })} placeholder="Untertitel (optional)" className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={campaign.title} onChange={(e) => setCampaign({ ...campaign, title: e.target.value })} placeholder="Titel (z.B. 🎪 Stoppelmarkt-Woche!)" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+                <input value={campaign.subtitle} onChange={(e) => setCampaign({ ...campaign, subtitle: e.target.value })} placeholder="Untertitel (optional)" className="w-full px-3 py-2.5 rounded-xl text-sm font-medium outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
                 <div className="flex gap-2 mb-2">
-                  <input type="date" value={campaign.startDate} onChange={(e) => setCampaign({ ...campaign, startDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-lg text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                  <input type="date" value={campaign.endDate} onChange={(e) => setCampaign({ ...campaign, endDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-lg text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input type="date" value={campaign.startDate} onChange={(e) => setCampaign({ ...campaign, startDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-xl text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input type="date" value={campaign.endDate} onChange={(e) => setCampaign({ ...campaign, endDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-xl text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                 </div>
                 <p className="text-[10px] mb-2.5" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
-                <button onClick={saveCampaign} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                <button onClick={saveCampaign} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
                 {campaignMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{campaignMsg}</p>}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>💬 WHATSAPP</div>
               <SettingsRow id="waTemplate" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
-                <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
-                <button onClick={saveWaTemplate} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
+                <button onClick={saveWaTemplate} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
                 {waTemplateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{waTemplateMsg}</p>}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>🧪 TESTWERKZEUGE</div>
               <SettingsRow id="testOrder" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
-                <button onClick={createTestOrder} className="w-full py-2.5 rounded-lg font-bold text-sm text-white mb-2" style={{ background: ORANGE }}>🧪 {t('testOrderBtn')}</button>
+                <button onClick={createTestOrder} className="w-full py-3 rounded-xl font-bold text-sm text-white mb-2" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🧪 {t('testOrderBtn')}</button>
                 <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
                   <input type="checkbox" checked={showTestOrders} onChange={(e) => setShowTestOrders(e.target.checked)} />
                   {t('showTestOrdersLabel')}
@@ -7030,16 +7076,16 @@ function StaffPanelView({ back }) {
                 {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
               </SettingsRow>
               <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: ORANGE }}>🔔 {t('notifTestBtn')}</button>
+                <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4" style={{ color: '#a4906c' }}>⭐ GOOGLE</div>
               <SettingsRow id="rating" icon="⭐" title={t('googleRatingLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                 <div className="flex gap-2 mb-2.5">
-                  <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                  <input value={ratingCount} onChange={(e) => setRatingCount(e.target.value)} placeholder="293" className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <input value={ratingCount} onChange={(e) => setRatingCount(e.target.value)} placeholder="293" className="flex-1 px-3 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                 </div>
-                <button onClick={saveRating} className="w-full py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
+                <button onClick={saveRating} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
                 {ratingMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{ratingMsg}</p>}
               </SettingsRow>
             </div>
