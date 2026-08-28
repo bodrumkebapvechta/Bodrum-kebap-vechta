@@ -1867,18 +1867,6 @@ function SplashScreen({ onDone }) {
           <div className="text-white font-black text-2xl tracking-wide">BODRUM KEBAP</div>
           <div className="font-bold text-sm tracking-[4px] mt-1" style={{ color: GOLD }}>VECHTA</div>
         </div>
-        <div
-          className="mt-6 h-[3px] w-40 rounded-full overflow-hidden"
-          style={{
-            opacity: stage >= 3 ? 1 : 0, transition: 'opacity .4s ease',
-            background: 'linear-gradient(90deg, transparent, rgba(255,199,56,.15), transparent), #2b5c41',
-            backgroundSize: '200px 100%, 100% 100%',
-            animation: stage >= 3 ? 'shimmerBar 1.1s linear infinite' : 'none',
-          }}
-        />
-        <div className="mt-4 text-xs font-semibold" style={{ color: '#a49475', opacity: stage >= 3 ? 1 : 0, transition: 'opacity .5s ease' }}>
-          Frisch vom Drehspieß …
-        </div>
       </div>
     </div>
   );
@@ -5924,6 +5912,13 @@ function StaffPanelView({ back }) {
   const [lastLoginAt, setLastLoginAt] = useState(null);
   const [rememberChoice, setRememberChoice] = useState(null); // null | '10m' | '1h' | 'today'
   const [checkingRemember, setCheckingRemember] = useState(true);
+  const pinInputRef = useRef(null);
+  useEffect(() => {
+    if (!checkingRemember && !ok) {
+      const timer = setTimeout(() => pinInputRef.current?.focus(), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [checkingRemember, ok]);
   useEffect(() => {
     try {
       const raw = localStorage.getItem('bk_staff_remember_v1');
@@ -6783,9 +6778,10 @@ function StaffPanelView({ back }) {
               </div>
               <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-5 mt-6" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }}>
+            <div className="rounded-3xl p-5 mt-6" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }} onClick={() => pinInputRef.current?.focus()}>
               <div className="relative">
                 <input
+                  ref={pinInputRef}
                   value={pin}
                   onChange={(e) => {
                     const v = e.target.value.replace(/\D/g, '').slice(0, 6);
