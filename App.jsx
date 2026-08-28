@@ -2834,10 +2834,11 @@ function MemoryMatchGame({ onClose }) {
 }
 
 
-function MittagsBanner() {
+function MittagsBanner({ menu, onPhotoClick }) {
   const { t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
-  const [sidePhotos, setSidePhotos] = useState(null);
+  const [enabledCats, setEnabledCats] = useState(null);
+  const [pizzaGalleryUrl, setPizzaGalleryUrl] = useState('');
   const [photoIdx, setPhotoIdx] = useState(0);
   useEffect(() => {
     const t2 = setInterval(() => setNow(new Date()), 1000);
@@ -2846,11 +2847,23 @@ function MittagsBanner() {
   useEffect(() => {
     safeGet('siteconfig:mittagsSidePhotos').then((r) => {
       if (r) {
-        const urls = ['pizza', 'salat', 'nudeln', 'schnitzel'].map((k) => r[k]).filter(Boolean);
-        if (urls.length) setSidePhotos(urls);
+        setEnabledCats(r.enabled || {});
+        setPizzaGalleryUrl(r.pizzaGalleryUrl || '');
       }
     });
   }, []);
+  const sidePhotos = React.useMemo(() => {
+    if (!enabledCats || !menu) return null;
+    const pool = [];
+    ['pizza', 'salat', 'nudeln', 'schnitzel'].forEach((catKey) => {
+      if (!enabledCats[catKey]) return;
+      const cat = menu.find((c) => c.key === catKey);
+      if (!cat) return;
+      cat.items.forEach((item) => { if (item.img && !item.customPizza && !item.customPasta) pool.push(item.img); });
+      if (catKey === 'pizza' && pizzaGalleryUrl) pool.push(pizzaGalleryUrl);
+    });
+    return pool.length ? pool : null;
+  }, [enabledCats, pizzaGalleryUrl, menu]);
   useEffect(() => {
     if (!sidePhotos || sidePhotos.length < 2) return;
     const iv = setInterval(() => setPhotoIdx((i) => (i + 1) % sidePhotos.length), 3500);
@@ -2901,7 +2914,7 @@ function MittagsBanner() {
       <div className="max-w-md mx-auto px-5 relative">
         <div className="flex items-center gap-2.5">
           {sidePhotos && (
-            <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ width: 54, height: 54, boxShadow: '0 6px 16px rgba(0,0,0,.25)', border: '2px solid rgba(255,255,255,.5)' }}>
+            <div onClick={() => onPhotoClick?.(sidePhotos[photoIdx % sidePhotos.length])} className="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" style={{ width: 78, height: 78, boxShadow: '0 8px 20px rgba(0,0,0,.3)', border: '2.5px solid rgba(255,255,255,.55)' }}>
               <img key={`l-${photoIdx}`} src={sidePhotos[photoIdx % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
             </div>
           )}
@@ -2916,7 +2929,7 @@ function MittagsBanner() {
             </div>
           </div>
           {sidePhotos && (
-            <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ width: 54, height: 54, boxShadow: '0 6px 16px rgba(0,0,0,.25)', border: '2px solid rgba(255,255,255,.5)' }}>
+            <div onClick={() => onPhotoClick?.(sidePhotos[(photoIdx + Math.ceil(sidePhotos.length / 2)) % sidePhotos.length])} className="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" style={{ width: 78, height: 78, boxShadow: '0 8px 20px rgba(0,0,0,.3)', border: '2.5px solid rgba(255,255,255,.55)' }}>
               <img key={`r-${photoIdx}`} src={sidePhotos[(photoIdx + Math.ceil(sidePhotos.length / 2)) % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
             </div>
           )}
@@ -3343,7 +3356,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         )}
       </header>
       <CampaignBanner />
-      <MittagsBanner />
+      <MittagsBanner menu={HOME_EFFECTIVE_MENU} onPhotoClick={setLightbox} />
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
       {dailyBanner && (
         <div className="mx-4 mt-3 mb-1 rounded-2xl overflow-hidden" style={{ background: GREEN, boxShadow: '0 10px 28px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }}>
@@ -5958,7 +5971,7 @@ function StaffPanelView({ back }) {
       safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIdsStaff(r); });
       safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
       safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); });
-      safeGet('siteconfig:mittagsSidePhotos').then((r) => { if (r) setMittagsSidePhotos({ pizza: '', salat: '', nudeln: '', schnitzel: '', ...r }); });
+      safeGet('siteconfig:mittagsSidePhotos').then((r) => { if (r) { setMittagsEnabled({ pizza: false, salat: false, nudeln: false, schnitzel: false, ...r.enabled }); setMittagsPizzaGalleryUrl(r.pizzaGalleryUrl || ''); } });
     }
   }, [ok]);
   const staffLookupResults = useMemo(() => {
@@ -6057,7 +6070,8 @@ function StaffPanelView({ back }) {
   const [dailyBannerHours, setDailyBannerHours] = useState('0');
   const [dailyBannerUploadBusy, setDailyBannerUploadBusy] = useState(false);
   const [dailyBannerMsg, setDailyBannerMsg] = useState('');
-  const [mittagsSidePhotos, setMittagsSidePhotos] = useState({ pizza: '', salat: '', nudeln: '', schnitzel: '' });
+  const [mittagsEnabled, setMittagsEnabled] = useState({ pizza: false, salat: false, nudeln: false, schnitzel: false });
+  const [mittagsPizzaGalleryUrl, setMittagsPizzaGalleryUrl] = useState('');
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
@@ -6431,10 +6445,15 @@ function StaffPanelView({ back }) {
     setRatingMsg(t('savedMsg'));
     setTimeout(() => setRatingMsg(''), 2500);
   };
-  const saveMittagsPhoto = async (cat, url) => {
-    const next = { ...mittagsSidePhotos, [cat]: url };
-    setMittagsSidePhotos(next);
-    await safeSet('siteconfig:mittagsSidePhotos', next);
+  const toggleMittagsCat = async (catKey) => {
+    const next = { ...mittagsEnabled, [catKey]: !mittagsEnabled[catKey] };
+    setMittagsEnabled(next);
+    await safeSet('siteconfig:mittagsSidePhotos', { enabled: next, pizzaGalleryUrl: mittagsPizzaGalleryUrl });
+  };
+  const setPizzaGalleryPhoto = async (url) => {
+    const nextUrl = mittagsPizzaGalleryUrl === url ? '' : url;
+    setMittagsPizzaGalleryUrl(nextUrl);
+    await safeSet('siteconfig:mittagsSidePhotos', { enabled: mittagsEnabled, pizzaGalleryUrl: nextUrl });
   };
   const saveDailyBanner = async () => {
     const days = parseFloat(dailyBannerDays) || 0;
@@ -7052,7 +7071,7 @@ function StaffPanelView({ back }) {
               </SettingsRow>
 
               <SettingsRow id="mittagsPhotos" icon="🖼️" title="Mittagsangebot – Seitenfotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Wähle je Kategorie ein Foto — sie wechseln alle paar Sekunden links und rechts neben dem Mittagsangebot-Banner.</p>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Kategorie aktivieren = alle Fotos dieser Kategorie wechseln links/rechts neben dem Mittagsangebot-Banner.</p>
                 {[
                   { key: 'pizza', label: '🍕 Pizza', catKey: 'pizza', gallery: true },
                   { key: 'salat', label: '🥗 Salat', catKey: 'salat', gallery: false },
@@ -7060,29 +7079,37 @@ function StaffPanelView({ back }) {
                   { key: 'schnitzel', label: '🍖 Schnitzel', catKey: 'schnitzel', gallery: false },
                 ].map((row) => {
                   const cat = MENU.find((c) => c.key === row.catKey);
-                  const candidates = (cat?.items || [])
-                    .map((item) => ({ id: item.id, name: item.name, url: photoOverrides[item.id] || item.img }))
-                    .filter((c) => c.url);
-                  const current = mittagsSidePhotos[row.key];
+                  const previews = (cat?.items || [])
+                    .map((item) => photoOverrides[item.id] || item.img)
+                    .filter(Boolean);
+                  const isOn = mittagsEnabled[row.key];
                   return (
-                    <div key={row.key} className="mb-4">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-xs font-black" style={{ color: GREEN }}>{row.label}</span>
-                        {current && <img src={current} alt="" className="w-6 h-6 rounded-full object-cover" style={{ border: `2px solid ${GOLD}` }} />}
-                      </div>
-                      <div className="flex gap-2 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
-                        {candidates.length === 0 && <p className="text-[10px] font-semibold" style={{ color: '#c4b697' }}>Keine Fotos in dieser Kategorie — zuerst in „Speisekarte bearbeiten" Fotos hinzufügen.</p>}
-                        {candidates.map((c) => (
-                          <button key={c.id} onClick={() => saveMittagsPhoto(row.key, c.url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 52, height: 52, border: current === c.url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
-                            <img src={c.url} alt="" className="w-full h-full object-cover" />
-                          </button>
-                        ))}
-                        {row.gallery && extraGalleryPhotos.map((url, i) => (
-                          <button key={`g${i}`} onClick={() => saveMittagsPhoto(row.key, url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 52, height: 52, border: current === url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
-                            <img src={url} alt="" className="w-full h-full object-cover" />
-                          </button>
-                        ))}
-                      </div>
+                    <div key={row.key} className="mb-3.5">
+                      <button onClick={() => toggleMittagsCat(row.key)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2" style={{ background: isOn ? `${GREEN}` : '#f7f0e2' }}>
+                        <span className="font-bold text-sm flex-1 text-left" style={{ color: isOn ? '#fff' : GREEN }}>{row.label}</span>
+                        <span className="text-[10px] font-black" style={{ color: isOn ? GOLD : '#a4906c' }}>{previews.length} Fotos</span>
+                        <div className="w-9 h-5 rounded-full flex-shrink-0 relative" style={{ background: isOn ? GOLD : '#e3d5bd' }}>
+                          <div className="absolute top-0.5 w-4 h-4 rounded-full bg-white" style={{ left: isOn ? 18 : 2, transition: 'left .15s' }} />
+                        </div>
+                      </button>
+                      {previews.length === 0 && <p className="text-[10px] font-semibold px-1" style={{ color: '#c4b697' }}>Keine Fotos in dieser Kategorie — zuerst in „Speisekarte bearbeiten" Fotos hinzufügen.</p>}
+                      {previews.length > 0 && (
+                        <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+                          {previews.map((url, i) => <img key={i} src={url} alt="" className="flex-shrink-0 rounded-lg object-cover" style={{ width: 40, height: 40, opacity: isOn ? 1 : 0.4 }} />)}
+                        </div>
+                      )}
+                      {row.gallery && extraGalleryPhotos.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-[10px] font-black mb-1" style={{ color: '#a4906c' }}>+ ZUSÄTZLICH AUS GALERIE (optional)</p>
+                          <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+                            {extraGalleryPhotos.map((url, i) => (
+                              <button key={i} onClick={() => setPizzaGalleryPhoto(url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 40, height: 40, border: mittagsPizzaGalleryUrl === url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
+                                <img src={url} alt="" className="w-full h-full object-cover" />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
