@@ -2106,6 +2106,12 @@ function WeekendComboPromo({ go, top }) {
   const { t } = React.useContext(LangContext);
   const [openDoener, setOpenDoener] = useState(false);
   const [meat, setMeat] = useState('haehnchen');
+  const [comboPhotos, setComboPhotos] = useState({ pizza: FOOD_G2, doener: DOENER_TELLER_IMG });
+  useEffect(() => {
+    safeGet('siteconfig:weekendComboPhotos').then((r) => {
+      if (r) setComboPhotos({ pizza: r.pizza || FOOD_G2, doener: r.doener || DOENER_TELLER_IMG });
+    });
+  }, []);
 
   const confirmDoener = () => {
     if (!ORDERING_ENABLED) { go('tischmenu', { initialCatHint: 'kebap' }); return; }
@@ -2120,39 +2126,43 @@ function WeekendComboPromo({ go, top }) {
 
   if (top) {
     return (
-      <section id="tagesempfehlung" className="py-3" style={{ background: `linear-gradient(100deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 4px 16px rgba(214,40,40,.25)' }}>
+      <section id="tagesempfehlung" className="py-4" style={{ background: `linear-gradient(100deg, ${CHILI}, ${ORANGE})`, boxShadow: '0 6px 20px rgba(214,40,40,.3)' }}>
         <div className="max-w-2xl mx-auto px-5">
-          <div className="text-center mb-2">
-            <span className="text-white font-black text-xs tracking-wide">🎉 {t('weekendOnlyToday')}</span>
+          <div className="text-center mb-3">
+            <span className="text-white font-black text-sm tracking-wide" style={{ textShadow: '0 2px 6px rgba(0,0,0,.25)' }}>🎉 {t('weekendOnlyToday')}</span>
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            <button onClick={goToPizzaCombo} className="flex items-center gap-2.5 rounded-xl p-2 text-left" style={{ background: 'rgba(255,255,255,.96)' }}>
-              <img src={FOOD_G2} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="font-black text-xs leading-tight" style={{ color: GREEN }}>{t('weekendPizzaTitle')}</div>
-                <div className="font-black text-base mt-0.5" style={{ color: ORANGE }}>{fmt(PIZZA_COMBO_PRICE)}</div>
+          <div className="grid grid-cols-2 gap-3">
+            <button onClick={goToPizzaCombo} className="rounded-2xl overflow-hidden text-left" style={{ background: '#fff', boxShadow: '0 10px 24px rgba(0,0,0,.28)', border: `2.5px solid ${GOLD}` }}>
+              <div className="relative">
+                <img src={comboPhotos.pizza} className="w-full object-cover" style={{ height: 100 }} />
+                <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full font-black text-sm" style={{ background: GOLD, color: GREEN, boxShadow: '0 3px 8px rgba(0,0,0,.25)' }}>{fmt(PIZZA_COMBO_PRICE)}</div>
+              </div>
+              <div className="px-3 py-2.5">
+                <div className="font-black text-sm leading-tight" style={{ color: GREEN }}>{t('weekendPizzaTitle')}</div>
               </div>
             </button>
-            <button onClick={() => setOpenDoener((v) => !v)} className="flex items-center gap-2.5 rounded-xl p-2 text-left" style={{ background: 'rgba(255,255,255,.96)' }}>
-              <img src={DOENER_TELLER_IMG} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="font-black text-xs leading-tight" style={{ color: GREEN }}>{DOENER_COMBO.title}</div>
-                <div className="font-black text-base mt-0.5" style={{ color: ORANGE }}>{fmt(DOENER_COMBO.price)}</div>
+            <button onClick={() => setOpenDoener((v) => !v)} className="rounded-2xl overflow-hidden text-left" style={{ background: '#fff', boxShadow: '0 10px 24px rgba(0,0,0,.28)', border: `2.5px solid ${GOLD}` }}>
+              <div className="relative">
+                <img src={comboPhotos.doener} className="w-full object-cover" style={{ height: 100 }} />
+                <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full font-black text-sm" style={{ background: GOLD, color: GREEN, boxShadow: '0 3px 8px rgba(0,0,0,.25)' }}>{fmt(DOENER_COMBO.price)}</div>
+              </div>
+              <div className="px-3 py-2.5">
+                <div className="font-black text-sm leading-tight" style={{ color: GREEN }}>{DOENER_COMBO.title}</div>
               </div>
             </button>
           </div>
           {openDoener && (
-            <div className="mt-2 rounded-xl p-3" style={{ background: 'rgba(255,255,255,.96)' }}>
-              <div className="text-[11px] font-bold mb-2" style={{ color: '#8a7c62' }}>{t('chooseMeat')}</div>
-              <div className="flex flex-col gap-1.5 mb-3">
+            <div className="mt-3 rounded-2xl p-4" style={{ background: 'rgba(255,255,255,.97)', boxShadow: '0 10px 24px rgba(0,0,0,.25)' }}>
+              <div className="text-xs font-bold mb-2.5" style={{ color: '#8a7c62' }}>{t('chooseMeat')}</div>
+              <div className="flex flex-col gap-2 mb-3">
                 {WEEKEND_MEAT_OPTIONS.map((m) => (
-                  <button key={m.key} onClick={() => setMeat(m.key)} className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-bold" style={meat === m.key ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN }}>
+                  <button key={m.key} onClick={() => setMeat(m.key)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold" style={meat === m.key ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN }}>
                     <span>{m.label}</span>
                     <span>{m.extra > 0 ? `+${fmt(m.extra)}` : t('included')}</span>
                   </button>
                 ))}
               </div>
-              <button onClick={confirmDoener} className="w-full py-2.5 rounded-full font-bold text-sm text-white" style={{ background: CHILI }}>
+              <button onClick={confirmDoener} className="w-full py-3 rounded-full font-bold text-sm text-white" style={{ background: CHILI, boxShadow: '0 6px 16px rgba(214,40,40,.35)' }}>
                 {t('addToOrder')}
               </button>
             </div>
@@ -2174,7 +2184,7 @@ function WeekendComboPromo({ go, top }) {
           {/* PIZZA CARD — leitet zur echten Pizza-Auswahl */}
           <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
             <div className="relative">
-              <img src={FOOD_G2} className="w-full h-56 sm:h-64 object-cover" />
+              <img src={comboPhotos.pizza} className="w-full h-56 sm:h-64 object-cover" />
               <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(PIZZA_COMBO_PRICE)}</div>
             </div>
             <div className="p-4">
@@ -2189,7 +2199,7 @@ function WeekendComboPromo({ go, top }) {
           {/* DÖNERTELLER CARD */}
           <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
             <div className="relative">
-              <img src={DOENER_TELLER_IMG} className="w-full h-56 sm:h-64 object-cover" />
+              <img src={comboPhotos.doener} className="w-full h-56 sm:h-64 object-cover" />
               <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(DOENER_COMBO.price)}</div>
             </div>
             <div className="p-4">
@@ -5974,6 +5984,7 @@ function StaffPanelView({ back }) {
       safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); });
       safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); });
       safeGet('siteconfig:mittagsSidePhotos').then((r) => { if (r) { setMittagsEnabled({ pizza: false, salat: false, nudeln: false, schnitzel: false, ...r.enabled }); setMittagsPizzaGalleryUrl(r.pizzaGalleryUrl || ''); } });
+      safeGet('siteconfig:weekendComboPhotos').then((r) => { if (r) setWeekendComboPhotos({ pizza: r.pizza || '', doener: r.doener || '' }); });
     }
   }, [ok]);
   const staffLookupResults = useMemo(() => {
@@ -6074,6 +6085,8 @@ function StaffPanelView({ back }) {
   const [dailyBannerMsg, setDailyBannerMsg] = useState('');
   const [mittagsEnabled, setMittagsEnabled] = useState({ pizza: false, salat: false, nudeln: false, schnitzel: false });
   const [mittagsPizzaGalleryUrl, setMittagsPizzaGalleryUrl] = useState('');
+  const [weekendComboPhotos, setWeekendComboPhotos] = useState({ pizza: '', doener: '' });
+  const [weekendPhotoUploadBusy, setWeekendPhotoUploadBusy] = useState('');
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
@@ -6446,6 +6459,18 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:rating', { score, count });
     setRatingMsg(t('savedMsg'));
     setTimeout(() => setRatingMsg(''), 2500);
+  };
+  const handleWeekendPhotoUpload = async (which, file) => {
+    if (!file) return;
+    setWeekendPhotoUploadBusy(which);
+    try {
+      const dataUrl = await compressImageFile(file, 1000, 0.78);
+      const publicUrl = await uploadImageToStorage(dataUrl, 'weekendcombo-' + which);
+      const next = { ...weekendComboPhotos, [which]: publicUrl || dataUrl };
+      setWeekendComboPhotos(next);
+      await safeSet('siteconfig:weekendComboPhotos', next);
+    } catch {}
+    setWeekendPhotoUploadBusy('');
   };
   const toggleMittagsCat = async (catKey) => {
     const next = { ...mittagsEnabled, [catKey]: !mittagsEnabled[catKey] };
@@ -7115,6 +7140,20 @@ function StaffPanelView({ back }) {
                     </div>
                   );
                 })}
+              </SettingsRow>
+
+              <SettingsRow id="weekendPhotos" icon="🎉" title="Samstag-Angebot – Fotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Aktuelle Fotos für die Pizza- und Dönerteller-Karten am Samstag.</p>
+                {[{ key: 'pizza', label: '🍕 Pizza-Kombi' }, { key: 'doener', label: '🥙 Dönerteller-Kombi' }].map((row) => (
+                  <div key={row.key} className="mb-3">
+                    <div className="text-xs font-black mb-1.5" style={{ color: GREEN }}>{row.label}</div>
+                    {weekendComboPhotos[row.key] && <img src={weekendComboPhotos[row.key]} alt="" className="w-full h-28 object-cover rounded-xl mb-2" />}
+                    <label className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm text-white cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: weekendPhotoUploadBusy === row.key ? 0.6 : 1 }}>
+                      <span className="text-base">📷</span> {weekendPhotoUploadBusy === row.key ? '…' : 'Foto ersetzen'}
+                      <input type="file" accept="image/*" className="hidden" disabled={!!weekendPhotoUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleWeekendPhotoUpload(row.key, f); e.target.value = ''; }} />
+                    </label>
+                  </div>
+                ))}
               </SettingsRow>
 
               <div className="text-[10px] font-black tracking-widest mb-2 mt-4 flex items-center gap-1.5" style={{ color: '#a4906c' }}>📢 ANKÜNDIGUNGEN</div>
