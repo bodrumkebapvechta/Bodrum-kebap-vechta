@@ -5890,7 +5890,7 @@ function StaffPanelView({ back }) {
   const pinEmbers = React.useMemo(() => Array.from({ length: 16 }).map(() => ({
     left: 4 + Math.random() * 92,
     delay: Math.random() * 3,
-    duration: 3 + Math.random() * 2.2,
+    duration: 4.5 + Math.random() * 3.5,
     drift: (Math.random() - 0.5) * 50,
     size: 2.5 + Math.random() * 3.5,
   })), []);
@@ -6615,16 +6615,17 @@ function StaffPanelView({ back }) {
           )}
 
           {/* Kategorien */}
-          <div className="bg-white rounded-xl p-4 mb-4">
+          <div className="bg-white rounded-2xl p-4 mb-4">
             <div className="font-black text-xs mb-2.5" style={{ color: GREEN }}>Kategorien</div>
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="grid grid-cols-2 gap-2 mb-3">
               {tischMenu.categories.map((cat) => (
-                <div key={cat.key} className="flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-xs font-bold" style={{ background: '#f7f0e2', color: GREEN }}>
-                  {cat.emoji} {tischText(cat.label, 'de')}
-                  <button onClick={() => { if (confirm(`"${tischText(cat.label, 'de')}" und alle ihre Artikel löschen?`)) tischDeleteCategory(cat.key); }} className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#f0d4d4' }}><X size={11} color={CHILI} /></button>
+                <div key={cat.key} className="flex items-center gap-2 pl-3 pr-2 py-2 rounded-xl" style={{ background: '#f7f0e2' }}>
+                  <span className="text-base flex-shrink-0">{cat.emoji}</span>
+                  <span className="flex-1 min-w-0 truncate text-xs font-bold" style={{ color: GREEN }}>{tischText(cat.label, 'de')}</span>
+                  <button onClick={() => { if (confirm(`"${tischText(cat.label, 'de')}" und alle ihre Artikel löschen?`)) tischDeleteCategory(cat.key); }} className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0d4d4' }}><X size={12} color={CHILI} /></button>
                 </div>
               ))}
-              {tischMenu.categories.length === 0 && <p className="text-[11px] font-semibold" style={{ color: '#c4b697' }}>Noch keine Kategorien — leg unten die erste an.</p>}
+              {tischMenu.categories.length === 0 && <p className="text-[11px] font-semibold col-span-2" style={{ color: '#c4b697' }}>Noch keine Kategorien — leg unten die erste an.</p>}
             </div>
             <div className="flex gap-2">
               <input value={tischNewCatEmoji} onChange={(e) => setTischNewCatEmoji(e.target.value)} placeholder="🍽️" className="w-14 px-2 py-2.5 rounded-lg text-center text-lg outline-none" style={{ background: '#f7f0e2' }} />
@@ -6721,7 +6722,7 @@ function StaffPanelView({ back }) {
         <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.1), transparent 60%), linear-gradient(165deg, #081209, #123420 50%, #0a1a10)` }}>
           <div className="absolute rounded-full pointer-events-none" style={{ width: 300, height: 300, top: -90, left: -70, background: 'radial-gradient(circle, rgba(255,59,59,.14), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 9s ease-in-out infinite' }} />
           <div className="absolute rounded-full pointer-events-none" style={{ width: 260, height: 260, bottom: -70, right: -60, background: 'radial-gradient(circle, rgba(255,199,56,.13), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 11s ease-in-out infinite reverse' }} />
-          <style>{`@keyframes pinEmberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-420px) translateX(var(--drift)); opacity:0; } }`}</style>
+          <style>{`@keyframes pinEmberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-680px) translateX(var(--drift)); opacity:0; } }`}</style>
           {pinEmbers.map((e, i) => (
             <div key={i} className="pointer-events-none" style={{
               position: 'absolute', bottom: 0, left: `${e.left}%`,
@@ -7338,7 +7339,7 @@ function PizzaToppingCard({ item, color, resolvedImg, lang }) {
         <AllergenTag alg={item.alg} />
       </div>
 
-      <div className="mx-auto mb-3 rounded-2xl overflow-hidden" style={{ width: '100%', maxWidth: 260, aspectRatio: '1/1', boxShadow: '0 10px 26px rgba(21,56,38,.2)' }}>
+      <div className="mx-auto mb-3 rounded-full overflow-hidden" style={{ width: '100%', maxWidth: 220, aspectRatio: '1/1', boxShadow: '0 12px 28px rgba(21,56,38,.28)', border: `4px solid ${GOLD}` }}>
         {resolvedImg ? <img src={resolvedImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full" style={{ background: 'radial-gradient(circle, #f3c96b 0%, #e6a13a 55%, #c97f1f 100%)' }} />}
       </div>
 
