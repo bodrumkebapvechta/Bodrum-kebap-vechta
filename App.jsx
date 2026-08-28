@@ -7048,31 +7048,26 @@ function StaffPanelView({ back }) {
             <div className="px-5">
               <button
                 onClick={() => setTischAdminOpen(true)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left mb-4"
+                className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-5"
                 style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
               >
-                <span className="text-xl">🍽️</span>
+                <span className="text-2xl">🍽️</span>
                 <div className="min-w-0">
-                  <div className="font-black text-xs text-white truncate">🍽️ Speisekarte bearbeiten →</div>
-                  <div className="text-[10px] text-white/80 truncate">Preise, Namen, Fotos, neue Produkte, löschen</div>
+                  <div className="font-black text-sm text-white truncate">Speisekarte bearbeiten →</div>
+                  <div className="text-[11px] text-white/80 truncate">Preise, Namen, Fotos, neue Produkte, löschen</div>
                 </div>
               </button>
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
-              <div className="bg-white rounded-2xl p-1.5 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
-                <button onClick={toggleChickenSoldOut} className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg" style={{ background: chickenSoldOut ? CHILI : '#f7f0e2' }}>🍗</div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="font-bold text-sm" style={{ color: GREEN }}>{t('chickenSoldOutLabel')}</div>
-                    <div className="text-[11px] font-semibold" style={{ color: chickenSoldOut ? CHILI : '#8a7c62' }}>{chickenSoldOut ? 'Als ausverkauft markiert' : 'Verfügbar'}</div>
-                  </div>
-                  <span className="text-[10px] font-black px-2.5 py-1.5 rounded-full flex-shrink-0" style={chickenSoldOut ? { background: CHILI, color: '#fff' } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
-                </button>
-              </div>
               <div className="bg-white rounded-2xl p-4 mb-5" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
-                <div className="flex items-center gap-2.5 mb-2">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm flex-shrink-0" style={{ background: '#fdecd4' }}>🥦</div>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#fdecd4' }}>🥦</div>
                   <div className="font-black text-sm" style={{ color: GREEN }}>{t('extrasSoldOutTitle')}</div>
                 </div>
+                <button onClick={toggleChickenSoldOut} className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl mb-2.5" style={{ background: chickenSoldOut ? CHILI : '#f7f0e2' }}>
+                  <span className="text-lg flex-shrink-0">🍗</span>
+                  <span className="flex-1 min-w-0 text-left font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>{t('chickenSoldOutLabel')}</span>
+                  <span className="text-[10px] font-black px-2 py-1 rounded-full flex-shrink-0" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#fff', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+                </button>
                 <p className="text-[11px] mb-3 leading-relaxed" style={{ color: '#a4906c' }}>{t('extrasSoldOutHint')}</p>
                 <div className="relative mb-2">
                   <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" color="#c4b697" />
