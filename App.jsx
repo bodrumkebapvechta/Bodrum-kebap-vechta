@@ -2875,6 +2875,8 @@ function MittagsBanner({ menu, onPhotoClick }) {
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const active = isLunchDay && now >= start && now <= end;
+  const isBlackout = day === 0 || (day === 5 && now >= end); // Sonntag, oder Freitag nach 14:00 — Countdown pausiert bis Montag
+  const showCountdown = !isBlackout;
 
   const getNextStart = () => {
     for (let add = 0; add <= 8; add++) {
@@ -2886,20 +2888,19 @@ function MittagsBanner({ menu, onPhotoClick }) {
     return null;
   };
 
-  let hh = 0, mm = 0, ss = 0, countdownLabel = '';
+  let countdownLabel = '';
   if (active) {
     const diff = end.getTime() - now.getTime();
-    hh = Math.floor(diff / 3600000);
-    mm = Math.floor((diff % 3600000) / 60000);
-    ss = Math.floor((diff % 60000) / 1000);
-    countdownLabel = `⏱ noch ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}`;
-  } else {
+    const hh = Math.floor(diff / 3600000);
+    const mm = Math.floor((diff % 3600000) / 60000);
+    countdownLabel = hh > 0 ? `⏱ noch ${hh} Std ${mm} Min` : `⏱ noch ${mm} Min`;
+  } else if (showCountdown) {
     const next = getNextStart();
     if (next) {
       const diff = next.getTime() - now.getTime();
-      hh = Math.floor(diff / 3600000);
-      mm = Math.floor((diff % 3600000) / 60000);
-      ss = Math.floor((diff % 60000) / 1000);
+      const hh = Math.floor(diff / 3600000);
+      const mm = Math.floor((diff % 3600000) / 60000);
+      const ss = Math.floor((diff % 60000) / 1000);
       countdownLabel = `⏳ ${t('lunchOfferInactive').split(' · ')[0]} · ${hh}:${mm.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}`;
     } else {
       countdownLabel = t('lunchOfferInactive');
@@ -2913,21 +2914,25 @@ function MittagsBanner({ menu, onPhotoClick }) {
       <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'rgba(255,199,56,.7)' }} />
       <div className="max-w-md mx-auto px-5 relative">
         <div className="flex items-center gap-3">
-          {sidePhotos && (
-            <div onClick={() => onPhotoClick?.(sidePhotos[photoIdx % sidePhotos.length])} className="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" style={{ width: 100, height: 100, boxShadow: '0 10px 24px rgba(0,0,0,.32)', border: '3px solid rgba(255,255,255,.55)' }}>
-              <img key={`p-${photoIdx}`} src={sidePhotos[photoIdx % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
-            </div>
-          )}
           <div className="flex-1 flex flex-col items-center text-center gap-1.5 rounded-2xl px-4 py-3.5" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,199,56,.4)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18)' }}>
             <div className="flex items-center gap-2">
               <span className="text-xl" style={active ? { animation: 'urgentPulse 1.6s ease-out infinite' } : {}}>{active ? '🔥' : '🍽️'}</span>
               <span className="text-white font-black text-base tracking-tight">{t('lunchOffer')}</span>
             </div>
             <div className="font-black text-3xl px-4 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdf8a)`, color: GREEN, boxShadow: '0 4px 12px rgba(0,0,0,.2)' }}>{fmt(9.5)}</div>
-            <div className="text-sm font-black mt-0.5 tabular-nums px-3 py-1 rounded-full" style={{ color: '#153826', background: 'rgba(255,255,255,.92)' }}>
-              {countdownLabel}
-            </div>
+            {showCountdown && (
+              <div className="text-sm font-black mt-0.5 tabular-nums px-3 py-1 rounded-full" style={{ color: '#153826', background: 'rgba(255,255,255,.92)' }}>
+                {countdownLabel}
+              </div>
+            )}
           </div>
+          {sidePhotos && (
+            <div onClick={() => onPhotoClick?.(sidePhotos[photoIdx % sidePhotos.length])} className="flex-shrink-0 relative rounded-2xl overflow-hidden cursor-pointer" style={{ width: 100, height: 100, boxShadow: '0 10px 24px rgba(0,0,0,.32)', border: '3px solid rgba(255,255,255,.55)' }}>
+              {sidePhotos.map((url, i) => (
+                <img key={url + i} src={url} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: i === photoIdx % sidePhotos.length ? 1 : 0, transition: 'opacity 1.2s ease-in-out' }} />
+              ))}
+            </div>
+          )}
         </div>
         <p className="text-center text-white text-sm font-bold mt-2" style={{ opacity: 0.95 }}>{t('lunchOfferItems')}</p>
       </div>
