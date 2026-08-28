@@ -5870,7 +5870,15 @@ function AnimatedLock({ open }) {
 function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
-  const [ok, setOk] = useState(false);
+  const [ok, setOk] = useState(() => {
+    try {
+      const raw = localStorage.getItem('bk_staff_remember_v1');
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      if (!data.until || data.until < Date.now()) { localStorage.removeItem('bk_staff_remember_v1'); return false; }
+      return true; // optimistic; verified against server epoch right after mount below
+    } catch { return false; }
+  });
   const [unlocking, setUnlocking] = useState(false);
   const [staffLookup, setStaffLookup] = useState('');
   const [lookupOpen, setLookupOpen] = useState(false);
@@ -5911,26 +5919,24 @@ function StaffPanelView({ back }) {
   const [keystroke, setKeystroke] = useState(0);
   const [lastLoginAt, setLastLoginAt] = useState(null);
   const [rememberChoice, setRememberChoice] = useState(null); // null | '10m' | '1h' | 'today'
-  const [checkingRemember, setCheckingRemember] = useState(true);
   const pinInputRef = useRef(null);
   useEffect(() => {
-    if (!checkingRemember && !ok) {
-      const timer = setTimeout(() => pinInputRef.current?.focus(), 150);
-      return () => clearTimeout(timer);
+    if (!ok) {
+      const raf = requestAnimationFrame(() => pinInputRef.current?.focus());
+      return () => cancelAnimationFrame(raf);
     }
-  }, [checkingRemember, ok]);
+  }, [ok]);
   useEffect(() => {
+    if (!ok) return;
     try {
       const raw = localStorage.getItem('bk_staff_remember_v1');
-      if (!raw) { setCheckingRemember(false); return; }
+      if (!raw) return; // ok=true from a fresh PIN entry this session, nothing to verify
       const data = JSON.parse(raw);
-      if (!data.until || data.until < Date.now()) { localStorage.removeItem('bk_staff_remember_v1'); setCheckingRemember(false); return; }
       safeGet('siteconfig:staffSessionEpoch').then((epoch) => {
         const serverEpoch = epoch || 0;
-        if (data.epoch === serverEpoch) { setOk(true); } else { localStorage.removeItem('bk_staff_remember_v1'); }
-        setCheckingRemember(false);
-      }).catch(() => setCheckingRemember(false));
-    } catch { setCheckingRemember(false); }
+        if (data.epoch !== serverEpoch) { localStorage.removeItem('bk_staff_remember_v1'); setOk(false); }
+      }).catch(() => {});
+    } catch {}
   }, []);
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
   useEffect(() => {
@@ -6622,10 +6628,6 @@ function StaffPanelView({ back }) {
     const updated = { ...wheelResult, redeemed: true, redeemedAt: new Date().toISOString() };
     await safeSet(`spincode:${c}`, updated); setWheelResult(updated); setRedeemMsg(t('redeemedMsg'));
   };
-
-  if (checkingRemember) {
-    return <div style={{ minHeight: '100vh', background: GREEN }} />;
-  }
 
   if (ok && tischAdminOpen) {
     return (
