@@ -725,7 +725,7 @@ const MENU = [
     { id: 'p54', name: 'Pizza Fantaria', priceSmall: 10.0, priceLarge: 11.5, desc: 'Rindersalami, Putenschinken, Paprika und Peperoni', alg: 'a,i,e,13' },
   ]},
   { key: 'familienpizza', label: 'Familienpizza', items: [
-    { id: 'familienpizza', name: 'Familienpizza Margherita', price: 15.0, desc: '~Ø 40 cm · Tomatensoße, Oregano, Goudakäse', alg: 'a,i,e', extras: [{ label: 'Gemüse', price: 2.5 }, { label: 'Fleisch', price: 3.5 }, { label: 'Steak', price: 4.5 }], toppingChoices: ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Meeresfrüchte', 'Krabben', 'Paprika', 'Brokkoli', 'Spinat', 'Bolognese', 'Rindersalami', 'Putenschinken', 'Pilze', 'Weichkäse in Salzlake', 'Mozzarella', 'Fleisch vom Drehspieß', 'Türkische Knoblauchwurst (Sucuk)'] },
+    { id: 'familienpizza', name: 'Familienpizza Margherita', price: 15.0, desc: '~Ø 40 cm · Tomatensoße, Oregano, Goudakäse', alg: 'a,i,e', extras: [{ label: 'Gemüse', price: 2.5 }, { label: 'Fleisch', price: 3.5 }, { label: 'Steak', price: 4.5 }], toppingChoices: ['Mais', 'Zwiebeln', 'Ananas', 'Peperoni', 'Meeresfrüchte', 'Krabben', 'Paprika', 'Brokkoli', 'Spinat', 'Bolognese', 'Rindersalami', 'Putenschinken', 'Pilze', 'Weichkäse in Salzlake', 'Mozzarella', 'Fleisch vom Drehspieß', 'Türkische Knoblauchwurst (Sucuk)', 'Thunfisch', 'Steak Fleisch'] },
   ]},
   { key: 'pizzabrot', label: 'Pizzabrot & Brötchen', items: [
     { id: 'p56', name: 'Pizzabrot', price: 4.5, alg: 'a,i,e' },
@@ -6637,21 +6637,41 @@ function StaffPanelView({ back }) {
           {tischMenu.categories.map((cat) => {
             const catItems = tischMenu.items.filter((i) => i.category === cat.key);
             return (
-              <div key={cat.key} className="mb-4">
-                <div className="font-black text-xs mb-2" style={{ color: '#a4906c' }}>{cat.emoji} {tischText(cat.label, 'de')}</div>
-                {catItems.map((item) => (
-                  <div key={item.id} className="bg-white rounded-xl p-3 mb-2 flex items-center gap-2.5">
-                    {(tischPhotos[item.id] || item.img) && <img src={tischPhotos[item.id] || item.img} alt="" className="w-11 h-11 rounded-lg object-cover flex-shrink-0" />}
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-sm" style={{ color: GREEN }}>{item.number && <span className="text-[10px] font-black mr-1" style={{ color: ORANGE }}>#{item.number}</span>}{tischText(item.name, 'de')}{item.alg && <sup className="ml-0.5 font-semibold" style={{ fontSize: '9px', color: '#a4906c' }}>{item.alg}</sup>} {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full ml-1" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</div>
-                      <div className="text-xs font-bold" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `22cm ${fmt(item.price)} / 28cm ${fmt(item.priceLarge)}` : fmt(item.price)}</div>
+              <div key={cat.key} className="mb-5">
+                <div className="flex items-center gap-1.5 mb-2.5 px-0.5">
+                  <span className="font-black text-xs" style={{ color: '#a4906c' }}>{cat.emoji} {tischText(cat.label, 'de')}</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: '#f0e5cf', color: '#a4906c' }}>{catItems.length}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {catItems.map((item) => (
+                    <div key={item.id} className="bg-white rounded-2xl p-3" style={{ boxShadow: '0 2px 8px rgba(21,56,38,.06)' }}>
+                      <div className="flex items-center gap-2.5 mb-2.5">
+                        {(tischPhotos[item.id] || item.img) ? (
+                          <img src={tischPhotos[item.id] || item.img} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl" style={{ background: '#f7f0e2' }}>🍽️</div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-sm leading-snug" style={{ color: GREEN }}>
+                            {item.number && <span className="text-[10px] font-black mr-1" style={{ color: ORANGE }}>#{item.number}</span>}
+                            {tischText(item.name, 'de')}
+                            {item.alg && <sup className="ml-0.5 font-semibold" style={{ fontSize: '9px', color: '#a4906c' }}>{item.alg}</sup>}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs font-black" style={{ color: ORANGE }}>{item.priceLarge !== undefined ? `22cm ${fmt(item.price)} / 28cm ${fmt(item.priceLarge)}` : fmt(item.price)}</span>
+                            {item.soldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => tischToggleSoldOut(item.id)} className="flex-1 text-[11px] font-bold py-2 rounded-xl" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? '↩ Zurück' : 'Ausverkauft'}</button>
+                        <button onClick={() => tischStartEdit(item)} className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#f0e5cf' }}>✏️</button>
+                        <button onClick={() => { if (confirm('Artikel löschen?')) tischDeleteItem(item.id); }} className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#f0d4d4' }}><X size={14} color={CHILI} /></button>
+                      </div>
                     </div>
-                    <button onClick={() => tischToggleSoldOut(item.id)} className="text-[10px] font-bold px-2 py-1.5 rounded-lg" style={{ background: item.soldOut ? '#e9e2d0' : '#fdecd4', color: item.soldOut ? '#8a7c62' : '#8a5a1f' }}>{item.soldOut ? 'Zurück' : 'Ausverkauft'}</button>
-                    <button onClick={() => tischStartEdit(item)} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#f0e5cf' }}>✏️</button>
-                    <button onClick={() => { if (confirm('Artikel löschen?')) tischDeleteItem(item.id); }} className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#f0d4d4' }}><X size={13} color={CHILI} /></button>
-                  </div>
-                ))}
-                {catItems.length === 0 && <p className="text-[11px] font-semibold px-1" style={{ color: '#c4b697' }}>Noch keine Artikel</p>}
+                  ))}
+                  {catItems.length === 0 && <p className="text-[11px] font-semibold px-1" style={{ color: '#c4b697' }}>Noch keine Artikel</p>}
+                </div>
               </div>
             );
           })}
@@ -6701,7 +6721,6 @@ function StaffPanelView({ back }) {
         <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.1), transparent 60%), linear-gradient(165deg, #081209, #123420 50%, #0a1a10)` }}>
           <div className="absolute rounded-full pointer-events-none" style={{ width: 300, height: 300, top: -90, left: -70, background: 'radial-gradient(circle, rgba(255,59,59,.14), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 9s ease-in-out infinite' }} />
           <div className="absolute rounded-full pointer-events-none" style={{ width: 260, height: 260, bottom: -70, right: -60, background: 'radial-gradient(circle, rgba(255,199,56,.13), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 11s ease-in-out infinite reverse' }} />
-          <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
           <style>{`@keyframes pinEmberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-420px) translateX(var(--drift)); opacity:0; } }`}</style>
           {pinEmbers.map((e, i) => (
             <div key={i} className="pointer-events-none" style={{
@@ -6780,7 +6799,6 @@ function StaffPanelView({ back }) {
         <div className="relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.09), transparent 55%), linear-gradient(165deg, #16241c, #1d3527 45%, #17281e)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
           <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, right: -70, background: 'radial-gradient(circle, rgba(255,199,56,.11), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 10s ease-in-out infinite' }} />
           <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, top: '40%', left: -80, background: 'radial-gradient(circle, rgba(45,106,79,.2), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 12s ease-in-out infinite reverse' }} />
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
           {lastLoginAt && (
             <div className="px-5 pb-3 text-center">
               <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,.45)' }}>🕐 Letzter Zugang: {new Date(lastLoginAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} Uhr</span>
@@ -7299,63 +7317,47 @@ function tischCatColor(key) {
   return TISCH_CAT_COLORS[h % TISCH_CAT_COLORS.length];
 }
 
-function toppingEmoji(label) {
+function pizzaToppingPrice(label) {
   const l = label.toLowerCase();
-  if (l.includes('mais')) return '🌽';
-  if (l.includes('zwiebel')) return '🧅';
-  if (l.includes('ananas')) return '🍍';
-  if (l.includes('peperoni') || l.includes('paprika')) return '🌶️';
-  if (l.includes('meeresfrüchte') || l.includes('krabben')) return '🦐';
-  if (l.includes('brokkoli')) return '🥦';
-  if (l.includes('spinat')) return '🥬';
-  if (l.includes('bolognese') || l.includes('drehspieß') || (l.includes('fleisch') && !l.includes('putenschinken'))) return '🥩';
-  if (l.includes('sucuk') || l.includes('wurst') || l.includes('salami')) return '🌭';
-  if (l.includes('schinken')) return '🥓';
-  if (l.includes('pilze')) return '🍄';
-  if (l.includes('käse') || l.includes('mozzarella')) return '🧀';
-  return '⭐';
+  if (l.includes('steak')) return 4.5;
+  const meatKeywords = ['krabben', 'meeresfrüchte', 'salami', 'schinken', 'drehspieß', 'thunfisch', 'sucuk', 'wurst'];
+  if (meatKeywords.some((k) => l.includes(k))) return 3.5;
+  return 2.5;
 }
 function PizzaToppingCard({ item, color, resolvedImg, lang }) {
-  const [active, setActive] = useState([]);
-  const toggle = (top) => setActive((prev) => prev.includes(top) ? prev.filter((t) => t !== top) : [...prev, top]);
-  const slots = React.useMemo(() => Array.from({ length: 12 }).map((_, i) => {
-    const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
-    return { x: 50 + Math.cos(angle) * 33, y: 50 + Math.sin(angle) * 33 };
-  }), []);
+  const [selectedToppings, setSelectedToppings] = useState([]);
+  const toggleTopping = (top) => setSelectedToppings((prev) => prev.includes(top) ? prev.filter((t) => t !== top) : [...prev, top]);
+  const toppingsTotal = selectedToppings.reduce((s, top) => s + pizzaToppingPrice(top), 0);
+  const totalPrice = item.price + toppingsTotal;
+
   return (
-    <div className="tm-card bg-white rounded-2xl p-4" style={{ boxShadow: '0 4px 16px rgba(21,56,38,.08)' }}>
+    <div className="tm-card bg-white rounded-3xl p-4" style={{ boxShadow: '0 4px 18px rgba(21,56,38,.08)' }}>
       <div className="flex items-center flex-wrap gap-1.5 mb-3">
         {item.number && <span className="inline-flex items-center justify-center min-w-[22px] px-1.5 py-0.5 rounded-md text-[11px] font-black" style={{ background: `${color}18`, color }}>{item.number}</span>}
         <span className="font-black text-[15px]" style={{ color: GREEN }}>{mx(tischText(item.name, 'de'), lang)}</span>
         <AllergenTag alg={item.alg} />
       </div>
-      <div className="relative mx-auto mb-3" style={{ width: 200, height: 200 }}>
-        <div className="absolute inset-0 rounded-full overflow-hidden" style={{ boxShadow: '0 12px 28px rgba(21,56,38,.28)', border: `4px solid ${GOLD}` }}>
-          {resolvedImg ? <img src={resolvedImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full" style={{ background: 'radial-gradient(circle, #f3c96b 0%, #e6a13a 55%, #c97f1f 100%)' }} />}
-        </div>
-        {active.map((top, i) => {
-          const slot = slots[i % slots.length];
-          return <span key={top} className="absolute text-xl" style={{ left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%,-50%)', animation: 'popIn .3s ease', filter: 'drop-shadow(0 2px 3px rgba(0,0,0,.35))' }}>{toppingEmoji(top)}</span>;
-        })}
+
+      <div className="mx-auto mb-3 rounded-2xl overflow-hidden" style={{ width: '100%', maxWidth: 260, aspectRatio: '1/1', boxShadow: '0 10px 26px rgba(21,56,38,.2)' }}>
+        {resolvedImg ? <img src={resolvedImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full" style={{ background: 'radial-gradient(circle, #f3c96b 0%, #e6a13a 55%, #c97f1f 100%)' }} />}
       </div>
-      {item.desc && <p className="text-xs text-center mb-2.5" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</p>}
-      <div className="flex justify-center mb-3">
-        <span className="text-base font-black px-3.5 py-1.5 rounded-full" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}>{fmt(item.price)}</span>
+
+      {item.desc && <p className="text-xs text-center mb-3" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</p>}
+
+      <div className="flex justify-center mb-4">
+        <span className="text-lg font-black px-4 py-1.5 rounded-full" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}>{fmt(totalPrice)}</span>
       </div>
-      {item.extras && (
-        <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-          {item.extras.map((ex) => <span key={ex.label} className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}14`, color }}>+ {ex.label} {fmt(ex.price)}</span>)}
-        </div>
-      )}
+
       {item.toppingChoices && item.toppingChoices.length > 0 && (
         <div>
-          <div className="text-[10px] font-black mb-2 text-center tracking-wide" style={{ color: '#a4906c' }}>ZUTATEN ANTIPPEN ZUM HINZUFÜGEN</div>
-          <div className="flex flex-wrap justify-center gap-1.5">
+          <div className="text-[10px] font-black mb-2 tracking-wide" style={{ color: '#a4906c' }}>ZUTATEN AUSWÄHLEN</div>
+          <div className="flex flex-wrap gap-1.5">
             {item.toppingChoices.map((top) => {
-              const isActive = active.includes(top);
+              const isActive = selectedToppings.includes(top);
               return (
-                <button key={top} onClick={() => toggle(top)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full flex items-center gap-1" style={isActive ? { background: color, color: '#fff', boxShadow: `0 3px 8px ${color}55` } : { background: '#f7f0e2', color: '#8a7c62', border: '1px solid #ede0c4' }}>
-                  <span>{toppingEmoji(top)}</span>{top}
+                <button key={top} onClick={() => toggleTopping(top)} className="flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-full" style={isActive ? { background: color, color: '#fff', boxShadow: `0 3px 8px ${color}55` } : { background: '#f7f0e2', color: '#8a7c62', border: '1px solid #ede0c4' }}>
+                  {top}
+                  <span className="font-black" style={{ opacity: isActive ? 0.9 : 0.65 }}>+{fmt(pizzaToppingPrice(top))}</span>
                 </button>
               );
             })}
