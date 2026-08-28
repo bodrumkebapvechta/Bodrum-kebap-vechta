@@ -5867,6 +5867,37 @@ function AnimatedLock({ open }) {
   );
 }
 
+function formatEventTime(ts) {
+  const d = new Date(ts);
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+  const isToday = d.getTime() >= todayStart.getTime();
+  const time = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  return isToday ? time : `${d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })} · ${time}`;
+}
+function StatsDetailModal({ data, onClose }) {
+  if (!data) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(21,56,38,.55)' }} onClick={onClose}>
+      <div className="w-full max-w-md rounded-t-3xl flex flex-col" style={{ background: '#fff', maxHeight: '75vh', boxShadow: '0 -20px 50px rgba(21,56,38,.3)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0" style={{ borderBottom: '1px solid #f0e5cf' }}>
+          <div className="font-black text-sm" style={{ color: GREEN }}>{data.title} <span className="font-bold" style={{ color: '#a4906c' }}>({data.items.length})</span></div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={15} color={GREEN} /></button>
+        </div>
+        <div className="overflow-y-auto px-5 py-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {data.items.length === 0 && <p className="text-xs text-center py-8" style={{ color: '#a4906c' }}>Noch keine Einträge</p>}
+          {data.items.map((it, i) => (
+            <div key={i} className="flex items-center justify-between gap-3 py-2.5" style={{ borderBottom: i < data.items.length - 1 ? '1px solid #f7f0e2' : 'none' }}>
+              <span className="font-black text-sm flex-shrink-0" style={{ color: GREEN }}>{it.time}</span>
+              {it.sub && <span className="text-xs font-semibold text-right truncate" style={{ color: '#a4906c' }}>{it.sub}</span>}
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 'env(safe-area-inset-bottom, 12px)' }} />
+      </div>
+    </div>
+  );
+}
+
 function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
   const [pin, setPin] = useState('');
@@ -5911,6 +5942,11 @@ function StaffPanelView({ back }) {
   const [redeemMsg, setRedeemMsg] = useState('');
 
   const [orders, setOrders] = useState([]);
+  const [statsModal, setStatsModal] = useState(null);
+  const openStatsModal = (title, list, subFn) => {
+    const sorted = [...list].sort((a, b) => b.value.ts - a.value.ts);
+    setStatsModal({ title, items: sorted.map((v) => ({ time: formatEventTime(v.value.ts), sub: subFn ? subFn(v) : null })) });
+  };
   const [staffPin, setStaffPin] = useState('440921');
   const [newPin, setNewPin] = useState('');
   const [newPin2, setNewPin2] = useState('');
@@ -7026,36 +7062,36 @@ function StaffPanelView({ back }) {
             return (
               <div className="px-5">
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
+                  <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
-                  </div>
-                  <div className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
+                  </button>
+                  <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
-                  </div>
+                  </button>
                 </div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
-                  </div>
-                  <div className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                  </button>
+                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
-                  </div>
+                  </button>
                 </div>
                 <div className="bg-white rounded-xl p-4 mb-3">
                   <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byLanguage')}</div>
                   {langOrder.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>—</p>}
                   {langOrder.map(([l, c]) => (
-                    <div key={l} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span className="uppercase">{l}</span><span>{c}</span></div>
+                    <button key={l} onClick={() => openStatsModal(`Sprache: ${l.toUpperCase()}`, pageVisits.filter((v) => v.value.lang === l), (v) => v.value.device === 'mobile' ? '📱 Mobile' : '💻 Desktop')} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span className="uppercase">{l}</span><span>{c}</span></button>
                   ))}
                 </div>
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byDevice')}</div>
-                  <div className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></div>
-                  <div className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>💻 Desktop</span><span>{byDevice.desktop || 0}</span></div>
+                  <button onClick={() => openStatsModal('📱 Mobile Besuche', pageVisits.filter((v) => v.value.device === 'mobile'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></button>
+                  <button onClick={() => openStatsModal('💻 Desktop Besuche', pageVisits.filter((v) => v.value.device === 'desktop'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>💻 Desktop</span><span>{byDevice.desktop || 0}</span></button>
                 </div>
                 {(() => {
                   const assistantEvents = visits.filter((v) => v.value.event && v.value.event.startsWith('assistant_'));
@@ -7076,7 +7112,7 @@ function StaffPanelView({ back }) {
                       <div className="bg-white rounded-xl p-4 mt-3">
                         <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤖 ASSISTENT — MEISTGEFRAGT</div>
                         {intentOrder.map(([k, c]) => (
-                          <div key={k} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></div>
+                          <button key={k} onClick={() => openStatsModal(intentLabels[k] || k, assistantEvents.filter((v) => v.value.event === `assistant_${k}`), (v) => v.value.q || null)} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></button>
                         ))}
                       </div>
                       {unrecognized.length > 0 && (
@@ -7099,6 +7135,7 @@ function StaffPanelView({ back }) {
               </div>
             );
           })()}
+          <StatsDetailModal data={statsModal} onClose={() => setStatsModal(null)} />
           {tab === 'menu' && (
             <div className="px-5">
               <button
