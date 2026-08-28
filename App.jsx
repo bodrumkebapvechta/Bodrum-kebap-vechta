@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
   Flame, ArrowLeft, ArrowRight, Check, MessageCircle, ChevronLeft, Plus, Minus,
   ShoppingBag, Users, Gift, RotateCw, Lock, ShieldCheck, Phone, RefreshCw,
-  Sparkles, User, Copy, Menu as MenuIcon, X, MapPin, Clock3, Instagram, Star, Timer, Heart,
+  Sparkles, User, Copy, Menu as MenuIcon, X, MapPin, Clock3, Instagram, Star, Timer, Heart, Search,
 } from 'lucide-react';
 
 /* ============ DESIGN TOKENS ============ */
@@ -7058,32 +7058,50 @@ function StaffPanelView({ back }) {
                 </div>
               </button>
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
-              <button onClick={toggleChickenSoldOut} className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl mb-3" style={chickenSoldOut ? { background: CHILI } : { background: '#fff', border: '1.5px solid #f0e5cf' }}>
-                <span className="flex items-center gap-2 font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>🍗 {t('chickenSoldOutLabel')}</span>
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-full" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
-              </button>
-              <div className="rounded-2xl p-4 mb-5" style={{ background: '#fdecd4', border: '1.5px solid #f0d4a8' }}>
-                <div className="font-black text-sm mb-1" style={{ color: '#8a5a1f' }}>🥦 {t('extrasSoldOutTitle')}</div>
-                <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('extrasSoldOutHint')}</p>
-                <input value={extraSearch} onChange={(e) => setExtraSearch(e.target.value)} placeholder={t('extraSearchPh')} className="w-full px-3.5 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#fff', color: GREEN }} />
+              <div className="bg-white rounded-2xl p-1.5 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+                <button onClick={toggleChickenSoldOut} className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg" style={{ background: chickenSoldOut ? CHILI : '#f7f0e2' }}>🍗</div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="font-bold text-sm" style={{ color: GREEN }}>{t('chickenSoldOutLabel')}</div>
+                    <div className="text-[11px] font-semibold" style={{ color: chickenSoldOut ? CHILI : '#8a7c62' }}>{chickenSoldOut ? 'Als ausverkauft markiert' : 'Verfügbar'}</div>
+                  </div>
+                  <span className="text-[10px] font-black px-2.5 py-1.5 rounded-full flex-shrink-0" style={chickenSoldOut ? { background: CHILI, color: '#fff' } : { background: '#f0e5cf', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+                </button>
+              </div>
+              <div className="bg-white rounded-2xl p-4 mb-5" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm flex-shrink-0" style={{ background: '#fdecd4' }}>🥦</div>
+                  <div className="font-black text-sm" style={{ color: GREEN }}>{t('extrasSoldOutTitle')}</div>
+                </div>
+                <p className="text-[11px] mb-3 leading-relaxed" style={{ color: '#a4906c' }}>{t('extrasSoldOutHint')}</p>
+                <div className="relative mb-2">
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" color="#c4b697" />
+                  <input value={extraSearch} onChange={(e) => setExtraSearch(e.target.value)} placeholder={t('extraSearchPh')} className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                </div>
                 {extraSearchResults.length > 0 && (
                   <div className="flex flex-col gap-1.5">
                     {extraSearchResults.map((name) => {
                       const isOut = soldOutExtras.includes(name);
                       return (
-                        <button key={name} onClick={() => toggleSoldOutExtra(name)} className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg" style={isOut ? { background: CHILI } : { background: '#fff', border: '1px solid #f0d4a8' }}>
+                        <button key={name} onClick={() => toggleSoldOutExtra(name)} className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl" style={isOut ? { background: CHILI } : { background: '#f7f0e2' }}>
                           <span className="font-bold text-sm" style={{ color: isOut ? '#fff' : GREEN }}>{mx(name, lang)}</span>
-                          <span className="text-[10px] font-black px-2 py-1 rounded-full" style={isOut ? { background: '#fff', color: CHILI } : { background: '#f0e5cf', color: '#7c6d55' }}>{isOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+                          <span className="text-[10px] font-black px-2 py-1 rounded-full" style={isOut ? { background: '#fff', color: CHILI } : { background: '#fff', color: '#7c6d55' }}>{isOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
                         </button>
                       );
                     })}
                   </div>
                 )}
                 {soldOutExtras.length > 0 && !extraSearch && (
-                  <p className="text-[11px] font-bold mt-2" style={{ color: '#8a5a1f' }}>{soldOutExtras.length} {t('editedPricesCount')}</p>
+                  <div className="flex items-center gap-1.5 mt-2 px-0.5">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{soldOutExtras.length}</span>
+                    <span className="text-[11px] font-bold" style={{ color: '#8a5a1f' }}>{t('editedPricesCount')}</span>
+                  </div>
                 )}
               </div>
-              <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
+              <div className="relative mb-3">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" color="#c4b697" />
+                <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.06)' }} />
+              </div>
               {!editingItem && menuSearchResults.map((item) => (
                 <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left rounded-2xl p-3.5 mb-2.5 flex items-center justify-between" style={{ background: '#fff', border: '1px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
                   <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{item.name}{priceOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
@@ -7121,7 +7139,10 @@ function StaffPanelView({ back }) {
                 </div>
               )}
               {Object.keys(priceOverrides).length > 0 && !editingItem && !menuSearch && (
-                <p className="text-[11px] text-center mt-4" style={{ color: '#a4906c' }}>{Object.keys(priceOverrides).length} {t('editedPricesCount')}</p>
+                <div className="flex items-center justify-center gap-1.5 mt-4">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{Object.keys(priceOverrides).length}</span>
+                  <span className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('editedPricesCount')}</span>
+                </div>
               )}
             </div>
           )}
