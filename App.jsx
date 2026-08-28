@@ -1709,6 +1709,98 @@ function WheelWidget({ onWin, compact }) {
 }
 
 /* ============ SPLASH ============ */
+const VECHTA_LAT = 52.727, VECHTA_LON = 8.273;
+let weatherCache = { effect: null, fetchedAt: 0 };
+function classifyWeather(code, isDay) {
+  if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(code)) return 'rain';
+  if ([71,73,75,77,85,86].includes(code)) return 'snow';
+  if (code === 0 && isDay) return 'sun';
+  return 'none';
+}
+function WeatherEffect() {
+  const [effect, setEffect] = useState(weatherCache.effect);
+  useEffect(() => {
+    const fresh = Date.now() - weatherCache.fetchedAt < 20 * 60 * 1000;
+    if (fresh) { setEffect(weatherCache.effect); return; }
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VECHTA_LAT}&longitude=${VECHTA_LON}&current=weather_code,is_day&timezone=Europe%2FBerlin`)
+      .then((r) => r.json())
+      .then((d) => {
+        const eff = classifyWeather(d?.current?.weather_code, d?.current?.is_day === 1);
+        weatherCache = { effect: eff, fetchedAt: Date.now() };
+        setEffect(eff);
+      })
+      .catch(() => {});
+  }, []);
+
+  const rainDrops = React.useMemo(() => Array.from({ length: 28 }).map(() => ({
+    left: Math.random() * 100,
+    delay: Math.random() * 3,
+    duration: 0.7 + Math.random() * 0.5,
+    height: 14 + Math.random() * 16,
+    opacity: 0.15 + Math.random() * 0.2,
+  })), []);
+  const splashes = React.useMemo(() => Array.from({ length: 10 }).map(() => ({
+    left: Math.random() * 100,
+    top: 55 + Math.random() * 42,
+    delay: Math.random() * 4,
+    duration: 2.2 + Math.random() * 1.8,
+  })), []);
+  const snowFlakes = React.useMemo(() => Array.from({ length: 32 }).map(() => ({
+    left: Math.random() * 100,
+    delay: Math.random() * 10,
+    duration: 8 + Math.random() * 8,
+    size: 3 + Math.random() * 4,
+    drift: (Math.random() - 0.5) * 60,
+    opacity: 0.4 + Math.random() * 0.4,
+  })), []);
+
+  if (!effect || effect === 'none') return null;
+
+  const content = (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 200 }}>
+      <style>{`
+        @keyframes weatherRainFall { 0%{ transform: translateY(-8vh); opacity:0; } 8%{ opacity:1; } 92%{ opacity:1; } 100%{ transform: translateY(108vh); opacity:0; } }
+        @keyframes weatherSplash { 0%{ transform: scale(0); opacity:.55; } 70%{ opacity:.15; } 100%{ transform: scale(2.6); opacity:0; } }
+        @keyframes weatherSnowFall { 0%{ transform: translateY(-6vh) translateX(0); opacity:0; } 8%{ opacity: var(--op); } 92%{ opacity: var(--op); } 100%{ transform: translateY(106vh) translateX(var(--drift)); opacity:0; } }
+        @keyframes weatherSunSweep { 0%{ transform: translateX(-40%) translateY(-20%) rotate(18deg); } 100%{ transform: translateX(40%) translateY(20%) rotate(18deg); } }
+      `}</style>
+
+      {effect === 'rain' && rainDrops.map((d, i) => (
+        <div key={i} style={{
+          position: 'absolute', top: 0, left: `${d.left}%`, width: 1.5, height: d.height,
+          background: `linear-gradient(180deg, transparent, rgba(210,230,255,${d.opacity}))`,
+          animation: `weatherRainFall ${d.duration}s linear ${d.delay}s infinite`,
+        }} />
+      ))}
+      {effect === 'rain' && splashes.map((s, i) => (
+        <div key={`sp${i}`} style={{
+          position: 'absolute', left: `${s.left}%`, top: `${s.top}%`, width: 10, height: 10,
+          borderRadius: '50%', border: '1px solid rgba(210,230,255,.35)',
+          animation: `weatherSplash ${s.duration}s ease-out ${s.delay}s infinite`,
+        }} />
+      ))}
+
+      {effect === 'snow' && snowFlakes.map((f, i) => (
+        <div key={i} style={{
+          position: 'absolute', top: 0, left: `${f.left}%`, width: f.size, height: f.size,
+          borderRadius: '50%', background: '#fff', filter: 'blur(.3px)',
+          animation: `weatherSnowFall ${f.duration}s linear ${f.delay}s infinite`,
+          '--drift': `${f.drift}px`, '--op': f.opacity,
+        }} />
+      ))}
+
+      {effect === 'sun' && (
+        <div style={{
+          position: 'absolute', top: '-30%', left: '-20%', width: '160%', height: '80%',
+          background: 'linear-gradient(100deg, transparent 40%, rgba(255,235,180,.10) 48%, rgba(255,245,210,.16) 50%, rgba(255,235,180,.10) 52%, transparent 60%)',
+          animation: 'weatherSunSweep 14s ease-in-out infinite alternate',
+        }} />
+      )}
+    </div>
+  );
+  return ReactDOM.createPortal(content, document.body);
+}
+
 function SplashScreen({ onDone }) {
   const [stage, setStage] = useState(0);
   useEffect(() => {
@@ -5795,6 +5887,13 @@ function StaffPanelView({ back }) {
   const [staffLookup, setStaffLookup] = useState('');
   const [lookupOpen, setLookupOpen] = useState(false);
   const [openSettingsId, setOpenSettingsId] = useState(null);
+  const pinEmbers = React.useMemo(() => Array.from({ length: 16 }).map(() => ({
+    left: 4 + Math.random() * 92,
+    delay: Math.random() * 3,
+    duration: 3 + Math.random() * 2.2,
+    drift: (Math.random() - 0.5) * 50,
+    size: 2.5 + Math.random() * 3.5,
+  })), []);
   useEffect(() => {
     if (ok) {
       safeGet('siteconfig:priceOverrides').then((r) => { if (r) setPriceOverrides(r); });
@@ -5889,6 +5988,7 @@ function StaffPanelView({ back }) {
   const [tischItemImg, setTischItemImg] = useState('');
   const [tischPhotos, setTischPhotos] = useState({});
   const [tischEditingId, setTischEditingId] = useState(null);
+  const [tischFormOpen, setTischFormOpen] = useState(false);
   const [tischUploadBusy, setTischUploadBusy] = useState(false);
   const [tischAdminOpen, setTischAdminOpen] = useState(false);
   const [tischMsg, setTischMsg] = useState('');
@@ -5946,7 +6046,11 @@ function StaffPanelView({ back }) {
     saveTischMenu(next);
   }
   function tischResetForm() {
-    setTischEditingId(null); setTischItemName(''); setTischItemDesc(''); setTischItemPrice(''); setTischItemPriceLarge(''); setTischItemImg(''); setTischMsg('');
+    setTischEditingId(null); setTischItemName(''); setTischItemDesc(''); setTischItemPrice(''); setTischItemPriceLarge(''); setTischItemImg(''); setTischMsg(''); setTischFormOpen(false);
+  }
+  function tischStartAdd() {
+    tischResetForm();
+    setTischFormOpen(true);
   }
   function tischStartEdit(item) {
     setTischEditingId(item.id); setTischItemCat(item.category);
@@ -5954,6 +6058,7 @@ function StaffPanelView({ back }) {
     setTischItemDesc(typeof item.desc === 'string' ? item.desc : (item.desc?.de || ''));
     setTischItemPrice(String(item.price)); setTischItemPriceLarge(item.priceLarge !== undefined ? String(item.priceLarge) : '');
     setTischItemImg(tischPhotos[item.id] || item.img || '');
+    setTischFormOpen(true);
   }
   const tischPhotoSaveQueueRef = useRef(Promise.resolve());
   function queueTischPhotoSave(itemId, url) {
@@ -6503,6 +6608,12 @@ function StaffPanelView({ back }) {
           <a href="?menu=1" target="_blank" rel="noreferrer" className="inline-block mb-3 mr-2 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#fdecd4', color: '#8a5a1f', border: '1px solid #f0d4a8' }}>👁️ Vorschau ansehen</a>
           <button onClick={tischImportFromMenu} className="inline-block mb-4 px-4 py-2 rounded-full font-bold text-xs" style={{ background: '#e2eee2', color: GREEN, border: `1px solid ${GREEN}` }}>📥 Alle Artikel von der Bestellseite importieren</button>
 
+          {tischMenu.categories.length > 0 && (
+            <button onClick={tischStartAdd} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-sm text-white mb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4a34)`, boxShadow: '0 8px 20px rgba(21,56,38,.25)' }}>
+              <span className="text-base">➕</span> Neuer Artikel
+            </button>
+          )}
+
           {/* Kategorien */}
           <div className="bg-white rounded-xl p-4 mb-4">
             <div className="font-black text-xs mb-2.5" style={{ color: GREEN }}>Kategorien</div>
@@ -6545,28 +6656,36 @@ function StaffPanelView({ back }) {
             );
           })}
 
-          {/* Artikel hinzufügen/bearbeiten */}
-          {tischMenu.categories.length > 0 && (
-            <div className="bg-white rounded-xl p-4 mt-2" style={{ border: `1.5px solid ${GOLD}` }}>
-              <div className="font-black text-xs mb-3" style={{ color: GREEN }}>{tischEditingId ? 'Artikel bearbeiten' : 'Neuer Artikel'}</div>
-              <select value={tischItemCat} onChange={(e) => setTischItemCat(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }}>
-                <option value="">Kategorie wählen…</option>
-                {tischMenu.categories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {tischText(c.label, 'de')}</option>)}
-              </select>
-              <input value={tischItemName} onChange={(e) => setTischItemName(e.target.value)} placeholder="Name (auf Deutsch)" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-              <textarea value={tischItemDesc} onChange={(e) => setTischItemDesc(e.target.value)} placeholder="Beschreibung (optional, auf Deutsch)" rows={2} className="w-full px-3 py-2.5 rounded-lg text-sm font-medium outline-none mb-2 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
-              <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-              <input value={tischItemPriceLarge} onChange={(e) => setTischItemPriceLarge(e.target.value)} placeholder="Preis groß (optional, z.B. für Pizza 28cm)" inputMode="decimal" className="w-full px-3 py-2.5 rounded-lg text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
-              {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2" />}
-              <label className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
-                <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
-                <input type="file" accept="image/*" className="hidden" disabled={tischUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) tischHandleImageUpload(f); e.target.value = ''; }} />
-              </label>
-              <div className="flex gap-2">
-                <button onClick={tischSaveItem} disabled={tischUploadBusy} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN }}>{tischUploadBusy ? '…' : t('saveBtn')}</button>
-                {tischEditingId && <button onClick={tischResetForm} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>}
+          {tischFormOpen && (
+            <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-8 pb-8 overflow-y-auto" style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(3px)' }} onClick={tischResetForm}>
+              <div className="w-full max-w-sm rounded-3xl p-5" style={{ background: '#fff', boxShadow: '0 30px 70px rgba(21,56,38,.4)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }} onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="font-black text-base" style={{ color: GREEN }}>{tischEditingId ? '✏️ Artikel bearbeiten' : '➕ Neuer Artikel'}</div>
+                  <button onClick={tischResetForm} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#f0e5cf' }}><X size={15} color={GREEN} /></button>
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  <select value={tischItemCat} onChange={(e) => setTischItemCat(e.target.value)} className="w-full px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }}>
+                    <option value="">Kategorie wählen…</option>
+                    {tischMenu.categories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {tischText(c.label, 'de')}</option>)}
+                  </select>
+                  <input value={tischItemName} onChange={(e) => setTischItemName(e.target.value)} placeholder="Name (auf Deutsch)" className="w-full px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <textarea value={tischItemDesc} onChange={(e) => setTischItemDesc(e.target.value)} placeholder="Beschreibung (optional, auf Deutsch)" rows={2} className="w-full px-3.5 py-3 rounded-xl text-sm font-medium outline-none resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <div className="flex gap-2.5">
+                    <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="flex-1 px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <input value={tischItemPriceLarge} onChange={(e) => setTischItemPriceLarge(e.target.value)} placeholder="Preis groß (opt.)" inputMode="decimal" className="flex-1 px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  </div>
+                  {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-xl" />}
+                  <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
+                    <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
+                    <input type="file" accept="image/*" className="hidden" disabled={tischUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) tischHandleImageUpload(f); e.target.value = ''; }} />
+                  </label>
+                  <div className="flex gap-2 mt-1">
+                    <button onClick={tischSaveItem} disabled={tischUploadBusy} className="flex-1 py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN }}>{tischUploadBusy ? '…' : t('saveBtn')}</button>
+                    <button onClick={tischResetForm} className="px-5 py-3 rounded-xl font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
+                  </div>
+                  {tischMsg && <p className="text-center text-xs font-bold" style={{ color: '#8a5a1f' }}>{tischMsg}</p>}
+                </div>
               </div>
-              {tischMsg && <p className="text-center text-xs font-bold mt-3" style={{ color: '#8a5a1f' }}>{tischMsg}</p>}
             </div>
           )}
         </div>
@@ -6583,6 +6702,17 @@ function StaffPanelView({ back }) {
           <div className="absolute rounded-full pointer-events-none" style={{ width: 300, height: 300, top: -90, left: -70, background: 'radial-gradient(circle, rgba(255,59,59,.14), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 9s ease-in-out infinite' }} />
           <div className="absolute rounded-full pointer-events-none" style={{ width: 260, height: 260, bottom: -70, right: -60, background: 'radial-gradient(circle, rgba(255,199,56,.13), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 11s ease-in-out infinite reverse' }} />
           <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 26px)' }} />
+          <style>{`@keyframes pinEmberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-420px) translateX(var(--drift)); opacity:0; } }`}</style>
+          {pinEmbers.map((e, i) => (
+            <div key={i} className="pointer-events-none" style={{
+              position: 'absolute', bottom: 0, left: `${e.left}%`,
+              width: e.size, height: e.size, borderRadius: '50%',
+              background: i % 2 === 0 ? GOLD : ORANGE,
+              boxShadow: `0 0 6px 2px ${i % 2 === 0 ? 'rgba(255,199,56,.7)' : 'rgba(230,90,10,.7)'}`,
+              animation: `pinEmberFloat ${e.duration}s ease-in ${e.delay}s infinite`,
+              '--drift': `${e.drift}px`,
+            }} />
+          ))}
           <div className="w-full max-w-xs relative">
             <div className="flex flex-col items-center mb-4 mt-8">
               <div
@@ -7169,6 +7299,73 @@ function tischCatColor(key) {
   return TISCH_CAT_COLORS[h % TISCH_CAT_COLORS.length];
 }
 
+function toppingEmoji(label) {
+  const l = label.toLowerCase();
+  if (l.includes('mais')) return '🌽';
+  if (l.includes('zwiebel')) return '🧅';
+  if (l.includes('ananas')) return '🍍';
+  if (l.includes('peperoni') || l.includes('paprika')) return '🌶️';
+  if (l.includes('meeresfrüchte') || l.includes('krabben')) return '🦐';
+  if (l.includes('brokkoli')) return '🥦';
+  if (l.includes('spinat')) return '🥬';
+  if (l.includes('bolognese') || l.includes('drehspieß') || (l.includes('fleisch') && !l.includes('putenschinken'))) return '🥩';
+  if (l.includes('sucuk') || l.includes('wurst') || l.includes('salami')) return '🌭';
+  if (l.includes('schinken')) return '🥓';
+  if (l.includes('pilze')) return '🍄';
+  if (l.includes('käse') || l.includes('mozzarella')) return '🧀';
+  return '⭐';
+}
+function PizzaToppingCard({ item, color, resolvedImg, lang }) {
+  const [active, setActive] = useState([]);
+  const toggle = (top) => setActive((prev) => prev.includes(top) ? prev.filter((t) => t !== top) : [...prev, top]);
+  const slots = React.useMemo(() => Array.from({ length: 12 }).map((_, i) => {
+    const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+    return { x: 50 + Math.cos(angle) * 33, y: 50 + Math.sin(angle) * 33 };
+  }), []);
+  return (
+    <div className="tm-card bg-white rounded-2xl p-4" style={{ boxShadow: '0 4px 16px rgba(21,56,38,.08)' }}>
+      <div className="flex items-center flex-wrap gap-1.5 mb-3">
+        {item.number && <span className="inline-flex items-center justify-center min-w-[22px] px-1.5 py-0.5 rounded-md text-[11px] font-black" style={{ background: `${color}18`, color }}>{item.number}</span>}
+        <span className="font-black text-[15px]" style={{ color: GREEN }}>{mx(tischText(item.name, 'de'), lang)}</span>
+        <AllergenTag alg={item.alg} />
+      </div>
+      <div className="relative mx-auto mb-3" style={{ width: 200, height: 200 }}>
+        <div className="absolute inset-0 rounded-full overflow-hidden" style={{ boxShadow: '0 12px 28px rgba(21,56,38,.28)', border: `4px solid ${GOLD}` }}>
+          {resolvedImg ? <img src={resolvedImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full" style={{ background: 'radial-gradient(circle, #f3c96b 0%, #e6a13a 55%, #c97f1f 100%)' }} />}
+        </div>
+        {active.map((top, i) => {
+          const slot = slots[i % slots.length];
+          return <span key={top} className="absolute text-xl" style={{ left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%,-50%)', animation: 'popIn .3s ease', filter: 'drop-shadow(0 2px 3px rgba(0,0,0,.35))' }}>{toppingEmoji(top)}</span>;
+        })}
+      </div>
+      {item.desc && <p className="text-xs text-center mb-2.5" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</p>}
+      <div className="flex justify-center mb-3">
+        <span className="text-base font-black px-3.5 py-1.5 rounded-full" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}>{fmt(item.price)}</span>
+      </div>
+      {item.extras && (
+        <div className="flex flex-wrap justify-center gap-1.5 mb-3">
+          {item.extras.map((ex) => <span key={ex.label} className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}14`, color }}>+ {ex.label} {fmt(ex.price)}</span>)}
+        </div>
+      )}
+      {item.toppingChoices && item.toppingChoices.length > 0 && (
+        <div>
+          <div className="text-[10px] font-black mb-2 text-center tracking-wide" style={{ color: '#a4906c' }}>ZUTATEN ANTIPPEN ZUM HINZUFÜGEN</div>
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {item.toppingChoices.map((top) => {
+              const isActive = active.includes(top);
+              return (
+                <button key={top} onClick={() => toggle(top)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full flex items-center gap-1" style={isActive ? { background: color, color: '#fff', boxShadow: `0 3px 8px ${color}55` } : { background: '#f7f0e2', color: '#8a7c62', border: '1px solid #ede0c4' }}>
+                  <span>{toppingEmoji(top)}</span>{top}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -7311,7 +7508,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         <>
           {/* Category tabs */}
           <div className="relative sticky top-0 z-10" style={{ background: 'rgba(253,246,232,.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e9dcc0' }}>
-            <div className="flex gap-2 px-4 py-3 overflow-x-auto" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex gap-2.5 px-4 py-3.5 overflow-x-auto" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
               {tischMenu.categories.map((cat) => {
                 const active = activeCat === cat.key;
                 const color = tischCatColor(cat.key);
@@ -7319,13 +7516,17 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                   <button
                     key={cat.key}
                     onClick={() => { setActiveCat(cat.key); setSearch(''); }}
-                    className="tm-tab flex-shrink-0 px-3 py-1.5 rounded-full font-bold text-xs whitespace-nowrap flex items-center gap-1"
-                    style={active
-                      ? { background: `linear-gradient(135deg, ${color}, ${GREEN})`, color: '#fff', boxShadow: `0 4px 10px ${color}44` }
-                      : { background: '#fff', color: '#7c6d55', border: '1px solid #e9dcc0' }}
+                    className="tm-tab flex-shrink-0 flex flex-col items-center justify-center gap-1 rounded-2xl"
+                    style={{
+                      width: 72, height: 72,
+                      background: active ? `linear-gradient(160deg, ${color}22, ${GREEN}14)` : '#fff',
+                      border: active ? `2px solid ${GOLD}` : '1.5px solid #e9dcc0',
+                      boxShadow: active ? `0 0 0 4px ${GOLD}22, 0 8px 18px rgba(21,56,38,.14)` : '0 2px 6px rgba(21,56,38,.05)',
+                      transition: 'all .2s ease',
+                    }}
                   >
-                    <span className="text-sm">{cat.emoji || '🍽️'}</span>
-                    {tischCatLabel(cat, lang)}
+                    <span className="text-2xl leading-none">{cat.emoji || '🍽️'}</span>
+                    <span className="font-bold text-[10px] leading-tight text-center px-1" style={{ color: active ? GREEN : '#8a7c62' }}>{tischCatLabel(cat, lang)}</span>
                   </button>
                 );
               })}
@@ -7360,6 +7561,9 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
               const color = tischCatColor(item.category);
               const originalId = item.id.replace(/^imp-/, '');
               const resolvedImg = tischPhotos[originalId] || tischPhotos[item.id] || item.img || photoOverrides[originalId] || '';
+              if (item.toppingChoices && item.toppingChoices.length > 0) {
+                return <PizzaToppingCard key={item.id} item={item} color={color} resolvedImg={resolvedImg} lang={lang} />;
+              }
               return (
                 <div
                   key={item.id}
@@ -7582,15 +7786,16 @@ export default function App() {
 
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><AIAssistant /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><AIAssistant /></LangContext.Provider>;
   }
 
   if (view === 'tischmenu') {
-    return <LangContext.Provider value={ctxValue}><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
   }
 
   return (
     <LangContext.Provider value={ctxValue}>
+    <WeatherEffect />
     <div className="min-h-screen w-full relative overflow-hidden" style={{ background: `${GREEN} radial-gradient(circle at 15% 20%, rgba(255,199,56,.05), transparent 45%), radial-gradient(circle at 85% 75%, rgba(255,106,26,.06), transparent 45%)`, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <style>{`
         @keyframes sideFloat1 { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-22px) rotate(6deg);} }
