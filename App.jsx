@@ -2866,7 +2866,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
   }, [enabledCats, pizzaGalleryUrl, menu]);
   useEffect(() => {
     if (!sidePhotos || sidePhotos.length < 2) return;
-    const iv = setInterval(() => setPhotoIdx((i) => (i + 1) % sidePhotos.length), 3500);
+    const iv = setInterval(() => setPhotoIdx((i) => (i + 1) % sidePhotos.length), 2500);
     return () => clearInterval(iv);
   }, [sidePhotos]);
   const day = now.getDay();
@@ -2912,10 +2912,10 @@ function MittagsBanner({ menu, onPhotoClick }) {
       <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 22px)' }} />
       <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'rgba(255,199,56,.7)' }} />
       <div className="max-w-md mx-auto px-5 relative">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           {sidePhotos && (
-            <div onClick={() => onPhotoClick?.(sidePhotos[photoIdx % sidePhotos.length])} className="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" style={{ width: 78, height: 78, boxShadow: '0 8px 20px rgba(0,0,0,.3)', border: '2.5px solid rgba(255,255,255,.55)' }}>
-              <img key={`l-${photoIdx}`} src={sidePhotos[photoIdx % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
+            <div onClick={() => onPhotoClick?.(sidePhotos[photoIdx % sidePhotos.length])} className="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" style={{ width: 100, height: 100, boxShadow: '0 10px 24px rgba(0,0,0,.32)', border: '3px solid rgba(255,255,255,.55)' }}>
+              <img key={`p-${photoIdx}`} src={sidePhotos[photoIdx % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
             </div>
           )}
           <div className="flex-1 flex flex-col items-center text-center gap-1.5 rounded-2xl px-4 py-3.5" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,199,56,.4)', backdropFilter: 'blur(2px)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.18)' }}>
@@ -2928,11 +2928,6 @@ function MittagsBanner({ menu, onPhotoClick }) {
               {countdownLabel}
             </div>
           </div>
-          {sidePhotos && (
-            <div onClick={() => onPhotoClick?.(sidePhotos[(photoIdx + Math.ceil(sidePhotos.length / 2)) % sidePhotos.length])} className="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" style={{ width: 78, height: 78, boxShadow: '0 8px 20px rgba(0,0,0,.3)', border: '2.5px solid rgba(255,255,255,.55)' }}>
-              <img key={`r-${photoIdx}`} src={sidePhotos[(photoIdx + Math.ceil(sidePhotos.length / 2)) % sidePhotos.length]} alt="" className="w-full h-full object-cover" style={{ animation: 'riseFade .5s ease' }} />
-            </div>
-          )}
         </div>
         <p className="text-center text-white text-sm font-bold mt-2" style={{ opacity: 0.95 }}>{t('lunchOfferItems')}</p>
       </div>
