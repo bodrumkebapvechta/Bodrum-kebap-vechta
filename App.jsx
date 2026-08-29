@@ -6088,6 +6088,7 @@ function StaffPanelView({ back }) {
   const [weekendComboPhotos, setWeekendComboPhotos] = useState({ pizza: '', doener: '' });
   const [weekendPhotoUploadBusy, setWeekendPhotoUploadBusy] = useState('');
   const [settingsGroup, setSettingsGroup] = useState('sicherheit');
+  const [pushTestMsg, setPushTestMsg] = useState('');
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
@@ -7272,15 +7273,51 @@ function StaffPanelView({ back }) {
               )}
 
               {settingsGroup === 'erweitert' && (
-                <SettingsRow id="testOrder" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                  <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
-                  <button onClick={createTestOrder} className="w-full py-3 rounded-xl font-bold text-sm text-white mb-2" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🧪 {t('testOrderBtn')}</button>
-                  <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
-                    <input type="checkbox" checked={showTestOrders} onChange={(e) => setShowTestOrders(e.target.checked)} />
-                    {t('showTestOrdersLabel')}
-                  </label>
-                  {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
-                </SettingsRow>
+                <>
+                  <SettingsRow id="testOrder" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
+                    <button onClick={createTestOrder} className="w-full py-3 rounded-xl font-bold text-sm text-white mb-2" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🧪 {t('testOrderBtn')}</button>
+                    <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
+                      <input type="checkbox" checked={showTestOrders} onChange={(e) => setShowTestOrders(e.target.checked)} />
+                      {t('showTestOrdersLabel')}
+                    </label>
+                    {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
+                  </SettingsRow>
+
+                  <SettingsRow id="pushTest" icon="🔔" title="Push-Berechtigung testen (direkt)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Fragt sofort beim Antippen nach Benachrichtigungs-Erlaubnis — ohne Wartezeit, ohne automatische Anzeige-Logik. Zeigt dir genau, ob OneSignal grundsätzlich funktioniert.</p>
+                    <button
+                      onClick={async () => {
+                        setPushTestMsg('Starte…');
+                        try {
+                          if (!window.OneSignalDeferred) { setPushTestMsg('⚠️ OneSignal-Skript nicht gefunden'); return; }
+                          window.OneSignalDeferred.push(async (OneSignal) => {
+                            try {
+                              const perm = OneSignal.Notifications.permission;
+                              setPushTestMsg(`Aktueller Status: ${perm} — frage jetzt…`);
+                              await OneSignal.Notifications.requestPermission();
+                              const after = OneSignal.Notifications.permission;
+                              setPushTestMsg(`Fertig. Status danach: ${after}`);
+                            } catch (e) {
+                              setPushTestMsg('⚠️ Fehler: ' + (e?.message || String(e)));
+                            }
+                          });
+                        } catch (e) {
+                          setPushTestMsg('⚠️ Fehler: ' + (e?.message || String(e)));
+                        }
+                      }}
+                      className="w-full py-3 rounded-xl font-bold text-sm text-white"
+                      style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
+                    >
+                      🔔 Jetzt direkt nach Erlaubnis fragen
+                    </button>
+                    {pushTestMsg && <p className="text-center text-xs font-bold mt-2 break-words" style={{ color: '#8a5a1f' }}>{pushTestMsg}</p>}
+                  </SettingsRow>
+
+                  <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
+                  </SettingsRow>
+                </>
               )}
             </div>
           )}
