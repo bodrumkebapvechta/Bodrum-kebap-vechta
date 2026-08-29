@@ -18,5 +18,9 @@
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
     }
+  ],
+  "crons": [
+    { "path": "/api/cron-montag", "schedule": "0 9 * * 1" },
+    { "path": "/api/cron-samstag", "schedule": "0 9 * * 6" }
   ]
 }

@@ -3221,35 +3221,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const liveViewers = useLiveViewerCount();
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
-  useEffect(() => {
-    const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
-    const day = now.getDay();
-
-    // Samstag-Angebot: einmal pro Samstag, kurz nach Mitternacht bereits auslösbar
-    if (day === 6) {
-      isPushTriggerEnabled('samstag').then((on) => {
-        if (!on) return;
-        safeGet('siteconfig:lastWeekendPush').then((r) => {
-          if (r?.date === todayStr) return;
-          safeSet('siteconfig:lastWeekendPush', { date: todayStr });
-          sendPushNotification('🎉 Samstag-Angebot ist da!', 'Pizza-Kombi & Dönerteller-Kombi — nur heute!');
-        });
-      });
-    }
-
-    // Montags-Erinnerung: Fenster kurz vor dem Start des Mittagsangebots (11:00–11:30 Uhr)
-    if (day === 1 && now.getHours() === 11 && now.getMinutes() < 30) {
-      isPushTriggerEnabled('montagErinnerung').then((on) => {
-        if (!on) return;
-        safeGet('siteconfig:lastMontagPush').then((r) => {
-          if (r?.date === todayStr) return;
-          safeSet('siteconfig:lastMontagPush', { date: todayStr });
-          sendPushNotification('🍽️ Mittagsangebot startet gleich!', 'Ab 11:30 Uhr: Mittagsmenü für 9,50 €');
-        });
-      });
-    }
-  }, []);
+  // Hinweis: Die automatischen Push-Benachrichtigungen für "Samstag-Angebot"
+  // und "Montags-Erinnerung" werden seit [Datum] nicht mehr hier im Frontend
+  // (abhängig von einem zufälligen Website-Besuch) ausgelöst, sondern
+  // zuverlässig server-seitig über Vercel Cron Jobs (siehe /api/cron-samstag
+  // und /api/cron-montag, konfiguriert in vercel.json). Die Ein/Aus-Schalter
+  // in Einstellungen → Kommunikation funktionieren weiterhin unverändert,
+  // da die Cron-Jobs denselben "siteconfig:pushTriggers"-Wert auslesen.
   const HERO_IMAGES_RAW = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos].filter((src) => !hiddenPhotos.includes(src));
   const HERO_IMAGES_UNSHUFFLED = HERO_IMAGES_RAW.length > 0 ? HERO_IMAGES_RAW : [TERRACE_IMG];
   const HERO_IMAGES = useMemo(() => {
@@ -6153,6 +6131,7 @@ function StaffPanelView({ back }) {
   const [showTestOrders, setShowTestOrders] = useState(false);
   const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
+  const [subscriberCount, setSubscriberCount] = useState(null);
   const [contactMessages, setContactMessages] = useState([]);
   const [menuSearch, setMenuSearch] = useState('');
   const [priceOverrides, setPriceOverrides] = useState({});
@@ -6382,6 +6361,9 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'analytics') {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
+      fetch('/api/subscriber-count').then((r) => r.json()).then((d) => {
+        if (typeof d?.count === 'number') setSubscriberCount(d.count);
+      }).catch(() => {});
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -7489,6 +7471,10 @@ function StaffPanelView({ back }) {
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
                   </button>
+                </div>
+                <div className="rounded-2xl p-4 text-center mb-3" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.2)' }}>
+                  <div className="font-black text-3xl text-white">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
+                  <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
                 </div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
