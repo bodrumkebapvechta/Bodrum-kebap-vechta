@@ -8289,25 +8289,11 @@ export default function App() {
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   useEffect(() => {
-    // Räumt automatisch jede Service-Worker-Registrierung auf diesem Scope
-    // auf, die NICHT exakt die aktuelle /sw.js ist (z. B. eine übrig
-    // gebliebene separate OneSignalSDKWorker.js-Registrierung) und
-    // registriert danach garantiert /sw.js neu — exakt dieselbe URL, die
-    // OneSignal.init() weiter unten via serviceWorkerPath: 'sw.js' selbst
-    // verwendet. So gibt es nie zwei konkurrierende Registrierungen mehr,
-    // unabhängig davon, was der Browser vorher im Cache hatte.
+  useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((regs) => {
-        const stale = regs.filter(
-          (r) => !r.active || r.active.scriptURL !== `${location.origin}/sw.js`
-        );
-        Promise.all(stale.map((r) => r.unregister())).finally(() => {
-          navigator.serviceWorker.register('/sw.js').catch(() => {});
-        });
-      }).catch(() => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-      });
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
+  }, []);
   }, []);
   useEffect(() => {
     if (document.getElementById('onesignal-sdk')) return;
