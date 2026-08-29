@@ -3446,7 +3446,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!ORDERING_ENABLED && (
               <div className="flex flex-wrap gap-3 mb-5">
                 <button
-                  onClick={() => go('tischmenu')}
+                  onClick={() => { logEvent('hero_menu'); go('tischmenu'); }}
                   className="h-12 flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
                   style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)', animation: 'goldGlow 2.4s ease-in-out infinite' }}
                 >
@@ -3486,13 +3486,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               </>
             )}
             <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1.3fr 0.65fr 1.1fr' }}>
-              <button onClick={() => scrollTo('tagesempfehlung')} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
+              <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
               </button>
-              <button onClick={() => setMoodPickerOpen(true)} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)' }}>
+              <button onClick={() => { logEvent('hero_mood'); setMoodPickerOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)' }}>
                 <span className="text-base flex-shrink-0">🎯</span> <span className="truncate">Mood</span>
               </button>
-              <button onClick={rollSurprise} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
+              <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
                 <span className="text-base flex-shrink-0">🎲</span> <span className="truncate">{t('surpriseMeBtn')}</span>
               </button>
             </div>
@@ -7493,6 +7493,71 @@ function StaffPanelView({ back }) {
                     <button key={l} onClick={() => openStatsModal(`Sprache: ${l.toUpperCase()}`, pageVisits.filter((v) => v.value.lang === l), (v) => v.value.device === 'mobile' ? '📱 Mobile' : '💻 Desktop')} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span className="uppercase">{l}</span><span>{c}</span></button>
                   ))}
                 </div>
+                {(() => {
+                  // Alle Klick-Events (Kategorien, Hero-Buttons, Anrufe, Route) in einer
+                  // gemeinsamen, absteigend sortierten Liste — zeigt auf einen Blick,
+                  // wo im Laufe des Tages/insgesamt am meisten geklickt wurde.
+                  const CATEGORY_LABELS = Object.fromEntries((tischMenu?.categories || []).map((c) => [c.key, tischText(c.label, 'de')]));
+                  const EVENT_LABELS = {
+                    hero_menu: '📋 Hero: Speisekarte',
+                    hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
+                    hero_mood: '🎯 Hero: Mood',
+                    hero_surprise: '🎲 Hero: Überrasch mich',
+                    call: '📞 Anruf-Button',
+                    route: '📍 Route/Anfahrt',
+                  };
+                  const grouped = {};
+                  visits.forEach((v) => {
+                    const ev = v.value.event;
+                    if (!ev) return;
+                    let label;
+                    if (ev === 'category') {
+                      const catKey = v.value.cat;
+                      label = `📂 Kategorie: ${CATEGORY_LABELS[catKey] || catKey}`;
+                    } else if (EVENT_LABELS[ev]) {
+                      label = EVENT_LABELS[ev];
+                    } else if (ev.startsWith('assistant_')) {
+                      return; // wird schon im KI-Assistent-Bereich separat gezeigt
+                    } else {
+                      return;
+                    }
+                    if (!grouped[label]) grouped[label] = [];
+                    grouped[label].push(v);
+                  });
+                  const rows = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
+                  const todayRows = Object.entries(grouped)
+                    .map(([label, rs]) => [label, rs.filter((r) => r.value.ts >= todayStart.getTime())])
+                    .filter(([, rs]) => rs.length > 0)
+                    .sort((a, b) => b[1].length - a[1].length);
+                  const maxCount = rows.length ? rows[0][1].length : 1;
+                  return (
+                    <div className="bg-white rounded-xl p-4 mb-3">
+                      <div className="text-[11px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>📊 SITE-AKTIVITÄT — HEUTE</div>
+                      {todayRows.length === 0 && <p className="text-xs mb-2" style={{ color: '#a4906c' }}>Heute noch keine Klicks erfasst.</p>}
+                      {todayRows.slice(0, 8).map(([label, rs]) => (
+                        <div key={'today-' + label} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}>
+                          <span className="truncate pr-2">{label}</span><span className="flex-shrink-0">{rs.length}</span>
+                        </div>
+                      ))}
+                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>📊 SITE-AKTIVITÄT — GESAMT (Rangliste)</div>
+                      {rows.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Aktivität erfasst.</p>}
+                      {rows.map(([label, rs]) => (
+                        <button
+                          key={label}
+                          onClick={() => openStatsModal(label, rs, (v) => new Date(v.value.ts).toLocaleString('de-DE'))}
+                          className="w-full mb-2 text-left"
+                        >
+                          <div className="flex items-center justify-between text-xs font-bold mb-0.5" style={{ color: GREEN }}>
+                            <span className="truncate pr-2">{label}</span><span className="flex-shrink-0">{rs.length}</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: '#f0e5cf' }}>
+                            <div className="h-full rounded-full" style={{ width: `${Math.max(4, (rs.length / maxCount) * 100)}%`, background: `linear-gradient(90deg, ${ORANGE}, ${GOLD})` }} />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byDevice')}</div>
                   <button onClick={() => openStatsModal('📱 Mobile Besuche', pageVisits.filter((v) => v.value.device === 'mobile'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></button>
@@ -8031,7 +8096,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                 return (
                   <button
                     key={cat.key}
-                    onClick={() => { setActiveCat(cat.key); setSearch(''); }}
+                    onClick={() => { setActiveCat(cat.key); setSearch(''); logEvent('category', { cat: cat.key }); }}
                     className="tm-tab flex-shrink-0 flex flex-col items-center justify-center gap-1 rounded-2xl"
                     style={{
                       width: 72, height: 72,
