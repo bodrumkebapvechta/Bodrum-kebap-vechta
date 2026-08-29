@@ -7426,8 +7426,20 @@ function StaffPanelView({ back }) {
                                 OneSignal.User.PushSubscription.optIn(),
                                 new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: OneSignal-Anmeldung hängt nach 8s')), 8000)),
                               ]);
-                              const id = OneSignal.User.PushSubscription.id;
-                              setPushTestMsg((m) => m + `\n✅ Angemeldet! ID: ${id || '(noch keine ID)'}`);
+                              const optedIn = OneSignal.User.PushSubscription.optedIn;
+                              const token = OneSignal.User.PushSubscription.token;
+                              setPushTestMsg((m) => m + `\n✓ optIn() fertig — optedIn: ${optedIn}, token: ${token ? 'vorhanden' : 'fehlt noch'}`);
+                              setPushTestMsg((m) => m + '\n→ warte auf ID von OneSignal-Server (bis zu 20s)…');
+                              let id = OneSignal.User.PushSubscription.id;
+                              for (let i = 0; i < 20 && !id; i++) {
+                                await new Promise((r) => setTimeout(r, 1000));
+                                id = OneSignal.User.PushSubscription.id;
+                              }
+                              if (id) {
+                                setPushTestMsg((m) => m + `\n✅ ID erhalten: ${id}`);
+                              } else {
+                                setPushTestMsg((m) => m + `\n⚠️ Nach 20s immer noch keine ID. optedIn: ${OneSignal.User.PushSubscription.optedIn}, token: ${OneSignal.User.PushSubscription.token ? 'vorhanden' : 'fehlt'}`);
+                              }
                             } catch (e) {
                               setPushTestMsg((m) => m + '\n⚠️ OneSignal-Anmeldung: ' + (e?.message || String(e)));
                             }
