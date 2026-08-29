@@ -8304,6 +8304,13 @@ export default function App() {
     window.OneSignalDeferred.push(async function (OneSignal) {
       await OneSignal.init({
         appId: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f',
+        // Verhindert, dass OneSignal zusätzlich einen eigenen Worker unter
+        // /OneSignalSDKWorker.js im selben Scope registriert. Stattdessen
+        // wird derselbe sw.js verwendet, den wir bereits oben registrieren
+        // (siehe navigator.serviceWorker.register('/sw.js')) — nur EIN
+        // Worker pro Scope, kein Kontroll-Konflikt mehr.
+        serviceWorkerPath: 'sw.js',
+        serviceWorkerParam: { scope: '/' },
       });
     });
   }, []);
