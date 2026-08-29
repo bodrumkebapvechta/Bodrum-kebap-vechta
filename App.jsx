@@ -142,6 +142,13 @@ const UI = {
   assistantGreeting: { de: 'Hallo! 👋 Ich bin der kleine Helfer von Bodrum Kebap. Frag mich nach Öffnungszeiten, Adresse, Preisen oder einer Empfehlung!', en: "Hi! 👋 I'm Bodrum Kebap's little helper. Ask me about hours, address, prices, or a recommendation!", tr: 'Merhaba! 👋 Ben Bodrum Kebap\'ın küçük yardımcısıyım. Açılış saati, adres, fiyat ya da öneri sorabilirsin!', ro: 'Salut! 👋 Sunt micul asistent al Bodrum Kebap. Întreabă-mă despre orar, adresă, prețuri sau o recomandare!', nl: 'Hoi! 👋 Ik ben de kleine helper van Bodrum Kebap. Vraag me naar openingstijden, adres, prijzen of een aanbeveling!', sq: 'Përshëndetje! 👋 Unë jam ndihmësi i vogël i Bodrum Kebap. Më pyet për orarin, adresën, çmimet ose një rekomandim!', ku: 'Silav! 👋 Ez alîkarê piçûk ê Bodrum Kebap im. Ji min bipirse li ser demjimêran, navnîşanê, buhayan an pêşniyarek!', pl: 'Cześć! 👋 Jestem małym asystentem Bodrum Kebap. Zapytaj mnie o godziny, adres, ceny lub polecenie!' },
   assistantPlaceholder: { de: 'Frag mich etwas...', en: 'Ask me something...', tr: 'Bir şey sor...', ro: 'Întreabă-mă ceva...', nl: 'Vraag me iets...', sq: 'Më pyet diçka...', ku: 'Tiştekî ji min bipirse...', pl: 'Zapytaj mnie o coś...' },
   contactMsgTitle: { de: '💬 Schreib uns', en: '💬 Message us', tr: '💬 Bize yazın', ro: '💬 Scrie-ne', nl: '💬 Schrijf ons', sq: '💬 Na shkruaj', ku: '💬 Ji me re binivîse', pl: '💬 Napisz do nas' },
+  wishBoxTitle: { de: 'Dein Wunsch an uns', en: 'Your wish for us', tr: 'Bizden isteğin', ro: 'Dorința ta pentru noi', nl: 'Jouw wens voor ons', sq: 'Dëshira jote për ne', ku: 'Xwestina te ji me re', pl: 'Twoje życzenie dla nas' },
+  wishBoxSub: { de: 'Welches Gericht wünschst du dir bei uns? Sag uns einfach, was dir fehlt.', en: 'Which dish would you like us to add? Just tell us what you\'re missing.', tr: 'Bizden ne eklememizi istersin? Ne eksik olduğunu söyle yeter.', ro: 'Ce fel de mâncare ți-ai dori la noi? Spune-ne ce lipsește.', nl: 'Welk gerecht zou je graag willen? Vertel ons wat je mist.', sq: 'Çfarë gjelle do të doje te ne? Na thuaj çfarë mungon.', ku: 'Tu kîjan xwarinê ji me dixwazî? Tenê ji me re bêje çi kêm e.', pl: 'Jakiego dania sobie życzysz? Po prostu napisz, czego brakuje.' },
+  wishBoxName: { de: 'Name (optional)', en: 'Name (optional)', tr: 'İsim (isteğe bağlı)', ro: 'Nume (opțional)', nl: 'Naam (optioneel)', sq: 'Emri (opsionale)', ku: 'Nav (vebijark)', pl: 'Imię (opcjonalnie)' },
+  wishBoxPlaceholder: { de: 'z.B. Falafel-Teller, mehr vegane Optionen, Ayran in groß …', en: 'e.g. Falafel plate, more vegan options, large Ayran …', tr: 'örn. Falafel tabağı, daha fazla vegan seçenek, büyük boy ayran …', ro: 'ex. Platou falafel, mai multe opțiuni vegane, Ayran mare …', nl: 'bijv. Falafelbord, meer veganistische opties, grote Ayran …', sq: 'p.sh. Pjatë falafel, më shumë opsione vegan, Ajran i madh …', ku: 'wek nimûne pêşkêş bike Falafel, vebijarkên vegan zêdetir …', pl: 'np. Talerz falafel, więcej opcji wegańskich, duży Ayran …' },
+  wishBoxSend: { de: 'Absenden', en: 'Send', tr: 'Gönder', ro: 'Trimite', nl: 'Versturen', sq: 'Dërgo', ku: 'Bişîne', pl: 'Wyślij' },
+  wishBoxSent: { de: 'Danke! Wir haben deinen Wunsch erhalten 💚', en: 'Thanks! We received your wish 💚', tr: 'Teşekkürler! İsteğin bize ulaştı 💚', ro: 'Mulțumim! Am primit dorința ta 💚', nl: 'Bedankt! We hebben je wens ontvangen 💚', sq: 'Faleminderit! E morëm dëshirën tënde 💚', ku: 'Spas! Xwestina te gihîşt me 💚', pl: 'Dziękujemy! Otrzymaliśmy Twoje życzenie 💚' },
+  spotlightKicker: { de: 'Kanntest du schon?', en: 'Did you know?', tr: 'Bunu biliyor muydun?', ro: 'Știai deja?', nl: 'Wist je dit al?', sq: 'A e dinit tashmë?', ku: 'Gelo te ev berê zanibû?', pl: 'Czy wiesz już o tym?' },
   contactMsgSub: { de: 'Frage, Feedback oder ein Problem? Wir melden uns persönlich zurück.', en: "Question, feedback, or a problem? We'll get back to you personally.", tr: 'Bir soru, geri bildirim ya da bir sorun mu var? Sana kişisel olarak dönüş yaparız.', ro: 'O întrebare, feedback sau o problemă? Îți răspundem personal.', nl: 'Een vraag, feedback of een probleem? We nemen persoonlijk contact met je op.', sq: 'Pyetje, koment apo problem? Do të të kthejmë përgjigje personalisht.', ku: 'Pirsek, ramanek an pirsgirêkek? Em ê bi taybetî bersivê bidin te.', pl: 'Pytanie, opinia lub problem? Odpowiemy osobiście.' },
   contactMsgName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam', sq: 'Emri yt', ku: 'Navê te', pl: 'Twoje imię' },
   contactMsgPhone: { de: 'E-Mail (optional)', en: 'Email (optional)', tr: 'E-posta (opsiyonel)', ro: 'E-mail (opțional)', nl: 'E-mail (optioneel)', sq: 'Email (opsional)', ku: 'E-mail (dilxwazî)', pl: 'E-mail (opcjonalnie)' },
@@ -1340,6 +1347,13 @@ function logEvent(eventType, extra) {
     safeSet(key, { ts: Date.now(), event: eventType, ...(extra || {}) });
   } catch {}
 }
+async function incrementCategoryClick(catKey) {
+  try {
+    const counts = (await safeGet('analytics:categoryCounts')) || {};
+    counts[catKey] = (counts[catKey] || 0) + 1;
+    await safeSet('analytics:categoryCounts', counts);
+  } catch {}
+}
 
 /* ============ WHEEL DATA ============ */
 const WHEEL_PRIZES = [
@@ -2431,8 +2445,24 @@ function AIAssistant() {
     if (!q) return;
     const { intent, text: reply } = getAssistantReply(q, lang);
     logEvent('assistant_' + intent, { q: q.slice(0, 200) });
-    setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
     setInput('');
+    if (intent !== 'fallback') {
+      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
+      return;
+    }
+    // Kein Keyword-Treffer: an die echte KI weiterreichen (kostet etwas,
+    // daher bewusst nur in diesem Fallback-Fall, nicht bei jeder Nachricht).
+    const thinkingId = Date.now() + Math.random();
+    setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: '…', id: thinkingId }]);
+    fetch('/api/ask-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, lang }),
+    }).then((r) => r.json()).then((d) => {
+      setMessages((m) => m.map((msg) => (msg.id === thinkingId ? { from: 'bot', text: d.answer || reply } : msg)));
+    }).catch(() => {
+      setMessages((m) => m.map((msg) => (msg.id === thinkingId ? { from: 'bot', text: reply } : msg)));
+    });
   };
 
   const startVoiceInput = () => {
@@ -2644,6 +2674,75 @@ async function translateToGerman(text, sourceLang) {
   return text; // Fallback: Original, falls Übersetzung fehlschlägt
 }
 
+function CategorySpotlight({ go }) {
+  const { t, lang } = React.useContext(LangContext);
+  const [cat, setCat] = useState(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const [counts, tm] = await Promise.all([
+          safeGet('analytics:categoryCounts'),
+          safeGet('siteconfig:tischMenu'),
+        ]);
+        const cats = tm?.categories || [];
+        if (!cats.length) return;
+        const withCounts = cats.map((c) => ({ key: c.key, label: tischText(c.label, lang), count: (counts && counts[c.key]) || 0 }));
+        withCounts.sort((a, b) => a.count - b.count);
+        setCat(withCounts[0]);
+      } catch {}
+    })();
+  }, [lang]);
+  if (!cat) return null;
+  return (
+    <section className="max-w-7xl mx-auto px-5 lg:px-10 mb-6">
+      <button
+        onClick={() => { logEvent('spotlight_click', { cat: cat.key }); go('tischmenu', { initialCatHint: cat.key }); }}
+        className="w-full flex items-center gap-4 rounded-2xl p-4 text-left"
+        style={{ background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, boxShadow: '0 10px 26px rgba(21,56,38,.25)', border: `1.5px solid ${GOLD}55` }}
+      >
+        <span className="text-3xl flex-shrink-0">🔎</span>
+        <div className="flex-1 min-w-0">
+          <div className="text-[11px] font-black tracking-widest mb-0.5" style={{ color: GOLD }}>{t('spotlightKicker')}</div>
+          <div className="text-white font-bold text-sm truncate">{cat.label}</div>
+        </div>
+        <ArrowRight size={18} color={GOLD} className="flex-shrink-0" />
+      </button>
+    </section>
+  );
+}
+
+function FaqSection() {
+  const [openIdx, setOpenIdx] = useState(null);
+  const faqs = [
+    { q: 'Habt ihr auch Lieferservice?', a: 'Nein, aktuell bieten wir nur Abholung an. Über WhatsApp oder telefonisch könnt ihr eure Bestellung vorbestellen und dann abholen.' },
+    { q: 'Ist bei euch alles halal?', a: 'Ja, unser gesamtes Fleisch ist 100% Halal-zertifiziert.' },
+    { q: 'Welche Zahlungsmethoden akzeptiert ihr?', a: 'Ihr könnt bei uns mit Karte oder bar bezahlen.' },
+    { q: 'Wann gibt es Steak-Gerichte?', a: 'Unsere Steak-Gerichte sind nur Freitag, Samstag und Sonntag verfügbar.' },
+    { q: 'Habt ihr auch vegetarische Optionen?', a: 'Ja, in mehreren Kategorien (z. B. Salate, Pizza) findet ihr vegetarische Gerichte.' },
+    { q: 'Wann habt ihr geschlossen?', a: 'Wir haben täglich von 11:30 bis 22:00 Uhr geöffnet, außer dienstags — da bleibt unser Laden geschlossen.' },
+    { q: 'Kann ich telefonisch bestellen?', a: 'Ja klar, ruft uns einfach unter 04441 / 95 16 104 an.' },
+  ];
+  return (
+    <section id="faq" className="max-w-7xl mx-auto px-5 lg:px-10 py-10">
+      <div className="text-center mb-7">
+        <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>FAQ</div>
+        <h2 className="font-black" style={{ fontSize: 'clamp(24px,4vw,32px)', color: GREEN }}>Häufig gestellte Fragen</h2>
+      </div>
+      <div className="max-w-2xl mx-auto flex flex-col gap-2.5">
+        {faqs.map((f, i) => (
+          <div key={i} className="rounded-2xl overflow-hidden bg-white" style={{ border: '1.5px solid #f0e5cf' }}>
+            <button onClick={() => setOpenIdx(openIdx === i ? null : i)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
+              <span className="font-bold text-sm" style={{ color: GREEN }}>{f.q}</span>
+              <span style={{ color: '#a4906c', transform: openIdx === i ? 'rotate(180deg)' : 'none', transition: 'transform .2s', display: 'inline-block' }}>▾</span>
+            </button>
+            {openIdx === i && <div className="px-4 pb-4 text-sm font-medium" style={{ color: '#5c5240' }}>{f.a}</div>}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ContactMessageForm({ lang, t }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -2693,6 +2792,44 @@ function ContactMessageForm({ lang, t }) {
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contactMsgMessage')} rows={3} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
           <button onClick={submit} disabled={status === 'sending' || !name.trim() || !message.trim()} className="px-5 py-2.5 rounded-full font-bold text-sm text-white self-start" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: (!name.trim() || !message.trim()) ? 0.5 : 1 }}>
             {status === 'sending' ? '⏳ ...' : t('contactMsgSend')}
+          </button>
+          {status === 'error' && <p className="text-xs font-bold" style={{ color: '#e08a8a' }}>{t('contactMsgError')}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WishBox({ lang, t }) {
+  const [name, setName] = useState('');
+  const [text, setText] = useState('');
+  const [status, setStatus] = useState('idle');
+
+  const submit = async () => {
+    if (!text.trim()) return;
+    setStatus('sending');
+    try {
+      const key = `wish:${Date.now()}-${makeShortCode(4)}`;
+      await safeSet(key, { name: name.trim(), text: text.trim(), lang, ts: Date.now() });
+      setStatus('sent');
+      setName(''); setText('');
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="mt-4 rounded-2xl p-5" style={{ background: 'rgba(255,246,234,.05)', border: '1px solid rgba(255,246,234,.12)' }}>
+      <div className="text-white font-black text-sm mb-1">💡 {t('wishBoxTitle')}</div>
+      <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('wishBoxSub')}</p>
+      {status === 'sent' ? (
+        <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('wishBoxSent')}</p>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('wishBoxName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+          <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('wishBoxPlaceholder')} rows={3} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+          <button onClick={submit} disabled={status === 'sending' || !text.trim()} className="px-5 py-2.5 rounded-full font-bold text-sm text-white self-start" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: !text.trim() ? 0.5 : 1 }}>
+            {status === 'sending' ? '⏳ ...' : t('wishBoxSend')}
           </button>
           {status === 'error' && <p className="text-xs font-bold" style={{ color: '#e08a8a' }}>{t('contactMsgError')}</p>}
         </div>
@@ -3365,6 +3502,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex-1 overflow-y-auto px-6 pt-6 flex flex-col gap-2.5">
               {[
                 { onClick: () => (ORDERING_ENABLED ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
+                { onClick: () => scrollTo('faq'), icon: '❓', label: 'FAQ' },
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
                 { onClick: () => scrollTo('kontakt'), icon: '📍', label: t('navContact') },
               ].map((item, i) => (
@@ -3637,6 +3775,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       )}
 
       {/* MAP / CONTACT */}
+      <CategorySpotlight go={go} />
+      <FaqSection />
       <section id="kontakt" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <div className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('contactKicker')}</div>
@@ -3668,6 +3808,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               </a>
             </div>
             <ContactMessageForm lang={lang} t={t} />
+            <WishBox lang={lang} t={t} />
           </div>
           <div className="rounded-2xl overflow-hidden" style={{ minHeight: 280, boxShadow: '0 10px 30px rgba(21,56,38,.14)' }}>
             <iframe
@@ -6131,6 +6272,7 @@ function StaffPanelView({ back }) {
   const [showTestOrders, setShowTestOrders] = useState(false);
   const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
+  const [wishes, setWishes] = useState([]);
   const [subscriberCount, setSubscriberCount] = useState(null);
   const [contactMessages, setContactMessages] = useState([]);
   const [menuSearch, setMenuSearch] = useState('');
@@ -6361,6 +6503,7 @@ function StaffPanelView({ back }) {
   useEffect(() => {
     if (ok && tab === 'analytics') {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
+      safeListPrefix('wish:', 100).then((rows) => setWishes(rows.sort((a, b) => b.value.ts - a.value.ts)));
       fetch('/api/subscriber-count').then((r) => r.json()).then((d) => {
         if (typeof d?.count === 'number') setSubscriberCount(d.count);
       }).catch(() => {});
@@ -7493,6 +7636,16 @@ function StaffPanelView({ back }) {
                     <button key={l} onClick={() => openStatsModal(`Sprache: ${l.toUpperCase()}`, pageVisits.filter((v) => v.value.lang === l), (v) => v.value.device === 'mobile' ? '📱 Mobile' : '💻 Desktop')} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span className="uppercase">{l}</span><span>{c}</span></button>
                   ))}
                 </div>
+                <div className="bg-white rounded-xl p-4 mb-3">
+                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💡 KUNDENWÜNSCHE</div>
+                  {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
+                  {wishes.slice(0, 30).map((w) => (
+                    <div key={w.key} className="py-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
+                      <div className="text-sm font-semibold" style={{ color: GREEN }}>{w.value.text}</div>
+                      <div className="text-[10px] font-bold mt-0.5" style={{ color: '#a4906c' }}>{w.value.name ? w.value.name + ' · ' : ''}{new Date(w.value.ts).toLocaleString('de-DE')}</div>
+                    </div>
+                  ))}
+                </div>
                 {(() => {
                   // Alle Klick-Events (Kategorien, Hero-Buttons, Anrufe, Route) in einer
                   // gemeinsamen, absteigend sortierten Liste — zeigt auf einen Blick,
@@ -8096,7 +8249,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                 return (
                   <button
                     key={cat.key}
-                    onClick={() => { setActiveCat(cat.key); setSearch(''); logEvent('category', { cat: cat.key }); }}
+                    onClick={() => { setActiveCat(cat.key); setSearch(''); logEvent('category', { cat: cat.key }); incrementCategoryClick(cat.key); }}
                     className="tm-tab flex-shrink-0 flex flex-col items-center justify-center gap-1 rounded-2xl"
                     style={{
                       width: 72, height: 72,
