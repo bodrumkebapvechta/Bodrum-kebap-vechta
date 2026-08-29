@@ -103,6 +103,11 @@ const UI = {
   staffMenuTab: { de: 'Menü', en: 'Menu', tr: 'Menü', ro: 'Meniu', nl: 'Menu' , sq: 'Menuja', ku: 'Menû', pl: 'Menu'},
   cookieText: { de: 'Diese Website verwendet lokale Speicherung (z.B. Sprachwahl, Favoriten) und anonyme Besucherstatistiken. Keine Weitergabe an Dritte.', en: 'This website uses local storage (e.g. language, favorites) and anonymous visitor statistics. No data is shared with third parties.', tr: 'Bu site yerel depolama (dil seçimi, favoriler gibi) ve anonim ziyaretçi istatistikleri kullanıyor. Veriler üçüncü taraflarla paylaşılmıyor.', ro: 'Acest site folosește stocare locală (limbă, favorite) și statistici anonime de vizitatori. Datele nu sunt partajate cu terți.', nl: 'Deze website gebruikt lokale opslag (taal, favorieten) en anonieme bezoekersstatistieken. Geen gegevens worden gedeeld met derden.', sq: 'Kjo faqe përdor ruajtje lokale (gjuha, të preferuarat) dhe statistika anonime vizitorësh. Të dhënat nuk ndahen me palë të treta.', ku: 'Ev malper cîgirtina herêmî (ziman, hezkirî) û statîstîkên mêvanan bi awayekî anonîm bi kar tîne. Daneyên bi aliyên sêyemîn re nayên parvekirin.', pl: 'Ta strona wykorzystuje pamięć lokalną (język, ulubione) oraz anonimowe statystyki odwiedzin. Dane nie są udostępniane osobom trzecim.' },
   cookieAccept: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen', sq: 'E kuptova', ku: 'Fêm kir', pl: 'Rozumiem' },
+  notifBannerText: { de: '🔔 Verpasse keine Angebote — aktiviere Benachrichtigungen für Aktionen und Neuigkeiten.', en: '🔔 Never miss a deal — turn on notifications for offers and news.', tr: '🔔 Fırsatları kaçırma — kampanya ve haberler için bildirimleri aç.', ro: '🔔 Nu rata nicio ofertă — activează notificările pentru promoții și noutăți.', nl: '🔔 Mis geen aanbiedingen — zet meldingen aan voor acties en nieuws.', sq: '🔔 Mos humb asnjë ofertë — aktivizo njoftimet për oferta dhe lajme.', ku: '🔔 Kirasekê wenda neke — ji bo kampanya û nûçeyan agahdarî çalak bike.', pl: '🔔 Nie przegap okazji — włącz powiadomienia o promocjach i nowościach.' },
+  notifBannerNotNow: { de: 'Nicht jetzt', en: 'Not now', tr: 'Şimdi değil', ro: 'Nu acum', nl: 'Niet nu', sq: 'Jo tani', ku: 'Niha na', pl: 'Nie teraz' },
+  notifBannerEnable: { de: 'Aktivieren', en: 'Enable', tr: 'Etkinleştir', ro: 'Activează', nl: 'Activeren', sq: 'Aktivizo', ku: 'Çalak bike', pl: 'Włącz' },
+  notifBannerIOSText: { de: '🔔 Für Benachrichtigungen auf dem iPhone: Tippe unten auf Teilen ⬆️ → „Zum Home-Bildschirm" und öffne die Seite von dort aus erneut.', en: '🔔 For notifications on iPhone: Tap Share ⬆️ below → "Add to Home Screen", then open the page from there.', tr: '🔔 iPhone\'da bildirimler için: Aşağıdaki Paylaş ⬆️ simgesine dokun → "Ana Ekrana Ekle" ve siteyi oradan tekrar aç.', ro: '🔔 Pentru notificări pe iPhone: Atinge Distribuie ⬆️ mai jos → „Adaugă pe ecranul principal", apoi deschide pagina de acolo.', nl: '🔔 Voor meldingen op iPhone: Tik hieronder op Delen ⬆️ → "Zet op beginscherm" en open de site vandaar opnieuw.', sq: '🔔 Për njoftime në iPhone: Prek Shpërndaj ⬆️ poshtë → "Shto në ekranin kryesor", pastaj hap faqen që andej.', ku: '🔔 Ji bo agahdariyan li ser iPhone: Li jêr li Parvekirinê ⬆️ bitikîne → "Li Ekrana Serekî zêde bike", paşê rûpelê ji wir veke.', pl: '🔔 Aby otrzymywać powiadomienia na iPhone: Stuknij Udostępnij ⬆️ poniżej → "Dodaj do ekranu głównego", a następnie otwórz stronę stamtąd.' },
+  notifBannerUnderstood: { de: 'Verstanden', en: 'Got it', tr: 'Anladım', ro: 'Am înțeles', nl: 'Begrepen', sq: 'E kuptova', ku: 'Fêm kir', pl: 'Rozumiem' },
   stoppelmarktText: { de: '🎪 Stoppelmarkt-Woche in Vechta! Besuchen Sie uns – frisch für Sie zubereitet', en: '🎪 Stoppelmarkt week in Vechta! Come visit us – freshly made for you', tr: '🎪 Vechta\'da Stoppelmarkt haftası! Bizi ziyaret edin – sizin için taze hazırlıyoruz', ro: '🎪 Săptămâna Stoppelmarkt în Vechta! Vizitați-ne – preparăm proaspăt pentru dvs.', nl: '🎪 Stoppelmarkt-week in Vechta! Kom langs – vers voor u bereid', sq: '🎪 Java e Stoppelmarkt në Vechta! Na vizitoni – përgatitur i freskët për ju', ku: '🎪 Hefteya Stoppelmarkt li Vechta! Serdana me bikin – ji bo we taze tê amadekirin', pl: '🎪 Tydzień Stoppelmarkt w Vechcie! Odwiedź nas – świeżo przygotowane dla Ciebie' },
   doenerBuildKicker: { de: 'FRISCH ZUBEREITET', en: 'FRESHLY MADE', tr: 'TAZE HAZIRLANIR', ro: 'PREPARAT PROASPĂT', nl: 'VERS BEREID', sq: 'PËRGATITUR I FRESKËT', ku: 'Taze Tê Amadekirin', pl: 'ŚWIEŻO PRZYGOTOWANE' },
   doenerBuildTitle: { de: 'So entsteht dein Döner', en: 'How your döner comes together', tr: 'Dönerin böyle hazırlanır', ro: 'Așa se face döner-ul tău', nl: 'Zo ontstaat jouw döner', sq: 'Kështu bëhet doneri yt', ku: 'Dönera te bi vî rengî çêdibe', pl: 'Tak powstaje Twój kebab' },
@@ -8065,12 +8070,21 @@ function NotificationOptInBanner() {
       } catch { return false; }
     };
     if (check()) return;
-    const iv = setInterval(() => { if (check()) clearInterval(iv); }, 1500);
+    let attempts = 0;
+    const iv = setInterval(() => {
+      attempts++;
+      if (check() || attempts > 120) clearInterval(iv); // max. ~3 Minuten warten
+    }, 1500);
     return () => clearInterval(iv);
   }, [needsHomeScreenFirst]);
   if (!visible) return null;
   const dismiss = () => {
     try { localStorage.setItem('bk_notif_dismissed', '1'); } catch {}
+    setVisible(false);
+  };
+  const dismissInstruction = () => {
+    // Nur für diese Ansicht ausblenden — NICHT dauerhaft, da der Nutzer die Seite erst noch
+    // zum Home-Bildschirm hinzufügen muss, um danach den echten Aktivieren-Button zu sehen.
     setVisible(false);
   };
   const enable = () => {
@@ -8092,18 +8106,18 @@ function NotificationOptInBanner() {
         {needsHomeScreenFirst ? (
           <>
             <p className="text-xs font-medium flex-1 text-center sm:text-left" style={{ color: '#d9cdb4' }}>
-              🔔 Für Benachrichtigungen auf dem iPhone: Tippe unten auf <b style={{ color: GOLD }}>Teilen ⬆️</b> → <b style={{ color: GOLD }}>„Zum Home-Bildschirm"</b> und öffne die Seite von dort aus erneut.
+              {t('notifBannerIOSText')}
             </p>
-            <button onClick={dismiss} className="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>Verstanden</button>
+            <button onClick={dismissInstruction} className="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{t('notifBannerUnderstood')}</button>
           </>
         ) : (
           <>
             <p className="text-xs font-medium flex-1 text-center sm:text-left" style={{ color: '#d9cdb4' }}>
-              🔔 Verpasse keine Angebote — aktiviere Benachrichtigungen für Aktionen und Neuigkeiten.
+              {t('notifBannerText')}
             </p>
             <div className="flex gap-2 flex-shrink-0">
-              <button onClick={dismiss} className="px-4 py-2.5 rounded-full font-semibold text-xs" style={{ background: 'rgba(255,255,255,.1)', color: '#d9cdb4' }}>Nicht jetzt</button>
-              <button onClick={enable} disabled={busy} className="px-6 py-2.5 rounded-full font-bold text-sm disabled:opacity-60" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{busy ? '…' : 'Aktivieren'}</button>
+              <button onClick={dismiss} className="px-4 py-2.5 rounded-full font-semibold text-xs" style={{ background: 'rgba(255,255,255,.1)', color: '#d9cdb4' }}>{t('notifBannerNotNow')}</button>
+              <button onClick={enable} disabled={busy} className="px-6 py-2.5 rounded-full font-bold text-sm disabled:opacity-60" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{busy ? '…' : t('notifBannerEnable')}</button>
             </div>
           </>
         )}
