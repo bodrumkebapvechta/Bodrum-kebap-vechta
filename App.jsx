@@ -8222,27 +8222,34 @@ function NotificationOptInBanner() {
     }).catch(() => setBusy(false));
   };
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[300] px-4 py-4" style={{ background: 'rgba(14,34,23,.97)', backdropFilter: 'blur(6px)', boxShadow: '0 -8px 24px rgba(0,0,0,.3)' }}>
-      <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-3">
-        {needsHomeScreenFirst ? (
-          <>
-            <p className="text-xs font-medium flex-1 text-center sm:text-left" style={{ color: '#d9cdb4' }}>
-              {t('notifBannerIOSText')}
-            </p>
-            <button onClick={dismissInstruction} className="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{t('notifBannerUnderstood')}</button>
-          </>
-        ) : (
-          <>
-            <p className="text-xs font-medium flex-1 text-center sm:text-left" style={{ color: '#d9cdb4' }}>
-              {t('notifBannerText')}
-            </p>
-            <div className="flex gap-2 flex-shrink-0">
-              <button onClick={dismiss} className="px-4 py-2.5 rounded-full font-semibold text-xs" style={{ background: 'rgba(255,255,255,.1)', color: '#d9cdb4' }}>{t('notifBannerNotNow')}</button>
-              <button onClick={enable} disabled={busy} className="px-6 py-2.5 rounded-full font-bold text-sm disabled:opacity-60" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{busy ? '…' : t('notifBannerEnable')}</button>
-            </div>
-          </>
-        )}
-      </div>
+    <div className="fixed bottom-0 left-0 right-0 z-[300] px-4 py-4" style={{ background: needsHomeScreenFirst ? 'transparent' : 'rgba(14,34,23,.97)', backdropFilter: needsHomeScreenFirst ? 'none' : 'blur(6px)', boxShadow: needsHomeScreenFirst ? 'none' : '0 -8px 24px rgba(0,0,0,.3)' }}>
+      {needsHomeScreenFirst ? (
+        <div className="max-w-md mx-auto rounded-3xl p-5" style={{ background: `linear-gradient(160deg, ${GREEN}, #0d2418)`, border: `2px solid ${GOLD}`, boxShadow: '0 -10px 40px rgba(0,0,0,.5)' }}>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: GOLD, animation: 'urgentPulse 1.8s ease-out infinite' }}>🔔</div>
+            <div className="font-black text-base" style={{ color: GOLD }}>Verpasse keine Angebote!</div>
+          </div>
+          <div className="flex items-center gap-3 mb-2.5 px-3 py-2.5 rounded-xl" style={{ background: 'rgba(255,255,255,.08)' }}>
+            <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style={{ background: GOLD, color: GREEN }}>1</span>
+            <span className="text-sm font-semibold" style={{ color: '#fff' }}>Tippe unten auf <b style={{ color: GOLD }}>Teilen ⬆️</b></span>
+          </div>
+          <div className="flex items-center gap-3 mb-3.5 px-3 py-2.5 rounded-xl" style={{ background: 'rgba(255,255,255,.08)' }}>
+            <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style={{ background: GOLD, color: GREEN }}>2</span>
+            <span className="text-sm font-semibold" style={{ color: '#fff' }}>Wähle <b style={{ color: GOLD }}>„Zum Home-Bildschirm"</b></span>
+          </div>
+          <button onClick={dismissInstruction} className="w-full py-3 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff' }}>{t('notifBannerUnderstood')}</button>
+        </div>
+      ) : (
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-3">
+          <p className="text-xs font-medium flex-1 text-center sm:text-left" style={{ color: '#d9cdb4' }}>
+            {t('notifBannerText')}
+          </p>
+          <div className="flex gap-2 flex-shrink-0">
+            <button onClick={dismiss} className="px-4 py-2.5 rounded-full font-semibold text-xs" style={{ background: 'rgba(255,255,255,.1)', color: '#d9cdb4' }}>{t('notifBannerNotNow')}</button>
+            <button onClick={enable} disabled={busy} className="px-6 py-2.5 rounded-full font-bold text-sm disabled:opacity-60" style={{ background: 'linear-gradient(135deg, #e65a0a, #ff8a3d)', color: '#fff' }}>{busy ? '…' : t('notifBannerEnable')}</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
