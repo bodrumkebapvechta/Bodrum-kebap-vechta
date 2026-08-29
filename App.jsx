@@ -1314,6 +1314,26 @@ function useLiveViewerCount() {
   return count;
 }
 
+async function sendPushNotification(title, message, url) {
+  try {
+    await fetch('/api/send-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, message, url }),
+    });
+  } catch {}
+}
+async function isPushTriggerEnabled(key) {
+  try {
+    const t = await safeGet('siteconfig:pushTriggers');
+    if (!t || t[key] === undefined) return true; // Standard: an
+    return !!t[key];
+  } catch { return true; }
+}
+async function fireIfEnabled(key, title, message, url) {
+  if (await isPushTriggerEnabled(key)) await sendPushNotification(title, message, url);
+}
+
 function logEvent(eventType, extra) {
   try {
     const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
@@ -3201,6 +3221,35 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const liveViewers = useLiveViewerCount();
   const status = getOpenStatus(now);
   useEffect(() => { logVisit(lang); }, []);
+  useEffect(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    const day = now.getDay();
+
+    // Samstag-Angebot: einmal pro Samstag, kurz nach Mitternacht bereits auslösbar
+    if (day === 6) {
+      isPushTriggerEnabled('samstag').then((on) => {
+        if (!on) return;
+        safeGet('siteconfig:lastWeekendPush').then((r) => {
+          if (r?.date === todayStr) return;
+          safeSet('siteconfig:lastWeekendPush', { date: todayStr });
+          sendPushNotification('🎉 Samstag-Angebot ist da!', 'Pizza-Kombi & Dönerteller-Kombi — nur heute!');
+        });
+      });
+    }
+
+    // Montags-Erinnerung: Fenster kurz vor dem Start des Mittagsangebots (11:00–11:30 Uhr)
+    if (day === 1 && now.getHours() === 11 && now.getMinutes() < 30) {
+      isPushTriggerEnabled('montagErinnerung').then((on) => {
+        if (!on) return;
+        safeGet('siteconfig:lastMontagPush').then((r) => {
+          if (r?.date === todayStr) return;
+          safeSet('siteconfig:lastMontagPush', { date: todayStr });
+          sendPushNotification('🍽️ Mittagsangebot startet gleich!', 'Ab 11:30 Uhr: Mittagsmenü für 9,50 €');
+        });
+      });
+    }
+  }, []);
   const HERO_IMAGES_RAW = [TERRACE_IMG, SPAGHETTI_IMG, CALZONE_IMG, FALAFEL_IMG, LAHMACUN_IMG, PIZZABROETCHEN_IMG, PENNE_IMG, PIZZA_KAESE_IMG, DOENER_SPIESS_IMG, SALAT_BUNT_IMG, NUGGETS_IMG, CHICKEN_STRIPS_IMG, BAUERNSALAT_IMG, POMMES_IMG, DOENER_TELLER_IMG, SCHNITZEL_IMG, ...extraGalleryPhotos].filter((src) => !hiddenPhotos.includes(src));
   const HERO_IMAGES_UNSHUFFLED = HERO_IMAGES_RAW.length > 0 ? HERO_IMAGES_RAW : [TERRACE_IMG];
   const HERO_IMAGES = useMemo(() => {
@@ -5990,6 +6039,7 @@ function StaffPanelView({ back }) {
       safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); });
       safeGet('siteconfig:mittagsSidePhotos').then((r) => { if (r) { setMittagsEnabled({ pizza: false, salat: false, nudeln: false, schnitzel: false, ...r.enabled }); setMittagsPizzaGalleryUrl(r.pizzaGalleryUrl || ''); } });
       safeGet('siteconfig:weekendComboPhotos').then((r) => { if (r) setWeekendComboPhotos({ pizza: r.pizza || '', doener: r.doener || '' }); });
+      safeGet('siteconfig:pushTriggers').then((r) => { if (r) setPushTriggers((prev) => ({ ...prev, ...r })); });
     }
   }, [ok]);
   const staffLookupResults = useMemo(() => {
@@ -6094,6 +6144,7 @@ function StaffPanelView({ back }) {
   const [weekendPhotoUploadBusy, setWeekendPhotoUploadBusy] = useState('');
   const [settingsGroup, setSettingsGroup] = useState('sicherheit');
   const [pushTestMsg, setPushTestMsg] = useState('');
+  const [pushTriggers, setPushTriggers] = useState({ ankuendigung: true, samstag: true, neuesProdukt: true, angebot: true, montagErinnerung: true });
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
@@ -6225,6 +6276,7 @@ function StaffPanelView({ back }) {
       const newItem = { id, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, soldOut: false };
       if (priceLargeVal !== undefined) newItem.priceLarge = priceLargeVal;
       items = [...tischMenu.items, newItem];
+      fireIfEnabled('neuesProdukt', '🆕 Neu auf der Karte!', tischItemName.trim());
     }
     if (tischItemImg && tischItemImg.trim()) {
       setTischPhotos((prev) => ({ ...prev, [itemId]: tischItemImg.trim() }));
@@ -6484,6 +6536,11 @@ function StaffPanelView({ back }) {
     } catch {}
     setWeekendPhotoUploadBusy('');
   };
+  const togglePushTrigger = async (key) => {
+    const next = { ...pushTriggers, [key]: !pushTriggers[key] };
+    setPushTriggers(next);
+    await safeSet('siteconfig:pushTriggers', next);
+  };
   const toggleMittagsCat = async (catKey) => {
     const next = { ...mittagsEnabled, [catKey]: !mittagsEnabled[catKey] };
     setMittagsEnabled(next);
@@ -6502,6 +6559,7 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:dailyBanner', { text: dailyBannerText.trim(), img: dailyBannerImg || '', expiresAt, updatedAt: Date.now() });
     setDailyBannerMsg(t('savedMsg'));
     setTimeout(() => setDailyBannerMsg(''), 2500);
+    if (dailyBannerText.trim()) fireIfEnabled('ankuendigung', '📣 Neue Ankündigung', dailyBannerText.trim());
   };
   const clearDailyBanner = async () => {
     setDailyBannerText(''); setDailyBannerImg(''); setDailyBannerDays('1'); setDailyBannerHours('0');
@@ -6518,9 +6576,13 @@ function StaffPanelView({ back }) {
     setDailyBannerUploadBusy(false);
   };
   const saveCampaign = async () => {
+    const prev = await safeGet('siteconfig:campaign');
     await safeSet('siteconfig:campaign', campaign);
     setCampaignMsg(t('savedMsg'));
     setTimeout(() => setCampaignMsg(''), 2500);
+    if (campaign.active && !prev?.active && campaign.title.trim()) {
+      fireIfEnabled('angebot', '🎉 ' + campaign.title.trim(), campaign.subtitle?.trim() || 'Jetzt bei uns entdecken!');
+    }
   };
   const saveWaTemplate = async () => {
     await safeSet('siteconfig:waTemplate', { text: waTemplateText.trim() });
@@ -7255,6 +7317,27 @@ function StaffPanelView({ back }) {
 
               {settingsGroup === 'kommunikation' && (
                 <>
+                  <SettingsRow id="pushTriggers" icon="🔔" title="Push-Benachrichtigungen — Auto-Versand" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Wenn aktiviert, wird bei diesem Ereignis automatisch eine Push-Benachrichtigung an alle angemeldeten Besucher gesendet.</p>
+                    {[
+                      { key: 'ankuendigung', label: '📣 Neue Ankündigung gespeichert' },
+                      { key: 'angebot', label: '🎉 Aktionsbanner wird aktiviert' },
+                      { key: 'neuesProdukt', label: '🆕 Neues Produkt hinzugefügt' },
+                      { key: 'samstag', label: '🍕 Samstag-Angebot (jeden Samstag)' },
+                      { key: 'montagErinnerung', label: '🍽️ Mittagsangebot-Erinnerung (Montag 11 Uhr)' },
+                    ].map((row) => {
+                      const isOn = pushTriggers[row.key];
+                      return (
+                        <button key={row.key} onClick={() => togglePushTrigger(row.key)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2" style={{ background: isOn ? GREEN : '#f7f0e2' }}>
+                          <span className="font-bold text-sm flex-1 text-left" style={{ color: isOn ? '#fff' : GREEN }}>{row.label}</span>
+                          <div className="w-9 h-5 rounded-full flex-shrink-0 relative" style={{ background: isOn ? GOLD : '#e3d5bd' }}>
+                            <div className="absolute top-0.5 w-4 h-4 rounded-full bg-white" style={{ left: isOn ? 18 : 2, transition: 'left .15s' }} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </SettingsRow>
+
                   <SettingsRow id="waTemplate" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
                     <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
