@@ -8077,7 +8077,11 @@ export default function App() {
     script.defer = true;
     document.head.appendChild(script);
     window.OneSignalDeferred.push(async function (OneSignal) {
-      await OneSignal.init({ appId: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f' });
+      await OneSignal.init({
+        appId: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f',
+        serviceWorkerParam: { scope: '/' },
+        serviceWorkerPath: 'sw.js',
+      });
     });
   }, []);
   useEffect(() => {
