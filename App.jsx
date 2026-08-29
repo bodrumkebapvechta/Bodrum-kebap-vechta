@@ -7287,24 +7287,24 @@ function StaffPanelView({ back }) {
                   <SettingsRow id="pushTest" icon="🔔" title="Push-Berechtigung testen (direkt)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Fragt sofort beim Antippen nach Benachrichtigungs-Erlaubnis — ohne Wartezeit, ohne automatische Anzeige-Logik. Zeigt dir genau, ob OneSignal grundsätzlich funktioniert.</p>
                     <button
-                      onClick={async () => {
-                        setPushTestMsg('Starte…');
-                        try {
-                          if (!window.OneSignalDeferred) { setPushTestMsg('⚠️ OneSignal-Skript nicht gefunden'); return; }
-                          window.OneSignalDeferred.push(async (OneSignal) => {
-                            try {
-                              const perm = OneSignal.Notifications.permission;
-                              setPushTestMsg(`Aktueller Status: ${perm} — frage jetzt…`);
-                              await OneSignal.Notifications.requestPermission();
-                              const after = OneSignal.Notifications.permission;
-                              setPushTestMsg(`Fertig. Status danach: ${after}`);
-                            } catch (e) {
-                              setPushTestMsg('⚠️ Fehler: ' + (e?.message || String(e)));
-                            }
-                          });
-                        } catch (e) {
-                          setPushTestMsg('⚠️ Fehler: ' + (e?.message || String(e)));
-                        }
+                      onClick={() => {
+                        setPushTestMsg('Aktueller Status: ' + (typeof Notification !== 'undefined' ? Notification.permission : 'nicht unterstützt') + ' — frage jetzt (nativ)…');
+                        if (typeof Notification === 'undefined') { setPushTestMsg('⚠️ Dieser Browser unterstützt keine Web-Notifications.'); return; }
+                        Notification.requestPermission().then((result) => {
+                          setPushTestMsg('Native Antwort: ' + result);
+                          if (result === 'granted' && window.OneSignalDeferred) {
+                            window.OneSignalDeferred.push(async (OneSignal) => {
+                              try {
+                                await OneSignal.User.PushSubscription.optIn();
+                                setPushTestMsg('✅ Erlaubt und bei OneSignal angemeldet!');
+                              } catch (e) {
+                                setPushTestMsg('Erlaubt, aber OneSignal-Anmeldung fehlgeschlagen: ' + (e?.message || String(e)));
+                              }
+                            });
+                          }
+                        }).catch((e) => {
+                          setPushTestMsg('⚠️ Fehler bei nativer Anfrage: ' + (e?.message || String(e)));
+                        });
                       }}
                       className="w-full py-3 rounded-xl font-bold text-sm text-white"
                       style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
