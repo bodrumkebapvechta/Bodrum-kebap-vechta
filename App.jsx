@@ -8053,12 +8053,13 @@ function NotificationOptInBanner() {
   const isStandalone = typeof window !== 'undefined' && (window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
   const needsHomeScreenFirst = isIOS && !isStandalone;
   useEffect(() => {
-    if (typeof Notification === 'undefined') return;
     const check = () => {
       try {
-        if (Notification.permission !== 'default') return false;
         if (localStorage.getItem('bk_notif_dismissed')) return false;
         if (!localStorage.getItem('cookieConsent')) return false;
+        if (needsHomeScreenFirst) { setVisible(true); return true; }
+        if (typeof Notification === 'undefined') return false;
+        if (Notification.permission !== 'default') return false;
         setVisible(true);
         return true;
       } catch { return false; }
@@ -8066,7 +8067,7 @@ function NotificationOptInBanner() {
     if (check()) return;
     const iv = setInterval(() => { if (check()) clearInterval(iv); }, 1500);
     return () => clearInterval(iv);
-  }, []);
+  }, [needsHomeScreenFirst]);
   if (!visible) return null;
   const dismiss = () => {
     try { localStorage.setItem('bk_notif_dismissed', '1'); } catch {}
