@@ -6145,6 +6145,7 @@ function StaffPanelView({ back }) {
   const [settingsGroup, setSettingsGroup] = useState('sicherheit');
   const [pushTestMsg, setPushTestMsg] = useState('');
   const [pushTriggers, setPushTriggers] = useState({ ankuendigung: true, samstag: true, neuesProdukt: true, angebot: true, montagErinnerung: true });
+  const [pushRawTestMsg, setPushRawTestMsg] = useState('');
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
   const [campaignMsg, setCampaignMsg] = useState('');
   const [waTemplateText, setWaTemplateText] = useState('');
@@ -7336,6 +7337,31 @@ function StaffPanelView({ back }) {
                         </button>
                       );
                     })}
+                  </SettingsRow>
+
+                  <SettingsRow id="pushRawTest" icon="🧪" title="Push testen (direkter Versand)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Sendet sofort eine echte Test-Benachrichtigung über den Server und zeigt die genaue Antwort — zeigt sofort, ob der geheime Schlüssel richtig eingerichtet ist.</p>
+                    <button
+                      onClick={async () => {
+                        setPushRawTestMsg('Sende…');
+                        try {
+                          const res = await fetch('/api/send-push', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ title: '🧪 Testbenachrichtigung', message: 'Wenn du das siehst, funktioniert alles!' }),
+                          });
+                          const data = await res.json().catch(() => ({}));
+                          setPushRawTestMsg(`Status ${res.status}: ${JSON.stringify(data)}`);
+                        } catch (e) {
+                          setPushRawTestMsg('⚠️ Netzwerkfehler: ' + (e?.message || String(e)));
+                        }
+                      }}
+                      className="w-full py-3 rounded-xl font-bold text-sm text-white"
+                      style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
+                    >
+                      🧪 Test-Push jetzt senden
+                    </button>
+                    {pushRawTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushRawTestMsg}</p>}
                   </SettingsRow>
 
                   <SettingsRow id="waTemplate" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
