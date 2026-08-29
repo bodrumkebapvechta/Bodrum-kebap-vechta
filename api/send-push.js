@@ -26,10 +26,13 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         app_id: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f',
-        included_segments: ['Subscribed Users'],
+        included_segments: ['Total Subscriptions'],
         headings: { en: title, de: title },
         contents: { en: message, de: message },
         url: url || 'https://www.bodrumkebapvechta.de',
+        chrome_web_icon: 'https://www.bodrumkebapvechta.de/icon-192.png',
+        firefox_icon: 'https://www.bodrumkebapvechta.de/icon-192.png',
+        chrome_web_badge: 'https://www.bodrumkebapvechta.de/icon-192.png',
       }),
     });
 
