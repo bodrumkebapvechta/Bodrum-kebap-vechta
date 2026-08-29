@@ -8289,11 +8289,9 @@ export default function App() {
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   useEffect(() => {
-  useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
-  }, []);
   }, []);
   useEffect(() => {
     if (document.getElementById('onesignal-sdk')) return;
