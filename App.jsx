@@ -7290,18 +7290,34 @@ function StaffPanelView({ back }) {
                       onClick={() => {
                         setPushTestMsg('Aktueller Status: ' + (typeof Notification !== 'undefined' ? Notification.permission : 'nicht unterstützt') + ' — frage jetzt (nativ)…');
                         if (typeof Notification === 'undefined') { setPushTestMsg('⚠️ Dieser Browser unterstützt keine Web-Notifications.'); return; }
-                        Notification.requestPermission().then((result) => {
+                        Notification.requestPermission().then(async (result) => {
                           setPushTestMsg('Native Antwort: ' + result);
-                          if (result === 'granted' && window.OneSignalDeferred) {
-                            window.OneSignalDeferred.push(async (OneSignal) => {
-                              try {
-                                await OneSignal.User.PushSubscription.optIn();
-                                setPushTestMsg('✅ Erlaubt und bei OneSignal angemeldet!');
-                              } catch (e) {
-                                setPushTestMsg('Erlaubt, aber OneSignal-Anmeldung fehlgeschlagen: ' + (e?.message || String(e)));
-                              }
-                            });
+                          if (result !== 'granted') return;
+                          try {
+                            setPushTestMsg((m) => m + '\n→ warte auf Service Worker…');
+                            const reg = await Promise.race([
+                              navigator.serviceWorker.ready,
+                              new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: Service Worker wurde nach 8s nicht aktiv')), 8000)),
+                            ]);
+                            setPushTestMsg((m) => m + `\n✓ Service Worker aktiv: ${reg.active?.scriptURL || '?'}`);
+                          } catch (e) {
+                            setPushTestMsg((m) => m + '\n⚠️ ' + (e?.message || String(e)));
+                            return;
                           }
+                          if (!window.OneSignalDeferred) { setPushTestMsg((m) => m + '\n⚠️ OneSignal-Skript nicht gefunden'); return; }
+                          window.OneSignalDeferred.push(async (OneSignal) => {
+                            try {
+                              setPushTestMsg((m) => m + '\n→ melde bei OneSignal an…');
+                              await Promise.race([
+                                OneSignal.User.PushSubscription.optIn(),
+                                new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: OneSignal-Anmeldung hängt nach 8s')), 8000)),
+                              ]);
+                              const id = OneSignal.User.PushSubscription.id;
+                              setPushTestMsg((m) => m + `\n✅ Angemeldet! ID: ${id || '(noch keine ID)'}`);
+                            } catch (e) {
+                              setPushTestMsg((m) => m + '\n⚠️ OneSignal-Anmeldung: ' + (e?.message || String(e)));
+                            }
+                          });
                         }).catch((e) => {
                           setPushTestMsg('⚠️ Fehler bei nativer Anfrage: ' + (e?.message || String(e)));
                         });
@@ -7311,7 +7327,7 @@ function StaffPanelView({ back }) {
                     >
                       🔔 Jetzt direkt nach Erlaubnis fragen
                     </button>
-                    {pushTestMsg && <p className="text-center text-xs font-bold mt-2 break-words" style={{ color: '#8a5a1f' }}>{pushTestMsg}</p>}
+                    {pushTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushTestMsg}</p>}
                   </SettingsRow>
 
                   <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
