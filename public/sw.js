@@ -1,5 +1,13 @@
 const CACHE_NAME = 'bodrum-kebap-v1';
 
+// WICHTIG: Übernimmt das Push-/Notification-Handling von OneSignal in DIESEM
+// Worker. Vorher gab es zwei getrennte Worker (sw.js + OneSignalSDKWorker.js),
+// die beide auf Scope '/' registriert waren und um die Kontrolle konkurrierten.
+// Da sw.js keinen eigenen Push-Handler hatte, gingen Push-Events verloren,
+// sobald sw.js (statt OneSignalSDKWorker.js) die aktive Kontrolle übernahm.
+// Durch importScripts gibt es jetzt nur noch EINEN Worker mit Push-Handling.
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
