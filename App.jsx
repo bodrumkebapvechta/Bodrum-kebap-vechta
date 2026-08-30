@@ -2696,6 +2696,7 @@ function ContactMessageForm({ lang, t }) {
       const messageDe = await translateToGerman(message.trim(), lang);
       const key = `contactmsg:${Date.now()}-${makeShortCode(4)}`;
       await safeSet(key, { name: name.trim(), email: email.trim(), message: message.trim(), messageDe, lang, ts: Date.now(), read: false });
+      sendOwnerPushNotification('📬 Neue Nachricht: ' + name.trim(), messageDe);
 
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -6232,6 +6233,7 @@ function StaffPanelView({ back }) {
   const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
   const [wishes, setWishes] = useState([]);
+  const [contactMessagesArchive, setContactMessagesArchive] = useState([]);
   const [subscriberCount, setSubscriberCount] = useState(null);
   const [contactMessages, setContactMessages] = useState([]);
   const [menuSearch, setMenuSearch] = useState('');
@@ -6463,6 +6465,11 @@ function StaffPanelView({ back }) {
     if (ok && tab === 'analytics') {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
       safeListPrefix('wish:', 100).then((rows) => setWishes(rows.sort((a, b) => b.value.ts - a.value.ts)));
+      // Nur lesen, NICHT löschen — anders als im Nachrichten-Tab, der ältere
+      // Nachrichten automatisch aufräumt. Hier soll nichts verschwinden,
+      // damit eine E-Mail-Benachrichtigung, die übersehen wurde, hier
+      // trotzdem dauerhaft sichtbar bleibt.
+      safeListPrefix('contactmsg:', 200).then((rows) => setContactMessagesArchive(rows.sort((a, b) => b.value.ts - a.value.ts)));
       fetch('/api/subscriber-count').then((r) => r.json()).then((d) => {
         if (typeof d?.count === 'number') setSubscriberCount(d.count);
       }).catch(() => {});
