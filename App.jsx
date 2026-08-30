@@ -8387,6 +8387,14 @@ function NotificationOptInBanner() {
       if (result === 'granted' && window.OneSignalDeferred) {
         window.OneSignalDeferred.push(async (OneSignal) => {
           try { await OneSignal.User.PushSubscription.optIn(); } catch {}
+          // Benachrichtigt den Besitzer einmalig (pro Gerät/Browser) über den
+          // neuen Abonnenten — rein additiv, ändert nichts am Opt-in-Ablauf.
+          try {
+            if (!localStorage.getItem('bk_owner_notified_new_sub')) {
+              localStorage.setItem('bk_owner_notified_new_sub', '1');
+              sendOwnerPushNotification('🔔 Neuer Push-Abonnent!', isStandalone ? 'Über App-Icon (Home-Bildschirm) abonniert 📲' : 'Über den Browser abonniert 🌐');
+            }
+          } catch {}
         });
       }
     }).catch(() => setBusy(false));
