@@ -958,7 +958,8 @@ function FavoriteHeart({ id, favorites, setFavorites, size = 16 }) {
 function isLunchWindowNow() {
   const now = new Date();
   const day = now.getDay();
-  if (![1, 3, 4, 5].includes(day)) return false;
+  const lunchDays = isTuesdayOpenNow(now) ? [1, 2, 3, 4, 5] : [1, 3, 4, 5];
+  if (!lunchDays.includes(day)) return false;
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   return now >= start && now <= end;
@@ -2068,10 +2069,19 @@ function useLiveClock() {
   return now;
 }
 
+// Ab dem 8. September 2026 (inklusive) haben wir auch dienstags geöffnet —
+// diese eine Funktion steuert das überall im Code. Kein manueller Eingriff
+// mehr nötig, sobald das Datum erreicht ist, schaltet alles automatisch um.
+function isTuesdayOpenNow(now) {
+  const cutoff = new Date(2026, 8, 8); // Monat ist 0-indiziert: 8 = September
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return d >= cutoff;
+}
+
 function getOpenStatus(now) {
   const day = now.getDay(); // 0 Sun ... 2 Tue
   const nextOpenAt = (daysAhead) => { const d = new Date(now); d.setDate(d.getDate() + daysAhead); d.setHours(11, 30, 0, 0); return d; };
-  if (day === 2) return { open: false, labelKey: 'statusClosedRestDay', nextOpen: nextOpenAt(1) };
+  if (day === 2 && !isTuesdayOpenNow(now)) return { open: false, labelKey: 'statusClosedRestDay', nextOpen: nextOpenAt(1) };
   const h = now.getHours() + now.getMinutes() / 60;
   if (h >= 11.5 && h < 22) {
     if (h >= 21.5) return { open: true, soon: true, labelKey: 'statusClosingSoon' };
@@ -2081,7 +2091,7 @@ function getOpenStatus(now) {
     if (h >= 11.0) return { open: false, soon: true, labelKey: 'statusOpeningSoon', nextOpen: nextOpenAt(0) };
     return { open: false, labelKey: 'statusNotYetOpen', nextOpen: nextOpenAt(0) };
   }
-  return { open: false, labelKey: 'statusClosed', nextOpen: nextOpenAt(day === 1 ? 2 : 1) };
+  return { open: false, labelKey: 'statusClosed', nextOpen: nextOpenAt(day === 1 && !isTuesdayOpenNow(now) ? 2 : 1) };
 }
 function formatCountdown(ms) {
   if (ms <= 0) return '0s';
@@ -2126,7 +2136,10 @@ const DAILY_SPECIALS = [
     { name: 'Kebap überbacken', price: 11.0, desc: 'Fleisch vom Drehspieß, Paprika, Zwiebeln und Tomatensoße, überbacken mit Käse', img: 'g4', cat: 'ueberbacken' },
     { name: 'Baguette Kebap', price: 10.0, desc: 'Fleisch vom Drehspieß, Pilzen, Zwiebeln & Käse', img: 'g5', cat: 'baguette' },
   ]},
-  { day: 2, items: null },
+  { day: 2, items: [
+    { name: 'Kalb Kebap', price: 8.0, desc: 'Fleisch vom Drehspieß, Salat & Soße nach Wahl', img: 'g1', cat: 'kebap' },
+    { name: 'Pizza Salami', price: 8.0, desc: 'Tomatensoße, Mozzarella & Salami', img: 'g3', cat: 'pizza' },
+  ]},
   { day: 3, items: [
     { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'spaghetti', cat: 'nudeln' },
     { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'schnitzel', cat: 'schnitzel' },
@@ -2316,9 +2329,11 @@ function formatItemPriceText(item) {
 
 const ASSISTANT_R = {
   openYes: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Dienstags haben wir Ruhetag.", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're closed on Tuesdays.", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız.", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Marțea suntem închiși.", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. Op dinsdag zijn we gesloten.", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Të martave jemi mbyllur.", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Roja Sêşemê em girtî ne.", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. We wtorki mamy zamknięte." },
+  openYesEveryDay: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Wir haben jeden Tag geöffnet, auch dienstags!", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're open every day, including Tuesdays!", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı dahil her gün açığız!", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Suntem deschiși în fiecare zi, inclusiv marțea!", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. We zijn elke dag geopend, ook op dinsdag!", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Jemi hapur çdo ditë, edhe të martave!", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Em her roj vekirî ne, Sêşem jî tê de!", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. Jesteśmy otwarci codziennie, także we wtorki!" },
   openNoPrefix: { de: "🔴 Wir haben gerade geschlossen.", en: "🔴 We're currently closed.", tr: "🔴 Şu an kapalıyız.", ro: "🔴 Suntem închiși momentan.", nl: "🔴 We zijn nu gesloten.", sq: "🔴 Jemi mbyllur tani.", ku: "🔴 Em niha girtî ne.", pl: "🔴 Jesteśmy teraz zamknięci." },
   opensIn: { de: "Öffnet in", en: "Opens in", tr: "Açılışa", ro: "Se deschide în", nl: "Opent over", sq: "Hapet pas", ku: "Vedibe piştî", pl: "Otwieramy za" },
   openNoSuffix: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, außer dienstags.", en: "We're open daily 11:30 AM–10:00 PM, except Tuesdays.", tr: "Her gün 11:30–22:00 arası açığız, Salı hariç.", ro: "Suntem deschiși zilnic 11:30–22:00, cu excepția marțea.", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, behalve dinsdag.", sq: "Jemi hapur çdo ditë 11:30–22:00, përveç të martave.", ku: "Em her roj saet 11:30–22:00 vekirî ne, ji xeynî Sêşemê.", pl: "Jesteśmy otwarci codziennie 11:30–22:00, oprócz wtorków." },
+  openNoSuffixEveryDay: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, auch dienstags — keine Ruhetage mehr!", en: "We're open daily 11:30 AM–10:00 PM, including Tuesdays — no closed days anymore!", tr: "Her gün 11:30–22:00 arası açığız, Salı dahil — artık kapalı günümüz yok!", ro: "Suntem deschiși zilnic 11:30–22:00, inclusiv marțea — fără zile de închidere!", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, ook op dinsdag — geen sluitingsdagen meer!", sq: "Jemi hapur çdo ditë 11:30–22:00, edhe të martave — nuk ka më ditë pushimi!", ku: "Em her roj saet 11:30–22:00 vekirî ne, Sêşem jî tê de — êdî roja girtî tune!", pl: "Jesteśmy otwarci codziennie 11:30–22:00, także we wtorki — nie ma już dni zamknięcia!" },
   address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
   phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
   halal: { de: "☪️ Ja, 100% Halal! Alle unsere Produkte sind halal-zertifiziert.", en: "☪️ Yes, 100% Halal! All our products are halal-certified.", tr: "☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.", ro: "☪️ Da, 100% Halal! Toate produsele noastre sunt certificate halal.", nl: "☪️ Ja, 100% Halal! Al onze producten zijn halal-gecertificeerd.", sq: "☪️ Po, 100% Hallall! Të gjitha produktet tona janë të certifikuara hallall.", ku: "☪️ Erê, %100 Helal e! Hemû berhemên me bawernameya helal hene.", pl: "☪️ Tak, 100% Halal! Wszystkie nasze produkty mają certyfikat halal." },
@@ -2354,8 +2369,9 @@ function getAssistantReply(qRaw, lang) {
   }
 
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
-    if (status.open) return { intent: 'hours', text: ar('openYes', lang) };
-    return { intent: 'hours', text: `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${ar('openNoSuffix', lang)}` };
+    const tueOpen = isTuesdayOpenNow(now);
+    if (status.open) return { intent: 'hours', text: ar(tueOpen ? 'openYesEveryDay' : 'openYes', lang) };
+    return { intent: 'hours', text: `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${ar(tueOpen ? 'openNoSuffixEveryDay' : 'openNoSuffix', lang)}` };
   }
   if (has('adres', 'nerede', 'wo ', 'address', 'yol', 'route', 'konum', 'standort', 'adresse')) {
     return { intent: 'address', text: ar('address', lang) };
@@ -2997,7 +3013,8 @@ function MittagsBanner({ menu, onPhotoClick }) {
   }, [sidePhotos]);
   const day = now.getDay();
   if (day === 6) return null; // Samstag hat seine eigene Kampagne (Tagesempfehlung)
-  const isLunchDay = [1, 3, 4, 5].includes(day);
+  const lunchDays = isTuesdayOpenNow(now) ? [1, 2, 3, 4, 5] : [1, 3, 4, 5];
+  const isLunchDay = lunchDays.includes(day);
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const active = isLunchDay && now >= start && now <= end;
@@ -3009,7 +3026,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
       const d = new Date(now);
       d.setDate(d.getDate() + add);
       d.setHours(11, 30, 0, 0);
-      if ([1, 3, 4, 5].includes(d.getDay()) && d.getTime() > now.getTime()) return d;
+      if (lunchDays.includes(d.getDay()) && d.getTime() > now.getTime()) return d;
     }
     return null;
   };
@@ -3165,7 +3182,7 @@ function DailySpecial({ go }) {
   const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4, g5: FOOD_G5, schnitzel: SCHNITZEL_IMG, spaghetti: SPAGHETTI_IMG };
   const days = DAY_NAMES[lang] || DAY_NAMES.de;
 
-  const isLunchDay = [1, 3, 4, 5].includes(day);
+  const isLunchDay = isTuesdayOpenNow(now) ? [1, 2, 3, 4, 5].includes(day) : [1, 3, 4, 5].includes(day);
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const isLunchWindow = isLunchDay && now >= start && now <= end;
@@ -3180,7 +3197,7 @@ function DailySpecial({ go }) {
     return null; // Samstag-Kampagne wird bereits ganz oben auf der Seite gezeigt
   }
 
-  if (day === 2) {
+  if (day === 2 && !isTuesdayOpenNow(now)) {
     return (
       <section id="tagesempfehlung" className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
         <div className="rounded-2xl p-6 text-center" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
@@ -3606,7 +3623,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold" style={{ color: GREEN }}>{lang === 'de' ? 'Täglich 11:30–22:00' : '11:30–22:00'}</span></div>
-            <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : lang === 'ku' ? 'Sêşem' : 'Dinsdag'}</span></div>
+            {!isTuesdayOpenNow(new Date()) && <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : lang === 'ku' ? 'Sêşem' : 'Dinsdag'}</span></div>}
             <div className="flex justify-between py-2.5 text-sm"><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroAddress')}</span><span className="font-bold text-right" style={{ color: GREEN }}>Oyther Straße 37,<br />49377 Vechta</span></div>
             <img src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
             <img src={PENNE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 78, height: 78, bottom: -18, left: -18, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(-8deg)' }} />
@@ -3737,7 +3754,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="rounded-2xl p-6 flex flex-col justify-center" style={{ background: GREEN }}>
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
             <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" onClick={() => logEvent('call')} className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
-            <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : lang === 'ku' ? 'Her roj 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div><div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : lang === 'ku' ? 'Sêşeman girtî' : 'Dinsdag gesloten'}</div></div></div>
+            <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : lang === 'ku' ? 'Her roj 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div>{!isTuesdayOpenNow(new Date()) && <div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : lang === 'ku' ? 'Sêşeman girtî' : 'Dinsdag gesloten'}</div>}</div></div>
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
@@ -8531,9 +8548,9 @@ export default function App() {
         "ratingValue": "4.6",
         "reviewCount": "293"
       },
-      "openingHoursSpecification": [
-        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }
-      ],
+      "openingHoursSpecification": isTuesdayOpenNow(new Date())
+        ? [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }]
+        : [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }],
       "servesHalal": true,
       "sameAs": ["https://instagram.com/BodrumKebapVechta"]
     });
