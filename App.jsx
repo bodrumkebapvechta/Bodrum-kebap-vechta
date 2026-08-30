@@ -149,7 +149,6 @@ const UI = {
   wishBoxPlaceholder: { de: 'z.B. Falafel-Teller, mehr vegane Optionen, Ayran in groß …', en: 'e.g. Falafel plate, more vegan options, large Ayran …', tr: 'örn. Falafel tabağı, daha fazla vegan seçenek, büyük boy ayran …', ro: 'ex. Platou falafel, mai multe opțiuni vegane, Ayran mare …', nl: 'bijv. Falafelbord, meer veganistische opties, grote Ayran …', sq: 'p.sh. Pjatë falafel, më shumë opsione vegan, Ajran i madh …', ku: 'wek nimûne pêşkêş bike Falafel, vebijarkên vegan zêdetir …', pl: 'np. Talerz falafel, więcej opcji wegańskich, duży Ayran …' },
   wishBoxSend: { de: 'Absenden', en: 'Send', tr: 'Gönder', ro: 'Trimite', nl: 'Versturen', sq: 'Dërgo', ku: 'Bişîne', pl: 'Wyślij' },
   wishBoxSent: { de: 'Danke! Wir haben deinen Wunsch erhalten 💚', en: 'Thanks! We received your wish 💚', tr: 'Teşekkürler! İsteğin bize ulaştı 💚', ro: 'Mulțumim! Am primit dorința ta 💚', nl: 'Bedankt! We hebben je wens ontvangen 💚', sq: 'Faleminderit! E morëm dëshirën tënde 💚', ku: 'Spas! Xwestina te gihîşt me 💚', pl: 'Dziękujemy! Otrzymaliśmy Twoje życzenie 💚' },
-  spotlightKicker: { de: 'Kanntest du schon?', en: 'Did you know?', tr: 'Bunu biliyor muydun?', ro: 'Știai deja?', nl: 'Wist je dit al?', sq: 'A e dinit tashmë?', ku: 'Gelo te ev berê zanibû?', pl: 'Czy wiesz już o tym?' },
   contactMsgSub: { de: 'Frage, Feedback oder ein Problem? Wir melden uns persönlich zurück.', en: "Question, feedback, or a problem? We'll get back to you personally.", tr: 'Bir soru, geri bildirim ya da bir sorun mu var? Sana kişisel olarak dönüş yaparız.', ro: 'O întrebare, feedback sau o problemă? Îți răspundem personal.', nl: 'Een vraag, feedback of een probleem? We nemen persoonlijk contact met je op.', sq: 'Pyetje, koment apo problem? Do të të kthejmë përgjigje personalisht.', ku: 'Pirsek, ramanek an pirsgirêkek? Em ê bi taybetî bersivê bidin te.', pl: 'Pytanie, opinia lub problem? Odpowiemy osobiście.' },
   contactMsgName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam', sq: 'Emri yt', ku: 'Navê te', pl: 'Twoje imię' },
   contactMsgPhone: { de: 'E-Mail (optional)', en: 'Email (optional)', tr: 'E-posta (opsiyonel)', ro: 'E-mail (opțional)', nl: 'E-mail (optioneel)', sq: 'Email (opsional)', ku: 'E-mail (dilxwazî)', pl: 'E-mail (opcjonalnie)' },
@@ -2675,75 +2674,6 @@ async function translateToGerman(text, sourceLang) {
   return text; // Fallback: Original, falls Übersetzung fehlschlägt
 }
 
-function CategorySpotlight({ go }) {
-  const { t, lang } = React.useContext(LangContext);
-  const [cat, setCat] = useState(null);
-  useEffect(() => {
-    (async () => {
-      try {
-        const [counts, tm] = await Promise.all([
-          safeGet('analytics:categoryCounts'),
-          safeGet('siteconfig:tischMenu'),
-        ]);
-        const cats = tm?.categories || [];
-        if (!cats.length) return;
-        const withCounts = cats.map((c) => ({ key: c.key, label: tischText(c.label, lang), count: (counts && counts[c.key]) || 0 }));
-        withCounts.sort((a, b) => a.count - b.count);
-        setCat(withCounts[0]);
-      } catch {}
-    })();
-  }, [lang]);
-  if (!cat) return null;
-  return (
-    <section className="max-w-7xl mx-auto px-5 lg:px-10 mb-6">
-      <button
-        onClick={() => { logEvent('spotlight_click', { cat: cat.key }); go('tischmenu', { initialCatHint: cat.key }); }}
-        className="w-full flex items-center gap-4 rounded-2xl p-4 text-left"
-        style={{ background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, boxShadow: '0 10px 26px rgba(21,56,38,.25)', border: `1.5px solid ${GOLD}55` }}
-      >
-        <span className="text-3xl flex-shrink-0">🔎</span>
-        <div className="flex-1 min-w-0">
-          <div className="text-[11px] font-black tracking-widest mb-0.5" style={{ color: GOLD }}>{t('spotlightKicker')}</div>
-          <div className="text-white font-bold text-sm truncate">{cat.label}</div>
-        </div>
-        <ArrowRight size={18} color={GOLD} className="flex-shrink-0" />
-      </button>
-    </section>
-  );
-}
-
-function FaqSection() {
-  const [openIdx, setOpenIdx] = useState(null);
-  const faqs = [
-    { q: 'Habt ihr auch Lieferservice?', a: 'Nein, aktuell bieten wir nur Abholung an. Über WhatsApp oder telefonisch könnt ihr eure Bestellung vorbestellen und dann abholen.' },
-    { q: 'Ist bei euch alles halal?', a: 'Ja, unser gesamtes Fleisch ist 100% Halal-zertifiziert.' },
-    { q: 'Welche Zahlungsmethoden akzeptiert ihr?', a: 'Ihr könnt bei uns mit Karte oder bar bezahlen.' },
-    { q: 'Wann gibt es Steak-Gerichte?', a: 'Unsere Steak-Gerichte sind nur Freitag, Samstag und Sonntag verfügbar.' },
-    { q: 'Habt ihr auch vegetarische Optionen?', a: 'Ja, in mehreren Kategorien (z. B. Salate, Pizza) findet ihr vegetarische Gerichte.' },
-    { q: 'Wann habt ihr geschlossen?', a: 'Wir haben täglich von 11:30 bis 22:00 Uhr geöffnet, außer dienstags — da bleibt unser Laden geschlossen.' },
-    { q: 'Kann ich telefonisch bestellen?', a: 'Ja klar, ruft uns einfach unter 04441 / 95 16 104 an.' },
-  ];
-  return (
-    <section id="faq" className="max-w-7xl mx-auto px-5 lg:px-10 py-10">
-      <div className="text-center mb-7">
-        <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>FAQ</div>
-        <h2 className="font-black" style={{ fontSize: 'clamp(24px,4vw,32px)', color: GREEN }}>Häufig gestellte Fragen</h2>
-      </div>
-      <div className="max-w-2xl mx-auto flex flex-col gap-2.5">
-        {faqs.map((f, i) => (
-          <div key={i} className="rounded-2xl overflow-hidden bg-white" style={{ border: '1.5px solid #f0e5cf' }}>
-            <button onClick={() => setOpenIdx(openIdx === i ? null : i)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
-              <span className="font-bold text-sm" style={{ color: GREEN }}>{f.q}</span>
-              <span style={{ color: '#a4906c', transform: openIdx === i ? 'rotate(180deg)' : 'none', transition: 'transform .2s', display: 'inline-block' }}>▾</span>
-            </button>
-            {openIdx === i && <div className="px-4 pb-4 text-sm font-medium" style={{ color: '#5c5240' }}>{f.a}</div>}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function ContactMessageForm({ lang, t }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -3515,7 +3445,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex-1 overflow-y-auto px-6 pt-6 flex flex-col gap-2.5">
               {[
                 { onClick: () => (ORDERING_ENABLED ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
-                { onClick: () => scrollTo('faq'), icon: '❓', label: 'FAQ' },
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
                 { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
               ].map((item, i) => (
@@ -3636,9 +3565,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
-            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
+              </button>
+              <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)' }}>
+                <span className="text-base flex-shrink-0">💡</span> <span className="truncate">{t('wishBoxNavLabel')}</span>
               </button>
               <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
                 <span className="text-base flex-shrink-0">🎲</span> <span className="truncate">{t('surpriseMeBtn')}</span>
@@ -3785,8 +3717,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       )}
 
       {/* MAP / CONTACT */}
-      <CategorySpotlight go={go} />
-      <FaqSection />
       <section id="kontakt" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <div className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('contactKicker')}</div>
