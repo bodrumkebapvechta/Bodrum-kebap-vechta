@@ -7596,13 +7596,6 @@ function StaffPanelView({ back }) {
                   </button>
                 </div>
                 <div className="bg-white rounded-xl p-4 mb-3">
-                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byLanguage')}</div>
-                  {langOrder.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>—</p>}
-                  {langOrder.map(([l, c]) => (
-                    <button key={l} onClick={() => openStatsModal(`Sprache: ${l.toUpperCase()}`, pageVisits.filter((v) => v.value.lang === l), (v) => v.value.device === 'mobile' ? '📱 Mobile' : '💻 Desktop')} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span className="uppercase">{l}</span><span>{c}</span></button>
-                  ))}
-                </div>
-                <div className="bg-white rounded-xl p-4 mb-3">
                   <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💡 KUNDENWÜNSCHE</div>
                   {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
                   {wishes.slice(0, 30).map((w) => (
@@ -7620,7 +7613,6 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_mood: '🎯 Hero: Mood',
                     hero_surprise: '🎲 Hero: Überrasch mich',
                     call: '📞 Anruf-Button',
                     route: '📍 Route/Anfahrt',
