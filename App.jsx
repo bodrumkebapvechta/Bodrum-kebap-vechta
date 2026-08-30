@@ -1330,6 +1330,15 @@ async function sendPushNotification(title, message, url) {
     });
   } catch {}
 }
+async function sendOwnerPushNotification(title, message, url) {
+  try {
+    await fetch('/api/send-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, message, url, targetOwner: true }),
+    });
+  } catch {}
+}
 async function isPushTriggerEnabled(key) {
   try {
     const t = await safeGet('siteconfig:pushTriggers');
@@ -2742,6 +2751,7 @@ function WishModal({ lang, t, onClose }) {
     try {
       const key = `wish:${Date.now()}-${makeShortCode(4)}`;
       await safeSet(key, { name: name.trim(), text: text.trim(), lang, ts: Date.now() });
+      sendOwnerPushNotification('💡 Neuer Kundenwunsch', text.trim());
       setStatus('sent');
     } catch {
       setStatus('error');
@@ -6154,6 +6164,16 @@ function StaffPanelView({ back }) {
       setUnlocking(true);
       setUnlockStage('unlocked');
       unlockAudio();
+      // Markiert dieses Gerät bei OneSignal als "owner", damit z.B. Kundenwünsche
+      // NUR hierher gesendet werden können (nicht an alle Abonnenten). Reine
+      // Ergänzung — verändert nichts an der bestehenden Push-Registrierung/init.
+      try {
+        if (window.OneSignal?.User?.addTag) {
+          window.OneSignal.User.addTag('owner', 'true');
+        } else if (window.OneSignalDeferred) {
+          window.OneSignalDeferred.push((OneSignal) => { try { OneSignal.User.addTag('owner', 'true'); } catch {} });
+        }
+      } catch {}
       safeGet('siteconfig:lastStaffLogin').then((r) => {
         if (r && r.ts) setLastLoginAt(r.ts);
         safeSet('siteconfig:lastStaffLogin', { ts: Date.now() });
