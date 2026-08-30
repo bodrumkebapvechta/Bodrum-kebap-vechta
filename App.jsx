@@ -143,6 +143,7 @@ const UI = {
   assistantPlaceholder: { de: 'Frag mich etwas...', en: 'Ask me something...', tr: 'Bir şey sor...', ro: 'Întreabă-mă ceva...', nl: 'Vraag me iets...', sq: 'Më pyet diçka...', ku: 'Tiştekî ji min bipirse...', pl: 'Zapytaj mnie o coś...' },
   contactMsgTitle: { de: '💬 Schreib uns', en: '💬 Message us', tr: '💬 Bize yazın', ro: '💬 Scrie-ne', nl: '💬 Schrijf ons', sq: '💬 Na shkruaj', ku: '💬 Ji me re binivîse', pl: '💬 Napisz do nas' },
   wishBoxTitle: { de: 'Dein Wunsch an uns', en: 'Your wish for us', tr: 'Bizden isteğin', ro: 'Dorința ta pentru noi', nl: 'Jouw wens voor ons', sq: 'Dëshira jote për ne', ku: 'Xwestina te ji me re', pl: 'Twoje życzenie dla nas' },
+  wishBoxNavLabel: { de: 'Dein Wunsch', en: 'Your wish', tr: 'İsteğin', ro: 'Dorința ta', nl: 'Jouw wens', sq: 'Dëshira jote', ku: 'Xwestina te', pl: 'Twoje życzenie' },
   wishBoxSub: { de: 'Welches Gericht wünschst du dir bei uns? Sag uns einfach, was dir fehlt.', en: 'Which dish would you like us to add? Just tell us what you\'re missing.', tr: 'Bizden ne eklememizi istersin? Ne eksik olduğunu söyle yeter.', ro: 'Ce fel de mâncare ți-ai dori la noi? Spune-ne ce lipsește.', nl: 'Welk gerecht zou je graag willen? Vertel ons wat je mist.', sq: 'Çfarë gjelle do të doje te ne? Na thuaj çfarë mungon.', ku: 'Tu kîjan xwarinê ji me dixwazî? Tenê ji me re bêje çi kêm e.', pl: 'Jakiego dania sobie życzysz? Po prostu napisz, czego brakuje.' },
   wishBoxName: { de: 'Name (optional)', en: 'Name (optional)', tr: 'İsim (isteğe bağlı)', ro: 'Nume (opțional)', nl: 'Naam (optioneel)', sq: 'Emri (opsionale)', ku: 'Nav (vebijark)', pl: 'Imię (opcjonalnie)' },
   wishBoxPlaceholder: { de: 'z.B. Falafel-Teller, mehr vegane Optionen, Ayran in groß …', en: 'e.g. Falafel plate, more vegan options, large Ayran …', tr: 'örn. Falafel tabağı, daha fazla vegan seçenek, büyük boy ayran …', ro: 'ex. Platou falafel, mai multe opțiuni vegane, Ayran mare …', nl: 'bijv. Falafelbord, meer veganistische opties, grote Ayran …', sq: 'p.sh. Pjatë falafel, më shumë opsione vegan, Ajran i madh …', ku: 'wek nimûne pêşkêş bike Falafel, vebijarkên vegan zêdetir …', pl: 'np. Talerz falafel, więcej opcji wegańskich, duży Ayran …' },
@@ -2800,7 +2801,7 @@ function ContactMessageForm({ lang, t }) {
   );
 }
 
-function WishBox({ lang, t }) {
+function WishModal({ lang, t, onClose }) {
   const [name, setName] = useState('');
   const [text, setText] = useState('');
   const [status, setStatus] = useState('idle');
@@ -2812,29 +2813,41 @@ function WishBox({ lang, t }) {
       const key = `wish:${Date.now()}-${makeShortCode(4)}`;
       await safeSet(key, { name: name.trim(), text: text.trim(), lang, ts: Date.now() });
       setStatus('sent');
-      setName(''); setText('');
     } catch {
       setStatus('error');
     }
   };
 
-  return (
-    <div className="mt-4 rounded-2xl p-5" style={{ background: 'rgba(255,246,234,.05)', border: '1px solid rgba(255,246,234,.12)' }}>
-      <div className="text-white font-black text-sm mb-1">💡 {t('wishBoxTitle')}</div>
-      <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('wishBoxSub')}</p>
-      {status === 'sent' ? (
-        <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('wishBoxSent')}</p>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('wishBoxName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
-          <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('wishBoxPlaceholder')} rows={3} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
-          <button onClick={submit} disabled={status === 'sending' || !text.trim()} className="px-5 py-2.5 rounded-full font-bold text-sm text-white self-start" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: !text.trim() ? 0.5 : 1 }}>
-            {status === 'sending' ? '⏳ ...' : t('wishBoxSend')}
-          </button>
-          {status === 'error' && <p className="text-xs font-bold" style={{ color: '#e08a8a' }}>{t('contactMsgError')}</p>}
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={onClose}>
+      <div
+        className="w-full max-w-sm rounded-3xl p-6"
+        style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 30px 70px rgba(21,56,38,.5)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-1">
+          <div className="font-black text-base" style={{ color: GOLD }}>💡 {t('wishBoxTitle')}</div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.1)' }}><X size={15} color="#fff" /></button>
         </div>
-      )}
-    </div>
+        <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('wishBoxSub')}</p>
+        {status === 'sent' ? (
+          <div className="text-center py-4">
+            <p className="text-sm font-bold mb-4" style={{ color: '#7ed99b' }}>{t('wishBoxSent')}</p>
+            <button onClick={onClose} className="px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: GOLD, color: GREEN }}>OK</button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2.5">
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('wishBoxName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+            <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('wishBoxPlaceholder')} rows={3} autoFocus className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+            <button onClick={submit} disabled={status === 'sending' || !text.trim()} className="px-5 py-3 rounded-full font-bold text-sm text-white" style={{ background: status === 'sending' ? '#8a7c62' : ORANGE, opacity: !text.trim() ? 0.5 : 1 }}>
+              {status === 'sending' ? '⏳ ...' : t('wishBoxSend')}
+            </button>
+            {status === 'error' && <p className="text-xs font-bold text-center" style={{ color: '#e08a8a' }}>{t('contactMsgError')}</p>}
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
   );
 }
 
@@ -3285,7 +3298,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
-  const [moodPickerOpen, setMoodPickerOpen] = useState(false);
+  const [wishModalOpen, setWishModalOpen] = useState(false);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
   const [homePriceOverrides, setHomePriceOverrides] = useState({});
   const [homePhotoOverrides, setHomePhotoOverrides] = useState({});
@@ -3465,7 +3478,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <nav className="hidden md:flex items-center gap-7">
             {ORDERING_ENABLED ? <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
-            <button onClick={() => scrollTo('kontakt')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navContact')}</button>
+            <button onClick={() => setWishModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>💡 {t('wishBoxNavLabel')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
@@ -3504,7 +3517,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 { onClick: () => (ORDERING_ENABLED ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
                 { onClick: () => scrollTo('faq'), icon: '❓', label: 'FAQ' },
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
-                { onClick: () => scrollTo('kontakt'), icon: '📍', label: t('navContact') },
+                { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
               ].map((item, i) => (
                 <button key={i} onClick={item.onClick} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
                   <span className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>{item.icon}</span>
@@ -3623,12 +3636,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
-            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1.3fr 0.65fr 1.1fr' }}>
+            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
-              </button>
-              <button onClick={() => { logEvent('hero_mood'); setMoodPickerOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)' }}>
-                <span className="text-base flex-shrink-0">🎯</span> <span className="truncate">Mood</span>
               </button>
               <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
                 <span className="text-base flex-shrink-0">🎲</span> <span className="truncate">{t('surpriseMeBtn')}</span>
@@ -3762,7 +3772,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         );
       })()}
 
-      {moodPickerOpen && <MoodPicker onClose={() => setMoodPickerOpen(false)} items={HOME_SURPRISE_ITEMS} />}
+      {wishModalOpen && <WishModal lang={lang} t={t} onClose={() => setWishModalOpen(false)} />}
       {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
@@ -3808,7 +3818,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               </a>
             </div>
             <ContactMessageForm lang={lang} t={t} />
-            <WishBox lang={lang} t={t} />
           </div>
           <div className="rounded-2xl overflow-hidden" style={{ minHeight: 280, boxShadow: '0 10px 30px rgba(21,56,38,.14)' }}>
             <iframe
