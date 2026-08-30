@@ -6254,6 +6254,7 @@ function StaffPanelView({ back }) {
 
   const [tischMenu, setTischMenu] = useState({ categories: [], items: [] });
   const [tischNewCatName, setTischNewCatName] = useState('');
+  const [tischAdminSearch, setTischAdminSearch] = useState('');
   const [tischNewCatEmoji, setTischNewCatEmoji] = useState('🍽️');
   const [tischItemCat, setTischItemCat] = useState('');
   const [tischItemName, setTischItemName] = useState('');
@@ -6978,9 +6979,28 @@ function StaffPanelView({ back }) {
             </div>
           </div>
 
+          {/* Suche nach Nummer oder Name */}
+          <div className="mb-4">
+            <input
+              value={tischAdminSearch}
+              onChange={(e) => setTischAdminSearch(e.target.value)}
+              placeholder="🔍 Suche nach Nummer oder Name…"
+              className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none"
+              style={{ background: '#fff', color: GREEN, border: '1.5px solid #f0e5cf' }}
+            />
+          </div>
+
           {/* Artikel-Liste je Kategorie */}
           {tischMenu.categories.map((cat) => {
-            const catItems = tischMenu.items.filter((i) => i.category === cat.key);
+            const q = tischAdminSearch.trim().toLowerCase();
+            const catItems = tischMenu.items.filter((i) => {
+              if (i.category !== cat.key) return false;
+              if (!q) return true;
+              const numMatch = i.number && String(i.number).toLowerCase().includes(q);
+              const nameMatch = tischText(i.name, 'de').toLowerCase().includes(q);
+              return numMatch || nameMatch;
+            });
+            if (q && catItems.length === 0) return null;
             return (
               <div key={cat.key} className="mb-5">
                 <div className="flex items-center gap-1.5 mb-2.5 px-0.5">
