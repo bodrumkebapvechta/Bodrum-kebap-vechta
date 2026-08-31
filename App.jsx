@@ -1759,41 +1759,67 @@ function WheelWidget({ onWin, compact }) {
 
 /* ============ SPLASH ============ */
 const VECHTA_LAT = 52.727, VECHTA_LON = 8.273;
-let weatherCache = { effect: null, fetchedAt: 0 };
-function classifyWeather(code, isDay) {
-  if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(code)) return 'rain';
-  if ([71,73,75,77,85,86].includes(code)) return 'snow';
-  if (code === 0 && isDay) return 'sun';
-  return 'none';
+let weatherCache = { data: null, fetchedAt: 0 };
+
+function getWeatherEffect(code, isDay, windKmh) {
+  const lightCodes = [51, 53, 56, 61, 80];
+  const moderateCodes = [55, 57, 63, 66, 81];
+  const heavyCodes = [65, 67, 82];
+  const stormCodes = [95, 96, 99];
+  const snowCodes = [71, 73, 75, 77, 85, 86];
+  let type = 'none', intensity = 'moderate', storm = false;
+  if (stormCodes.includes(code)) { type = 'rain'; intensity = 'heavy'; storm = true; }
+  else if (heavyCodes.includes(code)) { type = 'rain'; intensity = 'heavy'; }
+  else if (moderateCodes.includes(code)) { type = 'rain'; intensity = 'moderate'; }
+  else if (lightCodes.includes(code)) { type = 'rain'; intensity = 'light'; }
+  else if (snowCodes.includes(code)) { type = 'snow'; intensity = 'moderate'; }
+  else if (code === 0 && isDay) { type = 'sun'; }
+  const windy = typeof windKmh === 'number' && windKmh >= 25;
+  return { type, intensity, storm, windy, windKmh: windKmh ?? null };
 }
-function WeatherEffect() {
-  const [effect, setEffect] = useState(weatherCache.effect);
+
+// Von mehreren Komponenten gemeinsam genutzt (Regen-/Schnee-Effekt UND
+// Windschwanken der Buttons) — ein einziger Fetch für alle, dank des
+// modulweiten Caches (5 Minuten frisch, damit sich das Wetter zeitnah
+// aktualisiert statt 20 Minuten lang veraltet zu bleiben).
+function useWeather() {
+  const [data, setData] = useState(weatherCache.data);
   useEffect(() => {
-    const fresh = Date.now() - weatherCache.fetchedAt < 20 * 60 * 1000;
-    if (fresh) { setEffect(weatherCache.effect); return; }
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VECHTA_LAT}&longitude=${VECHTA_LON}&current=weather_code,is_day&timezone=Europe%2FBerlin`)
+    const fresh = weatherCache.data && Date.now() - weatherCache.fetchedAt < 1 * 60 * 1000;
+    if (fresh) { setData(weatherCache.data); return; }
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VECHTA_LAT}&longitude=${VECHTA_LON}&current=weather_code,is_day,wind_speed_10m&timezone=Europe%2FBerlin`)
       .then((r) => r.json())
       .then((d) => {
-        const eff = classifyWeather(d?.current?.weather_code, d?.current?.is_day === 1);
-        weatherCache = { effect: eff, fetchedAt: Date.now() };
-        setEffect(eff);
+        const eff = getWeatherEffect(d?.current?.weather_code, d?.current?.is_day === 1, d?.current?.wind_speed_10m);
+        weatherCache = { data: eff, fetchedAt: Date.now() };
+        setData(eff);
       })
       .catch(() => {});
   }, []);
+  return data;
+}
 
-  const rainDrops = React.useMemo(() => Array.from({ length: 28 }).map(() => ({
+function WeatherEffect() {
+  const weather = useWeather();
+  const effect = weather?.type || null;
+  const intensity = weather?.intensity || 'moderate';
+  const storm = !!weather?.storm;
+  const scale = intensity === 'light' ? 0.5 : intensity === 'heavy' ? 1.7 : 1;
+  const speedMul = intensity === 'light' ? 1.3 : intensity === 'heavy' ? 0.7 : 1;
+
+  const rainDrops = React.useMemo(() => Array.from({ length: Math.round(28 * scale) }).map(() => ({
     left: Math.random() * 100,
     delay: Math.random() * 3,
-    duration: 0.7 + Math.random() * 0.5,
+    duration: (0.7 + Math.random() * 0.5) * speedMul,
     height: 14 + Math.random() * 16,
-    opacity: 0.15 + Math.random() * 0.2,
-  })), []);
-  const splashes = React.useMemo(() => Array.from({ length: 10 }).map(() => ({
+    opacity: (0.15 + Math.random() * 0.2) * (intensity === 'heavy' ? 1.4 : 1),
+  })), [scale, speedMul, intensity]);
+  const splashes = React.useMemo(() => Array.from({ length: Math.round(10 * scale) }).map(() => ({
     left: Math.random() * 100,
     top: 55 + Math.random() * 42,
     delay: Math.random() * 4,
-    duration: 2.2 + Math.random() * 1.8,
-  })), []);
+    duration: (2.2 + Math.random() * 1.8) * speedMul,
+  })), [scale, speedMul]);
   const snowFlakes = React.useMemo(() => Array.from({ length: 32 }).map(() => ({
     left: Math.random() * 100,
     delay: Math.random() * 10,
@@ -1812,7 +1838,15 @@ function WeatherEffect() {
         @keyframes weatherSplash { 0%{ transform: scale(0); opacity:.55; } 70%{ opacity:.15; } 100%{ transform: scale(2.6); opacity:0; } }
         @keyframes weatherSnowFall { 0%{ transform: translateY(-6vh) translateX(0); opacity:0; } 8%{ opacity: var(--op); } 92%{ opacity: var(--op); } 100%{ transform: translateY(106vh) translateX(var(--drift)); opacity:0; } }
         @keyframes weatherSunSweep { 0%{ transform: translateX(-40%) translateY(-20%) rotate(18deg); } 100%{ transform: translateX(40%) translateY(20%) rotate(18deg); } }
+        @keyframes weatherLightning { 0%, 92%, 100% { opacity: 0; } 93% { opacity: .55; } 94% { opacity: .1; } 95% { opacity: .4; } 96% { opacity: 0; } }
       `}</style>
+
+      {storm && (
+        <>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,14,22,.22)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: '#fff', animation: 'weatherLightning 7s ease-in-out infinite' }} />
+        </>
+      )}
 
       {effect === 'rain' && rainDrops.map((d, i) => (
         <div key={i} style={{
@@ -3240,6 +3274,8 @@ function DailySpecial({ go }) {
 
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const { lang, setLang, t } = React.useContext(LangContext);
+  const weather = useWeather();
+  const windSway = (base = '', dur = 2.6, delay = 0) => weather?.windy ? `${base ? base + ', ' : ''}windSway ${dur}s ease-in-out ${delay}s infinite` : (base || undefined);
   const [navOpen, setNavOpen] = useState(false);
   const [logoClicks, setLogoClicks] = useState(0);
   const [gameOpen, setGameOpen] = useState(false);
@@ -3371,6 +3407,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes sideFloatHome1 { 0%,100%{ transform:translateY(0) rotate(-8deg);} 50%{ transform:translateY(-24px) rotate(8deg);} }
         @keyframes sideFloatHome2 { 0%,100%{ transform:translateY(0) rotate(6deg);} 50%{ transform:translateY(-32px) rotate(-6deg);} }
         @keyframes sideSpinHome { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+        @keyframes windSway { 0%,100%{ transform:rotate(-1.4deg) translateX(-1px);} 50%{ transform:rotate(1.4deg) translateX(1px);} }
         @keyframes floatY2 { 0%,100%{ transform:translateY(0px) rotate(4deg);} 50%{ transform:translateY(-14px) rotate(-4deg);} }
         @keyframes ctaGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,106,26,.55);} 50%{ box-shadow:0 0 0 10px rgba(255,106,26,0);} }
         @keyframes quickOrderShimmer { 0%{ background-position: 0% 0; } 100%{ background-position: 200% 0; } }
@@ -3556,7 +3593,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 <button
                   onClick={() => { logEvent('hero_menu'); go('tischmenu'); }}
                   className="h-12 flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
-                  style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)', animation: 'goldGlow 2.4s ease-in-out infinite' }}
+                  style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)', animation: windSway('goldGlow 2.4s ease-in-out infinite', 2.4, 0) }}
                 >
                   <span className="text-lg">📋</span> {t('navMenu')}
                   <ArrowRight size={16} />
@@ -3594,13 +3631,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               </>
             )}
             <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-              <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>
+              <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
               </button>
-              <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)' }}>
+              <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)', animation: windSway('', 2.8, 0.3) }}>
                 <span className="text-base flex-shrink-0">💡</span> <span className="truncate">{t('wishBoxNavLabel')}</span>
               </button>
-              <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)' }}>
+              <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)', animation: windSway('', 3.0, 0.45) }}>
                 <span className="text-base flex-shrink-0">🎲</span> <span className="truncate">{t('surpriseMeBtn')}</span>
               </button>
             </div>
