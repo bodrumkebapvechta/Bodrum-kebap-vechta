@@ -20,7 +20,7 @@
     }
   ],
   "crons": [
-    { "path": "/api/cron-montag", "schedule": "0 9 * * 1" },
+    { "path": "/api/cron-montag", "schedule": "30 8 * * 1" },
     { "path": "/api/cron-samstag", "schedule": "0 9 * * 6" }
   ]
 }
