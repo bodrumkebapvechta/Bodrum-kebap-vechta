@@ -235,7 +235,7 @@ const UI = {
   featGroupSub: { de: 'Mit Freunden zusammen bestellen', en: 'Order together with friends', tr: 'Arkadaşlarınla birlikte sipariş ver', ro: 'Comandă împreună cu prietenii', nl: 'Samen bestellen met vrienden' , sq: 'Porosit së bashku me shokët', ku: 'Bi hevalan re sifariş bide', pl: 'Zamawiaj razem ze znajomymi'},
   featLoyaltyTitle: { de: 'Treuekarte', en: 'Loyalty Card', tr: 'Sadakat Kartı', ro: 'Card de fidelitate', nl: 'Spaarkaart' , sq: 'Karta e besnikërisë', ku: 'Karta Dilsozîyê', pl: 'Karta lojalnościowa'},
   featSurpriseSub: { de: 'Lass dich zufällig inspirieren', en: 'Get a random inspiration', tr: 'Rastgele bir ilham al', ro: 'Inspiră-te aleatoriu', nl: 'Laat je willekeurig inspireren' , sq: 'Lëre veten të frymëzohesh rastësisht', ku: 'Bihêle bi rengekî tesadufî îlham bigirî', pl: 'Daj się zainspirować losowo'},
-  featLoyaltySub: { de: '8 Stempel sammeln, Gratis-Portion sichern', en: 'Collect 8 stamps, get a free item', tr: '8 damga topla, ücretsiz ürün kazan', ro: 'Colectează 8 ștampile, primești gratuit', nl: '8 stempels sparen, gratis item ontvangen' , sq: 'Mblidh 8 vula, siguro një racion falas', ku: '8 mor berhev bike, portîyoneke belaş bistîne', pl: 'Zbierz 8 pieczątek, zdobądź darmową porcję'},
+  featLoyaltySub: { de: '8 Stempel sammeln, Gratis-Pizza sichern', en: 'Collect 8 stamps, get a free pizza', tr: '8 damga topla, ücretsiz pizza kazan', ro: 'Colectează 8 ștampile, primești o pizza gratuită', nl: '8 stempels sparen, gratis pizza ontvangen' , sq: 'Mblidh 8 vula, siguro një picë falas', ku: '8 mor berhev bike, pizzayeke belaş bistîne', pl: 'Zbierz 8 pieczątek, zdobądź darmową pizzę'},
   footerImpressum: { de: 'Impressum', en: 'Legal notice', tr: 'Yasal Bilgiler', ro: 'Date companie', nl: 'Colofon' , sq: 'Të dhëna ligjore', ku: 'Agahiyên Hiqûqî', pl: 'Impressum'},
   footerDatenschutz: { de: 'Datenschutz', en: 'Privacy', tr: 'Gizlilik', ro: 'Confidențialitate', nl: 'Privacy' , sq: 'Privatësia', ku: 'Nihêniya Daneyan', pl: 'Polityka prywatności'},
   galleryTerrace: { de: 'UNSERE TERRASSE', en: 'OUR TERRACE', tr: 'TERASIMIZ', ro: 'TERASA NOASTRĂ', nl: 'ONS TERRAS' , sq: 'TARACA JONË', ku: 'TERASA ME', pl: 'NASZ TARAS'},
@@ -323,6 +323,25 @@ const UI = {
   loyaltyNoPhone: { de: 'Keine Telefonnummer nötig — deine Karte läuft über einen persönlichen Code.', en: 'No phone number needed — your card works via a personal code.', tr: 'Telefon numarası gerekmez — kartın kişisel bir kodla çalışır.', ro: 'Nu este nevoie de număr de telefon — cardul tău funcționează printr-un cod personal.', nl: 'Geen telefoonnummer nodig — je kaart werkt via een persoonlijke code.' , sq: 'Nuk nevojitet numër telefoni — karta jote funksionon me një kod personal.', ku: 'Ne hewceyî hejmara têlefonê ye — karta te bi koda şexsî dixebite.', pl: 'Numer telefonu niepotrzebny — Twoja karta działa dzięki osobistemu kodowi.'},
   codeDoesntExist: { de: 'Diesen Code gibt es nicht.', en: "This code doesn't exist.", tr: 'Bu kod mevcut değil.', ro: 'Acest cod nu există.', nl: 'Deze code bestaat niet.' , sq: 'Ky kod nuk ekziston.', ku: 'Ev kod nîne.', pl: 'Ten kod nie istnieje.'},
   showCodeForStamp: { de: 'Zeig deinen Code an der Kasse, damit wir einen Stempel hinzufügen können.', en: 'Show your code at the counter so we can add a stamp.', tr: 'Damga ekleyebilmemiz için kodunu kasada göster.', ro: 'Arată-ți codul la casă pentru a adăuga o ștampilă.', nl: 'Toon je code bij de kassa zodat we een stempel kunnen toevoegen.' , sq: 'Trego kodin tënd te arka që të shtojmë një vulë.', ku: 'Koda xwe li kasayê nîşan bide da ku em morekê zêde bikin.', pl: 'Pokaż swój kod przy kasie, abyśmy mogli dodać pieczątkę.'},
+  loyaltyTapToCopy: { de: 'Tippen zum Kopieren', en: 'Tap to copy', tr: 'Kopyalamak için dokun', ro: 'Atinge pentru a copia', nl: 'Tik om te kopiëren', sq: 'Prek për të kopjuar', ku: 'Bitikîne da ku jê hilgirî', pl: 'Dotknij, aby skopiować' },
+  loyaltyCopied: { de: 'Kopiert ✓', en: 'Copied ✓', tr: 'Kopyalandı ✓', ro: 'Copiat ✓', nl: 'Gekopieerd ✓', sq: 'U kopjua ✓', ku: 'Hate kopîkirin ✓', pl: 'Skopiowano ✓' },
+  loyaltyFullMsg: { de: '🎉 Deine Gratis-Pizza ist bereit! Zeig deinen Code an der Kasse.', en: '🎉 Your free pizza is ready! Show your code at the counter.', tr: '🎉 Ücretsiz pizzan hazır! Kodunu kasada göster.', ro: '🎉 Pizza ta gratuită e gata! Arată codul la casă.', nl: '🎉 Je gratis pizza is klaar! Toon je code bij de kassa.', sq: '🎉 Pica jote falas është gati! Trego kodin te arka.', ku: '🎉 Pizza te ya belaş amade ye! Koda xwe li kasayê nîşan bide.', pl: '🎉 Twoja darmowa pizza jest gotowa! Pokaż kod przy kasie.' },
+  loyaltyHaveCode: { de: 'Ich habe schon einen Code', en: 'I already have a code', tr: 'Zaten bir kodum var', ro: 'Am deja un cod', nl: 'Ik heb al een code', sq: 'Kam tashmë një kod', ku: 'Berê koda min heye', pl: 'Mam już kod' },
+  loyaltyConfirmCode: { de: 'Bestätigen', en: 'Confirm', tr: 'Onayla', ro: 'Confirmă', nl: 'Bevestigen', sq: 'Konfirmo', ku: 'Piştrast bike', pl: 'Potwierdź' },
+  loyaltyCancel: { de: 'Abbrechen', en: 'Cancel', tr: 'Vazgeç', ro: 'Anulează', nl: 'Annuleren', sq: 'Anulo', ku: 'Betal bike', pl: 'Anuluj' },
+  loyaltyInvalidCode: { de: 'Format: BK-1234', en: 'Format: BK-1234', tr: 'Format: BK-1234', ro: 'Format: BK-1234', nl: 'Formaat: BK-1234', sq: 'Formati: BK-1234', ku: 'Format: BK-1234', pl: 'Format: BK-1234' },
+  loyaltyCodeNotFound: { de: 'Code nicht gefunden', en: 'Code not found', tr: 'Kod bulunamadı', ro: 'Cod negăsit', nl: 'Code niet gevonden', sq: 'Kodi nuk u gjet', ku: 'Kod nehat dîtin', pl: 'Nie znaleziono kodu' },
+  loyaltyCodeTaken: { de: 'Dieser Code ist bereits vergeben — wähle einen anderen.', en: 'This code is already taken — choose another one.', tr: 'Bu kod zaten alınmış — başka bir tane seç.', ro: 'Acest cod este deja folosit — alege altul.', nl: 'Deze code is al in gebruik — kies een andere.', sq: 'Ky kod është marrë — zgjidh një tjetër.', ku: 'Ev kod berê hatiye girtin — yekî din hilbijêre.', pl: 'Ten kod jest już zajęty — wybierz inny.' },
+  loyaltyCreateOwnCode: { de: '✏️ Eigenen Code erstellen', en: '✏️ Create your own code', tr: '✏️ Kendi kodunu oluştur', ro: '✏️ Creează-ți propriul cod', nl: '✏️ Maak je eigen code', sq: '✏️ Krijo kodin tënd', ku: '✏️ Koda xwe ya taybet çêke', pl: '✏️ Utwórz własny kod' },
+  loyaltyCreateBtn: { de: 'Code erstellen', en: 'Create code', tr: 'Kodu oluştur', ro: 'Creează codul', nl: 'Code aanmaken', sq: 'Krijo kodin', ku: 'Kodê çêke', pl: 'Utwórz kod' },
+  loyaltyCustomHint: { de: 'Wähle 4 Zeichen (Zahlen und/oder Buchstaben) für deinen persönlichen Code.', en: 'Choose 4 characters (numbers and/or letters) for your personal code.', tr: 'Kişisel kodun için 4 karakter (rakam ve/veya harf) seç.', ro: 'Alege 4 caractere (cifre și/sau litere) pentru codul tău personal.', nl: 'Kies 4 tekens (cijfers en/of letters) voor je persoonlijke code.', sq: 'Zgjidh 4 karaktere (numra dhe/ose shkronja) për kodin tënd personal.', ku: '4 tîpan (hejmar û/an tîp) ji bo koda xwe ya şexsî hilbijêre.', pl: 'Wybierz 4 znaki (cyfry i/lub litery) dla swojego osobistego kodu.' },
+  loyaltyEnterHint: { de: 'Gib deinen bestehenden Code ein, um deine Karte auf diesem Gerät zu laden.', en: 'Enter your existing code to load your card on this device.', tr: 'Kartını bu cihazda yüklemek için mevcut kodunu gir.', ro: 'Introdu codul tău existent pentru a-ți încărca cardul pe acest dispozitiv.', nl: 'Voer je bestaande code in om je kaart op dit apparaat te laden.', sq: 'Fut kodin tënd ekzistues për të ngarkuar kartën tënde në këtë pajisje.', ku: 'Koda xwe ya heyî binivîse da ku karta xwe li ser vê amûrê bar bikî.', pl: 'Wpisz swój istniejący kod, aby wczytać kartę na tym urządzeniu.' },
+  loyaltyHowItWorksTitle: { de: 'So funktioniert\'s', en: 'How it works', tr: 'Nasıl çalışır', ro: 'Cum funcționează', nl: 'Zo werkt het', sq: 'Si funksionon', ku: 'Ew çawa dixebite', pl: 'Jak to działa' },
+  loyaltyRule1: { de: 'Bei jedem Besuch mit einer Bestellung gibt es 1 Stempel.', en: '1 stamp for every visit with an order.', tr: 'Sipariş verdiğin her ziyarette 1 damga kazanırsın.', ro: '1 ștampilă la fiecare vizită cu o comandă.', nl: '1 stempel bij elk bezoek met een bestelling.', sq: '1 vulë për çdo vizitë me porosi.', ku: 'Ji bo her serdana bi sifarişê 1 mor.', pl: '1 pieczątka za każdą wizytę z zamówieniem.' },
+  loyaltyRule2: { de: '8 Stempel voll = 1 Pizza gratis, deiner Wahl.', en: '8 stamps full = 1 free pizza of your choice.', tr: '8 damga tamamlanınca = seçtiğin 1 ücretsiz pizza.', ro: '8 ștampile complete = 1 pizza gratuită, la alegere.', nl: '8 stempels vol = 1 gratis pizza naar keuze.', sq: '8 vula të plota = 1 picë falas sipas zgjedhjes.', ku: '8 mor tijî = 1 pizza belaş, li gorî hilbijartina te.', pl: '8 pełnych pieczątek = 1 darmowa pizza do wyboru.' },
+  loyaltyRule3: { de: 'Kein Telefon, keine E-Mail — nur dein persönlicher Code.', en: 'No phone, no email — just your personal code.', tr: 'Telefon yok, e-posta yok — sadece kişisel kodun.', ro: 'Fără telefon, fără email — doar codul tău personal.', nl: 'Geen telefoon, geen e-mail — alleen jouw persoonlijke code.', sq: 'Pa telefon, pa email — vetëm kodi yt personal.', ku: 'Ne têlefon, ne e-name — tenê koda te ya şexsî.', pl: 'Bez telefonu, bez e-maila — tylko Twój osobisty kod.' },
+  loyaltyRule4: { de: 'Merk dir deinen Code gut — er ist der einzige Zugang zu deiner Karte.', en: 'Remember your code well — it\'s the only way to access your card.', tr: 'Kodunu iyi hatırla — kartına ulaşmanın tek yolu bu.', ro: 'Ține minte bine codul — este singura cale de acces la cardul tău.', nl: 'Onthoud je code goed — het is de enige toegang tot je kaart.', sq: 'Mbaje mend kodin mirë — është mënyra e vetme për të hyrë në kartën tënde.', ku: 'Koda xwe baş bi bîr bîne — ew yekane rêya gihîştina kartê ye.', pl: 'Zapamiętaj dobrze swój kod — to jedyny dostęp do Twojej karty.' },
+  loyaltyRule5: { de: 'Nach dem Einlösen startet automatisch eine neue Runde (0/8).', en: 'After redeeming, a new round starts automatically (0/8).', tr: 'Ödül kullanıldıktan sonra otomatik olarak yeni bir tur başlar (0/8).', ro: 'După utilizare, o rundă nouă începe automat (0/8).', nl: 'Na het inwisselen begint automatisch een nieuwe ronde (0/8).', sq: 'Pas përdorimit, fillon automatikisht një raund i ri (0/8).', ku: 'Piştî bikaranînê, gerek nû bixweber dest pê dike (0/8).', pl: 'Po odebraniu automatycznie zaczyna się nowa runda (0/8).' },
   dailyRecommendation: { de: 'TAGESEMPFEHLUNG', en: "TODAY'S PICKS", tr: 'GÜNÜN ÖNERİSİ', ro: 'RECOMANDAREA ZILEI', nl: 'AANBEVELING VAN DE DAG' , sq: 'REKOMANDIMI I DITËS', ku: 'PÊŞNIYARA ROJÊ', pl: 'POLECANE DNIA'},
   onlyLeft: { de: 'Nur noch', en: 'Only', tr: 'Sadece', ro: 'Doar', nl: 'Nog maar' , sq: 'Vetëm edhe', ku: 'Tenê hîn', pl: 'Zostało tylko'},
   minutesLeft: { de: 'Minuten!', en: 'minutes left!', tr: 'dakika kaldı!', ro: 'minute rămase!', nl: 'minuten over!' , sq: 'minuta!', ku: 'deqîqe!', pl: 'minut!'},
@@ -372,7 +391,7 @@ const UI = {
   yourCodeLabel: { de: 'DEIN CODE', en: 'YOUR CODE', tr: 'KODUN', ro: 'CODUL TĂU', nl: 'JOUW CODE' , sq: 'KODI YT', ku: 'KODA TE', pl: 'TWÓJ KOD'},
   freeItemEarned: { de: '🎉 Gratis-Portion verdient!', en: '🎉 Free item earned!', tr: '🎉 Ücretsiz ürün kazandın!', ro: '🎉 Produs gratuit câștigat!', nl: '🎉 Gratis item verdiend!' , sq: '🎉 Fitove një racion falas!', ku: '🎉 Te portîyoneke belaş bi dest xist!', pl: '🎉 Zdobyto darmową porcję!'},
   stampsUntilFreePrefix: { de: 'Noch', en: 'Only', tr: 'Sadece', ro: 'Mai', nl: 'Nog' , sq: 'Edhe', ku: 'Hîn', pl: 'Jeszcze'},
-  stampsUntilFreeSuffix: { de: 'Stempel bis zur Gratis-Portion', en: 'stamps until your free item', tr: 'damga kaldı, ücretsiz ürün kazanacaksın', ro: 'ștampile până la produsul gratuit', nl: 'stempels tot je gratis item' , sq: 'vula deri te racioni falas', ku: 'mor heta portîyona belaş', pl: 'pieczątek do darmowej porcji'},
+  stampsUntilFreeSuffix: { de: 'Stempel bis zur Gratis-Pizza', en: 'stamps until your free pizza', tr: 'damga kaldı, ücretsiz pizza kazanacaksın', ro: 'ștampile până la pizza gratuită', nl: 'stempels tot je gratis pizza' , sq: 'vula deri te pica falas', ku: 'mor heta pizza belaş', pl: 'pieczątek do darmowej pizzy'},
   noteExampleCheese: { de: 'Anmerkung, z.B. ohne Käse', en: 'Note, e.g. no cheese', tr: 'Not, örn. peynirsiz', ro: 'Observație, ex. fără brânză', nl: 'Opmerking, bijv. zonder kaas' , sq: 'Shënim, p.sh. pa djathë', ku: 'Not, mînak bêyî penîr', pl: 'Uwaga, np. bez sera'},
   noteExampleOnions: { de: 'Anmerkung, z.B. ohne Zwiebeln', en: 'Note, e.g. no onions', tr: 'Not, örn. soğansız', ro: 'Observație, ex. fără ceapă', nl: 'Opmerking, bijv. zonder uien' , sq: 'Shënim, p.sh. pa qepë', ku: 'Not, mînak bêyî pîvaz', pl: 'Uwaga, np. bez cebuli'},
   noteOptional: { de: 'Anmerkung (optional)', en: 'Note (optional)', tr: 'Not (isteğe bağlı)', ro: 'Observație (opțional)', nl: 'Opmerking (optioneel)' , sq: 'Shënim (opsionale)', ku: 'Not (vebijarkî)', pl: 'Uwaga (opcjonalnie)'},
@@ -1340,6 +1359,36 @@ async function sendOwnerPushNotification(title, message, url) {
     });
   } catch {}
 }
+
+const LOYALTY_TARGET = 8;
+const LOYALTY_CODE_RE = /^BK-[A-Z0-9]{4}$/;
+function generateLoyaltyCode() {
+  const digits = String(Math.floor(1000 + Math.random() * 9000));
+  return `BK-${digits}`;
+}
+async function getLoyaltyCard(code) {
+  const r = await safeGet(`loyalty:${code}`);
+  return r || null;
+}
+async function ensureLoyaltyCard(code) {
+  const existing = await getLoyaltyCard(code);
+  if (existing) return existing;
+  const fresh = { stamps: 0, createdAt: Date.now() };
+  await safeSet(`loyalty:${code}`, fresh);
+  return fresh;
+}
+async function addLoyaltyStamp(code) {
+  const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
+  const updated = { ...card, stamps: Math.min(LOYALTY_TARGET, card.stamps + 1), lastStampAt: Date.now() };
+  await safeSet(`loyalty:${code}`, updated);
+  return updated;
+}
+async function redeemLoyaltyCard(code) {
+  const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
+  const updated = { ...card, stamps: 0, lastRedeemedAt: Date.now(), redeemedCount: (card.redeemedCount || 0) + 1 };
+  await safeSet(`loyalty:${code}`, updated);
+  return updated;
+}
 async function isPushTriggerEnabled(key) {
   try {
     const t = await safeGet('siteconfig:pushTriggers');
@@ -2121,7 +2170,7 @@ function useLiveClock() {
 // diese eine Funktion steuert das überall im Code. Kein manueller Eingriff
 // mehr nötig, sobald das Datum erreicht ist, schaltet alles automatisch um.
 function isTuesdayOpenNow(now) {
-  const cutoff = new Date(2026, 8, 8); // Monat ist 0-indiziert: 8 = September
+  const cutoff = new Date(2026, 8, 2); // Monat ist 0-indiziert: 8 = September
   const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   return d >= cutoff;
 }
@@ -2856,6 +2905,160 @@ function WishModal({ lang, t, onClose }) {
   );
 }
 
+function LoyaltyModal({ lang, t, onClose }) {
+  const [code, setCode] = useState(null);
+  const [card, setCard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState('view'); // view | enter | custom
+  const [inputValue, setInputValue] = useState('');
+  const [inputError, setInputError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(true);
+
+  const loadCode = async (c) => {
+    setLoading(true);
+    const cc = await ensureLoyaltyCard(c);
+    setCode(c);
+    setCard(cc);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    let saved = null;
+    try { saved = localStorage.getItem('bk_loyalty_code'); } catch {}
+    if (!saved) {
+      saved = generateLoyaltyCode();
+      try { localStorage.setItem('bk_loyalty_code', saved); } catch {}
+    }
+    loadCode(saved);
+  }, []);
+
+  const normalizeSuffix = (v) => v.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+
+  const handleEnterCode = async () => {
+    const v = `BK-${normalizeSuffix(inputValue)}`;
+    if (!LOYALTY_CODE_RE.test(v)) { setInputError(t('loyaltyInvalidCode')); return; }
+    const existing = await getLoyaltyCard(v);
+    if (!existing) { setInputError(t('loyaltyCodeNotFound')); return; }
+    try { localStorage.setItem('bk_loyalty_code', v); } catch {}
+    setMode('view'); setInputError(''); setInputValue('');
+    loadCode(v);
+  };
+
+  const handleCreateCustom = async () => {
+    const v = `BK-${normalizeSuffix(inputValue)}`;
+    if (!LOYALTY_CODE_RE.test(v)) { setInputError(t('loyaltyInvalidCode')); return; }
+    const existing = await getLoyaltyCard(v);
+    if (existing) { setInputError(t('loyaltyCodeTaken')); return; }
+    try { localStorage.setItem('bk_loyalty_code', v); } catch {}
+    setMode('view'); setInputError(''); setInputValue('');
+    loadCode(v);
+  };
+
+  const copyCode = () => {
+    if (!code) return;
+    try { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {}
+  };
+
+  const stamps = card?.stamps || 0;
+  const isFull = stamps >= LOYALTY_TARGET;
+
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={onClose}>
+      <div
+        className="w-full max-w-sm rounded-3xl p-6 max-h-[88vh] overflow-y-auto"
+        style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 30px 70px rgba(21,56,38,.5)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-1">
+          <div className="font-black text-base" style={{ color: GOLD }}>🎟️ {t('titleLoyalty')}</div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.1)' }}><X size={15} color="#fff" /></button>
+        </div>
+        <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('loyaltyNoPhone')}</p>
+
+        {loading ? (
+          <div className="text-center py-8"><p className="text-sm font-bold" style={{ color: '#a89878' }}>…</p></div>
+        ) : mode === 'enter' || mode === 'custom' ? (
+          <div className="flex flex-col gap-2.5">
+            <p className="text-xs font-semibold text-center mb-1" style={{ color: '#a89878' }}>
+              {mode === 'custom' ? t('loyaltyCustomHint') : t('loyaltyEnterHint')}
+            </p>
+            <div className="flex items-center justify-center gap-1">
+              <span className="font-black text-lg" style={{ color: GOLD }}>BK-</span>
+              <input
+                value={inputValue}
+                onChange={(e) => { setInputValue(normalizeSuffix(e.target.value)); setInputError(''); }}
+                placeholder="1234"
+                maxLength={4}
+                className="px-3.5 py-3 rounded-lg text-lg font-black outline-none text-center tracking-widest"
+                style={{ background: CREAM, color: GREEN, border: 'none', width: 110 }}
+              />
+            </div>
+            {inputError && <p className="text-xs font-bold text-center" style={{ color: '#e08a8a' }}>{inputError}</p>}
+            <button onClick={mode === 'custom' ? handleCreateCustom : handleEnterCode} className="px-5 py-3 rounded-full font-bold text-sm text-white mt-1" style={{ background: ORANGE }}>
+              {mode === 'custom' ? t('loyaltyCreateBtn') : t('loyaltyConfirmCode')}
+            </button>
+            <button onClick={() => { setMode('view'); setInputError(''); setInputValue(''); }} className="text-xs font-semibold underline" style={{ color: '#a89878' }}>{t('loyaltyCancel')}</button>
+          </div>
+        ) : (
+          <>
+            <button onClick={copyCode} className="w-full rounded-2xl py-4 mb-2 text-center" style={{ background: 'rgba(255,246,234,.08)', border: '1.5px dashed rgba(255,199,56,.4)' }}>
+              <div className="text-[10px] font-black tracking-widest mb-1" style={{ color: '#a89878' }}>{copied ? t('loyaltyCopied') : t('loyaltyTapToCopy')}</div>
+              <div className="font-black text-2xl tracking-widest" style={{ color: GOLD }}>{code}</div>
+            </button>
+            <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline w-full text-center mb-4" style={{ color: '#a89878' }}>{t('loyaltyCreateOwnCode')}</button>
+
+            {/* Stempelkarte */}
+            <div className="rounded-2xl p-4 mb-3" style={{ background: 'rgba(255,246,234,.06)', border: '1px solid rgba(255,199,56,.2)' }}>
+              <div className="grid grid-cols-4 gap-2.5 mb-3">
+                {Array.from({ length: LOYALTY_TARGET }).map((_, i) => {
+                  const filled = i < stamps;
+                  return (
+                    <div key={i} className="aspect-square rounded-full flex items-center justify-center text-base"
+                      style={filled
+                        ? { background: `radial-gradient(circle at 35% 30%, #fff5cf, ${GOLD})`, boxShadow: '0 3px 10px rgba(255,199,56,.5)', animation: i === stamps - 1 ? 'goldGlow 1.6s ease-in-out 2' : 'none' }
+                        : { background: 'rgba(255,255,255,.05)', border: '1.5px dashed rgba(255,255,255,.25)' }}>
+                      {filled ? '🍕' : <span style={{ color: 'rgba(255,255,255,.25)', fontSize: 11, fontWeight: 900 }}>{i + 1}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.1)' }}>
+                <div className="h-full rounded-full" style={{ width: `${(stamps / LOYALTY_TARGET) * 100}%`, background: `linear-gradient(90deg, ${ORANGE}, ${GOLD})`, transition: 'width .4s ease' }} />
+              </div>
+            </div>
+
+            <p className="text-center text-sm font-bold mb-4" style={{ color: isFull ? '#7ed99b' : CREAM }}>
+              {isFull ? t('loyaltyFullMsg') : `${t('stampsUntilFreePrefix')} ${LOYALTY_TARGET - stamps} ${t('stampsUntilFreeSuffix')}`}
+            </p>
+
+            <p className="text-xs text-center font-medium mb-3" style={{ color: '#a89878' }}>{t('showCodeForStamp')}</p>
+
+            <div className="rounded-2xl p-4 mb-3" style={{ background: 'rgba(255,199,56,.08)', border: '1px solid rgba(255,199,56,.35)' }}>
+              <button onClick={() => setInfoOpen((v) => !v)} className="w-full flex items-center justify-between mb-2">
+                <span className="text-sm font-black" style={{ color: GOLD }}>ℹ️ {t('loyaltyHowItWorksTitle')}</span>
+                <span style={{ color: GOLD, transform: infoOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
+              </button>
+              {infoOpen && (
+                <div className="text-[12px] leading-relaxed" style={{ color: CREAM }}>
+                  <p className="mb-2">🥙 {t('loyaltyRule1')}</p>
+                  <p className="mb-2">🍕 {t('loyaltyRule2')}</p>
+                  <p className="mb-2">📱 {t('loyaltyRule3')}</p>
+                  <p className="mb-2">🔑 {t('loyaltyRule4')}</p>
+                  <p>♻️ {t('loyaltyRule5')}</p>
+                </div>
+              )}
+            </div>
+
+            <button onClick={() => setMode('enter')} className="text-xs font-semibold underline w-full text-center" style={{ color: '#a89878' }}>{t('loyaltyHaveCode')}</button>
+          </>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function DistanceWidget({ lang, inline }) {
   const [state, setState] = useState('idle'); // idle | loading | done | error
   const [result, setResult] = useState(null);
@@ -3307,6 +3510,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [wishModalOpen, setWishModalOpen] = useState(false);
+  const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
   const [homePriceOverrides, setHomePriceOverrides] = useState({});
   const [homePhotoOverrides, setHomePhotoOverrides] = useState({});
@@ -3488,6 +3692,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {ORDERING_ENABLED ? <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => setWishModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>💡 {t('wishBoxNavLabel')}</button>
+            <button onClick={() => setLoyaltyModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>🎟️ {t('titleLoyalty')}</button>
             <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
@@ -3526,6 +3731,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 { onClick: () => (ORDERING_ENABLED ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
                 { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
+                { onClick: () => { setNavOpen(false); setLoyaltyModalOpen(true); }, icon: '🎟️', label: t('titleLoyalty') },
               ].map((item, i) => (
                 <button key={i} onClick={item.onClick} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
                   <span className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>{item.icon}</span>
@@ -3784,6 +3990,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       })()}
 
       {wishModalOpen && <WishModal lang={lang} t={t} onClose={() => setWishModalOpen(false)} />}
+      {loyaltyModalOpen && <LoyaltyModal lang={lang} t={t} onClose={() => setLoyaltyModalOpen(false)} />}
       {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
@@ -6084,6 +6291,82 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   );
 }
 
+function LoyaltyAdminPanel() {
+  const [search, setSearch] = useState('');
+  const [result, setResult] = useState(null); // { code, card } | 'notfound' | null
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const doSearch = async () => {
+    const raw = search.trim().toUpperCase();
+    if (!raw) return;
+    const code = raw.startsWith('BK-') ? raw : `BK-${raw.replace(/[^A-Z0-9]/g, '')}`;
+    setBusy(true); setMsg('');
+    const card = await getLoyaltyCard(code);
+    setResult(card ? { code, card } : 'notfound');
+    setBusy(false);
+  };
+
+  const addStamp = async () => {
+    if (!result || result === 'notfound') return;
+    setBusy(true);
+    const updated = await addLoyaltyStamp(result.code);
+    setResult({ code: result.code, card: updated });
+    setMsg(updated.stamps >= LOYALTY_TARGET ? '🎉 Karte ist voll!' : 'Stempel hinzugefügt ✓');
+    setBusy(false);
+  };
+
+  const redeem = async () => {
+    if (!result || result === 'notfound') return;
+    if (!confirm(`Gratis-Portion für ${result.code} einlösen? Zähler wird auf 0 zurückgesetzt.`)) return;
+    setBusy(true);
+    const updated = await redeemLoyaltyCard(result.code);
+    setResult({ code: result.code, card: updated });
+    setMsg('Eingelöst ✓ — neue Runde gestartet');
+    setBusy(false);
+  };
+
+  return (
+    <div>
+      <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Code des Kunden eingeben (z. B. BK-4821 oder nur 4821), um einen Stempel hinzuzufügen oder die Gratis-Portion einzulösen.</p>
+      <div className="flex gap-2 mb-3">
+        <input
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setResult(null); setMsg(''); }}
+          onKeyDown={(e) => e.key === 'Enter' && doSearch()}
+          placeholder="BK-4821"
+          className="flex-1 px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center tracking-widest"
+          style={{ background: '#f7f0e2', color: GREEN }}
+        />
+        <button onClick={doSearch} disabled={busy} className="px-4 py-2.5 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>Suchen</button>
+      </div>
+
+      {result === 'notfound' && <p className="text-center text-xs font-bold" style={{ color: '#c0392b' }}>Kein Kunde mit diesem Code gefunden.</p>}
+
+      {result && result !== 'notfound' && (
+        <div className="rounded-2xl p-4" style={{ background: '#f7f0e2' }}>
+          <div className="text-center font-black text-lg tracking-widest mb-2" style={{ color: GREEN }}>{result.code}</div>
+          <div className="flex justify-center gap-1 mb-3">
+            {Array.from({ length: LOYALTY_TARGET }).map((_, i) => (
+              <div key={i} className="w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: i < result.card.stamps ? GOLD : '#fff', border: '1px solid #e3d5bd' }}>
+                {i < result.card.stamps ? '🥙' : ''}
+              </div>
+            ))}
+          </div>
+          <div className="text-center text-xs font-bold mb-3" style={{ color: '#8a7c62' }}>{result.card.stamps} / {LOYALTY_TARGET} Stempel</div>
+          {result.card.stamps >= LOYALTY_TARGET ? (
+            <button onClick={redeem} disabled={busy} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>🎉 Einlösen</button>
+          ) : (
+            <button onClick={addStamp} disabled={busy} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>+1 Stempel</button>
+          )}
+        </div>
+      )}
+
+      {msg && <p className="text-center text-xs font-bold mt-2.5" style={{ color: '#2d6a4f' }}>{msg}</p>}
+    </div>
+  );
+}
+
 function AnimatedLock({ open }) {
   return (
     <svg width="32" height="32" viewBox="0 0 34 34" style={{ overflow: 'visible' }}>
@@ -7687,9 +7970,18 @@ function StaffPanelView({ back }) {
                   <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💡 KUNDENWÜNSCHE</div>
                   {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
                   {wishes.slice(0, 30).map((w) => (
-                    <div key={w.key} className="py-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
-                      <div className="text-sm font-semibold" style={{ color: GREEN }}>{w.value.text}</div>
-                      <div className="text-[10px] font-bold mt-0.5" style={{ color: '#a4906c' }}>{w.value.name ? w.value.name + ' · ' : ''}{new Date(w.value.ts).toLocaleString('de-DE')}</div>
+                    <div key={w.key} className="py-2 flex items-start justify-between gap-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold" style={{ color: GREEN }}>{w.value.text}</div>
+                        <div className="text-[10px] font-bold mt-0.5" style={{ color: '#a4906c' }}>{w.value.name ? w.value.name + ' · ' : ''}{new Date(w.value.ts).toLocaleString('de-DE')}</div>
+                      </div>
+                      <button
+                        onClick={() => { safeDeleteKey(w.key); setWishes((prev) => prev.filter((x) => x.key !== w.key)); }}
+                        className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ background: '#f7ded9' }}
+                      >
+                        <X size={12} color={CHILI} />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -7809,13 +8101,24 @@ function StaffPanelView({ back }) {
             <div className="px-5">
               <button
                 onClick={() => setTischAdminOpen(true)}
-                className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-5"
+                className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-3"
                 style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
               >
                 <span className="text-2xl">🍽️</span>
                 <div className="min-w-0">
                   <div className="font-black text-sm text-white truncate">Speisekarte bearbeiten →</div>
                   <div className="text-[11px] text-white/80 truncate">Preise, Namen, Fotos, neue Produkte, löschen</div>
+                </div>
+              </button>
+              <button
+                onClick={() => setTab('photos')}
+                className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-5"
+                style={{ background: GREEN, boxShadow: '0 8px 20px rgba(21,56,38,.25)' }}
+              >
+                <span className="text-2xl">📷</span>
+                <div className="min-w-0">
+                  <div className="font-black text-sm text-white truncate">Fotos verwalten →</div>
+                  <div className="text-[11px] text-white/80 truncate">Galerie, Foto-Upload, Ankündigung-Bilder</div>
                 </div>
               </button>
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
@@ -7928,6 +8231,14 @@ function StaffPanelView({ back }) {
               </div>
             </div>
           )}
+          {tab === 'loyalty' && (
+            <div className="px-5">
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎟️ TREUEKARTEN</div>
+              <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+                <LoyaltyAdminPanel />
+              </div>
+            </div>
+          )}
           {tab === 'photos' && (
             <div className="px-5">
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📷 {t('staffPhotosTab').toUpperCase()}</div>
@@ -8030,12 +8341,13 @@ function StaffPanelView({ back }) {
               {(() => {
                 const staffTabs = [
                   { key: 'messages', icon: '💬', label: 'Nachrichten' },
-                  { key: 'photos', icon: '📷', label: t('staffPhotosTab') },
+                  { key: 'loyalty', icon: '🎟️', label: 'Treuekarten' },
                   { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                   { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                   { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
                 ];
-                const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === tab));
+                const effectiveTab = tab === 'photos' ? 'menu' : tab;
+                const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
                 return (
                   <>
                     <div className="flex items-center h-full">
