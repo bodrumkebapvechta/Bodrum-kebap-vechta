@@ -1782,19 +1782,33 @@ function getWeatherEffect(code, isDay, windKmh) {
 // Windschwanken der Buttons) — ein einziger Fetch für alle, dank des
 // modulweiten Caches (5 Minuten frisch, damit sich das Wetter zeitnah
 // aktualisiert statt 20 Minuten lang veraltet zu bleiben).
+const weatherSubscribers = new Set();
+let weatherIntervalId = null;
+function fetchWeatherNow() {
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VECHTA_LAT}&longitude=${VECHTA_LON}&current=weather_code,is_day,wind_speed_10m&timezone=Europe%2FBerlin`)
+    .then((r) => r.json())
+    .then((d) => {
+      const eff = getWeatherEffect(d?.current?.weather_code, d?.current?.is_day === 1, d?.current?.wind_speed_10m);
+      weatherCache = { data: eff, fetchedAt: Date.now() };
+      weatherSubscribers.forEach((fn) => fn(eff));
+    })
+    .catch(() => {});
+}
 function useWeather() {
   const [data, setData] = useState(weatherCache.data);
   useEffect(() => {
-    const fresh = weatherCache.data && Date.now() - weatherCache.fetchedAt < 1 * 60 * 1000;
-    if (fresh) { setData(weatherCache.data); return; }
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VECHTA_LAT}&longitude=${VECHTA_LON}&current=weather_code,is_day,wind_speed_10m&timezone=Europe%2FBerlin`)
-      .then((r) => r.json())
-      .then((d) => {
-        const eff = getWeatherEffect(d?.current?.weather_code, d?.current?.is_day === 1, d?.current?.wind_speed_10m);
-        weatherCache = { data: eff, fetchedAt: Date.now() };
-        setData(eff);
-      })
-      .catch(() => {});
+    weatherSubscribers.add(setData);
+    const fresh = weatherCache.data && Date.now() - weatherCache.fetchedAt < 60 * 1000;
+    if (fresh) setData(weatherCache.data); else fetchWeatherNow();
+    // Ein einziger geteilter Timer für die ganze Seite (egal wie viele
+    // Komponenten den Hook nutzen) — alle 60s neu prüfen, solange die Seite
+    // geöffnet bleibt. Open-Meteo aktualisiert "current" ohnehin nicht
+    // schneller, öfter fragen würde nur unnötig Akku/Datenvolumen kosten.
+    if (!weatherIntervalId) weatherIntervalId = setInterval(fetchWeatherNow, 60 * 1000);
+    return () => {
+      weatherSubscribers.delete(setData);
+      if (weatherSubscribers.size === 0 && weatherIntervalId) { clearInterval(weatherIntervalId); weatherIntervalId = null; }
+    };
   }, []);
   return data;
 }
