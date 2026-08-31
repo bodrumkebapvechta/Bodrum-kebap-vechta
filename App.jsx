@@ -233,7 +233,7 @@ const UI = {
   builderQuickLabel: { de: 'Döner, Pizza & Pasta selbst bauen', en: 'Build your Döner, Pizza & Pasta', tr: 'Döner, Pizza & Pasta Oluştur', ro: 'Construiește Kebap, Pizza & Pasta', nl: 'Bouw je Döner, Pizza & Pasta' , sq: 'Krijo vetë Döner, Picë & Pastë', ku: 'Dönerê, Pizzayê & Pastayê bi xwe çêke', pl: 'Zbuduj sam(a) kebab, pizzę i makaron'},
   featGroupTitle: { de: 'Gruppenbestellung', en: 'Group Order', tr: 'Grup Siparişi', ro: 'Comandă de grup', nl: 'Groepsbestelling' , sq: 'Porosi në grup', ku: 'Sifarişa Komê', pl: 'Zamówienie grupowe'},
   featGroupSub: { de: 'Mit Freunden zusammen bestellen', en: 'Order together with friends', tr: 'Arkadaşlarınla birlikte sipariş ver', ro: 'Comandă împreună cu prietenii', nl: 'Samen bestellen met vrienden' , sq: 'Porosit së bashku me shokët', ku: 'Bi hevalan re sifariş bide', pl: 'Zamawiaj razem ze znajomymi'},
-  featLoyaltyTitle: { de: 'Treuekarte', en: 'Loyalty Card', tr: 'Sadakat Kartı', ro: 'Card de fidelitate', nl: 'Spaarkaart' , sq: 'Karta e besnikërisë', ku: 'Karta Dilsozîyê', pl: 'Karta lojalnościowa'},
+  featLoyaltyTitle: { de: 'Stempelkarte', en: 'Stamp Card', tr: 'Damga Kartı', ro: 'Card de ștampile', nl: 'Stempelkaart' , sq: 'Karta e vulave', ku: 'Karta Moran', pl: 'Karta z pieczątkami'},
   featSurpriseSub: { de: 'Lass dich zufällig inspirieren', en: 'Get a random inspiration', tr: 'Rastgele bir ilham al', ro: 'Inspiră-te aleatoriu', nl: 'Laat je willekeurig inspireren' , sq: 'Lëre veten të frymëzohesh rastësisht', ku: 'Bihêle bi rengekî tesadufî îlham bigirî', pl: 'Daj się zainspirować losowo'},
   featLoyaltySub: { de: '8 Stempel sammeln, Gratis-Pizza sichern', en: 'Collect 8 stamps, get a free pizza', tr: '8 damga topla, ücretsiz pizza kazan', ro: 'Colectează 8 ștampile, primești o pizza gratuită', nl: '8 stempels sparen, gratis pizza ontvangen' , sq: 'Mblidh 8 vula, siguro një picë falas', ku: '8 mor berhev bike, pizzayeke belaş bistîne', pl: 'Zbierz 8 pieczątek, zdobądź darmową pizzę'},
   footerImpressum: { de: 'Impressum', en: 'Legal notice', tr: 'Yasal Bilgiler', ro: 'Date companie', nl: 'Colofon' , sq: 'Të dhëna ligjore', ku: 'Agahiyên Hiqûqî', pl: 'Impressum'},
@@ -264,7 +264,7 @@ const UI = {
   titleBuilder: { de: 'DEIN DÖNER', en: 'YOUR DÖNER', tr: 'SENİN DÖNERİN', ro: 'KEBAP-UL TĂU', nl: 'JOUW DÖNER' , sq: 'DÖNERI YT', ku: 'DÖNERÊ TE', pl: 'TWÓJ KEBAB'},
   titleGroup: { de: 'GRUPPENBESTELLUNG', en: 'GROUP ORDER', tr: 'GRUP SİPARİŞİ', ro: 'COMANDĂ DE GRUP', nl: 'GROEPSBESTELLING' , sq: 'POROSI NË GRUP', ku: 'SIFARIŞA KOMÊ', pl: 'ZAMÓWIENIE GRUPOWE'},
   titleStaff: { de: 'PERSONAL-BEREICH', en: 'STAFF AREA', tr: 'PERSONEL ALANI', ro: 'ZONĂ PERSONAL', nl: 'PERSONEELSGEDEELTE' , sq: 'ZONA E STAFIT', ku: 'QADA KARMENDAN', pl: 'STREFA PERSONELU'},
-  titleLoyalty: { de: 'TREUEKARTE', en: 'LOYALTY CARD', tr: 'SADAKAT KARTI', ro: 'CARD DE FIDELITATE', nl: 'SPAARKAART' , sq: 'KARTA E BESNIKËRISË', ku: 'KARTA DILSOZÎYÊ', pl: 'KARTA LOJALNOŚCIOWA'},
+  titleLoyalty: { de: 'STEMPELKARTE', en: 'STAMP CARD', tr: 'DAMGA KARTI', ro: 'CARD DE ȘTAMPILE', nl: 'STEMPELKAART', sq: 'KARTA E VULAVE', ku: 'KARTA MORAN', pl: 'KARTA Z PIECZĄTKAMI'},
   weekendOnlyToday: { de: '🎉 NUR HEUTE — SAMSTAG', en: '🎉 TODAY ONLY — SATURDAY', tr: '🎉 SADECE BUGÜN — CUMARTESİ', ro: '🎉 DOAR ASTĂZI — SÂMBĂTĂ', nl: '🎉 ALLEEN VANDAAG — ZATERDAG' , sq: '🎉 VETËM SOT — E SHTUNË', ku: '🎉 TENÊ ÎRO — ŞEMÎ', pl: '🎉 TYLKO DZIŚ — SOBOTA'},
   weekendOfferTitle: { de: 'Wochenende-Angebot!', en: 'Weekend Special!', tr: 'Hafta Sonu Fırsatı!', ro: 'Ofertă de Weekend!', nl: 'Weekendaanbieding!' , sq: 'Oferta e fundjavës!', ku: 'Pêşniyara Dawiya Hefteyê!', pl: 'Oferta weekendowa!'},
   weekendPizzaTitle: { de: '🍕 28cm Pizza + Dose Getränk', en: '🍕 28cm Pizza + Canned Drink', tr: '🍕 28cm Pizza + Kutu İçecek', ro: '🍕 Pizza 28cm + Băutură la doză', nl: '🍕 28cm Pizza + Blikje drinken' , sq: '🍕 Picë 28cm + Pije kanaçe', ku: '🍕 Pizza 28cm + Vexwarina qutîkirî', pl: '🍕 Pizza 28cm + puszka napoju'},
@@ -342,6 +342,11 @@ const UI = {
   loyaltyRule3: { de: 'Kein Telefon, keine E-Mail — nur dein persönlicher Code.', en: 'No phone, no email — just your personal code.', tr: 'Telefon yok, e-posta yok — sadece kişisel kodun.', ro: 'Fără telefon, fără email — doar codul tău personal.', nl: 'Geen telefoon, geen e-mail — alleen jouw persoonlijke code.', sq: 'Pa telefon, pa email — vetëm kodi yt personal.', ku: 'Ne têlefon, ne e-name — tenê koda te ya şexsî.', pl: 'Bez telefonu, bez e-maila — tylko Twój osobisty kod.' },
   loyaltyRule4: { de: 'Merk dir deinen Code gut — er ist der einzige Zugang zu deiner Karte.', en: 'Remember your code well — it\'s the only way to access your card.', tr: 'Kodunu iyi hatırla — kartına ulaşmanın tek yolu bu.', ro: 'Ține minte bine codul — este singura cale de acces la cardul tău.', nl: 'Onthoud je code goed — het is de enige toegang tot je kaart.', sq: 'Mbaje mend kodin mirë — është mënyra e vetme për të hyrë në kartën tënde.', ku: 'Koda xwe baş bi bîr bîne — ew yekane rêya gihîştina kartê ye.', pl: 'Zapamiętaj dobrze swój kod — to jedyny dostęp do Twojej karty.' },
   loyaltyRule5: { de: 'Nach dem Einlösen startet automatisch eine neue Runde (0/8).', en: 'After redeeming, a new round starts automatically (0/8).', tr: 'Ödül kullanıldıktan sonra otomatik olarak yeni bir tur başlar (0/8).', ro: 'După utilizare, o rundă nouă începe automat (0/8).', nl: 'Na het inwisselen begint automatisch een nieuwe ronde (0/8).', sq: 'Pas përdorimit, fillon automatikisht një raund i ri (0/8).', ku: 'Piştî bikaranînê, gerek nû bixweber dest pê dike (0/8).', pl: 'Po odebraniu automatycznie zaczyna się nowa runda (0/8).' },
+  loyaltyBirthdayTitle: { de: '🎂 Geburtstag hinzufügen (optional)', en: '🎂 Add birthday (optional)', tr: '🎂 Doğum günü ekle (isteğe bağlı)', ro: '🎂 Adaugă ziua de naștere (opțional)', nl: '🎂 Verjaardag toevoegen (optioneel)', sq: '🎂 Shto ditëlindjen (opsionale)', ku: '🎂 Rojbûnê lê zêde bike (vebijark)', pl: '🎂 Dodaj urodziny (opcjonalnie)' },
+  loyaltyBirthdaySub: { de: 'Nur Tag und Monat — kein Jahr, keine sonstigen Daten. Wir überraschen dich an deinem Tag mit einem kleinen Extra.', en: 'Just day and month — no year, no other data. We\'ll surprise you on your day with a little extra.', tr: 'Sadece gün ve ay — yıl yok, başka veri yok. O gün seni küçük bir sürprizle karşılarız.', ro: 'Doar ziua și luna — fără an, fără alte date. Te surprindem în ziua ta cu ceva mic.', nl: 'Alleen dag en maand — geen jaar, geen andere gegevens. We verrassen je op jouw dag met een klein extraatje.', sq: 'Vetëm dita dhe muaji — pa vit, pa të dhëna të tjera. Do të të surprizojmë atë ditë me diçka të vogël.', ku: 'Tenê roj û meh — ne sal, ne agahiyên din. Em ê te di roja te de bi tiştekî piçûk sürprîz bikin.', pl: 'Tylko dzień i miesiąc — bez roku, bez innych danych. Zaskoczymy Cię tego dnia małym prezentem.' },
+  loyaltyBirthdaySaved: { de: 'Gespeichert 🎉', en: 'Saved 🎉', tr: 'Kaydedildi 🎉', ro: 'Salvat 🎉', nl: 'Opgeslagen 🎉', sq: 'U ruajt 🎉', ku: 'Hate tomarkirin 🎉', pl: 'Zapisano 🎉' },
+  loyaltyBirthdaySkip: { de: 'Überspringen', en: 'Skip', tr: 'Atla', ro: 'Omite', nl: 'Overslaan', sq: 'Kalo', ku: 'Bavêje', pl: 'Pomiń' },
+  loyaltyBirthdaySave: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan', sq: 'Ruaj', ku: 'Tomar bike', pl: 'Zapisz' },
   dailyRecommendation: { de: 'TAGESEMPFEHLUNG', en: "TODAY'S PICKS", tr: 'GÜNÜN ÖNERİSİ', ro: 'RECOMANDAREA ZILEI', nl: 'AANBEVELING VAN DE DAG' , sq: 'REKOMANDIMI I DITËS', ku: 'PÊŞNIYARA ROJÊ', pl: 'POLECANE DNIA'},
   onlyLeft: { de: 'Nur noch', en: 'Only', tr: 'Sadece', ro: 'Doar', nl: 'Nog maar' , sq: 'Vetëm edhe', ku: 'Tenê hîn', pl: 'Zostało tylko'},
   minutesLeft: { de: 'Minuten!', en: 'minutes left!', tr: 'dakika kaldı!', ro: 'minute rămase!', nl: 'minuten over!' , sq: 'minuta!', ku: 'deqîqe!', pl: 'minut!'},
@@ -371,7 +376,7 @@ const UI = {
   wheelPrizesCountSuffix: { de: 'x Glücksrad-Gewinn wird mitgeschickt', en: 'x wheel prize will be included', tr: 'x çark ödülü siparişe eklenecek', ro: 'x premii de la roată vor fi incluse', nl: 'x radprijs wordt meegestuurd' , sq: 'x fitore nga rrota e fatit do të dërgohet', ku: 'x xelata çerxa bextê dê were şandin', pl: 'x wygrana z koła zostanie dołączona'},
   loginBtn: { de: 'Anmelden', en: 'Log in', tr: 'Giriş yap', ro: 'Autentificare', nl: 'Inloggen' , sq: 'Hyr', ku: 'Têkeve', pl: 'Zaloguj się'},
   defaultPinNote: { de: 'Standard-PIN: 1234', en: 'Default PIN: 1234', tr: 'Varsayılan PIN: 1234', ro: 'PIN implicit: 1234', nl: 'Standaard-pincode: 1234' , sq: 'PIN standarde: 1234', ku: 'PIN standard: 1234', pl: 'Domyślny PIN: 1234'},
-  loyaltyTabLabel: { de: '🎟️ Treuekarte', en: '🎟️ Loyalty card', tr: '🎟️ Sadakat kartı', ro: '🎟️ Card de fidelitate', nl: '🎟️ Spaarkaart' , sq: '🎟️ Karta e besnikërisë', ku: '🎟️ Karta Dilsozîyê', pl: '🎟️ Karta lojalnościowa'},
+  loyaltyTabLabel: { de: '🎟️ Stempelkarte', en: '🎟️ Stamp card', tr: '🎟️ Damga kartı', ro: '🎟️ Card de ștampile', nl: '🎟️ Stempelkaart' , sq: '🎟️ Karta e vulave', ku: '🎟️ Karta Moran', pl: '🎟️ Karta z pieczątkami'},
   customerCodePh: { de: 'Kunden-Code', en: 'Customer code', tr: 'Müşteri kodu', ro: 'Cod client', nl: 'Klantcode' , sq: 'Kodi i klientit', ku: 'Koda Muşteriyê', pl: 'Kod klienta'},
   searchBtn: { de: 'Suchen', en: 'Search', tr: 'Ara', ro: 'Caută', nl: 'Zoeken' , sq: 'Kërko', ku: 'Bigere', pl: 'Szukaj'},
   addStampBtn: { de: '+1 Stempel', en: '+1 stamp', tr: '+1 damga', ro: '+1 ștampilă', nl: '+1 stempel' , sq: '+1 vulë', ku: '+1 Mor', pl: '+1 pieczątka'},
@@ -1367,8 +1372,19 @@ function generateLoyaltyCode() {
   return `BK-${digits}`;
 }
 async function getLoyaltyCard(code) {
-  const r = await safeGet(`loyalty:${code}`);
-  return r || null;
+  // Bewusst OHNE den kvCache (safeGet) — Treuekarten-Daten ändern sich von
+  // einem anderen Gerät aus (Personal fügt einen Stempel hinzu), daher muss
+  // hier bei JEDEM Öffnen frisch vom Server gelesen werden, sonst sieht der
+  // Kunde auf seinem Gerät weiterhin den alten, im Speicher zwischengelagerten
+  // Stand, bis er die Seite komplett neu lädt.
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(`loyalty:${code}`)}&select=value`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.length ? rows[0].value : null;
+  } catch { return null; }
 }
 async function ensureLoyaltyCard(code) {
   const existing = await getLoyaltyCard(code);
@@ -1381,11 +1397,18 @@ async function addLoyaltyStamp(code) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
   const updated = { ...card, stamps: Math.min(LOYALTY_TARGET, card.stamps + 1), lastStampAt: Date.now() };
   await safeSet(`loyalty:${code}`, updated);
+  try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now() }); } catch {}
   return updated;
 }
 async function redeemLoyaltyCard(code) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
-  const updated = { ...card, stamps: 0, lastRedeemedAt: Date.now(), redeemedCount: (card.redeemedCount || 0) + 1 };
+  const updated = { ...card, stamps: 0, lastRedeemedAt: Date.now(), redeemedCount: (card.redeemedCount || 0) + 1, almostThereNotified: false };
+  await safeSet(`loyalty:${code}`, updated);
+  return updated;
+}
+async function setLoyaltyBirthday(code, mmdd) {
+  const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
+  const updated = { ...card, birthday: mmdd };
   await safeSet(`loyalty:${code}`, updated);
   return updated;
 }
@@ -2913,7 +2936,10 @@ function LoyaltyModal({ lang, t, onClose }) {
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
   const [copied, setCopied] = useState(false);
-  const [infoOpen, setInfoOpen] = useState(true);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [bdayMonth, setBdayMonth] = useState('');
+  const [bdayDay, setBdayDay] = useState('');
+  const [bdaySaved, setBdaySaved] = useState(false);
 
   const loadCode = async (c) => {
     setLoading(true);
@@ -2921,6 +2947,15 @@ function LoyaltyModal({ lang, t, onClose }) {
     setCode(c);
     setCard(cc);
     setLoading(false);
+    // Markiert dieses Gerät bei OneSignal mit dem Code, damit spätere
+    // Erinnerungs-Pushes gezielt NUR an dieses eine Gerät gehen können.
+    try {
+      if (window.OneSignal?.User?.addTag) {
+        window.OneSignal.User.addTag('loyalty_code', c);
+      } else if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push((OneSignal) => { try { OneSignal.User.addTag('loyalty_code', c); } catch {} });
+      }
+    } catch {}
   };
 
   useEffect(() => {
@@ -2958,6 +2993,15 @@ function LoyaltyModal({ lang, t, onClose }) {
   const copyCode = () => {
     if (!code) return;
     try { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {}
+  };
+
+  const saveBirthday = async () => {
+    const mm = String(bdayMonth).padStart(2, '0');
+    const dd = String(bdayDay).padStart(2, '0');
+    if (!bdayMonth || !bdayDay || +mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) return;
+    const updated = await setLoyaltyBirthday(code, `${mm}-${dd}`);
+    setCard(updated);
+    setBdaySaved(true);
   };
 
   const stamps = card?.stamps || 0;
@@ -3002,55 +3046,71 @@ function LoyaltyModal({ lang, t, onClose }) {
           </div>
         ) : (
           <>
-            <button onClick={copyCode} className="w-full rounded-2xl py-4 mb-2 text-center" style={{ background: 'rgba(255,246,234,.08)', border: '1.5px dashed rgba(255,199,56,.4)' }}>
-              <div className="text-[10px] font-black tracking-widest mb-1" style={{ color: '#a89878' }}>{copied ? t('loyaltyCopied') : t('loyaltyTapToCopy')}</div>
-              <div className="font-black text-2xl tracking-widest" style={{ color: GOLD }}>{code}</div>
-            </button>
-            <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline w-full text-center mb-4" style={{ color: '#a89878' }}>{t('loyaltyCreateOwnCode')}</button>
+            <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
+              <button onClick={copyCode} className="w-full mb-1">
+                <div className="text-[10px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>{copied ? t('loyaltyCopied') : t('loyaltyTapToCopy')}</div>
+                <div className="font-black text-2xl tracking-widest" style={{ color: GREEN }}>{code}</div>
+              </button>
+              <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline" style={{ color: '#8a7c62' }}>{t('loyaltyCreateOwnCode')}</button>
+            </div>
 
             {/* Stempelkarte */}
-            <div className="rounded-2xl p-4 mb-3" style={{ background: 'rgba(255,246,234,.06)', border: '1px solid rgba(255,199,56,.2)' }}>
+            <div className="rounded-2xl p-4 mb-4" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
               <div className="grid grid-cols-4 gap-2.5 mb-3">
                 {Array.from({ length: LOYALTY_TARGET }).map((_, i) => {
                   const filled = i < stamps;
                   return (
                     <div key={i} className="aspect-square rounded-full flex items-center justify-center text-base"
                       style={filled
-                        ? { background: `radial-gradient(circle at 35% 30%, #fff5cf, ${GOLD})`, boxShadow: '0 3px 10px rgba(255,199,56,.5)', animation: i === stamps - 1 ? 'goldGlow 1.6s ease-in-out 2' : 'none' }
-                        : { background: 'rgba(255,255,255,.05)', border: '1.5px dashed rgba(255,255,255,.25)' }}>
-                      {filled ? '🍕' : <span style={{ color: 'rgba(255,255,255,.25)', fontSize: 11, fontWeight: 900 }}>{i + 1}</span>}
+                        ? { background: `radial-gradient(circle at 35% 30%, ${GOLD}, ${ORANGE})`, boxShadow: '0 3px 8px rgba(230,90,10,.35)' }
+                        : { background: '#fff', border: '1.5px dashed #d9c9a3' }}>
+                      {filled ? '🍕' : <span style={{ color: '#c9b892', fontSize: 11, fontWeight: 900 }}>{i + 1}</span>}
                     </div>
                   );
                 })}
               </div>
-              <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.1)' }}>
+              <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: '#e9dcbb' }}>
                 <div className="h-full rounded-full" style={{ width: `${(stamps / LOYALTY_TARGET) * 100}%`, background: `linear-gradient(90deg, ${ORANGE}, ${GOLD})`, transition: 'width .4s ease' }} />
               </div>
+              <p className="text-center text-sm font-bold mt-3" style={{ color: isFull ? '#2d6a4f' : GREEN }}>
+                {isFull ? t('loyaltyFullMsg') : `${t('stampsUntilFreePrefix')} ${LOYALTY_TARGET - stamps} ${t('stampsUntilFreeSuffix')}`}
+              </p>
             </div>
-
-            <p className="text-center text-sm font-bold mb-4" style={{ color: isFull ? '#7ed99b' : CREAM }}>
-              {isFull ? t('loyaltyFullMsg') : `${t('stampsUntilFreePrefix')} ${LOYALTY_TARGET - stamps} ${t('stampsUntilFreeSuffix')}`}
-            </p>
 
             <p className="text-xs text-center font-medium mb-3" style={{ color: '#a89878' }}>{t('showCodeForStamp')}</p>
 
-            <div className="rounded-2xl p-4 mb-3" style={{ background: 'rgba(255,199,56,.08)', border: '1px solid rgba(255,199,56,.35)' }}>
-              <button onClick={() => setInfoOpen((v) => !v)} className="w-full flex items-center justify-between mb-2">
-                <span className="text-sm font-black" style={{ color: GOLD }}>ℹ️ {t('loyaltyHowItWorksTitle')}</span>
-                <span style={{ color: GOLD, transform: infoOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
-              </button>
-              {infoOpen && (
-                <div className="text-[12px] leading-relaxed" style={{ color: CREAM }}>
-                  <p className="mb-2">🥙 {t('loyaltyRule1')}</p>
-                  <p className="mb-2">🍕 {t('loyaltyRule2')}</p>
-                  <p className="mb-2">📱 {t('loyaltyRule3')}</p>
-                  <p className="mb-2">🔑 {t('loyaltyRule4')}</p>
-                  <p>♻️ {t('loyaltyRule5')}</p>
-                </div>
-              )}
-            </div>
+            <button onClick={() => setInfoOpen((v) => !v)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl mb-1" style={{ background: 'rgba(255,255,255,.06)' }}>
+              <span className="text-xs font-bold" style={{ color: GOLD }}>ℹ️ {t('loyaltyHowItWorksTitle')}</span>
+              <span style={{ color: '#a89878', transform: infoOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
+            </button>
+            {infoOpen && (
+              <div className="text-[12px] leading-relaxed px-4 py-3 mb-3 rounded-xl" style={{ color: CREAM, background: 'rgba(255,255,255,.04)' }}>
+                <p className="mb-2">🥙 {t('loyaltyRule1')}</p>
+                <p className="mb-2">🍕 {t('loyaltyRule2')}</p>
+                <p className="mb-2">📱 {t('loyaltyRule3')}</p>
+                <p className="mb-2">🔑 {t('loyaltyRule4')}</p>
+                <p>♻️ {t('loyaltyRule5')}</p>
+              </div>
+            )}
 
-            <button onClick={() => setMode('enter')} className="text-xs font-semibold underline w-full text-center" style={{ color: '#a89878' }}>{t('loyaltyHaveCode')}</button>
+            {!card?.birthday && (
+              <div className="rounded-2xl p-4 mb-4" style={{ background: 'rgba(255,255,255,.05)' }}>
+                <div className="text-xs font-black mb-1" style={{ color: GOLD }}>{t('loyaltyBirthdayTitle')}</div>
+                <p className="text-[11px] mb-3" style={{ color: '#a89878' }}>{t('loyaltyBirthdaySub')}</p>
+                {bdaySaved ? (
+                  <p className="text-sm font-bold text-center" style={{ color: '#7ed99b' }}>{t('loyaltyBirthdaySaved')}</p>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <input value={bdayDay} onChange={(e) => setBdayDay(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="TT" maxLength={2} className="w-14 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+                    <span style={{ color: '#a89878' }}>.</span>
+                    <input value={bdayMonth} onChange={(e) => setBdayMonth(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="MM" maxLength={2} className="w-14 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+                    <button onClick={saveBirthday} className="flex-1 py-2.5 rounded-lg font-bold text-xs text-white" style={{ background: ORANGE }}>{t('loyaltyBirthdaySave')}</button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button onClick={() => setMode('enter')} className="text-xs font-semibold underline w-full text-center mt-2" style={{ color: '#a89878' }}>{t('loyaltyHaveCode')}</button>
           </>
         )}
       </div>
@@ -6584,6 +6644,8 @@ function StaffPanelView({ back }) {
   const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
   const [wishes, setWishes] = useState([]);
+  const [loyaltyStats, setLoyaltyStats] = useState(null);
+  const [recentStamps, setRecentStamps] = useState([]);
   const [contactMessagesArchive, setContactMessagesArchive] = useState([]);
   const [subscriberCount, setSubscriberCount] = useState(null);
   const [contactMessages, setContactMessages] = useState([]);
@@ -6825,6 +6887,24 @@ function StaffPanelView({ back }) {
       fetch('/api/subscriber-count').then((r) => r.json()).then((d) => {
         if (typeof d?.count === 'number') setSubscriberCount(d.count);
       }).catch(() => {});
+    }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (ok && (tab === 'analytics' || tab === 'loyalty')) {
+      safeListPrefix('loyalty:', 500).then((rows) => {
+        const cards = rows.map((r) => r.value);
+        const totalCards = cards.length;
+        const fullCards = cards.filter((c) => (c.stamps || 0) >= LOYALTY_TARGET).length;
+        const totalRedeemed = cards.reduce((s, c) => s + (c.redeemedCount || 0), 0);
+        const withBirthday = cards.filter((c) => !!c.birthday).length;
+        const todayMMDD = (() => { const d = new Date(); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+        const in7Days = Array.from({ length: 7 }).map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
+        const upcomingBirthdays = rows.filter((r) => r.value.birthday && in7Days.includes(r.value.birthday))
+          .map((r) => ({ code: r.key.replace('loyalty:', ''), birthday: r.value.birthday }))
+          .sort((a, b) => a.birthday.localeCompare(b.birthday));
+        setLoyaltyStats({ totalCards, fullCards, totalRedeemed, withBirthday, upcomingBirthdays, todayMMDD });
+      });
+      safeListPrefix('loyaltystamp:', 10).then((rows) => setRecentStamps(rows.sort((a, b) => b.value.ts - a.value.ts)));
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -7966,8 +8046,7 @@ function StaffPanelView({ back }) {
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </button>
                 </div>
-                <div className="bg-white rounded-xl p-4 mb-3">
-                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💡 KUNDENWÜNSCHE</div>
+                <SettingsRow id="statKundenwuensche" icon="💡" title={`Kundenwünsche (${wishes.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                   {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
                   {wishes.slice(0, 30).map((w) => (
                     <div key={w.key} className="py-2 flex items-start justify-between gap-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
@@ -7984,7 +8063,7 @@ function StaffPanelView({ back }) {
                       </button>
                     </div>
                   ))}
-                </div>
+                </SettingsRow>
                 {(() => {
                   // Alle Klick-Events (Kategorien, Hero-Buttons, Anrufe, Route) in einer
                   // gemeinsamen, absteigend sortierten Liste — zeigt auf einen Blick,
@@ -8022,15 +8101,15 @@ function StaffPanelView({ back }) {
                     .sort((a, b) => b[1].length - a[1].length);
                   const maxCount = rows.length ? rows[0][1].length : 1;
                   return (
-                    <div className="bg-white rounded-xl p-4 mb-3">
-                      <div className="text-[11px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>📊 SITE-AKTIVITÄT — HEUTE</div>
+                    <SettingsRow id="statAktivitaet" icon="📊" title="Site-Aktivität" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                      <div className="text-[11px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>HEUTE</div>
                       {todayRows.length === 0 && <p className="text-xs mb-2" style={{ color: '#a4906c' }}>Heute noch keine Klicks erfasst.</p>}
                       {todayRows.slice(0, 8).map(([label, rs]) => (
                         <div key={'today-' + label} className="flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}>
                           <span className="truncate pr-2">{label}</span><span className="flex-shrink-0">{rs.length}</span>
                         </div>
                       ))}
-                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>📊 SITE-AKTIVITÄT — GESAMT (Rangliste)</div>
+                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>GESAMT (Rangliste)</div>
                       {rows.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Aktivität erfasst.</p>}
                       {rows.map(([label, rs]) => (
                         <button
@@ -8046,14 +8125,12 @@ function StaffPanelView({ back }) {
                           </div>
                         </button>
                       ))}
-                    </div>
+                      <div className="text-[11px] font-black tracking-widest mt-4 mb-1" style={{ color: '#a4906c' }}>{t('byDevice').toUpperCase()}</div>
+                      <button onClick={() => openStatsModal('📱 Mobile Besuche', pageVisits.filter((v) => v.value.device === 'mobile'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></button>
+                      <button onClick={() => openStatsModal('💻 Desktop Besuche', pageVisits.filter((v) => v.value.device === 'desktop'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>💻 Desktop</span><span>{byDevice.desktop || 0}</span></button>
+                    </SettingsRow>
                   );
                 })()}
-                <div className="bg-white rounded-xl p-4">
-                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>{t('byDevice')}</div>
-                  <button onClick={() => openStatsModal('📱 Mobile Besuche', pageVisits.filter((v) => v.value.device === 'mobile'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>📱 Mobile</span><span>{byDevice.mobile || 0}</span></button>
-                  <button onClick={() => openStatsModal('💻 Desktop Besuche', pageVisits.filter((v) => v.value.device === 'desktop'), (v) => (v.value.lang || '').toUpperCase())} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>💻 Desktop</span><span>{byDevice.desktop || 0}</span></button>
-                </div>
                 {(() => {
                   const assistantEvents = visits.filter((v) => v.value.event && v.value.event.startsWith('assistant_'));
                   const byIntent = {};
@@ -8069,16 +8146,14 @@ function StaffPanelView({ back }) {
                     .slice(0, 25);
                   if (intentOrder.length === 0) return null;
                   return (
-                    <>
-                      <div className="bg-white rounded-xl p-4 mt-3">
-                        <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤖 ASSISTENT — MEISTGEFRAGT</div>
-                        {intentOrder.map(([k, c]) => (
-                          <button key={k} onClick={() => openStatsModal(intentLabels[k] || k, assistantEvents.filter((v) => v.value.event === `assistant_${k}`), (v) => v.value.q || null)} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></button>
-                        ))}
-                      </div>
+                    <SettingsRow id="statAssistant" icon="🤖" title="KI-Assistent" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                      <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>MEISTGEFRAGT</div>
+                      {intentOrder.map(([k, c]) => (
+                        <button key={k} onClick={() => openStatsModal(intentLabels[k] || k, assistantEvents.filter((v) => v.value.event === `assistant_${k}`), (v) => v.value.q || null)} className="w-full flex items-center justify-between py-1 text-sm font-semibold" style={{ color: GREEN }}><span>{intentLabels[k] || k}</span><span>{c}</span></button>
+                      ))}
                       {unrecognized.length > 0 && (
-                        <div className="bg-white rounded-xl p-4 mt-3">
-                          <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🤔 NICHT VERSTANDENE FRAGEN</div>
+                        <>
+                          <div className="text-[11px] font-black tracking-widest mt-4 mb-2" style={{ color: '#a4906c' }}>NICHT VERSTANDENE FRAGEN</div>
                           <div className="flex flex-col gap-1.5">
                             {unrecognized.map((v) => (
                               <div key={v.key} className="rounded-lg px-3 py-2" style={{ background: '#f7f0e2' }}>
@@ -8087,9 +8162,9 @@ function StaffPanelView({ back }) {
                               </div>
                             ))}
                           </div>
-                        </div>
+                        </>
                       )}
-                    </>
+                    </SettingsRow>
                   );
                 })()}
                 <p className="text-[10px] text-center mt-4" style={{ color: '#a4906c' }}>{t('analyticsNote')}</p>
@@ -8233,7 +8308,50 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'loyalty' && (
             <div className="px-5">
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎟️ TREUEKARTEN</div>
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎟️ STEMPELKARTEN</div>
+
+              {loyaltyStats && (
+                <div className="bg-white rounded-2xl p-4 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    <div className="rounded-lg p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                      <div className="font-black text-lg" style={{ color: GREEN }}>{loyaltyStats.totalCards}</div>
+                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Karten aktiv</div>
+                    </div>
+                    <div className="rounded-lg p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                      <div className="font-black text-lg" style={{ color: ORANGE }}>{loyaltyStats.fullCards}</div>
+                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Warten auf Pizza</div>
+                    </div>
+                    <div className="rounded-lg p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                      <div className="font-black text-lg" style={{ color: GREEN }}>{loyaltyStats.totalRedeemed}</div>
+                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Eingelöst gesamt</div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] font-bold mb-2" style={{ color: '#8a7c62' }}>🎂 {loyaltyStats.withBirthday} Karten mit Geburtstag hinterlegt</div>
+                  {loyaltyStats.upcomingBirthdays.length > 0 && (
+                    <div className="rounded-lg p-3" style={{ background: '#fdf1de' }}>
+                      <div className="text-[10px] font-black mb-1.5" style={{ color: '#8a5a1f' }}>GEBURTSTAGE DIESE WOCHE</div>
+                      {loyaltyStats.upcomingBirthdays.map((b) => (
+                        <div key={b.code} className="flex justify-between text-xs font-semibold py-0.5" style={{ color: GREEN }}>
+                          <span>{b.code}</span>
+                          <span>{b.birthday === loyaltyStats.todayMMDD ? '🎉 Heute!' : b.birthday}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {recentStamps.length > 0 && (
+                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid #f0e5cf' }}>
+                      <div className="text-[10px] font-black mb-1.5" style={{ color: '#a4906c' }}>LETZTE 10 STEMPEL</div>
+                      {recentStamps.map((s) => (
+                        <div key={s.key} className="flex justify-between text-xs font-semibold py-0.5" style={{ color: GREEN }}>
+                          <span>{s.value.code}</span>
+                          <span style={{ color: '#a4906c' }}>{new Date(s.value.ts).toLocaleString('de-DE')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
                 <LoyaltyAdminPanel />
               </div>
@@ -8341,7 +8459,7 @@ function StaffPanelView({ back }) {
               {(() => {
                 const staffTabs = [
                   { key: 'messages', icon: '💬', label: 'Nachrichten' },
-                  { key: 'loyalty', icon: '🎟️', label: 'Treuekarten' },
+                  { key: 'loyalty', icon: '🎟️', label: 'Stempelkarten' },
                   { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                   { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                   { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },

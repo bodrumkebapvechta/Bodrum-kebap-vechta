@@ -21,6 +21,7 @@
   ],
   "crons": [
     { "path": "/api/cron-montag", "schedule": "30 8 * * 1" },
-    { "path": "/api/cron-samstag", "schedule": "0 9 * * 6" }
+    { "path": "/api/cron-samstag", "schedule": "0 9 * * 6" },
+    { "path": "/api/cron-loyalty-reminders", "schedule": "0 11 * * *" }
   ]
 }
