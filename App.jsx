@@ -1371,6 +1371,19 @@ function generateLoyaltyCode() {
   const digits = String(Math.floor(1000 + Math.random() * 9000));
   return `BK-${digits}`;
 }
+const _loadedScripts = new Map();
+function loadExternalScript(src) {
+  if (_loadedScripts.has(src)) return _loadedScripts.get(src);
+  const p = new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = src;
+    el.onload = resolve;
+    el.onerror = reject;
+    document.head.appendChild(el);
+  });
+  _loadedScripts.set(src, p);
+  return p;
+}
 async function getLoyaltyCard(code) {
   // Bewusst OHNE den kvCache (safeGet) — Treuekarten-Daten ändern sich von
   // einem anderen Gerät aus (Personal fügt einen Stempel hinzu), daher muss
@@ -2940,6 +2953,31 @@ function LoyaltyModal({ lang, t, onClose }) {
   const [bdayMonth, setBdayMonth] = useState('');
   const [bdayDay, setBdayDay] = useState('');
   const [bdaySaved, setBdaySaved] = useState(false);
+  const qrCanvasRef = useRef(null);
+
+  useEffect(() => {
+    if (!code || mode !== 'view') return;
+    loadExternalScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js').then(() => {
+      if (!qrCanvasRef.current || !window.qrcode) return;
+      const qr = window.qrcode(0, 'M');
+      qr.addData(code);
+      qr.make();
+      const size = qr.getModuleCount();
+      const canvas = qrCanvasRef.current;
+      const scale = 5;
+      canvas.width = size * scale;
+      canvas.height = size * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fdf6e8';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#153826';
+      for (let r = 0; r < size; r++) {
+        for (let c2 = 0; c2 < size; c2++) {
+          if (qr.isDark(r, c2)) ctx.fillRect(c2 * scale, r * scale, scale, scale);
+        }
+      }
+    }).catch(() => {});
+  }, [code, mode]);
 
   const loadCode = async (c) => {
     setLoading(true);
@@ -3047,6 +3085,7 @@ function LoyaltyModal({ lang, t, onClose }) {
         ) : (
           <>
             <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
+              <canvas ref={qrCanvasRef} className="mx-auto mb-2 rounded-lg" style={{ width: 120, height: 120 }} />
               <button onClick={copyCode} className="w-full mb-1">
                 <div className="text-[10px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>{copied ? t('loyaltyCopied') : t('loyaltyTapToCopy')}</div>
                 <div className="font-black text-2xl tracking-widest" style={{ color: GREEN }}>{code}</div>
@@ -6356,9 +6395,15 @@ function LoyaltyAdminPanel() {
   const [result, setResult] = useState(null); // { code, card } | 'notfound' | null
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scanError, setScanError] = useState('');
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const rafRef = useRef(null);
 
-  const doSearch = async () => {
-    const raw = search.trim().toUpperCase();
+  const doSearchCode = async (rawCode) => {
+    const raw = rawCode.trim().toUpperCase();
     if (!raw) return;
     const code = raw.startsWith('BK-') ? raw : `BK-${raw.replace(/[^A-Z0-9]/g, '')}`;
     setBusy(true); setMsg('');
@@ -6366,6 +6411,53 @@ function LoyaltyAdminPanel() {
     setResult(card ? { code, card } : 'notfound');
     setBusy(false);
   };
+
+  const doSearch = () => doSearchCode(search);
+
+  const stopScanner = () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setScannerOpen(false);
+  };
+
+  const openScanner = async () => {
+    setScanError('');
+    setScannerOpen(true);
+    try {
+      await loadExternalScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js');
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      const tick = () => {
+        if (!videoRef.current || !canvasRef.current || !window.jsQR) { rafRef.current = requestAnimationFrame(tick); return; }
+        const video = videoRef.current;
+        if (video.readyState !== video.HAVE_ENOUGH_DATA) { rafRef.current = requestAnimationFrame(tick); return; }
+        const canvas = canvasRef.current;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const found = window.jsQR(imgData.data, imgData.width, imgData.height);
+        if (found && found.data) {
+          setSearch(found.data);
+          stopScanner();
+          doSearchCode(found.data);
+          return;
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    } catch (err) {
+      setScanError('Kamera nicht verfügbar oder Zugriff verweigert.');
+    }
+  };
+
+  useEffect(() => () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop()); }, []);
 
   const addStamp = async () => {
     if (!result || result === 'notfound') return;
@@ -6389,7 +6481,7 @@ function LoyaltyAdminPanel() {
   return (
     <div>
       <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Code des Kunden eingeben (z. B. BK-4821 oder nur 4821), um einen Stempel hinzuzufügen oder die Gratis-Portion einzulösen.</p>
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-2 mb-2">
         <input
           value={search}
           onChange={(e) => { setSearch(e.target.value); setResult(null); setMsg(''); }}
@@ -6400,6 +6492,20 @@ function LoyaltyAdminPanel() {
         />
         <button onClick={doSearch} disabled={busy} className="px-4 py-2.5 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>Suchen</button>
       </div>
+      <button onClick={openScanner} className="w-full py-2.5 rounded-xl font-bold text-sm text-white mb-3" style={{ background: ORANGE }}>📷 QR-Code scannen</button>
+
+      {scannerOpen && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[400] flex flex-col items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.92)' }}>
+          <div className="w-full max-w-sm rounded-2xl overflow-hidden mb-4" style={{ background: '#000' }}>
+            <video ref={videoRef} playsInline muted className="w-full" style={{ display: 'block' }} />
+          </div>
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
+          {scanError && <p className="text-sm font-bold text-center mb-3" style={{ color: '#e08a8a' }}>{scanError}</p>}
+          <p className="text-xs font-medium text-center mb-4" style={{ color: '#d9cdb4' }}>QR-Code der Stempelkarte vor die Kamera halten…</p>
+          <button onClick={stopScanner} className="px-6 py-3 rounded-full font-bold text-sm text-white" style={{ background: CHILI }}>Abbrechen</button>
+        </div>,
+        document.body
+      )}
 
       {result === 'notfound' && <p className="text-center text-xs font-bold" style={{ color: '#c0392b' }}>Kein Kunde mit diesem Code gefunden.</p>}
 
