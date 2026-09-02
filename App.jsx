@@ -8655,7 +8655,7 @@ function StaffPanelView({ back }) {
                       <div className="min-w-0">
                         <div className="text-sm font-bold" style={{ color: GREEN }}>{c.code}</div>
                         <div className="text-[10px] font-semibold" style={{ color: '#a4906c' }}>
-                          {c.stamps || 0}/{LOYALTY_TARGET} Stempel{c.createdAt ? ` · erstellt ${new Date(c.createdAt).toLocaleDateString('de-DE')}` : ''}
+                          {c.stamps || 0}/{LOYALTY_TARGET} Stempel{c.createdAt ? ` · erstellt ${new Date(c.createdAt).toLocaleString('de-DE')}` : ''}
                         </div>
                       </div>
                       <button
