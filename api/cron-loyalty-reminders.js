@@ -6,6 +6,7 @@
 //    mindestens 4 Tage vergangen sind, UND seit der letzten Erinnerung
 //    ebenfalls mindestens 4 Tage — so kann niemand öfter als alle 4 Tage
 //    genervt werden.
+// 3) Geburtstags-Push: einmal pro Jahr, mit klarem Angebot (Gratis-Pizza).
 //
 // Jeder Push geht NUR an das eine Gerät mit dem passenden "loyalty_code"-Tag
 // (siehe OneSignal.User.addTag im Frontend), nicht an alle Abonnenten.
@@ -73,7 +74,7 @@ export default async function handler(req, res) {
 
       // 🎂 Geburtstag (unabhängig vom Stempelstand, einmal pro Jahr)
       if (card.birthday === todayMMDD && card.lastBirthdayYear !== thisYear) {
-        await sendToCode(REST_API_KEY, code, '🎂 Alles Gute zum Geburtstag!', 'Zeig heute deinen Code an der Kasse und wir überraschen dich mit einem kleinen Extra 🎉');
+        await sendToCode(REST_API_KEY, code, '🎂 Alles Gute zum Geburtstag!', 'Zeig heute deinen Code an der Kasse — eine Gratis-Pizza wartet auf dich! 🍕🎉');
         await saveCard(row.key, { ...card, lastBirthdayYear: thisYear });
         birthdaySent++;
       }
