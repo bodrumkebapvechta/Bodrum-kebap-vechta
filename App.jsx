@@ -2153,11 +2153,13 @@ const REVIEWS = [
 function Testimonials() {
   const [idx, setIdx] = useState(0);
   const [rating, setRating] = useState({ score: 4.6, count: 293 });
+  const [reviews, setReviews] = useState(REVIEWS);
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % REVIEWS.length), 4000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % reviews.length), 4000);
     safeGet('siteconfig:rating').then((r) => { if (r && r.score) setRating(r); });
+    safeGet('siteconfig:reviews').then((r) => { if (r && Array.isArray(r) && r.length) setReviews(r); });
     return () => clearInterval(t);
-  }, []);
+  }, [reviews.length]);
   return (
     <section className="max-w-7xl mx-auto px-5 lg:px-10 py-12">
       <div className="rounded-2xl p-8 sm:p-10 text-center" style={{ background: '#fff', boxShadow: '0 10px 30px rgba(21,56,38,.1)' }}>
@@ -2165,10 +2167,10 @@ function Testimonials() {
           {Array.from({ length: 5 }).map((_, i) => (<Star key={i} size={19} fill={GOLD} color={GOLD} />))}
         </div>
         <div className="font-black text-sm mb-6" style={{ color: GREEN }}><CountUp to={rating.score} decimals={1} /> · <CountUp to={rating.count} /> Google-Bewertungen</div>
-        <p className="text-lg sm:text-xl font-semibold mb-4" style={{ color: '#4a4032', minHeight: 64 }}>„{REVIEWS[idx].text}"</p>
-        <div className="text-xs font-bold tracking-wide" style={{ color: '#a4906c' }}>— {REVIEWS[idx].name}</div>
+        <p className="text-lg sm:text-xl font-semibold mb-4" style={{ color: '#4a4032', minHeight: 64 }}>„{reviews[idx]?.text}"</p>
+        <div className="text-xs font-bold tracking-wide" style={{ color: '#a4906c' }}>— {reviews[idx]?.name}</div>
         <div className="flex justify-center gap-2 mt-6">
-          {REVIEWS.map((_, i) => (
+          {reviews.map((_, i) => (
             <button key={i} onClick={() => setIdx(i)} className="w-2 h-2 rounded-full" style={{ background: i === idx ? ORANGE : '#e3d5bd' }} />
           ))}
         </div>
@@ -6842,6 +6844,8 @@ function StaffPanelView({ back }) {
     setTimeout(() => setLogoutAllMsg(''), 3000);
   };
   const [ratingScore, setRatingScore] = useState('4.6');
+  const [reviewsList, setReviewsList] = useState([]);
+  const [reviewsMsg, setReviewsMsg] = useState('');
   const [ratingCount, setRatingCount] = useState('293');
   const [ratingMsg, setRatingMsg] = useState('');
   const [dailyBannerText, setDailyBannerText] = useState('');
@@ -7270,6 +7274,30 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:rating', { score, count });
     setRatingMsg(t('savedMsg'));
     setTimeout(() => setRatingMsg(''), 2500);
+  };
+  useEffect(() => {
+    safeGet('siteconfig:reviews').then((r) => {
+      if (r && Array.isArray(r) && r.length) setReviewsList(r);
+      else setReviewsList(REVIEWS.map((r) => ({ ...r })));
+    });
+  }, []);
+  const updateReviewField = (i, field, val) => {
+    setReviewsList((prev) => prev.map((r, idx) => (idx === i ? { ...r, [field]: val } : r)));
+  };
+  const removeReview = (i) => {
+    setReviewsList((prev) => prev.filter((_, idx) => idx !== i));
+  };
+  const addReview = () => {
+    if (reviewsList.length >= 8) return;
+    setReviewsList((prev) => [...prev, { text: '', name: 'Google-Bewertung' }]);
+  };
+  const saveReviews = async () => {
+    const cleaned = reviewsList.filter((r) => r.text && r.text.trim());
+    if (cleaned.length === 0) return;
+    await safeSet('siteconfig:reviews', cleaned);
+    setReviewsList(cleaned);
+    setReviewsMsg(t('savedMsg'));
+    setTimeout(() => setReviewsMsg(''), 2500);
   };
   const selectExistingWeekendPhoto = async (which, url) => {
     const next = { ...weekendComboPhotos, [which]: url };
@@ -8152,6 +8180,39 @@ function StaffPanelView({ back }) {
                     </div>
                     <button onClick={saveRating} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
                     {ratingMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{ratingMsg}</p>}
+
+                    <div className="mt-5 pt-4" style={{ borderTop: '1px solid #f0e5cf' }}>
+                      <p className="text-[11px] font-black mb-2.5" style={{ color: '#a4906c' }}>ECHTE BEWERTUNGEN (auf der Startseite gezeigt)</p>
+                      {reviewsList.map((r, i) => (
+                        <div key={i} className="rounded-xl p-3 mb-2.5" style={{ background: '#f7f0e2' }}>
+                          <textarea
+                            value={r.text}
+                            onChange={(e) => updateReviewField(i, 'text', e.target.value)}
+                            placeholder="Bewertungstext…"
+                            rows={2}
+                            className="w-full px-3 py-2 rounded-lg text-sm font-semibold outline-none resize-none mb-2"
+                            style={{ background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}
+                          />
+                          <div className="flex gap-2">
+                            <input
+                              value={r.name}
+                              onChange={(e) => updateReviewField(i, 'name', e.target.value)}
+                              placeholder="Name (z. B. Max M.)"
+                              className="flex-1 px-3 py-2 rounded-lg text-xs font-bold outline-none"
+                              style={{ background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}
+                            />
+                            <button onClick={() => removeReview(i)} className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#f7ded9' }}>
+                              <X size={14} color={CHILI} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {reviewsList.length < 8 && (
+                        <button onClick={addReview} className="w-full py-2.5 rounded-xl font-bold text-xs mb-3" style={{ background: 'rgba(21,56,38,.06)', color: GREEN }}>+ Bewertung hinzufügen</button>
+                      )}
+                      <button onClick={saveReviews} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(230,90,10,.25)' }}>{t('saveBtn')}</button>
+                      {reviewsMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{reviewsMsg}</p>}
+                    </div>
                   </SettingsRow>
                 </>
               )}
