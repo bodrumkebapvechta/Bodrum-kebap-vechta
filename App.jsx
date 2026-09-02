@@ -3693,6 +3693,16 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
     setGameOpen(true);
   };
   const [lightbox, setLightbox] = useState(null);
+  const [textScale, setTextScale] = useState(() => {
+    try { return parseFloat(localStorage.getItem('bk_text_scale')) || 1; } catch { return 1; }
+  });
+  const changeTextScale = (delta) => {
+    setTextScale((s) => {
+      const next = Math.min(1.3, Math.max(1, +(s + delta).toFixed(2)));
+      try { localStorage.setItem('bk_text_scale', String(next)); } catch {}
+      return next;
+    });
+  };
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [wishModalOpen, setWishModalOpen] = useState(false);
@@ -3801,7 +3811,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   };
 
   return (
-    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)' }}>
+    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)', zoom: textScale }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
@@ -3903,6 +3913,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!ORDERING_ENABLED && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
+            <div className="flex items-center rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.1)' }}>
+              <button onClick={() => changeTextScale(-0.1)} disabled={textScale <= 1} className="w-8 h-8 flex items-center justify-center font-black text-xs disabled:opacity-30" style={{ color: CREAM }}>A-</button>
+              <button onClick={() => changeTextScale(0.1)} disabled={textScale >= 1.3} className="w-8 h-8 flex items-center justify-center font-black text-sm disabled:opacity-30" style={{ color: CREAM }}>A+</button>
+            </div>
             <LanguageSwitcher lang={lang} setLang={setLang} dark />
             <button onClick={() => setNavOpen((v) => !v)} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.45)' }}>
               {navOpen ? <X size={19} color="#fff" /> : <MenuIcon size={19} color="#fff" />}
@@ -9399,38 +9413,60 @@ export default function App() {
   }, []);
   useEffect(() => {
     if (document.getElementById('bk-structured-data')) return;
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'bk-structured-data';
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Restaurant",
-      "name": "Bodrum Kebap",
-      "image": "https://bodrumkebapvechta.de/hero.jpg",
-      "url": "https://bodrumkebapvechta.de",
-      "telephone": "+4944419516104",
-      "priceRange": "€€",
-      "servesCuisine": ["Turkish", "Döner", "Pizza", "Pasta"],
-      "acceptsReservations": "False",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Oyther Straße 37",
-        "postalCode": "49377",
-        "addressLocality": "Vechta",
-        "addressCountry": "DE"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.6",
-        "reviewCount": "293"
-      },
-      "openingHoursSpecification": isTuesdayOpenNow(new Date())
-        ? [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }]
-        : [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }],
-      "servesHalal": true,
-      "sameAs": ["https://instagram.com/BodrumKebapVechta"]
+    // Bewertung live aus den echten Einstellungen laden, statt einen festen
+    // Wert im Code zu hinterlegen, der mit der Zeit veraltet und nicht mehr
+    // zur Zahl passt, die im Personal-Bereich gepflegt wird.
+    safeGet('siteconfig:rating').then((r) => {
+      const ratingValue = r && r.score ? String(r.score) : '4.6';
+      const reviewCount = r && r.count ? String(r.count) : '293';
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.id = 'bk-structured-data';
+      script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Bodrum Kebap",
+        "image": "https://bodrumkebapvechta.de/hero.jpg",
+        "logo": "https://bodrumkebapvechta.de/icon-512.png",
+        "url": "https://bodrumkebapvechta.de",
+        "telephone": "+4944419516104",
+        "priceRange": "€€",
+        "servesCuisine": ["Turkish", "Döner", "Pizza", "Pasta"],
+        "acceptsReservations": "False",
+        "hasMenu": "https://bodrumkebapvechta.de/?menu=1",
+        "paymentAccepted": ["Cash", "Credit Card"],
+        "currenciesAccepted": "EUR",
+        "keywords": "Döner Vechta, Kebap Vechta, Pizza Vechta, Dönerladen Vechta, Halal Restaurant Vechta, Imbiss Vechta",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Oyther Straße 37",
+          "postalCode": "49377",
+          "addressLocality": "Vechta",
+          "addressCountry": "DE"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": VECHTA_LAT,
+          "longitude": VECHTA_LON
+        },
+        "areaServed": {
+          "@type": "GeoCircle",
+          "geoMidpoint": { "@type": "GeoCoordinates", "latitude": VECHTA_LAT, "longitude": VECHTA_LON },
+          "geoRadius": "15000"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": ratingValue,
+          "reviewCount": reviewCount
+        },
+        "openingHoursSpecification": isTuesdayOpenNow(new Date())
+          ? [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }]
+          : [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }],
+        "servesHalal": true,
+        "sameAs": ["https://instagram.com/BodrumKebapVechta"]
+      });
+      document.head.appendChild(script);
     });
-    document.head.appendChild(script);
   }, []);
   const langCtx = useLang();
   useEffect(() => {
