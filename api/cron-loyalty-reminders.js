@@ -81,7 +81,7 @@ export default async function handler(req, res) {
       const cardAgeMs = now - (card.createdAt || 0);
       const MIN_CARD_AGE_MS = 21 * 24 * 60 * 60 * 1000;
       if (card.birthday === todayMMDD && card.lastBirthdayYear !== thisYear && cardAgeMs >= MIN_CARD_AGE_MS) {
-        await sendToCode(REST_API_KEY, code, '🎂 Alles Gute zum Geburtstag!', 'Zeig heute deinen Code an der Kasse — eine Gratis-Pizza wartet auf dich! 🍕🎉');
+        await sendToCode(REST_API_KEY, code, '🎂 Alles Gute zum Geburtstag!', 'Zeig heute deinen Code an der Kasse — eine kleine Überraschung wartet auf dich! 🎉');
         await saveCard(row.key, { ...card, lastBirthdayYear: thisYear });
         birthdaySent++;
       }
