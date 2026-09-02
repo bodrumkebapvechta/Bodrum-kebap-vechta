@@ -72,8 +72,15 @@ export default async function handler(req, res) {
       const card = row.value || {};
       const stamps = card.stamps || 0;
 
-      // 🎂 Geburtstag (unabhängig vom Stempelstand, einmal pro Jahr)
-      if (card.birthday === todayMMDD && card.lastBirthdayYear !== thisYear) {
+      // 🎂 Geburtstag (unabhängig vom Stempelstand, einmal pro Jahr).
+      // WICHTIG: Nur bei Karten, die mindestens 21 Tage alt sind. Ohne diese
+      // Regel könnte jemand einen neuen Code anlegen, "morgen" als Geburtstag
+      // eintragen und sich sofort eine Gratis-Pizza sichern — und das
+      // beliebig oft mit neuen Codes wiederholen (ein frei erfundenes Jahr
+      // lässt sich nicht verhindern, aber die Zeit lässt sich nicht fälschen).
+      const cardAgeMs = now - (card.createdAt || 0);
+      const MIN_CARD_AGE_MS = 21 * 24 * 60 * 60 * 1000;
+      if (card.birthday === todayMMDD && card.lastBirthdayYear !== thisYear && cardAgeMs >= MIN_CARD_AGE_MS) {
         await sendToCode(REST_API_KEY, code, '🎂 Alles Gute zum Geburtstag!', 'Zeig heute deinen Code an der Kasse — eine Gratis-Pizza wartet auf dich! 🍕🎉');
         await saveCard(row.key, { ...card, lastBirthdayYear: thisYear });
         birthdaySent++;
