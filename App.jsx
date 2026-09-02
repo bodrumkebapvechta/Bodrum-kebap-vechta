@@ -347,6 +347,9 @@ const UI = {
   loyaltyBirthdaySaved: { de: 'Gespeichert 🎉', en: 'Saved 🎉', tr: 'Kaydedildi 🎉', ro: 'Salvat 🎉', nl: 'Opgeslagen 🎉', sq: 'U ruajt 🎉', ku: 'Hate tomarkirin 🎉', pl: 'Zapisano 🎉' },
   loyaltyBirthdaySkip: { de: 'Überspringen', en: 'Skip', tr: 'Atla', ro: 'Omite', nl: 'Overslaan', sq: 'Kalo', ku: 'Bavêje', pl: 'Pomiń' },
   loyaltyBirthdaySave: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan', sq: 'Ruaj', ku: 'Tomar bike', pl: 'Zapisz' },
+  loyaltyBirthdayInvalid: { de: 'Bitte Tag und Monat korrekt ausfüllen', en: 'Please enter a valid day and month', tr: 'Lütfen geçerli bir gün ve ay gir', ro: 'Te rugăm introdu o zi și lună valide', nl: 'Vul een geldige dag en maand in', sq: 'Ju lutemi vendosni një ditë dhe muaj të vlefshëm', ku: 'Ji kerema xwe rojek û mehek derbasdar binivîse', pl: 'Podaj prawidłowy dzień i miesiąc' },
+  loyaltyBirthdayInvalidYear: { de: 'Bitte ein gültiges Jahr eingeben', en: 'Please enter a valid year', tr: 'Lütfen geçerli bir yıl gir', ro: 'Te rugăm introdu un an valid', nl: 'Vul een geldig jaar in', sq: 'Ju lutemi vendosni një vit të vlefshëm', ku: 'Ji kerema xwe salek derbasdar binivîse', pl: 'Podaj prawidłowy rok' },
+  loyaltyBirthdayDuplicate: { de: 'Dieses Geburtsdatum ist bereits bei einer anderen Karte hinterlegt.', en: 'This birthdate is already registered to another card.', tr: 'Bu doğum tarihi zaten başka bir kartta kayıtlı.', ro: 'Această dată de naștere este deja înregistrată la un alt card.', nl: 'Deze verjaardag is al geregistreerd bij een andere kaart.', sq: 'Kjo datëlindje është regjistruar tashmë te një kartë tjetër.', ku: 'Ev roja bûyînê berê li karteke din hatiye tomarkirin.', pl: 'Ta data urodzenia jest już zarejestrowana na innej karcie.' },
   loyaltyContinue: { de: 'Weiter', en: 'Continue', tr: 'Devam et', ro: 'Continuă', nl: 'Doorgaan', sq: 'Vazhdo', ku: 'Bidomîne', pl: 'Dalej' },
   loyaltySetupTitle: { de: 'Wie möchtest du deine Karte einrichten?', en: 'How would you like to set up your card?', tr: 'Kartını nasıl oluşturmak istersin?', ro: 'Cum vrei să-ți configurezi cardul?', nl: 'Hoe wil je je kaart instellen?', sq: 'Si dëshiron ta krijosh kartën tënde?', ku: 'Tu dixwazî çawa kartê saz bikî?', pl: 'Jak chcesz skonfigurować swoją kartę?' },
   loyaltyOptionRandom: { de: 'Zufälligen Code erhalten', en: 'Get a random code', tr: 'Rastgele kod al', ro: 'Primește un cod aleatoriu', nl: 'Willekeurige code ontvangen', sq: 'Merr një kod të rastësishëm', ku: 'Kodeke tesadufî bistîne', pl: 'Otrzymaj losowy kod' },
@@ -1428,9 +1431,21 @@ async function redeemLoyaltyCard(code) {
   await safeSet(`loyalty:${code}`, updated);
   return updated;
 }
-async function setLoyaltyBirthday(code, mmdd) {
+async function setLoyaltyBirthday(code, mmdd, year) {
+  // Prüft, ob dieses exakte Geburtsdatum (Tag+Monat+Jahr) bereits bei einer
+  // ANDEREN Karte hinterlegt ist. Ein Mensch hat nur ein echtes Geburtsdatum
+  // — verhindert, dass jemand für denselben Geburtstag mehrfach Codes
+  // anlegt, um die Geburtstags-Gratis-Pizza wiederholt zu kassieren.
+  const rows = await safeListPrefix('loyalty:', 1000);
+  const duplicate = rows.find((r) => {
+    const otherCode = r.key.replace('loyalty:', '');
+    return otherCode !== code && r.value?.birthday === mmdd && r.value?.birthYear === year;
+  });
+  if (duplicate) {
+    return { error: 'duplicate' };
+  }
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
-  const updated = { ...card, birthday: mmdd };
+  const updated = { ...card, birthday: mmdd, birthYear: year };
   await safeSet(`loyalty:${code}`, updated);
   return updated;
 }
@@ -2974,6 +2989,8 @@ function LoyaltyModal({ lang, t, onClose }) {
   const [infoOpen, setInfoOpen] = useState(false);
   const [bdayMonth, setBdayMonth] = useState('');
   const [bdayDay, setBdayDay] = useState('');
+  const [bdayYear, setBdayYear] = useState('');
+  const [bdayError, setBdayError] = useState('');
   const [bdaySaved, setBdaySaved] = useState(false);
   const qrCanvasRef = useRef(null);
 
@@ -3068,8 +3085,13 @@ function LoyaltyModal({ lang, t, onClose }) {
   const saveBirthday = async () => {
     const mm = String(bdayMonth).padStart(2, '0');
     const dd = String(bdayDay).padStart(2, '0');
-    if (!bdayMonth || !bdayDay || +mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) return;
-    const updated = await setLoyaltyBirthday(code, `${mm}-${dd}`);
+    const yyyy = String(bdayYear).trim();
+    const currentYear = new Date().getFullYear();
+    setBdayError('');
+    if (!bdayMonth || !bdayDay || +mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) { setBdayError(t('loyaltyBirthdayInvalid')); return; }
+    if (!/^\d{4}$/.test(yyyy) || +yyyy < currentYear - 110 || +yyyy > currentYear) { setBdayError(t('loyaltyBirthdayInvalidYear')); return; }
+    const updated = await setLoyaltyBirthday(code, `${mm}-${dd}`, yyyy);
+    if (updated?.error === 'duplicate') { setBdayError(t('loyaltyBirthdayDuplicate')); return; }
     setCard(updated);
     setBdaySaved(true);
   };
@@ -3202,11 +3224,16 @@ function LoyaltyModal({ lang, t, onClose }) {
                 {bdaySaved ? (
                   <p className="text-sm font-bold text-center" style={{ color: '#7ed99b' }}>{t('loyaltyBirthdaySaved')}</p>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <input value={bdayDay} onChange={(e) => setBdayDay(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="TT" maxLength={2} className="w-14 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
-                    <span style={{ color: '#a89878' }}>.</span>
-                    <input value={bdayMonth} onChange={(e) => setBdayMonth(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="MM" maxLength={2} className="w-14 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
-                    <button onClick={saveBirthday} className="flex-1 py-2.5 rounded-lg font-bold text-xs text-white" style={{ background: ORANGE }}>{t('loyaltyBirthdaySave')}</button>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <input value={bdayDay} onChange={(e) => setBdayDay(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="TT" maxLength={2} className="w-12 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+                      <span style={{ color: '#a89878' }}>.</span>
+                      <input value={bdayMonth} onChange={(e) => setBdayMonth(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="MM" maxLength={2} className="w-12 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+                      <span style={{ color: '#a89878' }}>.</span>
+                      <input value={bdayYear} onChange={(e) => setBdayYear(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="JJJJ" maxLength={4} className="w-16 px-2 py-2.5 rounded-lg text-sm font-bold text-center outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
+                      <button onClick={saveBirthday} className="flex-1 py-2.5 rounded-lg font-bold text-xs text-white" style={{ background: ORANGE }}>{t('loyaltyBirthdaySave')}</button>
+                    </div>
+                    {bdayError && <p className="text-[11px] font-bold text-center mt-2" style={{ color: '#e08a8a' }}>{bdayError}</p>}
                   </div>
                 )}
               </div>
