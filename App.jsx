@@ -6733,6 +6733,12 @@ function StaffPanelView({ back }) {
   const [staffPin, setStaffPin] = useState('440921');
   const [newPin, setNewPin] = useState('');
   const [newPin2, setNewPin2] = useState('');
+  const [ownerPassword, setOwnerPassword] = useState('bodrum2026');
+  const [newOwnerPw, setNewOwnerPw] = useState('');
+  const [oldOwnerPw, setOldOwnerPw] = useState('');
+  const [newOwnerPw2, setNewOwnerPw2] = useState('');
+  const [ownerPwMsg, setOwnerPwMsg] = useState('');
+  const [ownerPwEnterValue, setOwnerPwEnterValue] = useState('');
   const [pinMsg, setPinMsg] = useState('');
   const [unlockStage, setUnlockStage] = useState('idle'); // idle | unlocked | wrong
   const [keystroke, setKeystroke] = useState(0);
@@ -6758,22 +6764,23 @@ function StaffPanelView({ back }) {
     } catch {}
   }, []);
   useEffect(() => { safeGet('siteconfig:staffPin').then((r) => { if (r && r.pin) setStaffPin(r.pin); }); }, []);
+  useEffect(() => { safeGet('siteconfig:ownerDevicePassword').then((r) => { if (r && r.password) setOwnerPassword(r.password); }); }, []);
+  const saveOwnerPassword = async () => {
+    if (oldOwnerPw !== ownerPassword) { setOwnerPwMsg('❌ Aktuelles Passwort ist falsch'); setTimeout(() => setOwnerPwMsg(''), 2500); return; }
+    if (newOwnerPw.trim().length < 4) { setOwnerPwMsg('Neues Passwort muss mind. 4 Zeichen haben'); setTimeout(() => setOwnerPwMsg(''), 2500); return; }
+    if (newOwnerPw !== newOwnerPw2) { setOwnerPwMsg('Neue Passwörter stimmen nicht überein'); setTimeout(() => setOwnerPwMsg(''), 2500); return; }
+    await safeSet('siteconfig:ownerDevicePassword', { password: newOwnerPw.trim() });
+    setOwnerPassword(newOwnerPw.trim());
+    setOldOwnerPw(''); setNewOwnerPw(''); setNewOwnerPw2('');
+    setOwnerPwMsg('✓ Passwort geändert');
+    setTimeout(() => setOwnerPwMsg(''), 2500);
+  };
   useEffect(() => {
     if (ok || unlocking || pin.length === 0) return;
     if (pin === staffPin) {
       setUnlocking(true);
       setUnlockStage('unlocked');
       unlockAudio();
-      // Markiert dieses Gerät bei OneSignal als "owner", damit z.B. Kundenwünsche
-      // NUR hierher gesendet werden können (nicht an alle Abonnenten). Reine
-      // Ergänzung — verändert nichts an der bestehenden Push-Registrierung/init.
-      try {
-        if (window.OneSignal?.User?.addTag) {
-          window.OneSignal.User.addTag('owner', 'true');
-        } else if (window.OneSignalDeferred) {
-          window.OneSignalDeferred.push((OneSignal) => { try { OneSignal.User.addTag('owner', 'true'); } catch {} });
-        }
-      } catch {}
       safeGet('siteconfig:lastStaffLogin').then((r) => {
         if (r && r.ts) setLastLoginAt(r.ts);
         safeSet('siteconfig:lastStaffLogin', { ts: Date.now() });
@@ -6822,6 +6829,7 @@ function StaffPanelView({ back }) {
   const [weekendPhotoUploadBusy, setWeekendPhotoUploadBusy] = useState('');
   const [settingsGroup, setSettingsGroup] = useState('sicherheit');
   const [pushTestMsg, setPushTestMsg] = useState('');
+  const [ownerDeviceMsg, setOwnerDeviceMsg] = useState('');
   const [pushTriggers, setPushTriggers] = useState({ ankuendigung: true, samstag: true, neuesProdukt: true, angebot: true, montagErinnerung: true });
   const [pushRawTestMsg, setPushRawTestMsg] = useState('');
   const [campaign, setCampaign] = useState({ active: false, title: '', subtitle: '', startDate: '', endDate: '' });
@@ -8126,6 +8134,78 @@ function StaffPanelView({ back }) {
                       {t('showTestOrdersLabel')}
                     </label>
                     {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
+                  </SettingsRow>
+
+                  <SettingsRow id="ownerDevice" icon="📱" title="Ana Cihaz (Owner-Gerät)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    {/* Aktivierungs-Karte */}
+                    <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">🔐</span>
+                        <span className="text-sm font-black" style={{ color: GREEN }}>Dieses Gerät aktivieren</span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed mb-3" style={{ color: '#8a7c62' }}>
+                        Legt DIESES Telefon als einziges Gerät fest, das Besitzer-Benachrichtigungen erhält (Kundenwünsche, Nachrichten, neue Abonnenten, volle Stempelkarten).
+                      </p>
+                      <input
+                        value={ownerPwEnterValue}
+                        onChange={(e) => { setOwnerPwEnterValue(e.target.value); setOwnerDeviceMsg(''); }}
+                        type="password"
+                        placeholder="Passwort"
+                        className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3 text-center tracking-widest"
+                        style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}
+                      />
+                      <button
+                        onClick={() => {
+                          if (ownerPwEnterValue !== ownerPassword) {
+                            setOwnerDeviceMsg('❌ Falsches Passwort');
+                            return;
+                          }
+                          try {
+                            if (window.OneSignal?.User?.addTag) {
+                              window.OneSignal.User.addTag('owner', 'true');
+                              setOwnerDeviceMsg('✓ Dieses Gerät ist jetzt das Ana Cihaz (Owner-Gerät).');
+                            } else if (window.OneSignalDeferred) {
+                              window.OneSignalDeferred.push((OneSignal) => {
+                                try { OneSignal.User.addTag('owner', 'true'); } catch {}
+                              });
+                              setOwnerDeviceMsg('✓ Dieses Gerät ist jetzt das Ana Cihaz (Owner-Gerät).');
+                            } else {
+                              setOwnerDeviceMsg('⚠️ OneSignal ist noch nicht bereit — Seite neu laden und erneut versuchen.');
+                            }
+                          } catch {
+                            setOwnerDeviceMsg('⚠️ Fehler — bitte erneut versuchen.');
+                          }
+                          setOwnerPwEnterValue('');
+                        }}
+                        className="w-full py-3 rounded-xl font-bold text-sm text-white"
+                        style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 6px 16px rgba(230,90,10,.3)' }}
+                      >
+                        📱 Als Ana Cihaz festlegen
+                      </button>
+                      {ownerDeviceMsg && (
+                        <p className="text-center text-xs font-bold mt-3 rounded-lg py-2" style={{ color: ownerDeviceMsg.startsWith('❌') || ownerDeviceMsg.startsWith('⚠️') ? '#c0392b' : '#2d6a4f', background: ownerDeviceMsg.startsWith('❌') || ownerDeviceMsg.startsWith('⚠️') ? 'rgba(214,40,40,.08)' : 'rgba(45,106,79,.1)' }}>
+                          {ownerDeviceMsg}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Passwort-ändern-Karte */}
+                    <div className="rounded-2xl p-4" style={{ background: 'rgba(255,246,234,.5)', border: '1.5px solid #f0e5cf' }}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-lg">🔑</span>
+                        <span className="text-sm font-black" style={{ color: GREEN }}>Passwort ändern</span>
+                      </div>
+                      <input value={oldOwnerPw} onChange={(e) => setOldOwnerPw(e.target.value)} type="password" placeholder="Aktuelles Passwort" className="w-full px-4 py-2.5 rounded-xl text-sm font-bold outline-none mb-2 text-center" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }} />
+                      <div className="w-full h-px my-2.5" style={{ background: '#e9dcbb' }} />
+                      <input value={newOwnerPw} onChange={(e) => setNewOwnerPw(e.target.value)} type="password" placeholder="Neues Passwort" className="w-full px-4 py-2.5 rounded-xl text-sm font-bold outline-none mb-2 text-center" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }} />
+                      <input value={newOwnerPw2} onChange={(e) => setNewOwnerPw2(e.target.value)} type="password" placeholder="Neues Passwort wiederholen" className="w-full px-4 py-2.5 rounded-xl text-sm font-bold outline-none mb-3 text-center" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }} />
+                      <button onClick={saveOwnerPassword} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
+                      {ownerPwMsg && (
+                        <p className="text-center text-xs font-bold mt-3 rounded-lg py-2" style={{ color: ownerPwMsg.startsWith('✓') ? '#2d6a4f' : '#c0392b', background: ownerPwMsg.startsWith('✓') ? 'rgba(45,106,79,.1)' : 'rgba(214,40,40,.08)' }}>
+                          {ownerPwMsg}
+                        </p>
+                      )}
+                    </div>
                   </SettingsRow>
 
                   <SettingsRow id="pushTest" icon="🔔" title="Push-Berechtigung testen (direkt)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
