@@ -347,6 +347,13 @@ const UI = {
   loyaltyBirthdaySaved: { de: 'Gespeichert 🎉', en: 'Saved 🎉', tr: 'Kaydedildi 🎉', ro: 'Salvat 🎉', nl: 'Opgeslagen 🎉', sq: 'U ruajt 🎉', ku: 'Hate tomarkirin 🎉', pl: 'Zapisano 🎉' },
   loyaltyBirthdaySkip: { de: 'Überspringen', en: 'Skip', tr: 'Atla', ro: 'Omite', nl: 'Overslaan', sq: 'Kalo', ku: 'Bavêje', pl: 'Pomiń' },
   loyaltyBirthdaySave: { de: 'Speichern', en: 'Save', tr: 'Kaydet', ro: 'Salvează', nl: 'Opslaan', sq: 'Ruaj', ku: 'Tomar bike', pl: 'Zapisz' },
+  loyaltyContinue: { de: 'Weiter', en: 'Continue', tr: 'Devam et', ro: 'Continuă', nl: 'Doorgaan', sq: 'Vazhdo', ku: 'Bidomîne', pl: 'Dalej' },
+  loyaltySetupTitle: { de: 'Wie möchtest du deine Karte einrichten?', en: 'How would you like to set up your card?', tr: 'Kartını nasıl oluşturmak istersin?', ro: 'Cum vrei să-ți configurezi cardul?', nl: 'Hoe wil je je kaart instellen?', sq: 'Si dëshiron ta krijosh kartën tënde?', ku: 'Tu dixwazî çawa kartê saz bikî?', pl: 'Jak chcesz skonfigurować swoją kartę?' },
+  loyaltyOptionRandom: { de: 'Zufälligen Code erhalten', en: 'Get a random code', tr: 'Rastgele kod al', ro: 'Primește un cod aleatoriu', nl: 'Willekeurige code ontvangen', sq: 'Merr një kod të rastësishëm', ku: 'Kodeke tesadufî bistîne', pl: 'Otrzymaj losowy kod' },
+  loyaltyOptionCustom: { de: 'Eigenen Code erstellen', en: 'Create your own code', tr: 'Kendi kodunu oluştur', ro: 'Creează-ți propriul cod', nl: 'Maak je eigen code', sq: 'Krijo kodin tënd', ku: 'Koda xwe ya taybet çêke', pl: 'Utwórz własny kod' },
+  loyaltyOptionExisting: { de: 'Ich habe schon einen Code', en: 'I already have a code', tr: 'Zaten bir kodum var', ro: 'Am deja un cod', nl: 'Ik heb al een code', sq: 'Kam tashmë një kod', ku: 'Berê koda min heye', pl: 'Mam już kod' },
+  loyaltyRuleWelcome: { de: 'Willkommensgeschenk: dein 1. Stempel gibt es sofort, ganz ohne Besuch!', en: 'Welcome gift: your 1st stamp is instant — no visit needed!', tr: 'Hoş geldin hediyesi: ilk damgan hemen, dükkana gelmeden!', ro: 'Cadou de bun venit: prima ștampilă este instant — fără vizită!', nl: 'Welkomstcadeau: je 1e stempel krijg je direct — geen bezoek nodig!', sq: 'Dhuratë mirëseardhjeje: vula e parë menjëherë — pa vizitë!', ku: 'Diyariya bi xêrhatinê: mora te ya yekem tavilê — bêyî serdanê!', pl: 'Prezent powitalny: 1. pieczątka od razu — bez wizyty!' },
+  loyaltyWelcomeStampMsg: { de: 'Dein erster Stempel ist schon da — willkommen!', en: 'Your first stamp is already here — welcome!', tr: 'İlk damgan hazır bile — hoş geldin!', ro: 'Prima ta ștampilă este deja aici — bine ai venit!', nl: 'Je eerste stempel is er al — welkom!', sq: 'Vula jote e parë është tashmë këtu — mirë se erdhe!', ku: 'Mora te ya yekem berê hat — bi xêr hatî!', pl: 'Twoja pierwsza pieczątka już czeka — witamy!' },
   dailyRecommendation: { de: 'TAGESEMPFEHLUNG', en: "TODAY'S PICKS", tr: 'GÜNÜN ÖNERİSİ', ro: 'RECOMANDAREA ZILEI', nl: 'AANBEVELING VAN DE DAG' , sq: 'REKOMANDIMI I DITËS', ku: 'PÊŞNIYARA ROJÊ', pl: 'POLECANE DNIA'},
   onlyLeft: { de: 'Nur noch', en: 'Only', tr: 'Sadece', ro: 'Doar', nl: 'Nog maar' , sq: 'Vetëm edhe', ku: 'Tenê hîn', pl: 'Zostało tylko'},
   minutesLeft: { de: 'Minuten!', en: 'minutes left!', tr: 'dakika kaldı!', ro: 'minute rămase!', nl: 'minuten over!' , sq: 'minuta!', ku: 'deqîqe!', pl: 'minut!'},
@@ -1401,10 +1408,12 @@ async function getLoyaltyCard(code) {
 }
 async function ensureLoyaltyCard(code) {
   const existing = await getLoyaltyCard(code);
-  if (existing) return existing;
-  const fresh = { stamps: 0, createdAt: Date.now() };
+  if (existing) return { card: existing, isNew: false };
+  // Willkommensgeschenk: 1 Stempel gratis, ohne dass ein Besuch nötig ist.
+  const fresh = { stamps: 1, createdAt: Date.now(), welcomeStamp: true };
   await safeSet(`loyalty:${code}`, fresh);
-  return fresh;
+  try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source: 'welcome' }); } catch {}
+  return { card: fresh, isNew: true };
 }
 async function addLoyaltyStamp(code) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
@@ -2942,9 +2951,10 @@ function WishModal({ lang, t, onClose }) {
 }
 
 function LoyaltyModal({ lang, t, onClose }) {
+  const [step, setStep] = useState('loading'); // loading | intro | setup | card
   const [code, setCode] = useState(null);
   const [card, setCard] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [justCreated, setJustCreated] = useState(false);
   const [mode, setMode] = useState('view'); // view | enter | custom
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
@@ -2956,7 +2966,7 @@ function LoyaltyModal({ lang, t, onClose }) {
   const qrCanvasRef = useRef(null);
 
   useEffect(() => {
-    if (!code || mode !== 'view') return;
+    if (step !== 'card' || !code) return;
     loadExternalScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js').then(() => {
       if (!qrCanvasRef.current || !window.qrcode) return;
       const qr = window.qrcode(0, 'M');
@@ -2977,16 +2987,9 @@ function LoyaltyModal({ lang, t, onClose }) {
         }
       }
     }).catch(() => {});
-  }, [code, mode]);
+  }, [code, step]);
 
-  const loadCode = async (c) => {
-    setLoading(true);
-    const cc = await ensureLoyaltyCard(c);
-    setCode(c);
-    setCard(cc);
-    setLoading(false);
-    // Markiert dieses Gerät bei OneSignal mit dem Code, damit spätere
-    // Erinnerungs-Pushes gezielt NUR an dieses eine Gerät gehen können.
+  const tagDevice = (c) => {
     try {
       if (window.OneSignal?.User?.addTag) {
         window.OneSignal.User.addTag('loyalty_code', c);
@@ -2996,17 +2999,34 @@ function LoyaltyModal({ lang, t, onClose }) {
     } catch {}
   };
 
+  const loadCode = async (c) => {
+    const { card: cc, isNew } = await ensureLoyaltyCard(c);
+    setCode(c);
+    setCard(cc);
+    setJustCreated(isNew);
+    tagDevice(c);
+    setStep('card');
+  };
+
+  // Wiederkehrende Nutzer: Code bereits gespeichert → direkt zur Karte, ohne
+  // Erklär-Assistent. Neue Nutzer: erst die Erklärung, dann Karte einrichten.
   useEffect(() => {
     let saved = null;
     try { saved = localStorage.getItem('bk_loyalty_code'); } catch {}
-    if (!saved) {
-      saved = generateLoyaltyCode();
-      try { localStorage.setItem('bk_loyalty_code', saved); } catch {}
+    if (saved) {
+      loadCode(saved);
+    } else {
+      setStep('intro');
     }
-    loadCode(saved);
   }, []);
 
   const normalizeSuffix = (v) => v.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+
+  const handleGetRandomCode = () => {
+    const c = generateLoyaltyCode();
+    try { localStorage.setItem('bk_loyalty_code', c); } catch {}
+    loadCode(c);
+  };
 
   const handleEnterCode = async () => {
     const v = `BK-${normalizeSuffix(inputValue)}`;
@@ -3056,41 +3076,86 @@ function LoyaltyModal({ lang, t, onClose }) {
           <div className="font-black text-base" style={{ color: GOLD }}>🎟️ {t('titleLoyalty')}</div>
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.1)' }}><X size={15} color="#fff" /></button>
         </div>
-        <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('loyaltyNoPhone')}</p>
 
-        {loading ? (
+        {step === 'loading' && (
           <div className="text-center py-8"><p className="text-sm font-bold" style={{ color: '#a89878' }}>…</p></div>
-        ) : mode === 'enter' || mode === 'custom' ? (
-          <div className="flex flex-col gap-2.5">
-            <p className="text-xs font-semibold text-center mb-1" style={{ color: '#a89878' }}>
-              {mode === 'custom' ? t('loyaltyCustomHint') : t('loyaltyEnterHint')}
-            </p>
-            <div className="flex items-center justify-center gap-1">
-              <span className="font-black text-lg" style={{ color: GOLD }}>BK-</span>
-              <input
-                value={inputValue}
-                onChange={(e) => { setInputValue(normalizeSuffix(e.target.value)); setInputError(''); }}
-                placeholder="1234"
-                maxLength={4}
-                className="px-3.5 py-3 rounded-lg text-lg font-black outline-none text-center tracking-widest"
-                style={{ background: CREAM, color: GREEN, border: 'none', width: 110 }}
-              />
+        )}
+
+        {step === 'intro' && (
+          <div>
+            <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('loyaltyNoPhone')}</p>
+            <div className="rounded-2xl p-4 mb-5" style={{ background: 'rgba(255,199,56,.08)', border: '1px solid rgba(255,199,56,.35)' }}>
+              <div className="text-sm font-black mb-3" style={{ color: GOLD }}>ℹ️ {t('loyaltyHowItWorksTitle')}</div>
+              <div className="text-[13px] leading-relaxed" style={{ color: CREAM }}>
+                <p className="mb-2.5">🎁 {t('loyaltyRuleWelcome')}</p>
+                <p className="mb-2.5">🥙 {t('loyaltyRule1')}</p>
+                <p className="mb-2.5">🍕 {t('loyaltyRule2')}</p>
+                <p className="mb-2.5">📱 {t('loyaltyRule3')}</p>
+                <p className="mb-2.5">🔑 {t('loyaltyRule4')}</p>
+                <p>♻️ {t('loyaltyRule5')}</p>
+              </div>
             </div>
-            {inputError && <p className="text-xs font-bold text-center" style={{ color: '#e08a8a' }}>{inputError}</p>}
-            <button onClick={mode === 'custom' ? handleCreateCustom : handleEnterCode} className="px-5 py-3 rounded-full font-bold text-sm text-white mt-1" style={{ background: ORANGE }}>
-              {mode === 'custom' ? t('loyaltyCreateBtn') : t('loyaltyConfirmCode')}
-            </button>
-            <button onClick={() => { setMode('view'); setInputError(''); setInputValue(''); }} className="text-xs font-semibold underline" style={{ color: '#a89878' }}>{t('loyaltyCancel')}</button>
+            <button onClick={() => setStep('setup')} className="w-full py-3.5 rounded-full font-bold text-sm text-white" style={{ background: ORANGE }}>{t('loyaltyContinue')} →</button>
           </div>
-        ) : (
+        )}
+
+        {step === 'setup' && (
+          <div>
+            <p className="text-sm font-bold text-center mb-4" style={{ color: CREAM }}>{t('loyaltySetupTitle')}</p>
+
+            {mode === 'enter' || mode === 'custom' ? (
+              <div className="flex flex-col gap-2.5">
+                <p className="text-xs font-semibold text-center mb-1" style={{ color: '#a89878' }}>
+                  {mode === 'custom' ? t('loyaltyCustomHint') : t('loyaltyEnterHint')}
+                </p>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="font-black text-lg" style={{ color: GOLD }}>BK-</span>
+                  <input
+                    value={inputValue}
+                    onChange={(e) => { setInputValue(normalizeSuffix(e.target.value)); setInputError(''); }}
+                    placeholder="1234"
+                    maxLength={4}
+                    className="px-3.5 py-3 rounded-lg text-lg font-black outline-none text-center tracking-widest"
+                    style={{ background: CREAM, color: GREEN, border: 'none', width: 110 }}
+                  />
+                </div>
+                {inputError && <p className="text-xs font-bold text-center" style={{ color: '#e08a8a' }}>{inputError}</p>}
+                <button onClick={mode === 'custom' ? handleCreateCustom : handleEnterCode} className="px-5 py-3 rounded-full font-bold text-sm text-white mt-1" style={{ background: ORANGE }}>
+                  {mode === 'custom' ? t('loyaltyCreateBtn') : t('loyaltyConfirmCode')}
+                </button>
+                <button onClick={() => { setMode('view'); setInputError(''); setInputValue(''); }} className="text-xs font-semibold underline" style={{ color: '#a89878' }}>{t('loyaltyCancel')}</button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                <button onClick={handleGetRandomCode} className="w-full py-3.5 rounded-2xl font-bold text-sm text-white text-left px-4" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>
+                  🎲 {t('loyaltyOptionRandom')}
+                </button>
+                <button onClick={() => setMode('custom')} className="w-full py-3.5 rounded-2xl font-bold text-sm text-white text-left px-4" style={{ background: 'rgba(255,255,255,.08)' }}>
+                  ✏️ {t('loyaltyOptionCustom')}
+                </button>
+                <button onClick={() => setMode('enter')} className="w-full py-3.5 rounded-2xl font-bold text-sm text-white text-left px-4" style={{ background: 'rgba(255,255,255,.08)' }}>
+                  🔑 {t('loyaltyOptionExisting')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {step === 'card' && (
           <>
+            {justCreated && (
+              <div className="rounded-xl p-3 mb-3 text-center" style={{ background: 'rgba(126,217,155,.15)', border: '1px solid rgba(126,217,155,.4)' }}>
+                <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>🎉 {t('loyaltyWelcomeStampMsg')}</p>
+              </div>
+            )}
+            <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('loyaltyNoPhone')}</p>
+
             <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
               <canvas ref={qrCanvasRef} className="mx-auto mb-2 rounded-lg" style={{ width: 120, height: 120 }} />
               <button onClick={copyCode} className="w-full mb-1">
                 <div className="text-[10px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>{copied ? t('loyaltyCopied') : t('loyaltyTapToCopy')}</div>
                 <div className="font-black text-2xl tracking-widest" style={{ color: GREEN }}>{code}</div>
               </button>
-              <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline" style={{ color: '#8a7c62' }}>{t('loyaltyCreateOwnCode')}</button>
             </div>
 
             {/* Stempelkarte */}
@@ -3118,20 +3183,6 @@ function LoyaltyModal({ lang, t, onClose }) {
 
             <p className="text-xs text-center font-medium mb-3" style={{ color: '#a89878' }}>{t('showCodeForStamp')}</p>
 
-            <button onClick={() => setInfoOpen((v) => !v)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl mb-1" style={{ background: 'rgba(255,255,255,.06)' }}>
-              <span className="text-xs font-bold" style={{ color: GOLD }}>ℹ️ {t('loyaltyHowItWorksTitle')}</span>
-              <span style={{ color: '#a89878', transform: infoOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
-            </button>
-            {infoOpen && (
-              <div className="text-[12px] leading-relaxed px-4 py-3 mb-3 rounded-xl" style={{ color: CREAM, background: 'rgba(255,255,255,.04)' }}>
-                <p className="mb-2">🥙 {t('loyaltyRule1')}</p>
-                <p className="mb-2">🍕 {t('loyaltyRule2')}</p>
-                <p className="mb-2">📱 {t('loyaltyRule3')}</p>
-                <p className="mb-2">🔑 {t('loyaltyRule4')}</p>
-                <p>♻️ {t('loyaltyRule5')}</p>
-              </div>
-            )}
-
             {!card?.birthday && (
               <div className="rounded-2xl p-4 mb-4" style={{ background: 'rgba(255,255,255,.05)' }}>
                 <div className="text-xs font-black mb-1" style={{ color: GOLD }}>{t('loyaltyBirthdayTitle')}</div>
@@ -3149,7 +3200,38 @@ function LoyaltyModal({ lang, t, onClose }) {
               </div>
             )}
 
-            <button onClick={() => setMode('enter')} className="text-xs font-semibold underline w-full text-center mt-2" style={{ color: '#a89878' }}>{t('loyaltyHaveCode')}</button>
+            <div className="flex items-center justify-between gap-3">
+              <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline" style={{ color: '#8a7c62' }}>{t('loyaltyCreateOwnCode')}</button>
+              <button onClick={() => setInfoOpen((v) => !v)} className="text-[11px] font-semibold underline" style={{ color: '#8a7c62' }}>ℹ️ {t('loyaltyHowItWorksTitle')}</button>
+            </div>
+            {infoOpen && (
+              <div className="text-[12px] leading-relaxed px-4 py-3 mt-2 rounded-xl" style={{ color: CREAM, background: 'rgba(255,255,255,.04)' }}>
+                <p className="mb-2">🥙 {t('loyaltyRule1')}</p>
+                <p className="mb-2">🍕 {t('loyaltyRule2')}</p>
+                <p className="mb-2">📱 {t('loyaltyRule3')}</p>
+                <p className="mb-2">🔑 {t('loyaltyRule4')}</p>
+                <p>♻️ {t('loyaltyRule5')}</p>
+              </div>
+            )}
+            {mode === 'custom' && (
+              <div className="flex flex-col gap-2.5 mt-3 rounded-2xl p-4" style={{ background: 'rgba(255,255,255,.05)' }}>
+                <p className="text-xs font-semibold text-center" style={{ color: '#a89878' }}>{t('loyaltyCustomHint')}</p>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="font-black text-lg" style={{ color: GOLD }}>BK-</span>
+                  <input
+                    value={inputValue}
+                    onChange={(e) => { setInputValue(normalizeSuffix(e.target.value)); setInputError(''); }}
+                    placeholder="1234"
+                    maxLength={4}
+                    className="px-3.5 py-3 rounded-lg text-lg font-black outline-none text-center tracking-widest"
+                    style={{ background: CREAM, color: GREEN, border: 'none', width: 110 }}
+                  />
+                </div>
+                {inputError && <p className="text-xs font-bold text-center" style={{ color: '#e08a8a' }}>{inputError}</p>}
+                <button onClick={handleCreateCustom} className="px-5 py-3 rounded-full font-bold text-sm text-white mt-1" style={{ background: ORANGE }}>{t('loyaltyCreateBtn')}</button>
+                <button onClick={() => { setMode('view'); setInputError(''); setInputValue(''); }} className="text-xs font-semibold underline" style={{ color: '#a89878' }}>{t('loyaltyCancel')}</button>
+              </div>
+            )}
           </>
         )}
       </div>
