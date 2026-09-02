@@ -6863,6 +6863,7 @@ function StaffPanelView({ back }) {
   const [visits, setVisits] = useState([]);
   const [wishes, setWishes] = useState([]);
   const [loyaltyStats, setLoyaltyStats] = useState(null);
+  const [allLoyaltyCards, setAllLoyaltyCards] = useState([]);
   const [recentStamps, setRecentStamps] = useState([]);
   const [contactMessagesArchive, setContactMessagesArchive] = useState([]);
   const [subscriberCount, setSubscriberCount] = useState(null);
@@ -7121,6 +7122,10 @@ function StaffPanelView({ back }) {
           .map((r) => ({ code: r.key.replace('loyalty:', ''), birthday: r.value.birthday }))
           .sort((a, b) => a.birthday.localeCompare(b.birthday));
         setLoyaltyStats({ totalCards, fullCards, totalRedeemed, withBirthday, upcomingBirthdays, todayMMDD });
+        setAllLoyaltyCards(
+          rows.map((r) => ({ code: r.key.replace('loyalty:', ''), ...r.value }))
+            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        );
       });
       safeListPrefix('loyaltystamp:', 10).then((rows) => setRecentStamps(rows.sort((a, b) => b.value.ts - a.value.ts)));
     }
@@ -8639,6 +8644,34 @@ function StaffPanelView({ back }) {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {allLoyaltyCards.length > 0 && (
+                <div className="bg-white rounded-2xl p-4 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>ALLE KARTEN ({allLoyaltyCards.length})</div>
+                  {allLoyaltyCards.map((c) => (
+                    <div key={c.code} className="flex items-center justify-between gap-2 py-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold" style={{ color: GREEN }}>{c.code}</div>
+                        <div className="text-[10px] font-semibold" style={{ color: '#a4906c' }}>
+                          {c.stamps || 0}/{LOYALTY_TARGET} Stempel{c.createdAt ? ` · erstellt ${new Date(c.createdAt).toLocaleDateString('de-DE')}` : ''}
+                        </div>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Karte ${c.code} wirklich komplett löschen?`)) return;
+                          await deleteLoyaltyCard(c.code);
+                          setAllLoyaltyCards((prev) => prev.filter((x) => x.code !== c.code));
+                          setLoyaltyStats((prev) => prev ? { ...prev, totalCards: prev.totalCards - 1 } : prev);
+                        }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ background: '#f7ded9' }}
+                      >
+                        <X size={13} color={CHILI} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
 
