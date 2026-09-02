@@ -1434,6 +1434,16 @@ async function setLoyaltyBirthday(code, mmdd) {
   await safeSet(`loyalty:${code}`, updated);
   return updated;
 }
+async function deleteLoyaltyCard(code) {
+  await safeDeleteKey(`loyalty:${code}`);
+  // Zugehörige Stempel-Historie ebenfalls entfernen, damit "Letzte Stempel"
+  // nicht weiter alte Testdaten anzeigt.
+  try {
+    const rows = await safeListPrefix('loyaltystamp:', 500);
+    const matching = rows.filter((r) => r.value?.code === code);
+    await Promise.all(matching.map((r) => safeDeleteKey(r.key)));
+  } catch {}
+}
 async function isPushTriggerEnabled(key) {
   try {
     const t = await safeGet('siteconfig:pushTriggers');
@@ -6560,6 +6570,17 @@ function LoyaltyAdminPanel() {
     setBusy(false);
   };
 
+  const deleteCard = async () => {
+    if (!result || result === 'notfound') return;
+    if (!confirm(`Karte ${result.code} wirklich komplett löschen? Das kann nicht rückgängig gemacht werden.`)) return;
+    setBusy(true);
+    await deleteLoyaltyCard(result.code);
+    setResult(null);
+    setSearch('');
+    setMsg(`${result.code} wurde gelöscht ✓`);
+    setBusy(false);
+  };
+
   return (
     <div>
       <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Code des Kunden eingeben (z. B. BK-4821 oder nur 4821), um einen Stempel hinzuzufügen oder die Gratis-Portion einzulösen.</p>
@@ -6607,6 +6628,7 @@ function LoyaltyAdminPanel() {
           ) : (
             <button onClick={addStamp} disabled={busy} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>+1 Stempel</button>
           )}
+          <button onClick={deleteCard} disabled={busy} className="w-full py-2.5 rounded-xl font-bold text-xs mt-2" style={{ background: 'transparent', color: '#c0392b', border: '1.5px solid #f0d0cc' }}>🗑️ Karte löschen</button>
         </div>
       )}
 
