@@ -1316,14 +1316,14 @@ async function generateReceiptImage({ items, total, code, name, pickupTime, note
 
   return canvas.toDataURL('image/png');
 }
-function logVisit(lang) {
+function logVisit(lang, source) {
   try {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     if (localStorage.getItem('bk_visit_day') === today) return;
     localStorage.setItem('bk_visit_day', today);
     const device = window.innerWidth < 768 ? 'mobile' : 'desktop';
     const key = `analytics:${Date.now()}-${makeShortCode(4)}`;
-    safeSet(key, { ts: Date.now(), lang, device });
+    safeSet(key, { ts: Date.now(), lang, device, ...(source ? { source } : {}) });
   } catch {}
 }
 function useLiveViewerCount() {
@@ -8374,6 +8374,7 @@ function StaffPanelView({ back }) {
             const routeClicks = visits.filter((v) => v.value.event === 'route').length;
             const total = pageVisits.length;
             const today = pageVisits.filter((v) => v.value.ts >= todayStart.getTime()).length;
+            const qrVisits = pageVisits.filter((v) => v.value.source === 'qr_tisch').length;
             const byLang = {};
             const byDevice = { mobile: 0, desktop: 0 };
             pageVisits.forEach((v) => {
@@ -8397,14 +8398,18 @@ function StaffPanelView({ back }) {
                   <div className="font-black text-3xl text-white">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
                   <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
-                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
-                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
+                <div className="grid grid-cols-3 gap-2.5 mb-4">
+                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-3 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
+                    <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
-                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
-                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
+                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="rounded-xl p-3 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
+                    <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
+                  </button>
+                  <button onClick={() => openStatsModal('📷 QR-Code (Tisch)', pageVisits.filter((v) => v.value.source === 'qr_tisch'), (v) => `${(v.value.lang || '').toUpperCase()} · ${new Date(v.value.ts).toLocaleString('de-DE')}`)} className="rounded-xl p-3 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-xl" style={{ color: ORANGE }}>📷 {qrVisits}</div>
+                    <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>QR-Code (Tisch)</div>
                   </button>
                 </div>
                 <SettingsRow id="statKundenwuensche" icon="💡" title={`Kundenwünsche (${wishes.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
@@ -9428,6 +9433,13 @@ export default function App() {
     document.head.appendChild(script);
   }, []);
   const langCtx = useLang();
+  useEffect(() => {
+    // Tischmenü wird bisher NUR aufgerufen, wenn jemand über den QR-Code
+    // (Link mit ?menu=1) direkt einsteigt — HomeView's eigener logVisit()
+    // greift hier nie, weil HomeView in diesem Fall gar nicht gerendert wird.
+    // Ohne diesen Aufruf wurden QR-Besuche bisher überhaupt nicht gezählt.
+    if (isTischMenu) logVisit(langCtx.lang, 'qr_tisch');
+  }, []);
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const cartCount = useMemo(() => Object.values(cart).reduce((s, v) => s + v.qty, 0), [cart]);
