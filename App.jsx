@@ -3685,17 +3685,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const weather = useWeather();
   const windSway = (base = '', dur = 2.6, delay = 0) => weather?.windy ? `${base ? base + ', ' : ''}windSway ${dur}s ease-in-out ${delay}s infinite` : (base || undefined);
   const [navOpen, setNavOpen] = useState(false);
-  const [logoClicks, setLogoClicks] = useState(0);
   const [gameOpen, setGameOpen] = useState(false);
-  const logoClickTimer = useRef(null);
   const handleLogoClick = () => {
-    setLogoClicks((c) => {
-      const nc = c + 1;
-      if (nc >= 3) { setGameOpen(true); return 0; }
-      return nc;
-    });
-    clearTimeout(logoClickTimer.current);
-    logoClickTimer.current = setTimeout(() => setLogoClicks(0), 1500);
+    logEvent('hero_logo_game');
+    setGameOpen(true);
   };
   const [lightbox, setLightbox] = useState(null);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
@@ -3869,7 +3862,19 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <header className="sticky top-0 z-40" style={{ background: GREEN }}>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-3.5 flex items-center justify-between">
           <div className="flex items-center flex-wrap gap-2 sm:gap-3">
-            <img src={LOGO_ICON} alt="Bodrum Kebap Vechta" onClick={handleLogoClick} className="w-10 h-10 rounded-full object-contain cursor-pointer" style={{ background: CREAM, padding: 3 }} />
+            <div className="relative flex-shrink-0" onClick={handleLogoClick}>
+              <img src={LOGO_ICON} alt="Bodrum Kebap Vechta" className="w-10 h-10 rounded-full object-contain cursor-pointer" style={{ background: CREAM, padding: 3 }} />
+              <span
+                className="absolute flex items-center justify-center"
+                style={{
+                  bottom: -3, right: -3, width: 18, height: 18, borderRadius: '50%',
+                  background: GOLD, border: `1.5px solid ${GREEN}`, fontSize: 10,
+                  animation: 'goldGlow 2.2s ease-in-out infinite',
+                }}
+              >
+                🎮
+              </span>
+            </div>
             <div>
               <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
               <div className="text-[10px] font-bold tracking-[3px]" style={{ color: GOLD }}>VECHTA</div>
@@ -8368,6 +8373,7 @@ function StaffPanelView({ back }) {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
                     hero_surprise: '🎲 Hero: Überrasch mich',
+                    hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     call: '📞 Anruf-Button',
                     route: '📍 Route/Anfahrt',
                   };
