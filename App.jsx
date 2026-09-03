@@ -8794,8 +8794,11 @@ function StaffPanelView({ back }) {
                   )}
                   {recentStamps.length > 0 && (
                     <div className="mt-3 pt-3" style={{ borderTop: '1px solid #f0e5cf' }}>
-                      <div className="text-[10px] font-black mb-1.5" style={{ color: '#a4906c' }}>LETZTE 10 STEMPEL</div>
-                      {recentStamps.map((s) => (
+                      <button onClick={() => setOpenSettingsId((v) => v === 'recentStamps' ? null : 'recentStamps')} className="w-full flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-black" style={{ color: '#a4906c' }}>LETZTE 10 STEMPEL</span>
+                        <span style={{ color: '#a4906c', transform: openSettingsId === 'recentStamps' ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
+                      </button>
+                      {openSettingsId === 'recentStamps' && recentStamps.map((s) => (
                         <div key={s.key} className="flex justify-between text-xs font-semibold py-0.5" style={{ color: GREEN }}>
                           <span>{s.value.code}</span>
                           <span style={{ color: '#a4906c' }}>{new Date(s.value.ts).toLocaleString('de-DE')}</span>
@@ -8808,8 +8811,11 @@ function StaffPanelView({ back }) {
 
               {allLoyaltyCards.length > 0 && (
                 <div className="bg-white rounded-2xl p-4 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
-                  <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>ALLE KARTEN ({allLoyaltyCards.length})</div>
-                  {allLoyaltyCards.map((c) => (
+                  <button onClick={() => setOpenSettingsId((v) => v === 'allCards' ? null : 'allCards')} className="w-full flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-black tracking-widest" style={{ color: '#a4906c' }}>ALLE KARTEN ({allLoyaltyCards.length})</span>
+                    <span style={{ color: '#a4906c', transform: openSettingsId === 'allCards' ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
+                  </button>
+                  {openSettingsId === 'allCards' && allLoyaltyCards.map((c) => (
                     <div key={c.code} className="flex items-center justify-between gap-2 py-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
                       <div className="min-w-0">
                         <div className="text-sm font-bold" style={{ color: GREEN }}>{c.code}</div>
