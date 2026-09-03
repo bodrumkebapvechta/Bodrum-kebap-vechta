@@ -2855,6 +2855,16 @@ async function translateToGerman(text, sourceLang) {
   } catch {}
   return text; // Fallback: Original, falls Übersetzung fehlschlägt
 }
+async function translateFromGerman(text, targetLang) {
+  if (targetLang === 'de' || !text.trim()) return text;
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=de|${targetLang}`);
+    const j = await res.json();
+    const translated = j?.responseData?.translatedText;
+    if (translated && j.responseStatus === 200) return translated;
+  } catch {}
+  return text; // Fallback: deutsches Original, falls Übersetzung fehlschlägt
+}
 
 function ContactMessageForm({ lang, t }) {
   const [name, setName] = useState('');
@@ -3731,7 +3741,24 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const HOME_EFFECTIVE_MENU = useMemo(() => applyPriceOverrides(homePriceOverrides, homePhotoOverrides, homeSoldOutIds), [homePriceOverrides, homePhotoOverrides, homeSoldOutIds]);
   const HOME_SURPRISE_ITEMS = useMemo(() => buildSurpriseItems(HOME_EFFECTIVE_MENU), [HOME_EFFECTIVE_MENU]);
   const [dailyBanner, setDailyBanner] = useState(null);
-  useEffect(() => { safeGet('siteconfig:dailyBanner').then((r) => { if (r && r.text && (!r.expiresAt || r.expiresAt > Date.now())) setDailyBanner(r); }); }, []);
+  useEffect(() => {
+    safeGet('siteconfig:dailyBanner').then(async (r) => {
+      if (!r || !r.text || (r.expiresAt && r.expiresAt <= Date.now())) return;
+      if (lang === 'de') { setDailyBanner(r); return; }
+      // Bereits für diese Sprache übersetzt und zwischengespeichert?
+      if (r.translations && r.translations[lang]) {
+        setDailyBanner({ ...r, text: r.translations[lang] });
+        return;
+      }
+      // Einmalig übersetzen — das Ergebnis wird gespeichert, damit nicht
+      // jeder Besucher in dieser Sprache erneut die Übersetzungs-API aufruft.
+      const translated = await translateFromGerman(r.text, lang);
+      setDailyBanner({ ...r, text: translated });
+      try {
+        await safeSet('siteconfig:dailyBanner', { ...r, translations: { ...(r.translations || {}), [lang]: translated } });
+      } catch {}
+    });
+  }, [lang]);
   const [extraGalleryPhotos, setExtraGalleryPhotos] = useState([]);
   useEffect(() => { safeGet('siteconfig:extraGalleryPhotos').then((r) => { if (r) setExtraGalleryPhotos(r); }); }, []);
   const [hiddenPhotos, setHiddenPhotos] = useState([]);
@@ -4075,8 +4102,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
               </button>
-              <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: `linear-gradient(135deg, ${CHILI}, #ff6b35)`, boxShadow: '0 8px 22px rgba(214,40,40,.45)', animation: windSway('pulseGlow 1.8s ease-in-out infinite', 2.7, 0.2) }}>
-                <span className="text-base flex-shrink-0">🎟️</span> <span className="truncate">{t('loyaltyTabLabel')}</span>
+              <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-xs text-center text-white leading-tight" style={{ background: `linear-gradient(135deg, ${CHILI}, #ff6b35)`, boxShadow: '0 8px 22px rgba(214,40,40,.45)', animation: windSway('pulseGlow 1.8s ease-in-out infinite', 2.7, 0.2) }}>
+                <span className="text-xl flex-shrink-0">🎟️</span> <span className="truncate">{t('loyaltyTabLabel')}</span>
               </button>
               <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)', animation: windSway('', 2.8, 0.3) }}>
                 <span className="text-base flex-shrink-0">💡</span> <span className="truncate">{t('wishBoxNavLabel')}</span>
@@ -6924,6 +6951,7 @@ function StaffPanelView({ back }) {
   const [tischAdminSearch, setTischAdminSearch] = useState('');
   const [tischNewCatEmoji, setTischNewCatEmoji] = useState('🍽️');
   const [tischItemCat, setTischItemCat] = useState('');
+  const [tischItemNumber, setTischItemNumber] = useState('');
   const [tischItemName, setTischItemName] = useState('');
   const [tischItemDesc, setTischItemDesc] = useState('');
   const [tischItemPrice, setTischItemPrice] = useState('');
@@ -6989,7 +7017,7 @@ function StaffPanelView({ back }) {
     saveTischMenu(next);
   }
   function tischResetForm() {
-    setTischEditingId(null); setTischItemName(''); setTischItemDesc(''); setTischItemPrice(''); setTischItemPriceLarge(''); setTischItemImg(''); setTischMsg(''); setTischFormOpen(false);
+    setTischEditingId(null); setTischItemName(''); setTischItemDesc(''); setTischItemPrice(''); setTischItemPriceLarge(''); setTischItemNumber(''); setTischItemImg(''); setTischMsg(''); setTischFormOpen(false);
   }
   function tischStartAdd() {
     tischResetForm();
@@ -7000,6 +7028,7 @@ function StaffPanelView({ back }) {
     setTischItemName(typeof item.name === 'string' ? item.name : (item.name?.de || ''));
     setTischItemDesc(typeof item.desc === 'string' ? item.desc : (item.desc?.de || ''));
     setTischItemPrice(String(item.price)); setTischItemPriceLarge(item.priceLarge !== undefined ? String(item.priceLarge) : '');
+    setTischItemNumber(item.number || '');
     setTischItemImg(tischPhotos[item.id] || item.img || '');
     setTischFormOpen(true);
   }
@@ -7010,7 +7039,10 @@ function StaffPanelView({ back }) {
   function tischSaveItem() {
     const price = parseFloat(tischItemPrice.replace(',', '.'));
     if (!tischItemCat || !tischItemName.trim() || isNaN(price)) { setTischMsg('⚠️ Kategorie, Name und Preis erforderlich'); return; }
-    const priceLargeVal = tischItemPriceLarge.trim() ? parseFloat(tischItemPriceLarge.replace(',', '.')) : undefined;
+    const selectedCatForSave = tischMenu.categories.find((c) => c.key === tischItemCat);
+    const isPizzaCatForSave = selectedCatForSave && tischText(selectedCatForSave.label, 'de').toLowerCase().includes('pizza');
+    const priceLargeVal = isPizzaCatForSave && tischItemPriceLarge.trim() ? parseFloat(tischItemPriceLarge.replace(',', '.')) : undefined;
+    const numberVal = tischItemNumber.trim();
     let items;
     let itemId = tischEditingId;
     if (tischEditingId) {
@@ -7019,6 +7051,7 @@ function StaffPanelView({ back }) {
         const next = { ...i, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price };
         delete next.img; // Fotos liegen jetzt einzeln unter tischphoto:{id}, nicht mehr im Menü-Datensatz
         if (priceLargeVal !== undefined) next.priceLarge = priceLargeVal; else delete next.priceLarge;
+        if (numberVal) next.number = numberVal; else delete next.number;
         return next;
       });
     } else {
@@ -7026,6 +7059,7 @@ function StaffPanelView({ back }) {
       itemId = id;
       const newItem = { id, category: tischItemCat, name: tischItemName.trim(), desc: tischItemDesc.trim(), price, soldOut: false };
       if (priceLargeVal !== undefined) newItem.priceLarge = priceLargeVal;
+      if (numberVal) newItem.number = numberVal;
       items = [...tischMenu.items, newItem];
       fireIfEnabled('neuesProdukt', '🆕 Neu auf der Karte!', tischItemName.trim());
     }
@@ -7766,12 +7800,21 @@ function StaffPanelView({ back }) {
                     <option value="">Kategorie wählen…</option>
                     {tischMenu.categories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {tischText(c.label, 'de')}</option>)}
                   </select>
+                  <input value={tischItemNumber} onChange={(e) => setTischItemNumber(e.target.value.replace(/[^a-zA-Z0-9-]/g, ''))} placeholder="Nummer (z.B. 12 oder 0-steak)" className="w-full px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                   <input value={tischItemName} onChange={(e) => setTischItemName(e.target.value)} placeholder="Name (auf Deutsch)" className="w-full px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                   <textarea value={tischItemDesc} onChange={(e) => setTischItemDesc(e.target.value)} placeholder="Beschreibung (optional, auf Deutsch)" rows={2} className="w-full px-3.5 py-3 rounded-xl text-sm font-medium outline-none resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                  <div className="flex gap-2.5">
-                    <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="flex-1 px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                    <input value={tischItemPriceLarge} onChange={(e) => setTischItemPriceLarge(e.target.value)} placeholder="Preis groß (opt.)" inputMode="decimal" className="flex-1 px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                  </div>
+                  {(() => {
+                    const selectedCat = tischMenu.categories.find((c) => c.key === tischItemCat);
+                    const isPizzaCat = selectedCat && tischText(selectedCat.label, 'de').toLowerCase().includes('pizza');
+                    return isPizzaCat ? (
+                      <div className="flex gap-2.5">
+                        <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis klein (22cm)" inputMode="decimal" className="flex-1 px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                        <input value={tischItemPriceLarge} onChange={(e) => setTischItemPriceLarge(e.target.value)} placeholder="Preis groß (28cm)" inputMode="decimal" className="flex-1 px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                      </div>
+                    ) : (
+                      <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                    );
+                  })()}
                   {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-xl" />}
                   <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
                     <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
