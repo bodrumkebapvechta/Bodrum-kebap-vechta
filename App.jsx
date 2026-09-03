@@ -3830,7 +3830,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const now = useLiveClock();
   const liveViewers = useLiveViewerCount();
   const status = getOpenStatus(now);
-  useEffect(() => { logVisit(lang); }, []);
+  useEffect(() => { logVisit(lang, isQrVisit() ? 'qr_tisch' : undefined); }, []);
   // Hinweis: Die automatischen Push-Benachrichtigungen für "Samstag-Angebot"
   // und "Montags-Erinnerung" werden seit [Datum] nicht mehr hier im Frontend
   // (abhängig von einem zufälligen Website-Besuch) ausgelöst, sondern
@@ -8460,7 +8460,6 @@ function StaffPanelView({ back }) {
             const routeClicks = visits.filter((v) => v.value.event === 'route').length;
             const total = pageVisits.length;
             const today = pageVisits.filter((v) => v.value.ts >= todayStart.getTime()).length;
-            const qrVisits = pageVisits.filter((v) => v.value.source === 'qr_tisch').length;
             const byLang = {};
             const byDevice = { mobile: 0, desktop: 0 };
             pageVisits.forEach((v) => {
@@ -8484,18 +8483,14 @@ function StaffPanelView({ back }) {
                   <div className="font-black text-3xl text-white">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
                   <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
                 </div>
-                <div className="grid grid-cols-3 gap-2.5 mb-4">
-                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-3 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
-                    <div className="font-black text-xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
-                    <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="rounded-xl p-3 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
-                    <div className="font-black text-xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
-                    <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
-                  </button>
-                  <button onClick={() => openStatsModal('📷 QR-Code (Tisch)', pageVisits.filter((v) => v.value.source === 'qr_tisch'), (v) => `${(v.value.lang || '').toUpperCase()} · ${new Date(v.value.ts).toLocaleString('de-DE')}`)} className="rounded-xl p-3 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
-                    <div className="font-black text-xl" style={{ color: ORANGE }}>📷 {qrVisits}</div>
-                    <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>QR-Code (Tisch)</div>
+                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </button>
                 </div>
                 <SettingsRow id="statKundenwuensche" icon="💡" title={`Kundenwünsche (${wishes.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
@@ -9457,6 +9452,9 @@ function CookieBanner() {
 
 function isTischMenuUrl() {
   try { return new URLSearchParams(window.location.search).get('menu') === '1'; } catch { return false; }
+}
+function isQrVisit() {
+  try { return new URLSearchParams(window.location.search).get('qr') === '1'; } catch { return false; }
 }
 
 export default function App() {
