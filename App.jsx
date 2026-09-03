@@ -4070,9 +4070,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
-            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
+              </button>
+              <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #c9781a, #e6a83a)', boxShadow: '0 8px 20px rgba(201,120,26,.35)', animation: windSway('', 2.7, 0.2) }}>
+                <span className="text-base flex-shrink-0">🎟️</span> <span className="truncate">{t('loyaltyTabLabel')}</span>
               </button>
               <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)', animation: windSway('', 2.8, 0.3) }}>
                 <span className="text-base flex-shrink-0">💡</span> <span className="truncate">{t('wishBoxNavLabel')}</span>
@@ -8461,6 +8464,7 @@ function StaffPanelView({ back }) {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
                     hero_surprise: '🎲 Hero: Überrasch mich',
+                    hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     call: '📞 Anruf-Button',
                     route: '📍 Route/Anfahrt',
