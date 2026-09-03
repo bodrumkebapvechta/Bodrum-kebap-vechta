@@ -1059,6 +1059,23 @@ function tischText(val, lang) {
   if (typeof val === 'string') return val;
   return val[lang] || val.de || '';
 }
+// Sortiert Artikel nach ihrer Nummer (z.B. "205", "204e", "0-steak") — erst
+// nach der führenden Zahl, dann alphabetisch (204d vor 204e). Artikel ohne
+// Nummer landen am Ende, sortiert nach Name.
+function sortByItemNumber(items, lang) {
+  return [...items].sort((a, b) => {
+    const na = a.number ? parseFloat(String(a.number).match(/-?\d+(\.\d+)?/)?.[0] ?? 'NaN') : NaN;
+    const nb = b.number ? parseFloat(String(b.number).match(/-?\d+(\.\d+)?/)?.[0] ?? 'NaN') : NaN;
+    const aHas = !isNaN(na), bHas = !isNaN(nb);
+    if (aHas && bHas) {
+      if (na !== nb) return na - nb;
+      return String(a.number).localeCompare(String(b.number));
+    }
+    if (aHas) return -1;
+    if (bHas) return 1;
+    return tischText(a.name, lang || 'de').localeCompare(tischText(b.name, lang || 'de'));
+  });
+}
 function tischCatLabel(cat, lang) {
   if (cat.key.startsWith('imp-')) {
     const orig = cat.key.slice(4);
@@ -7740,13 +7757,13 @@ function StaffPanelView({ back }) {
           {/* Artikel-Liste je Kategorie */}
           {tischMenu.categories.map((cat) => {
             const q = tischAdminSearch.trim().toLowerCase();
-            const catItems = tischMenu.items.filter((i) => {
+            const catItems = sortByItemNumber(tischMenu.items.filter((i) => {
               if (i.category !== cat.key) return false;
               if (!q) return true;
               const numMatch = i.number && String(i.number).toLowerCase().includes(q);
               const nameMatch = tischText(i.name, 'de').toLowerCase().includes(q);
               return numMatch || nameMatch;
-            });
+            }));
             if (q && catItems.length === 0) return null;
             return (
               <div key={cat.key} className="mb-5">
@@ -9069,8 +9086,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
 
   const activeItems = useMemo(() => {
     if (!tischMenu || !activeCat) return [];
-    return tischMenu.items.filter((i) => i.category === activeCat);
-  }, [tischMenu, activeCat]);
+    return sortByItemNumber(tischMenu.items.filter((i) => i.category === activeCat), lang);
+  }, [tischMenu, activeCat, lang]);
 
   const searchResults = useMemo(() => {
     if (!tischMenu || !search.trim()) return null;
