@@ -4037,7 +4037,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           {dailyBanner.img && <img src={dailyBanner.img} alt="" onClick={() => setLightbox(dailyBanner.img)} className="w-full h-40 object-cover cursor-pointer" />}
           <div className="flex items-center gap-2.5 px-4 py-3.5">
             <span className="text-xl flex-shrink-0">📣</span>
-            <span className="font-bold text-sm" style={{ color: GOLD }}>{dailyBanner.text}</span>
+            <span className="font-bold text-sm" style={{ color: GOLD, whiteSpace: 'pre-line' }}>{dailyBanner.text}</span>
           </div>
         </div>
       )}
@@ -8157,7 +8157,7 @@ function StaffPanelView({ back }) {
                   </SettingsRow>
 
                   <SettingsRow id="dailyBanner" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <input value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <textarea value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} rows={3} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
                     {dailyBannerImg && <img src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
                     <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white mb-2.5 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: dailyBannerUploadBusy ? 0.6 : 1 }}>
                       <span className="text-base">📷</span> {dailyBannerUploadBusy ? '…' : 'Foto hinzufügen (optional)'}
