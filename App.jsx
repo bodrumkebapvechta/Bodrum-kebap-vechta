@@ -3830,6 +3830,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         @keyframes sideFloatHome2 { 0%,100%{ transform:translateY(0) rotate(6deg);} 50%{ transform:translateY(-32px) rotate(-6deg);} }
         @keyframes sideSpinHome { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
         @keyframes windSway { 0%,100%{ transform:rotate(-1.4deg) translateX(-1px);} 50%{ transform:rotate(1.4deg) translateX(1px);} }
+        @keyframes pulseGlow { 0%,100%{ box-shadow:0 8px 22px rgba(214,40,40,.45);} 50%{ box-shadow:0 8px 30px rgba(214,40,40,.75), 0 0 0 4px rgba(255,107,53,.25);} }
         @keyframes floatY2 { 0%,100%{ transform:translateY(0px) rotate(4deg);} 50%{ transform:translateY(-14px) rotate(-4deg);} }
         @keyframes ctaGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,106,26,.55);} 50%{ box-shadow:0 0 0 10px rgba(255,106,26,0);} }
         @keyframes quickOrderShimmer { 0%{ background-position: 0% 0; } 100%{ background-position: 200% 0; } }
@@ -4074,7 +4075,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
               </button>
-              <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #c9781a, #e6a83a)', boxShadow: '0 8px 20px rgba(201,120,26,.35)', animation: windSway('', 2.7, 0.2) }}>
+              <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: `linear-gradient(135deg, ${CHILI}, #ff6b35)`, boxShadow: '0 8px 22px rgba(214,40,40,.45)', animation: windSway('pulseGlow 1.8s ease-in-out infinite', 2.7, 0.2) }}>
                 <span className="text-base flex-shrink-0">🎟️</span> <span className="truncate">{t('loyaltyTabLabel')}</span>
               </button>
               <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)', animation: windSway('', 2.8, 0.3) }}>
