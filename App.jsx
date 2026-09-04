@@ -1842,9 +1842,20 @@ function WheelWidget({ onWin, compact, prizes }) {
       const isReal = prize.label !== 'Nochmal Glück!';
       let res;
       if (isReal) {
-        const code = makeSpinCode();
-        await safeSet(`spincode:${code}`, { prize: prize.label, redeemed: false, at: new Date().toISOString() });
-        res = { prize: prize.label, code };
+        // Der Code wird jetzt server-seitig erstellt (statt direkt vom
+        // Browser in die Datenbank geschrieben), damit niemand einen
+        // "Gewinn"-Code fälschen kann, ohne wirklich am Rad gedreht zu haben.
+        try {
+          const r = await fetch('/api/create-spincode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prize: prize.label }),
+          });
+          const data = await r.json();
+          res = { prize: prize.label, code: data.code || null };
+        } catch {
+          res = { prize: prize.label, code: null };
+        }
       } else {
         res = { prize: prize.label, code: null };
       }
