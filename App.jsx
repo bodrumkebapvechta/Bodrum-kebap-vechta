@@ -7058,6 +7058,15 @@ function StaffPanelView({ back }) {
   const [showTestOrders, setShowTestOrders] = useState(false);
   const [testOrderMsg, setTestOrderMsg] = useState('');
   const [visits, setVisits] = useState([]);
+  const deleteAllAnalytics = async () => {
+    if (!confirm('Wirklich ALLE Statistik-Daten löschen? (Besuche, Site-Aktivität, Live-Zähler). Das kann nicht rückgängig gemacht werden.')) return;
+    const [analyticsRows, heartbeatRows] = await Promise.all([
+      safeListPrefix('analytics:', 2000),
+      safeListPrefix('heartbeat:', 500),
+    ]);
+    await Promise.all([...analyticsRows, ...heartbeatRows].map((r) => safeDeleteKey(r.key)));
+    setVisits([]);
+  };
   const [wishes, setWishes] = useState([]);
   const [loyaltyStats, setLoyaltyStats] = useState(null);
   const [allLoyaltyCards, setAllLoyaltyCards] = useState([]);
@@ -8799,6 +8808,9 @@ function StaffPanelView({ back }) {
                   );
                 })()}
                 <p className="text-[10px] text-center mt-4" style={{ color: '#a4906c' }}>{t('analyticsNote')}</p>
+                <button onClick={deleteAllAnalytics} className="w-full mt-3 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5" style={{ background: '#f7ded9', color: CHILI }}>
+                  🗑️ Alle Statistik-Daten löschen (inkl. Live-Zähler)
+                </button>
               </div>
             );
           })()}
