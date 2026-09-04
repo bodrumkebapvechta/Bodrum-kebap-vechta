@@ -1506,13 +1506,13 @@ const WHEEL_SLICE = 360 / WHEEL_N;
 // bewusst getrennt von der Bestellungs-Rad-Liste oben, da der Kontext ein
 // anderer ist (Vor-Ort-Besuch statt Mindestbestellwert).
 const TUESDAY_WHEEL_PRIZES = [
-  { label: '10% Rabatt', weight: 18, color: GREEN, text: '#fff' },
-  { label: 'Nochmal Glück!', weight: 22, color: '#e8d9b8', text: GREEN },
+  { label: '10% Rabatt', weight: 20, color: GREEN, text: '#fff' },
+  { label: 'Nochmal Glück!', weight: 10, color: '#e8d9b8', text: GREEN },
   { label: 'Gratis Getränk', weight: 20, color: ORANGE, text: '#fff' },
   { label: 'Gratis Pommes', weight: 15, color: GREEN, text: '#fff' },
-  { label: '20% Rabatt', weight: 8, color: GOLD, text: GREEN },
+  { label: '20% Rabatt', weight: 10, color: GOLD, text: GREEN },
   { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
-  { label: 'Gratis Sigara Böreği', weight: 5, color: CHILI, text: '#fff' },
+  { label: 'Gratis Sigara Böreği', weight: 13, color: CHILI, text: '#fff' },
 ];
 function pickWheelPrize() {
   const total = WHEEL_PRIZES.reduce((s, p) => s + p.weight, 0);
@@ -1865,46 +1865,62 @@ function WheelWidget({ onWin, compact, prizes }) {
     }, 4200);
   };
 
+  const prizeEmoji = (label) => {
+    if (label.includes('Rabatt')) return '💸';
+    if (label.includes('Getränk')) return '🥤';
+    if (label.includes('Pommes')) return '🍟';
+    if (label.includes('Nuggets')) return '🍗';
+    if (label.includes('Böreği') || label.includes('Sigara')) return '🥟';
+    return '🎁';
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <div className="relative" style={{ width: size, height: size }}>
-        <div className="absolute left-1/2 -translate-x-1/2" style={{ top: -12, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: `18px solid ${GOLD}`, zIndex: 10 }} />
-        <div className="rounded-full relative" style={{
-          width: size, height: size, background: `conic-gradient(${activePrizes.map((p, i) => `${p.color} ${i * activeSlice}deg ${(i + 1) * activeSlice}deg`).join(',')})`, border: `6px solid ${GOLD}`,
+      <div className="relative" style={{ width: size, height: size, filter: 'drop-shadow(0 14px 28px rgba(21,56,38,.4))' }}>
+        <div className="absolute left-1/2 -translate-x-1/2" style={{ top: -14, width: 0, height: 0, borderLeft: '11px solid transparent', borderRight: '11px solid transparent', borderTop: `20px solid ${GOLD}`, zIndex: 10, filter: 'drop-shadow(0 3px 4px rgba(0,0,0,.35))' }} />
+        {/* Äußerer Ring für mehr Tiefe */}
+        <div className="absolute rounded-full" style={{ inset: -4, background: `linear-gradient(135deg, ${GOLD}, #a9781a)`, zIndex: 0 }} />
+        <div className="rounded-full relative overflow-hidden" style={{
+          width: size, height: size, background: `conic-gradient(${activePrizes.map((p, i) => `${p.color} ${i * activeSlice}deg ${(i + 1) * activeSlice}deg`).join(',')})`, border: `3px solid rgba(255,255,255,.9)`,
           transform: `rotate(${rotation}deg)`, transition: spinning ? 'transform 4.2s cubic-bezier(0.17,0.67,0.16,0.99)' : 'none',
+          boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.06), inset 0 3px 12px rgba(0,0,0,.15)',
         }}>
+          {/* Segment-Trennlinien */}
+          {activePrizes.map((_, i) => (
+            <div key={'div' + i} className="absolute left-1/2 top-1/2 origin-left" style={{ width: size / 2, height: 1.5, background: 'rgba(255,255,255,.35)', transform: `rotate(${i * activeSlice}deg)` }} />
+          ))}
           {activePrizes.map((p, i) => {
             const angle = i * activeSlice + activeSlice / 2;
             return (
               <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle - 90}deg) translateX(14px)` }}>
-                <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: 'translateY(-6px)' }}>{mx(p.label, lang)}</span>
+                <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: 'translateY(-6px)', textShadow: '0 1px 2px rgba(0,0,0,.25)' }}>{mx(p.label, lang)}</span>
               </div>
             );
           })}
         </div>
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center" style={{ width: 50, height: 50, background: '#fff', border: `4px solid ${GOLD}` }}>
-          <Flame size={20} color={ORANGE} />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center" style={{ width: 56, height: 56, background: `radial-gradient(circle at 35% 30%, #fff, #f0e5cf)`, border: `3px solid ${GOLD}`, boxShadow: '0 4px 10px rgba(0,0,0,.25)' }}>
+          <Flame size={22} color={ORANGE} />
         </div>
       </div>
       {!result && (
-        <button onClick={spin} disabled={spinning} className="mt-7 w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>
-          <RotateCw size={17} /> {spinning ? t('spinning') : t('spinNow')}
+        <button onClick={spin} disabled={spinning} className="mt-8 w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)', letterSpacing: '.02em' }}>
+          <RotateCw size={18} className={spinning ? 'animate-spin' : ''} /> {spinning ? t('spinning') : t('spinNow')}
         </button>
       )}
       {result && (
-        <div className="mt-7 w-full bg-white rounded-2xl p-5 text-center shadow-sm" style={{ borderTop: `4px solid ${ORANGE}` }}>
+        <div className="mt-8 w-full rounded-2xl p-6 text-center relative overflow-hidden" style={{ background: result.code ? `linear-gradient(160deg, #fdf6e8, #f0e2c2)` : '#fff', boxShadow: '0 12px 28px rgba(21,56,38,.18)', border: result.code ? `1.5px solid ${GOLD}` : '1.5px solid #e3d5bd' }}>
           {result.code ? (
             <>
-              <div className="text-2xl mb-1">🎉</div>
-              <div className="font-black text-base mb-1" style={{ color: GREEN }}>{mx(result.prize, lang)}</div>
-              <div className="text-xs font-medium mb-3" style={{ color: '#7c6d55' }}>{t('showCodeAtCounter')}</div>
-              <div className="text-xl font-black tracking-[0.25em] py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: GREEN }}>{result.code}</div>
+              <div className="text-4xl mb-2">{prizeEmoji(result.prize)}</div>
+              <div className="font-black text-lg mb-1.5" style={{ color: GREEN }}>{mx(result.prize, lang)}</div>
+              <div className="text-xs font-semibold mb-4" style={{ color: '#8a7c62' }}>{t('showCodeAtCounter')}</div>
+              <div className="text-2xl font-black tracking-[0.3em] py-3 rounded-xl" style={{ background: '#fff', color: GREEN, boxShadow: 'inset 0 0 0 1.5px #e3d5bd' }}>{result.code}</div>
             </>
           ) : (
             <>
-              <div className="text-2xl mb-1">🍀</div>
+              <div className="text-4xl mb-2">🍀</div>
               <div className="font-black text-base" style={{ color: GREEN }}>{t('noExtraWin')}</div>
-              <div className="text-xs font-medium mt-1" style={{ color: '#7c6d55' }}>{t('thanksPlaying')}</div>
+              <div className="text-xs font-medium mt-1.5" style={{ color: '#8a7c62' }}>{t('thanksPlaying')}</div>
             </>
           )}
         </div>
@@ -3035,7 +3051,7 @@ function TuesdayWheelModal({ t, onClose }) {
   }, []);
 
   const handleWin = (res) => {
-    logEvent('tuesday_wheel_spin');
+    logEvent('tuesday_wheel_spin', { prize: res.prize });
     try { localStorage.setItem('bk_tuesday_wheel_day', new Date().toDateString()); } catch {}
   };
 
@@ -6914,6 +6930,7 @@ function StaffPanelView({ back }) {
   const [tab, setTab] = useState('menu'); // orders | wheel | settings | analytics
 
   const [wheelCode, setWheelCode] = useState('');
+  const [wheelStats, setWheelStats] = useState(null);
   const [wheelResult, setWheelResult] = useState(undefined);
   const [redeemMsg, setRedeemMsg] = useState('');
 
@@ -7286,6 +7303,20 @@ function StaffPanelView({ back }) {
       fetch('/api/subscriber-count').then((r) => r.json()).then((d) => {
         if (typeof d?.count === 'number') setSubscriberCount(d.count);
       }).catch(() => {});
+    }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (ok && tab === 'wheel') {
+      safeListPrefix('spincode:', 500).then((rows) => {
+        const total = rows.length;
+        const redeemed = rows.filter((r) => r.value?.redeemed).length;
+        const byPrize = {};
+        rows.forEach((r) => {
+          const p = r.value?.prize || '?';
+          byPrize[p] = (byPrize[p] || 0) + 1;
+        });
+        setWheelStats({ total, redeemed, open: total - redeemed, byPrize });
+      });
     }
   }, [ok, tab]);
   useEffect(() => {
@@ -8069,6 +8100,33 @@ function StaffPanelView({ back }) {
                   <div className="text-lg font-black mb-4" style={{ color: GREEN }}>{mx(wheelResult.prize, lang)}</div>
                   {!wheelResult.redeemed && <button onClick={wheelRedeem} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{t('confirmRedeem')}</button>}
                   {redeemMsg && <p className="text-center text-sm font-bold mt-3" style={{ color: '#8a5a1f' }}>{redeemMsg}</p>}
+                </div>
+              )}
+
+              {wheelStats && (
+                <div className="bg-white rounded-2xl p-4 mt-4" style={{ border: '1.5px solid #f0e5cf' }}>
+                  <div className="text-[10px] font-black tracking-widest mb-3" style={{ color: '#a4906c' }}>📊 STATISTIK</div>
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                      <div className="font-black text-lg" style={{ color: GREEN }}>{wheelStats.total}</div>
+                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Gedreht</div>
+                    </div>
+                    <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                      <div className="font-black text-lg" style={{ color: '#34a065' }}>{wheelStats.redeemed}</div>
+                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Eingelöst</div>
+                    </div>
+                    <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                      <div className="font-black text-lg" style={{ color: ORANGE }}>{wheelStats.open}</div>
+                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Offen</div>
+                    </div>
+                  </div>
+                  <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>NACH GEWINN</div>
+                  {Object.entries(wheelStats.byPrize).sort((a, b) => b[1] - a[1]).map(([prize, count]) => (
+                    <div key={prize} className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid #f7f0e2' }}>
+                      <span className="text-sm font-semibold" style={{ color: GREEN }}>{prize}</span>
+                      <span className="text-sm font-black" style={{ color: ORANGE }}>{count}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
