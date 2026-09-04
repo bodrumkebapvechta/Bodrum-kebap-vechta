@@ -252,6 +252,7 @@ const UI = {
   toCart: { de: 'Zum Warenkorb', en: 'Add to cart', tr: 'Sepete ekle', ro: 'Adaugă în coș', nl: 'In winkelwagen' , sq: 'Në shportë', ku: 'Bo selikê', pl: 'Do koszyka'},
   gesamt: { de: 'Gesamt', en: 'Total', tr: 'Toplam', ro: 'Total', nl: 'Totaal' , sq: 'Gjithsej', ku: 'Bi Tevayî', pl: 'Razem'},
   waSend: { de: 'Per WhatsApp senden', en: 'Send via WhatsApp', tr: 'WhatsApp ile gönder', ro: 'Trimite prin WhatsApp', nl: 'Versturen via WhatsApp' , sq: 'Dërgo përmes WhatsApp', ku: 'Bi WhatsApp bişîne', pl: 'Wyślij przez WhatsApp'},
+  waSendHint: { de: '⚠️ WhatsApp öffnet sich mit deiner fertigen Bestellung — bitte dort zusätzlich auf „Senden" tippen, sonst kommt die Bestellung nicht bei uns an!', en: '⚠️ WhatsApp will open with your order ready — please also tap "Send" there, otherwise the order won\'t reach us!', tr: '⚠️ WhatsApp, siparişin hazır halde açılacak — lütfen orada da "Gönder"e bas, yoksa sipariş bize ulaşmaz!', ro: '⚠️ WhatsApp se va deschide cu comanda ta gata — te rugăm apasă și acolo pe „Trimite", altfel comanda nu ajunge la noi!', nl: '⚠️ WhatsApp opent met je bestelling klaar — tik daar ook op "Verzenden", anders komt de bestelling niet aan!', sq: '⚠️ WhatsApp do të hapet me porosinë tënde gati — të lutem shtyp edhe atje "Dërgo", përndryshe porosia nuk na arrin!', ku: '⚠️ WhatsApp dê bi sifarişa te ya amade vebe — ji kerema xwe li wir jî li "Bişîne" bitikîne, wekî din sifariş nagihîje me!', pl: '⚠️ WhatsApp otworzy się z gotowym zamówieniem — dotknij tam również "Wyślij", inaczej zamówienie do nas nie dotrze!' },
   cartEmpty: { de: 'Dein Warenkorb ist leer.', en: 'Your cart is empty.', tr: 'Sepetin boş.', ro: 'Coșul tău este gol.', nl: 'Je winkelwagen is leeg.' , sq: 'Shporta jote është bosh.', ku: 'Selika te vala ye.', pl: 'Twój koszyk jest pusty.'},
   skip: { de: 'Nein danke, überspringen', en: 'No thanks, skip', tr: 'Hayır teşekkürler, geç', ro: 'Nu, mulțumesc, sari peste', nl: 'Nee bedankt, overslaan' , sq: 'Jo faleminderit, kalo', ku: 'Na spas, derbas bike', pl: 'Nie dziękuję, pomiń'},
   yourName: { de: 'Dein Name', en: 'Your name', tr: 'Adın', ro: 'Numele tău', nl: 'Je naam' , sq: 'Emri yt', ku: 'Navê te', pl: 'Twoje imię'},
@@ -1501,6 +1502,18 @@ const WHEEL_PRIZES = [
 ];
 const WHEEL_N = WHEEL_PRIZES.length;
 const WHEEL_SLICE = 360 / WHEEL_N;
+// Eigene, großzügigere Preisliste für das Dienstags-Glücksrad im Laden —
+// bewusst getrennt von der Bestellungs-Rad-Liste oben, da der Kontext ein
+// anderer ist (Vor-Ort-Besuch statt Mindestbestellwert).
+const TUESDAY_WHEEL_PRIZES = [
+  { label: '10% Rabatt', weight: 18, color: GREEN, text: '#fff' },
+  { label: 'Nochmal Glück!', weight: 22, color: '#e8d9b8', text: GREEN },
+  { label: 'Gratis Getränk', weight: 20, color: ORANGE, text: '#fff' },
+  { label: 'Gratis Pommes', weight: 15, color: GREEN, text: '#fff' },
+  { label: '20% Rabatt', weight: 8, color: GOLD, text: GREEN },
+  { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
+  { label: 'Gratis Sigara Böreği', weight: 5, color: CHILI, text: '#fff' },
+];
 function pickWheelPrize() {
   const total = WHEEL_PRIZES.reduce((s, p) => s + p.weight, 0);
   let r = Math.random() * total;
@@ -1803,21 +1816,31 @@ function CartPopEmoji({ trigger }) {
   );
 }
 
-function WheelWidget({ onWin, compact }) {
+function WheelWidget({ onWin, compact, prizes }) {
   const { lang, t } = React.useContext(LangContext);
+  const activePrizes = prizes || WHEEL_PRIZES;
+  const activeN = activePrizes.length;
+  const activeSlice = 360 / activeN;
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const size = compact ? 240 : 280;
 
+  const pickActivePrize = () => {
+    const total = activePrizes.reduce((s, p) => s + p.weight, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < activePrizes.length; i++) { r -= activePrizes[i].weight; if (r <= 0) return i; }
+    return 0;
+  };
+
   const spin = () => {
     if (spinning || result) return;
     setSpinning(true);
-    const idx = pickWheelPrize();
-    const center = idx * WHEEL_SLICE + WHEEL_SLICE / 2;
+    const idx = pickActivePrize();
+    const center = idx * activeSlice + activeSlice / 2;
     setRotation(5 * 360 + (360 - center));
     setTimeout(async () => {
-      const prize = WHEEL_PRIZES[idx];
+      const prize = activePrizes[idx];
       const isReal = prize.label !== 'Nochmal Glück!';
       let res;
       if (isReal) {
@@ -1838,11 +1861,11 @@ function WheelWidget({ onWin, compact }) {
       <div className="relative" style={{ width: size, height: size }}>
         <div className="absolute left-1/2 -translate-x-1/2" style={{ top: -12, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: `18px solid ${GOLD}`, zIndex: 10 }} />
         <div className="rounded-full relative" style={{
-          width: size, height: size, background: wheelConicGradient(), border: `6px solid ${GOLD}`,
+          width: size, height: size, background: `conic-gradient(${activePrizes.map((p, i) => `${p.color} ${i * activeSlice}deg ${(i + 1) * activeSlice}deg`).join(',')})`, border: `6px solid ${GOLD}`,
           transform: `rotate(${rotation}deg)`, transition: spinning ? 'transform 4.2s cubic-bezier(0.17,0.67,0.16,0.99)' : 'none',
         }}>
-          {WHEEL_PRIZES.map((p, i) => {
-            const angle = i * WHEEL_SLICE + WHEEL_SLICE / 2;
+          {activePrizes.map((p, i) => {
+            const angle = i * activeSlice + activeSlice / 2;
             return (
               <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle - 90}deg) translateX(14px)` }}>
                 <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: 'translateY(-6px)' }}>{mx(p.label, lang)}</span>
@@ -2992,6 +3015,53 @@ function WishModal({ lang, t, onClose }) {
   );
 }
 
+function TuesdayWheelModal({ t, onClose }) {
+  const [alreadySpun, setAlreadySpun] = useState(false);
+
+  useEffect(() => {
+    try {
+      const today = new Date().toDateString();
+      if (localStorage.getItem('bk_tuesday_wheel_day') === today) setAlreadySpun(true);
+    } catch {}
+  }, []);
+
+  const handleWin = (res) => {
+    logEvent('tuesday_wheel_spin');
+    try { localStorage.setItem('bk_tuesday_wheel_day', new Date().toDateString()); } catch {}
+  };
+
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={onClose}>
+      <div
+        className="w-full max-w-sm rounded-3xl p-6 max-h-[90vh] overflow-y-auto"
+        style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 30px 70px rgba(21,56,38,.5)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-1">
+          <div className="font-black text-base" style={{ color: GOLD }}>🎡 Dienstags-Glücksrad</div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.1)' }}><X size={15} color="#fff" /></button>
+        </div>
+
+        {alreadySpun ? (
+          <div className="text-center py-8">
+            <p className="text-4xl mb-3">🎡</p>
+            <p className="text-sm font-bold" style={{ color: CREAM }}>Du hast heute schon gedreht!</p>
+            <p className="text-xs font-medium mt-1.5" style={{ color: '#a89878' }}>Nächsten Dienstag bist du wieder dran.</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-xs font-medium mb-4 text-center" style={{ color: '#a89878' }}>
+              Nur heute, nur bei uns im Laden: dreh am Rad und zeig das Ergebnis direkt an der Kasse — dein Personal gibt dir den Gewinn sofort!
+            </p>
+            <WheelWidget prizes={TUESDAY_WHEEL_PRIZES} onWin={handleWin} />
+          </>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function LoyaltyModal({ lang, t, onClose }) {
   const [step, setStep] = useState('loading'); // loading | intro | setup | card
   const [code, setCode] = useState(null);
@@ -3742,6 +3812,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [wishModalOpen, setWishModalOpen] = useState(false);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
+  const [tuesdayWheelOpen, setTuesdayWheelOpen] = useState(false);
+  const isTuesdayToday = useMemo(() => new Date().getDay() === 2, []);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
   const [homePriceOverrides, setHomePriceOverrides] = useState({});
   const [homePhotoOverrides, setHomePhotoOverrides] = useState({});
@@ -4115,6 +4187,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
+            {isTuesdayToday && (
+              <button
+                onClick={() => { logEvent('hero_tuesday_wheel'); setTuesdayWheelOpen(true); }}
+                className="w-full mt-4 py-4 rounded-2xl flex items-center justify-center gap-3 font-black text-sm text-white"
+                style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, boxShadow: '0 10px 26px rgba(230,90,10,.5)', animation: 'pulseGlow 1.8s ease-in-out infinite' }}
+              >
+                <span className="text-2xl">🎡</span> Dienstags-Glücksrad — jetzt drehen!
+              </button>
+            )}
             <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
                 <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
@@ -4259,6 +4340,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
       {wishModalOpen && <WishModal lang={lang} t={t} onClose={() => setWishModalOpen(false)} />}
       {loyaltyModalOpen && <LoyaltyModal lang={lang} t={t} onClose={() => setLoyaltyModalOpen(false)} />}
+      {tuesdayWheelOpen && <TuesdayWheelModal t={t} onClose={() => setTuesdayWheelOpen(false)} />}
       {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
@@ -5145,6 +5227,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   <div className="px-5 py-4" style={{ borderTop: '1px solid #e3d5bd', background: '#fff' }}>
                     <div className="flex justify-between items-center mb-3"><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('gesamt')}</span><span className="text-lg font-black" style={{ color: GREEN }}>{fmt(totalPrice)}</span></div>
                     <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
+                    <p className="text-[11px] font-semibold text-center mt-2" style={{ color: '#c0392b' }}>{t('waSendHint')}</p>
                   </div>
                 )}
               </>
@@ -5415,6 +5498,7 @@ function DonerBuilderView({ back, go }) {
             )}
 
             <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
+            <p className="text-[11px] font-semibold text-center -mt-1 mb-3" style={{ color: '#c0392b' }}>{t('waSendHint')}</p>
           </div>
         )}
       </div>
@@ -5441,6 +5525,7 @@ function DonerBuilderView({ back, go }) {
             {!wheelResult && total < 30 && (<div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>{t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}</div>)}
             {wheelResult && wheelResult.code && (<div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN, animation: 'popIn .5s ease' }}><Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>{t('wonPrefix')} {mx(wheelResult.prize, lang)} {t('wonSuffix')}</span></div>)}
             <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
+            <p className="text-[11px] font-semibold text-center -mt-1 mb-3" style={{ color: '#c0392b' }}>{t('waSendHint')}</p>
           </div>
         )}
       </div>
@@ -8315,6 +8400,18 @@ function StaffPanelView({ back }) {
                     {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
                   </SettingsRow>
 
+                  <button
+                    onClick={() => setTab('wheel')}
+                    className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-4"
+                    style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
+                  >
+                    <span className="text-2xl">🎡</span>
+                    <div className="min-w-0">
+                      <div className="font-black text-sm text-white truncate">Gewinncode prüfen →</div>
+                      <div className="text-[11px] text-white/80 truncate">Glücksrad-Gewinne einlösen (auch Dienstags-Rad)</div>
+                    </div>
+                  </button>
+
                   <SettingsRow id="ownerDevice" icon="📱" title="Ana Cihaz (Owner-Gerät)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     {/* Aktivierungs-Karte */}
                     <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
@@ -8522,6 +8619,8 @@ function StaffPanelView({ back }) {
                     hero_surprise: '🎲 Hero: Überrasch mich',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
+                    hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
+                    tuesday_wheel_spin: '🎡 Dienstags-Glücksrad gedreht',
                     call: '📞 Anruf-Button',
                     route: '📍 Route/Anfahrt',
                   };
@@ -8948,7 +9047,7 @@ function StaffPanelView({ back }) {
                   { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                   { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
                 ];
-                const effectiveTab = tab === 'photos' ? 'menu' : tab;
+                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'settings' : tab);
                 const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
                 return (
                   <>
