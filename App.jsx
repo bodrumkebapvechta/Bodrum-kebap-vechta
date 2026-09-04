@@ -6937,6 +6937,7 @@ function StaffPanelView({ back }) {
 
   const [wheelCode, setWheelCode] = useState('');
   const [wheelStats, setWheelStats] = useState(null);
+  const [wheelStatsHidden, setWheelStatsHidden] = useState(false);
   const [wheelResult, setWheelResult] = useState(undefined);
   const [redeemMsg, setRedeemMsg] = useState('');
 
@@ -7838,6 +7839,15 @@ function StaffPanelView({ back }) {
     const updated = { ...wheelResult, redeemed: true, redeemedAt: new Date().toISOString() };
     await safeSet(`spincode:${c}`, updated); setWheelResult(updated); setRedeemMsg(t('redeemedMsg'));
   };
+  const deleteAllSpincodes = async () => {
+    if (!confirm('Wirklich ALLE Gewinncode-Daten löschen? Das kann nicht rückgängig gemacht werden.')) return;
+    const rows = await safeListPrefix('spincode:', 500);
+    await Promise.all(rows.map((r) => safeDeleteKey(r.key)));
+    setWheelStats({ total: 0, redeemed: 0, open: 0, byPrize: {} });
+    setWheelResult(undefined);
+    setWheelCode('');
+    setRedeemMsg('');
+  };
 
   if (ok && tischAdminOpen) {
     return (
@@ -8111,28 +8121,40 @@ function StaffPanelView({ back }) {
 
               {wheelStats && (
                 <div className="bg-white rounded-2xl p-4 mt-4" style={{ border: '1.5px solid #f0e5cf' }}>
-                  <div className="text-[10px] font-black tracking-widest mb-3" style={{ color: '#a4906c' }}>📊 STATISTIK</div>
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
-                      <div className="font-black text-lg" style={{ color: GREEN }}>{wheelStats.total}</div>
-                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Gedreht</div>
-                    </div>
-                    <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
-                      <div className="font-black text-lg" style={{ color: '#34a065' }}>{wheelStats.redeemed}</div>
-                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Eingelöst</div>
-                    </div>
-                    <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
-                      <div className="font-black text-lg" style={{ color: ORANGE }}>{wheelStats.open}</div>
-                      <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Offen</div>
-                    </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <button onClick={() => setWheelStatsHidden((v) => !v)} className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-black tracking-widest" style={{ color: '#a4906c' }}>📊 STATISTIK</span>
+                      <span style={{ color: '#a4906c', fontSize: 10, transform: wheelStatsHidden ? 'rotate(-90deg)' : 'none', transition: 'transform .2s' }}>▾</span>
+                    </button>
+                    <button onClick={deleteAllSpincodes} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg" style={{ background: '#f7ded9' }}>
+                      <span className="text-[10px] font-bold" style={{ color: CHILI }}>🗑️ Alle löschen</span>
+                    </button>
                   </div>
-                  <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>NACH GEWINN</div>
-                  {Object.entries(wheelStats.byPrize).sort((a, b) => b[1] - a[1]).map(([prize, count]) => (
-                    <div key={prize} className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid #f7f0e2' }}>
-                      <span className="text-sm font-semibold" style={{ color: GREEN }}>{prize}</span>
-                      <span className="text-sm font-black" style={{ color: ORANGE }}>{count}</span>
-                    </div>
-                  ))}
+                  {!wheelStatsHidden && (
+                    <>
+                      <div className="grid grid-cols-3 gap-2 mb-4">
+                        <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                          <div className="font-black text-lg" style={{ color: GREEN }}>{wheelStats.total}</div>
+                          <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Gedreht</div>
+                        </div>
+                        <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                          <div className="font-black text-lg" style={{ color: '#34a065' }}>{wheelStats.redeemed}</div>
+                          <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Eingelöst</div>
+                        </div>
+                        <div className="rounded-xl p-2.5 text-center" style={{ background: '#f7f0e2' }}>
+                          <div className="font-black text-lg" style={{ color: ORANGE }}>{wheelStats.open}</div>
+                          <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Offen</div>
+                        </div>
+                      </div>
+                      <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>NACH GEWINN</div>
+                      {Object.entries(wheelStats.byPrize).sort((a, b) => b[1] - a[1]).map(([prize, count]) => (
+                        <div key={prize} className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid #f7f0e2' }}>
+                          <span className="text-sm font-semibold" style={{ color: GREEN }}>{prize}</span>
+                          <span className="text-sm font-black" style={{ color: ORANGE }}>{count}</span>
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </div>
               )}
             </div>
