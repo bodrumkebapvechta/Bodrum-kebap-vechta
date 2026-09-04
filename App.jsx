@@ -4101,6 +4101,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         )}
       </header>
+      {isTuesdayToday && (
+        <button
+          onClick={() => { logEvent('hero_tuesday_wheel'); setTuesdayWheelOpen(true); }}
+          className="w-full py-4 flex items-center justify-center gap-3 font-black text-sm text-white"
+          style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, boxShadow: '0 6px 20px rgba(230,90,10,.4)', animation: 'pulseGlow 1.8s ease-in-out infinite' }}
+        >
+          <span className="text-2xl">🎡</span> Dienstags-Glücksrad — jetzt drehen!
+        </button>
+      )}
       <CampaignBanner />
       <MittagsBanner menu={HOME_EFFECTIVE_MENU} onPhotoClick={setLightbox} />
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
@@ -4186,15 +4195,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
                 </button>
               </>
-            )}
-            {isTuesdayToday && (
-              <button
-                onClick={() => { logEvent('hero_tuesday_wheel'); setTuesdayWheelOpen(true); }}
-                className="w-full mt-4 py-4 rounded-2xl flex items-center justify-center gap-3 font-black text-sm text-white"
-                style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, boxShadow: '0 10px 26px rgba(230,90,10,.5)', animation: 'pulseGlow 1.8s ease-in-out infinite' }}
-              >
-                <span className="text-2xl">🎡</span> Dienstags-Glücksrad — jetzt drehen!
-              </button>
             )}
             <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
               <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
@@ -8400,18 +8400,6 @@ function StaffPanelView({ back }) {
                     {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
                   </SettingsRow>
 
-                  <button
-                    onClick={() => setTab('wheel')}
-                    className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-4"
-                    style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
-                  >
-                    <span className="text-2xl">🎡</span>
-                    <div className="min-w-0">
-                      <div className="font-black text-sm text-white truncate">Gewinncode prüfen →</div>
-                      <div className="text-[11px] text-white/80 truncate">Glücksrad-Gewinne einlösen (auch Dienstags-Rad)</div>
-                    </div>
-                  </button>
-
                   <SettingsRow id="ownerDevice" icon="📱" title="Ana Cihaz (Owner-Gerät)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     {/* Aktivierungs-Karte */}
                     <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
@@ -8830,6 +8818,21 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'messages' && (
             <div className="px-5">
+              <button
+                onClick={() => setTab('wheel')}
+                className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
+                style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, boxShadow: '0 10px 26px rgba(230,90,10,.35)' }}
+              >
+                <div className="absolute rounded-full pointer-events-none" style={{ width: 140, height: 140, top: -50, right: -40, background: 'rgba(255,255,255,.15)' }} />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 relative" style={{ background: 'rgba(255,255,255,.22)' }}>
+                  <span className="text-2xl">🎡</span>
+                </div>
+                <div className="min-w-0 relative">
+                  <div className="font-black text-[15px] text-white">Gewinncode prüfen</div>
+                  <div className="text-[11px] font-semibold text-white/85">Glücksrad-Gewinne einlösen — inkl. Dienstags-Rad</div>
+                </div>
+                <span className="ml-auto text-white text-xl relative">→</span>
+              </button>
               <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💬 NACHRICHTEN</div>
               {contactMessages.length === 0 && (
                 <div className="text-center py-14 rounded-2xl" style={{ background: '#fff', border: '1.5px dashed #e3d5bd' }}>
@@ -9047,7 +9050,7 @@ function StaffPanelView({ back }) {
                   { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                   { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
                 ];
-                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'settings' : tab);
+                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'messages' : tab);
                 const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
                 return (
                   <>
