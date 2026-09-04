@@ -1891,13 +1891,15 @@ function WheelWidget({ onWin, compact, prizes }) {
           ))}
           {activePrizes.map((p, i) => {
             const angle = i * activeSlice + activeSlice / 2;
-            // Auf der linken Wagenhälfte (90°–270°) steht der Text sonst auf
-            // dem Kopf — hier zusätzlich um 180° gedreht, damit er von außen
-            // nach innen immer normal lesbar bleibt, egal wo das Segment liegt.
-            const isLeftHalf = angle > 90 && angle < 270;
+            // Rechnerisch + per Bild-Simulation geprüft (nicht nur angenommen):
+            // Bei dieser Positionierung (rotate(angle-90) + translateX, origin-left)
+            // steht der Text auf dem Kopf, sobald das Segment in der UNTEREN
+            // Hälfte des Rads liegt (angle >= 180°) — NICHT bei 90°–270°, wie
+            // man vermuten könnte. Erst nachträglich per Simulation bestätigt.
+            const needsFlip = angle >= 180;
             return (
               <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle - 90}deg) translateX(14px)` }}>
-                <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: `translateY(-6px) rotate(${isLeftHalf ? 180 : 0}deg)`, textShadow: '0 1px 2px rgba(0,0,0,.25)' }}>{mx(p.label, lang)}</span>
+                <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: `translateY(-6px) rotate(${needsFlip ? 180 : 0}deg)`, textShadow: '0 1px 2px rgba(0,0,0,.25)' }}>{mx(p.label, lang)}</span>
               </div>
             );
           })}
