@@ -1891,9 +1891,13 @@ function WheelWidget({ onWin, compact, prizes }) {
           ))}
           {activePrizes.map((p, i) => {
             const angle = i * activeSlice + activeSlice / 2;
+            // Auf der linken Wagenhälfte (90°–270°) steht der Text sonst auf
+            // dem Kopf — hier zusätzlich um 180° gedreht, damit er von außen
+            // nach innen immer normal lesbar bleibt, egal wo das Segment liegt.
+            const isLeftHalf = angle > 90 && angle < 270;
             return (
               <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle - 90}deg) translateX(14px)` }}>
-                <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: 'translateY(-6px)', textShadow: '0 1px 2px rgba(0,0,0,.25)' }}>{mx(p.label, lang)}</span>
+                <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: `translateY(-6px) rotate(${isLeftHalf ? 180 : 0}deg)`, textShadow: '0 1px 2px rgba(0,0,0,.25)' }}>{mx(p.label, lang)}</span>
               </div>
             );
           })}
