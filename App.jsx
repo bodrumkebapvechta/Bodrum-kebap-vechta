@@ -1521,9 +1521,7 @@ function pickWheelPrize() {
   return 0;
 }
 function makeSpinCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let out = ''; for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
+  return String(Math.floor(1000 + Math.random() * 9000));
 }
 function wheelConicGradient() {
   return `conic-gradient(${WHEEL_PRIZES.map((p, i) => `${p.color} ${i * WHEEL_SLICE}deg ${(i + 1) * WHEEL_SLICE}deg`).join(',')})`;
