@@ -3131,6 +3131,10 @@ function LoyaltyModal({ lang, t, onClose }) {
   const [bdayMonth, setBdayMonth] = useState('');
   const [bdayDay, setBdayDay] = useState('');
   const [bdayError, setBdayError] = useState('');
+  const [showSurvey, setShowSurvey] = useState(false);
+  const [surveyRating, setSurveyRating] = useState(0);
+  const [surveyComment, setSurveyComment] = useState('');
+  const [surveySubmitted, setSurveySubmitted] = useState(false);
   const [bdaySaved, setBdaySaved] = useState(false);
   const qrCanvasRef = useRef(null);
 
@@ -3175,6 +3179,28 @@ function LoyaltyModal({ lang, t, onClose }) {
     setJustCreated(isNew);
     tagDevice(c);
     setStep('card');
+    // Mini-Umfrage: erscheint einmalig, wenn seit dem letzten Öffnen eine
+    // NEUE Einlösung stattgefunden hat (redeemedCount ist gestiegen).
+    try {
+      const lastSeen = parseInt(localStorage.getItem(`bk_last_seen_redeemed_${c}`) || '0', 10);
+      if ((cc.redeemedCount || 0) > lastSeen) setShowSurvey(true);
+    } catch {}
+  };
+
+  const submitSurvey = async (rating) => {
+    setSurveyRating(rating);
+    if (rating >= 4) {
+      // Bei guter Bewertung sofort speichern, kein Kommentarfeld nötig.
+      try { await safeSet(`survey:${Date.now()}-${makeShortCode(4)}`, { code, rating, ts: Date.now() }); } catch {}
+      try { localStorage.setItem(`bk_last_seen_redeemed_${code}`, String(card?.redeemedCount || 0)); } catch {}
+      setSurveySubmitted(true);
+    }
+    // Bei 1-3 Sternen wird erst nach Klick auf "Absenden" (mit optionalem Kommentar) gespeichert.
+  };
+  const submitSurveyWithComment = async () => {
+    try { await safeSet(`survey:${Date.now()}-${makeShortCode(4)}`, { code, rating: surveyRating, comment: surveyComment.trim() || null, ts: Date.now() }); } catch {}
+    try { localStorage.setItem(`bk_last_seen_redeemed_${code}`, String(card?.redeemedCount || 0)); } catch {}
+    setSurveySubmitted(true);
   };
 
   // Wiederkehrende Nutzer: Code bereits gespeichert → direkt zur Karte, ohne
@@ -3313,6 +3339,37 @@ function LoyaltyModal({ lang, t, onClose }) {
 
         {step === 'card' && (
           <>
+            {showSurvey && !surveySubmitted && (
+              <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
+                <p className="font-black text-sm mb-3" style={{ color: GREEN }}>🍕 Wie hat's dir geschmeckt?</p>
+                <div className="flex justify-center gap-1.5 mb-3">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button key={n} onClick={() => submitSurvey(n)} className="text-3xl leading-none">
+                      {surveyRating >= n ? '⭐' : '☆'}
+                    </button>
+                  ))}
+                </div>
+                {surveyRating > 0 && surveyRating <= 3 && (
+                  <div>
+                    <textarea
+                      value={surveyComment}
+                      onChange={(e) => setSurveyComment(e.target.value)}
+                      placeholder="Was können wir besser machen? (optional)"
+                      rows={2}
+                      className="w-full px-3 py-2.5 rounded-xl text-xs font-medium outline-none resize-none mb-2"
+                      style={{ background: '#fff', color: GREEN, border: '1px solid #e3d5bd' }}
+                    />
+                    <button onClick={submitSurveyWithComment} className="w-full py-2.5 rounded-xl font-bold text-xs text-white" style={{ background: ORANGE }}>Absenden</button>
+                  </div>
+                )}
+              </div>
+            )}
+            {surveySubmitted && (
+              <div className="rounded-xl p-3 mb-4 text-center" style={{ background: 'rgba(126,217,155,.15)', border: '1px solid rgba(126,217,155,.4)' }}>
+                <p className="text-xs font-bold" style={{ color: '#7ed99b' }}>Danke für dein Feedback! 🙏</p>
+              </div>
+            )}
+
             {justCreated && (
               <div className="rounded-xl p-3 mb-3 text-center" style={{ background: 'rgba(126,217,155,.15)', border: '1px solid rgba(126,217,155,.4)' }}>
                 <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>🎉 {t('loyaltyWelcomeStampMsg')}</p>
@@ -7118,6 +7175,7 @@ function StaffPanelView({ back }) {
   };
   const [wishes, setWishes] = useState([]);
   const [loyaltyStats, setLoyaltyStats] = useState(null);
+  const [surveyStats, setSurveyStats] = useState(null);
   const [allLoyaltyCards, setAllLoyaltyCards] = useState([]);
   const [recentStamps, setRecentStamps] = useState([]);
   const [contactMessagesArchive, setContactMessagesArchive] = useState([]);
@@ -7407,6 +7465,14 @@ function StaffPanelView({ back }) {
           rows.map((r) => ({ code: r.key.replace('loyalty:', ''), ...r.value }))
             .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
         );
+      });
+      safeListPrefix('survey:', 500).then((rows) => {
+        const total = rows.length;
+        const avg = total ? (rows.reduce((s, r) => s + (r.value.rating || 0), 0) / total).toFixed(1) : null;
+        const lowComments = rows
+          .filter((r) => r.value.rating <= 3 && r.value.comment)
+          .sort((a, b) => b.value.ts - a.value.ts);
+        setSurveyStats({ total, avg, lowComments });
       });
       safeListPrefix('loyaltystamp:', 10).then((rows) => setRecentStamps(rows.sort((a, b) => b.value.ts - a.value.ts)));
     }
@@ -9062,6 +9128,24 @@ function StaffPanelView({ back }) {
                           <span>{count} erfolgreich eingeladen</span>
                         </div>
                       ))}
+                    </div>
+                  )}
+                  {surveyStats && surveyStats.total > 0 && (
+                    <div className="rounded-lg p-3 mt-3" style={{ background: '#fdf1de' }}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-black" style={{ color: '#8a5a1f' }}>⭐ MINI-UMFRAGE</span>
+                        <span className="text-sm font-black" style={{ color: GREEN }}>{surveyStats.avg}/5 ({surveyStats.total})</span>
+                      </div>
+                      {surveyStats.lowComments.length > 0 && (
+                        <div className="mt-2 pt-2" style={{ borderTop: '1px solid #f0e0c0' }}>
+                          <div className="text-[10px] font-bold mb-1" style={{ color: '#c0392b' }}>Feedback zum Verbessern:</div>
+                          {surveyStats.lowComments.slice(0, 5).map((r) => (
+                            <div key={r.key} className="text-xs font-medium py-1" style={{ color: GREEN }}>
+                              {'⭐'.repeat(r.value.rating)} — "{r.value.comment}"
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                   {recentStamps.length > 0 && (
