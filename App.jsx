@@ -351,6 +351,9 @@ const UI = {
   loyaltyBirthdayInvalid: { de: 'Bitte Tag und Monat korrekt ausfüllen', en: 'Please enter a valid day and month', tr: 'Lütfen geçerli bir gün ve ay gir', ro: 'Te rugăm introdu o zi și lună valide', nl: 'Vul een geldige dag en maand in', sq: 'Ju lutemi vendosni një ditë dhe muaj të vlefshëm', ku: 'Ji kerema xwe rojek û mehek derbasdar binivîse', pl: 'Podaj prawidłowy dzień i miesiąc' },
   loyaltyBirthdayInvalidYear: { de: 'Bitte ein gültiges Jahr eingeben', en: 'Please enter a valid year', tr: 'Lütfen geçerli bir yıl gir', ro: 'Te rugăm introdu un an valid', nl: 'Vul een geldig jaar in', sq: 'Ju lutemi vendosni një vit të vlefshëm', ku: 'Ji kerema xwe salek derbasdar binivîse', pl: 'Podaj prawidłowy rok' },
   loyaltyBirthdayDuplicate: { de: 'Dieses Geburtsdatum ist bereits bei einer anderen Karte hinterlegt.', en: 'This birthdate is already registered to another card.', tr: 'Bu doğum tarihi zaten başka bir kartta kayıtlı.', ro: 'Această dată de naștere este deja înregistrată la un alt card.', nl: 'Deze verjaardag is al geregistreerd bij een andere kaart.', sq: 'Kjo datëlindje është regjistruar tashmë te një kartë tjetër.', ku: 'Ev roja bûyînê berê li karteke din hatiye tomarkirin.', pl: 'Ta data urodzenia jest już zarejestrowana na innej karcie.' },
+  loyaltyReferBtn: { de: '🎁 Freund einladen, Bonus-Stempel sichern', en: '🎁 Invite a friend, get a bonus stamp', tr: '🎁 Arkadaşını davet et, bonus damga kazan', ro: '🎁 Invită un prieten, primești o ștampilă bonus', nl: '🎁 Nodig een vriend uit, krijg een bonusstempel', sq: '🎁 Fto një mik, merr një vulë bonus', ku: '🎁 Hevalek vexwîne, morê bonus bistîne', pl: '🎁 Zaproś znajomego, zdobądź bonusową pieczątkę' },
+  loyaltyReferShareMsg: { de: '🎟️ Ich hab eine Stempelkarte bei Bodrum Kebap Vechta! Erstell dir über meinen Link deine eigene — und wenn du das erste Mal vorbeikommst, bekommen wir BEIDE einen Bonus-Stempel: {link}', en: '🎟️ I have a stamp card at Bodrum Kebap Vechta! Get your own via my link — and when you visit for the first time, we BOTH get a bonus stamp: {link}', tr: '🎟️ Bodrum Kebap Vechta\'da bir damga kartım var! Linkimden sen de kendi kartını oluştur — ilk kez geldiğinde ikimize de bonus damga düşer: {link}', ro: '🎟️ Am un card de ștampile la Bodrum Kebap Vechta! Fă-ți propriul card prin link-ul meu — iar când vii prima dată, primim AMÂNDOI o ștampilă bonus: {link}', nl: '🎟️ Ik heb een spaarkaart bij Bodrum Kebap Vechta! Maak via mijn link je eigen kaart — en als je voor het eerst langskomt, krijgen we BEIDEN een bonusstempel: {link}', sq: '🎟️ Kam një kartë vulash te Bodrum Kebap Vechta! Krijo tënden përmes linkut tim — dhe kur të vish herën e parë, të dy marrim një vulë bonus: {link}', ku: '🎟️ Li Bodrum Kebap Vechta karteke min a moran heye! Ji lînka min ya xwe çêke — û gava tu cara yekem werî, herduyan mor bonus distîne: {link}', pl: '🎟️ Mam kartę z pieczątkami w Bodrum Kebap Vechta! Załóż swoją przez mój link — a gdy odwiedzisz nas po raz pierwszy, OBOJE dostaniemy bonusową pieczątkę: {link}' },
+  loyaltyReferredNote: { de: '🎁 Du wurdest eingeladen! Bei deinem ersten Besuch gibt es einen Bonus-Stempel für dich und deinen Freund.', en: '🎁 You were invited! On your first visit, you and your friend both get a bonus stamp.', tr: '🎁 Davet edildin! İlk ziyaretinde sana ve arkadaşına bonus damga var.', ro: '🎁 Ai fost invitat! La prima vizită, tu și prietenul tău primiți o ștampilă bonus.', nl: '🎁 Je bent uitgenodigd! Bij je eerste bezoek krijgen jij en je vriend allebei een bonusstempel.', sq: '🎁 U ftove! Në vizitën tënde të parë, ti dhe miku yt merrni një vulë bonus.', ku: '🎁 Tu hatî vexwendin! Di serdana xwe ya yekem de, tu û hevalê te herduyan morek bonus distînin.', pl: '🎁 Zostałeś zaproszony! Przy pierwszej wizycie Ty i Twój znajomy dostajecie bonusową pieczątkę.' },
   loyaltyContinue: { de: 'Weiter', en: 'Continue', tr: 'Devam et', ro: 'Continuă', nl: 'Doorgaan', sq: 'Vazhdo', ku: 'Bidomîne', pl: 'Dalej' },
   loyaltySetupTitle: { de: 'Wie möchtest du deine Karte einrichten?', en: 'How would you like to set up your card?', tr: 'Kartını nasıl oluşturmak istersin?', ro: 'Cum vrei să-ți configurezi cardul?', nl: 'Hoe wil je je kaart instellen?', sq: 'Si dëshiron ta krijosh kartën tënde?', ku: 'Tu dixwazî çawa kartê saz bikî?', pl: 'Jak chcesz skonfigurować swoją kartę?' },
   loyaltyOptionRandom: { de: 'Zufälligen Code erhalten', en: 'Get a random code', tr: 'Rastgele kod al', ro: 'Primește un cod aleatoriu', nl: 'Willekeurige code ontvangen', sq: 'Merr një kod të rastësishëm', ku: 'Kodeke tesadufî bistîne', pl: 'Otrzymaj losowy kod' },
@@ -1427,11 +1430,19 @@ async function getLoyaltyCard(code) {
     return rows.length ? rows[0].value : null;
   } catch { return null; }
 }
-async function ensureLoyaltyCard(code) {
+async function ensureLoyaltyCard(code, referredBy) {
   const existing = await getLoyaltyCard(code);
   if (existing) return { card: existing, isNew: false };
   // Willkommensgeschenk: 1 Stempel gratis, ohne dass ein Besuch nötig ist.
+  // referredBy wird nur GESPEICHERT (kein Bonus hier!) — der Freundschaftsbonus
+  // wird erst beim ERSTEN echten, personalbestätigten Stempel ausgelöst (siehe
+  // addLoyaltyStamp), damit niemand durch bloßes Anklicken eines Links ohne
+  // jeden Besuch Stempel für sich und andere erschleichen kann.
   const fresh = { stamps: 1, createdAt: Date.now(), welcomeStamp: true };
+  if (referredBy && referredBy !== code) {
+    const referrerExists = await getLoyaltyCard(referredBy);
+    if (referrerExists) fresh.referredBy = referredBy;
+  }
   await safeSet(`loyalty:${code}`, fresh);
   try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source: 'welcome' }); } catch {}
   return { card: fresh, isNew: true };
@@ -1439,6 +1450,19 @@ async function ensureLoyaltyCard(code) {
 async function addLoyaltyStamp(code) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
   const updated = { ...card, stamps: Math.min(LOYALTY_TARGET, card.stamps + 1), lastStampAt: Date.now() };
+  // Freundschaftsbonus: erst JETZT (beim ersten echten, von Personal
+  // bestätigten Stempel dieses Kunden) auslösen — nie beim bloßen Anlegen
+  // der Karte. So braucht jeder Bonus mindestens einen echten Besuch.
+  if (card.referredBy && !card.referralProcessed) {
+    updated.stamps = Math.min(LOYALTY_TARGET, updated.stamps + 1);
+    updated.referralProcessed = true;
+    try {
+      const referrerCard = await getLoyaltyCard(card.referredBy);
+      if (referrerCard) {
+        await safeSet(`loyalty:${card.referredBy}`, { ...referrerCard, stamps: Math.min(LOYALTY_TARGET, (referrerCard.stamps || 0) + 1) });
+      }
+    } catch {}
+  }
   await safeSet(`loyalty:${code}`, updated);
   try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now() }); } catch {}
   return updated;
@@ -3144,7 +3168,7 @@ function LoyaltyModal({ lang, t, onClose }) {
   };
 
   const loadCode = async (c) => {
-    const { card: cc, isNew } = await ensureLoyaltyCard(c);
+    const { card: cc, isNew } = await ensureLoyaltyCard(c, getReferralCode());
     setCode(c);
     setCard(cc);
     setJustCreated(isNew);
@@ -3347,6 +3371,28 @@ function LoyaltyModal({ lang, t, onClose }) {
                 )}
               </div>
             )}
+
+            {card?.referredBy && !card?.referralProcessed && (
+              <div className="rounded-xl p-3 mb-3 text-center" style={{ background: 'rgba(255,199,56,.1)', border: '1px solid rgba(255,199,56,.3)' }}>
+                <p className="text-[11px] font-semibold" style={{ color: GOLD }}>{t('loyaltyReferredNote')}</p>
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                const link = `https://www.bodrumkebapvechta.de/?ref=${code}`;
+                const msg = t('loyaltyReferShareMsg').replace('{link}', link);
+                if (navigator.share) {
+                  navigator.share({ text: msg }).catch(() => {});
+                } else {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                }
+              }}
+              className="w-full py-3 rounded-2xl font-bold text-sm text-white mb-3"
+              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 6px 16px rgba(230,90,10,.3)' }}
+            >
+              {t('loyaltyReferBtn')}
+            </button>
 
             <div className="flex items-center justify-between gap-3">
               <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline" style={{ color: '#8a7c62' }}>{t('loyaltyCreateOwnCode')}</button>
@@ -9664,6 +9710,9 @@ function isTischMenuUrl() {
 }
 function isQrVisit() {
   try { return new URLSearchParams(window.location.search).get('qr') === '1'; } catch { return false; }
+}
+function getReferralCode() {
+  try { return new URLSearchParams(window.location.search).get('ref'); } catch { return null; }
 }
 
 export default function App() {
