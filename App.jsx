@@ -7397,7 +7397,12 @@ function StaffPanelView({ back }) {
         const upcomingBirthdays = rows.filter((r) => r.value.birthday && in7Days.includes(r.value.birthday))
           .map((r) => ({ code: r.key.replace('loyalty:', ''), birthday: r.value.birthday }))
           .sort((a, b) => a.birthday.localeCompare(b.birthday));
-        setLoyaltyStats({ totalCards, fullCards, totalRedeemed, withBirthday, upcomingBirthdays, todayMMDD });
+        // Wer hat wie viele ERFOLGREICHE (bonus bereits vergebene) Einladungen?
+        const referralCounts = {};
+        cards.forEach((c) => { if (c.referredBy && c.referralProcessed) referralCounts[c.referredBy] = (referralCounts[c.referredBy] || 0) + 1; });
+        const referralLeaders = Object.entries(referralCounts).sort((a, b) => b[1] - a[1]);
+        const pendingReferrals = cards.filter((c) => c.referredBy && !c.referralProcessed).length;
+        setLoyaltyStats({ totalCards, fullCards, totalRedeemed, withBirthday, upcomingBirthdays, todayMMDD, referralLeaders, pendingReferrals });
         setAllLoyaltyCards(
           rows.map((r) => ({ code: r.key.replace('loyalty:', ''), ...r.value }))
             .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
@@ -9045,6 +9050,20 @@ function StaffPanelView({ back }) {
                       ))}
                     </div>
                   )}
+                  {(loyaltyStats.referralLeaders?.length > 0 || loyaltyStats.pendingReferrals > 0) && (
+                    <div className="rounded-lg p-3 mt-3" style={{ background: '#fdf1de' }}>
+                      <div className="text-[10px] font-black mb-1.5" style={{ color: '#8a5a1f' }}>🎁 FREUNDE EINGELADEN</div>
+                      {loyaltyStats.pendingReferrals > 0 && (
+                        <div className="text-xs font-semibold mb-1.5" style={{ color: '#a4906c' }}>{loyaltyStats.pendingReferrals} warten noch auf den 1. Stempel</div>
+                      )}
+                      {loyaltyStats.referralLeaders?.map(([code, count]) => (
+                        <div key={code} className="flex justify-between text-xs font-semibold py-0.5" style={{ color: GREEN }}>
+                          <span>{code}</span>
+                          <span>{count} erfolgreich eingeladen</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {recentStamps.length > 0 && (
                     <div className="mt-3 pt-3" style={{ borderTop: '1px solid #f0e5cf' }}>
                       <button onClick={() => setOpenSettingsId((v) => v === 'recentStamps' ? null : 'recentStamps')} className="w-full flex items-center justify-between mb-1.5">
@@ -9076,6 +9095,11 @@ function StaffPanelView({ back }) {
                           {c.stamps || 0}/{LOYALTY_TARGET} Stempel{c.createdAt ? ` · erstellt ${new Date(c.createdAt).toLocaleString('de-DE')}` : ''}
                         </div>
                         {c.birthday && <div className="text-[10px] font-bold mt-0.5" style={{ color: '#e6640a' }}>🎂 {c.birthday.split('-')[1]}.{c.birthday.split('-')[0]}.</div>}
+                        {c.referredBy && (
+                          <div className="text-[10px] font-bold mt-0.5" style={{ color: c.referralProcessed ? '#34a065' : '#a4906c' }}>
+                            🎁 eingeladen von {c.referredBy}{c.referralProcessed ? ' · Bonus vergeben ✓' : ' · wartet auf 1. Stempel'}
+                          </div>
+                        )}
                       </div>
                       <button
                         onClick={async () => {
