@@ -354,6 +354,7 @@ const UI = {
   loyaltyReferBtn: { de: '🎁 Freund einladen, Bonus-Stempel sichern', en: '🎁 Invite a friend, get a bonus stamp', tr: '🎁 Arkadaşını davet et, bonus damga kazan', ro: '🎁 Invită un prieten, primești o ștampilă bonus', nl: '🎁 Nodig een vriend uit, krijg een bonusstempel', sq: '🎁 Fto një mik, merr një vulë bonus', ku: '🎁 Hevalek vexwîne, morê bonus bistîne', pl: '🎁 Zaproś znajomego, zdobądź bonusową pieczątkę' },
   loyaltyReferShareMsg: { de: '🎟️ Ich hab eine Stempelkarte bei Bodrum Kebap Vechta! Erstell dir über meinen Link deine eigene — und wenn du das erste Mal vorbeikommst, bekommen wir BEIDE einen Bonus-Stempel: {link}', en: '🎟️ I have a stamp card at Bodrum Kebap Vechta! Get your own via my link — and when you visit for the first time, we BOTH get a bonus stamp: {link}', tr: '🎟️ Bodrum Kebap Vechta\'da bir damga kartım var! Linkimden sen de kendi kartını oluştur — ilk kez geldiğinde ikimize de bonus damga düşer: {link}', ro: '🎟️ Am un card de ștampile la Bodrum Kebap Vechta! Fă-ți propriul card prin link-ul meu — iar când vii prima dată, primim AMÂNDOI o ștampilă bonus: {link}', nl: '🎟️ Ik heb een spaarkaart bij Bodrum Kebap Vechta! Maak via mijn link je eigen kaart — en als je voor het eerst langskomt, krijgen we BEIDEN een bonusstempel: {link}', sq: '🎟️ Kam një kartë vulash te Bodrum Kebap Vechta! Krijo tënden përmes linkut tim — dhe kur të vish herën e parë, të dy marrim një vulë bonus: {link}', ku: '🎟️ Li Bodrum Kebap Vechta karteke min a moran heye! Ji lînka min ya xwe çêke — û gava tu cara yekem werî, herduyan mor bonus distîne: {link}', pl: '🎟️ Mam kartę z pieczątkami w Bodrum Kebap Vechta! Załóż swoją przez mój link — a gdy odwiedzisz nas po raz pierwszy, OBOJE dostaniemy bonusową pieczątkę: {link}' },
   loyaltyReferredNote: { de: '🎁 Du wurdest eingeladen! Bei deinem ersten Besuch gibt es einen Bonus-Stempel für dich und deinen Freund.', en: '🎁 You were invited! On your first visit, you and your friend both get a bonus stamp.', tr: '🎁 Davet edildin! İlk ziyaretinde sana ve arkadaşına bonus damga var.', ro: '🎁 Ai fost invitat! La prima vizită, tu și prietenul tău primiți o ștampilă bonus.', nl: '🎁 Je bent uitgenodigd! Bij je eerste bezoek krijgen jij en je vriend allebei een bonusstempel.', sq: '🎁 U ftove! Në vizitën tënde të parë, ti dhe miku yt merrni një vulë bonus.', ku: '🎁 Tu hatî vexwendin! Di serdana xwe ya yekem de, tu û hevalê te herduyan morek bonus distînin.', pl: '🎁 Zostałeś zaproszony! Przy pierwszej wizycie Ty i Twój znajomy dostajecie bonusową pieczątkę.' },
+  loyaltyReferShortDesc: { de: 'Freunde einladen, bei deren erstem Besuch bekommt ihr BEIDE einen Bonus-Stempel.', en: 'Invite friends — on their first visit, you BOTH get a bonus stamp.', tr: 'Arkadaşlarını davet et, ilk ziyaretlerinde ikinize de bonus damga düşer.', ro: 'Invită prieteni — la prima lor vizită, AMÂNDOI primiți o ștampilă bonus.', nl: 'Nodig vrienden uit — bij hun eerste bezoek krijgen jullie BEIDEN een bonusstempel.', sq: 'Fto miq — në vizitën e tyre të parë, të dy merrni një vulë bonus.', ku: 'Hevalan vexwîne — di serdana wan a yekem de, herduyan morek bonus distînin.', pl: 'Zaproś znajomych — przy ich pierwszej wizycie OBOJE dostajecie bonusową pieczątkę.' },
   loyaltyContinue: { de: 'Weiter', en: 'Continue', tr: 'Devam et', ro: 'Continuă', nl: 'Doorgaan', sq: 'Vazhdo', ku: 'Bidomîne', pl: 'Dalej' },
   loyaltySetupTitle: { de: 'Wie möchtest du deine Karte einrichten?', en: 'How would you like to set up your card?', tr: 'Kartını nasıl oluşturmak istersin?', ro: 'Cum vrei să-ți configurezi cardul?', nl: 'Hoe wil je je kaart instellen?', sq: 'Si dëshiron ta krijosh kartën tënde?', ku: 'Tu dixwazî çawa kartê saz bikî?', pl: 'Jak chcesz skonfigurować swoją kartę?' },
   loyaltyOptionRandom: { de: 'Zufälligen Code erhalten', en: 'Get a random code', tr: 'Rastgele kod al', ro: 'Primește un cod aleatoriu', nl: 'Willekeurige code ontvangen', sq: 'Merr një kod të rastësishëm', ku: 'Kodeke tesadufî bistîne', pl: 'Otrzymaj losowy kod' },
@@ -3317,6 +3318,24 @@ function LoyaltyModal({ lang, t, onClose }) {
                 <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>🎉 {t('loyaltyWelcomeStampMsg')}</p>
               </div>
             )}
+
+            <p className="text-[11px] font-semibold text-center mb-2" style={{ color: '#a89878' }}>{t('loyaltyReferShortDesc')}</p>
+            <button
+              onClick={() => {
+                const link = `https://www.bodrumkebapvechta.de/?ref=${code}`;
+                const msg = t('loyaltyReferShareMsg').replace('{link}', link);
+                if (navigator.share) {
+                  navigator.share({ text: msg }).catch(() => {});
+                } else {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                }
+              }}
+              className="w-full py-3 rounded-2xl font-bold text-sm text-white mb-4"
+              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 6px 16px rgba(230,90,10,.3)' }}
+            >
+              {t('loyaltyReferBtn')}
+            </button>
+
             <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('loyaltyNoPhone')}</p>
 
             <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
@@ -3377,22 +3396,6 @@ function LoyaltyModal({ lang, t, onClose }) {
                 <p className="text-[11px] font-semibold" style={{ color: GOLD }}>{t('loyaltyReferredNote')}</p>
               </div>
             )}
-
-            <button
-              onClick={() => {
-                const link = `https://www.bodrumkebapvechta.de/?ref=${code}`;
-                const msg = t('loyaltyReferShareMsg').replace('{link}', link);
-                if (navigator.share) {
-                  navigator.share({ text: msg }).catch(() => {});
-                } else {
-                  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-                }
-              }}
-              className="w-full py-3 rounded-2xl font-bold text-sm text-white mb-3"
-              style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 6px 16px rgba(230,90,10,.3)' }}
-            >
-              {t('loyaltyReferBtn')}
-            </button>
 
             <div className="flex items-center justify-between gap-3">
               <button onClick={() => setMode('custom')} className="text-[11px] font-semibold underline" style={{ color: '#8a7c62' }}>{t('loyaltyCreateOwnCode')}</button>
