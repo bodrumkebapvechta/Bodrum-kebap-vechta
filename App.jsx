@@ -1525,13 +1525,12 @@ async function incrementCategoryClick(catKey) {
 
 /* ============ WHEEL DATA ============ */
 const WHEEL_PRIZES = [
-  { label: '10% Rabatt', weight: 13, color: GREEN, text: '#fff' },
+  { label: '10% Rabatt', weight: 18, color: GREEN, text: '#fff' },
   { label: 'Nochmal Glück!', weight: 20, color: '#e8d9b8', text: GREEN },
   { label: 'Gratis Getränk', weight: 15, color: ORANGE, text: '#fff' },
   { label: 'Gratis Pommes', weight: 15, color: GREEN, text: '#fff' },
   { label: 'Nochmal Glück!', weight: 20, color: '#e8d9b8', text: GREEN },
   { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
-  { label: '10% Rabatt', weight: 5, color: GOLD, text: GREEN },
 ];
 const WHEEL_N = WHEEL_PRIZES.length;
 const WHEEL_SLICE = 360 / WHEEL_N;
