@@ -74,13 +74,14 @@ const SITE_PHOTOS = [
 
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl', 'sq', 'ku', 'pl'];
-// Sipariş akışı (WhatsApp/Sepet/Kurucu/Grup/Çark) geçici olarak kapalı — donanım hazır olunca true yapılabilir.
-const ORDERING_ENABLED_GLOBAL = false;
-// Erlaubt es, das Bestellsystem NUR auf einem einzelnen Gerät zum Testen zu
-// aktivieren (über einen geheimen Link: ?ordertest=1), ohne es für echte
-// Kunden live zu schalten. Der globale Schalter bleibt dabei unverändert aus.
+// Sipariş akışı (WhatsApp/Sepet/Kurucu/Grup/Çark) über die Datenbank
+// (siteconfig:orderingEnabled) gesteuert — Lütfü kann es im Personal-Bereich
+// selbst an/aus schalten, ohne dass Code geändert werden muss.
+let dbOrderingEnabled = false; // wird beim App-Start aus Supabase geladen
 function orderingEnabled() {
-  if (ORDERING_ENABLED_GLOBAL) return true;
+  if (dbOrderingEnabled) return true;
+  // Geheimer Testmodus für EIN einzelnes Gerät (über ?ordertest=1), unabhängig
+  // vom globalen Schalter — nützlich zum Testen, bevor global aktiviert wird.
   try { return localStorage.getItem('bk_order_test_device') === '1'; } catch { return false; }
 }
 const LANG_NAMES = { de: 'Deutsch', en: 'English', tr: 'Türkçe', ro: 'Română', nl: 'Nederlands', sq: 'Shqip', ku: 'Kurdî', pl: 'Polski' };
@@ -3027,6 +3028,104 @@ function ContactMessageForm({ lang, t }) {
   );
 }
 
+function QuickOrderByNumberModal({ onClose, onContinue }) {
+  const { lang } = React.useContext(LangContext);
+  const [numInput, setNumInput] = useState('');
+  const [entries, setEntries] = useState([]);
+  const [error, setError] = useState('');
+  const inputRef = React.useRef(null);
+
+  const addByNumber = () => {
+    const num = numInput.trim();
+    if (!num) return;
+    const item = ALL_MENU_ITEMS.find((i) => i.number === num);
+    if (!item) {
+      setError(`Nummer "${num}" nicht gefunden`);
+      return;
+    }
+    const price = item.priceLarge !== undefined ? item.priceSmall : item.price;
+    setEntries((prev) => {
+      const existing = prev.find((e) => e.id === item.id);
+      if (existing) return prev.map((e) => (e.id === item.id ? { ...e, qty: e.qty + 1 } : e));
+      return [...prev, { id: item.id, number: item.number, name: mx(item.name, lang), price, qty: 1 }];
+    });
+    setNumInput('');
+    setError('');
+    inputRef.current?.focus();
+  };
+  const changeQty = (id, delta) => {
+    setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, qty: Math.max(1, e.qty + delta) } : e)).filter((e) => e.qty > 0));
+  };
+  const removeEntry = (id) => setEntries((prev) => prev.filter((e) => e.id !== id));
+  const total = entries.reduce((s, e) => s + e.price * e.qty, 0);
+
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={onClose}>
+      <div
+        className="w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6 max-h-[85vh] flex flex-col"
+        style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 -10px 40px rgba(0,0,0,.4)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-black text-base" style={{ color: GOLD }}>🔢 Mit Nummer bestellen</div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.1)' }}><X size={15} color="#fff" /></button>
+        </div>
+
+        <div className="flex gap-2 mb-1">
+          <input
+            ref={inputRef}
+            autoFocus
+            value={numInput}
+            onChange={(e) => { setNumInput(e.target.value); setError(''); }}
+            onKeyDown={(e) => e.key === 'Enter' && addByNumber()}
+            inputMode="numeric"
+            placeholder="z.B. 205"
+            className="flex-1 px-4 py-3.5 rounded-xl text-base font-black tracking-[0.05em] outline-none"
+            style={{ background: '#fff', color: GREEN }}
+          />
+          <button onClick={addByNumber} className="px-5 rounded-xl font-bold text-sm text-white flex-shrink-0" style={{ background: ORANGE }}>+ Add</button>
+        </div>
+        {error && <p className="text-xs font-bold mb-2" style={{ color: '#ff8a8a' }}>{error}</p>}
+        <p className="text-[11px] font-medium mb-3" style={{ color: '#a89878' }}>Nummer steht auf der Speisekarte neben jedem Produkt.</p>
+
+        <div className="flex-1 overflow-y-auto min-h-0 mb-3">
+          {entries.length === 0 ? (
+            <p className="text-sm text-center py-8 font-semibold" style={{ color: '#a89878' }}>Noch keine Artikel hinzugefügt.</p>
+          ) : (
+            entries.map((e) => (
+              <div key={e.id} className="flex items-center gap-2.5 py-2.5" style={{ borderBottom: '1px solid rgba(255,255,255,.08)' }}>
+                <span className="text-xs font-black flex-shrink-0" style={{ color: GOLD }}>{e.number}</span>
+                <span className="flex-1 min-w-0 text-sm font-bold truncate" style={{ color: '#fff' }}>{e.name}</span>
+                <button onClick={() => changeQty(e.id, -1)} className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.12)', color: '#fff' }}>−</button>
+                <span className="text-sm font-black w-4 text-center flex-shrink-0" style={{ color: '#fff' }}>{e.qty}</span>
+                <button onClick={() => changeQty(e.id, 1)} className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.12)', color: '#fff' }}>+</button>
+                <button onClick={() => removeEntry(e.id)} className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ color: '#ff8a8a' }}><X size={14} /></button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {entries.length > 0 && (
+          <div className="flex items-center justify-between mb-3 px-1">
+            <span className="text-xs font-bold" style={{ color: '#a89878' }}>Zwischensumme</span>
+            <span className="font-black text-lg" style={{ color: GOLD }}>{fmt(total)}</span>
+          </div>
+        )}
+
+        <button
+          onClick={() => entries.length > 0 && onContinue(entries)}
+          disabled={entries.length === 0}
+          className="w-full py-3.5 rounded-2xl font-black text-base text-white disabled:opacity-40"
+          style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}
+        >
+          Weiter →
+        </button>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function WishModal({ lang, t, onClose }) {
   const [name, setName] = useState('');
   const [text, setText] = useState('');
@@ -3955,6 +4054,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [wishModalOpen, setWishModalOpen] = useState(false);
+  const [quickOrderModalOpen, setQuickOrderModalOpen] = useState(false);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
   const [tuesdayWheelOpen, setTuesdayWheelOpen] = useState(false);
   const isTuesdayToday = useMemo(() => new Date().getDay() === 2, []);
@@ -4321,22 +4421,20 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {orderingEnabled() && (
               <>
                 <button
-                  onClick={() => go('whatsapp', { focusSearch: true })}
-                  className="quick-order-btn w-full sm:w-auto flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-base mb-5 relative overflow-hidden"
+                  onClick={() => setQuickOrderModalOpen(true)}
+                  className="quick-order-btn w-full sm:w-auto flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-base mb-3 relative overflow-hidden"
                   style={{ background: `linear-gradient(120deg, #ff3d68, #ff6a1a 55%, ${GOLD})`, backgroundSize: '200% 100%', color: '#fff', boxShadow: '0 14px 34px rgba(255,61,104,.4)' }}
                 >
                   <span className="text-2xl relative">🔢</span>
                   <span className="relative">{t('quickOrderByNumberBtn')}</span>
                   <ArrowRight size={18} className="relative ml-auto sm:ml-1" />
                 </button>
-                <div className="flex flex-wrap gap-3 mb-3">
-                  <button onClick={() => go('whatsapp')} className="cta-pulse px-6 py-3.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 26px rgba(230,90,10,.45)' }}>{t('heroCtaWhatsapp')}</button>
+                <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                  <button onClick={() => go('whatsapp')} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>📋 {t('heroCtaWhatsapp')}</button>
+                  <button onClick={() => go('builder')} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdb70)`, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)' }}>🧩 {t('builderQuickLabel')}</button>
                 </div>
-                <button onClick={() => go('group')} className="w-full sm:w-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-sm" style={{ background: GOLD, color: GREEN, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 8px 22px rgba(255,199,56,.35)' }}>
-                  <span className="text-lg">👥</span> {t('heroCtaGroup')}
-                </button>
-                <button onClick={() => go('builder')} className="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl font-black text-base mt-4" style={{ background: `linear-gradient(135deg, ${GOLD}, #ffdb70)`, color: GREEN, boxShadow: '0 12px 30px rgba(255,199,56,.45)', animation: 'goldGlow 2.4s ease-in-out infinite' }}>
-                  <span className="text-2xl">🧩</span> {t('builderQuickLabel')}
+                <button onClick={() => go('group')} className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.35)' }}>
+                  👥 {t('heroCtaGroup')}
                 </button>
               </>
             )}
@@ -4483,6 +4581,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       })()}
 
       {wishModalOpen && <WishModal lang={lang} t={t} onClose={() => setWishModalOpen(false)} />}
+      {quickOrderModalOpen && (
+        <QuickOrderByNumberModal
+          onClose={() => setQuickOrderModalOpen(false)}
+          onContinue={(items) => {
+            setQuickOrderModalOpen(false);
+            go('whatsapp', { presetItems: items });
+          }}
+        />
+      )}
       {loyaltyModalOpen && <LoyaltyModal lang={lang} t={t} onClose={() => setLoyaltyModalOpen(false)} />}
       {tuesdayWheelOpen && <TuesdayWheelModal t={t} onClose={() => setTuesdayWheelOpen(false)} />}
       {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
@@ -4642,6 +4749,17 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       const key = `combo-${Date.now()}`;
       setCart((c) => ({ ...c, [key]: { name: `🎉 ${initialAction.pendingCombo.title}`, deName: `🎉 ${initialAction.pendingCombo.title}`, price: initialAction.pendingCombo.price, qty: 1 } }));
       setLastAddedTab(initialAction.pendingCombo.title.includes('Pizza') ? 'pizza' : null);
+      setDrawerView('upsell');
+      setCartOpen(true);
+    }
+    if (initialAction?.presetItems?.length) {
+      setCart((c) => {
+        const next = { ...c };
+        initialAction.presetItems.forEach((it) => {
+          next[it.id] = { name: it.name, deName: it.name, price: it.price, qty: (next[it.id]?.qty || 0) + it.qty };
+        });
+        return next;
+      });
       setDrawerView('upsell');
       setCartOpen(true);
     }
@@ -8691,6 +8809,29 @@ function StaffPanelView({ back }) {
 
               {settingsGroup === 'erweitert' && (
                 <>
+                  <div className="rounded-2xl p-4 mb-3" style={{ background: orderingEnabled() ? `linear-gradient(135deg, ${GREEN}, #1f4a34)` : '#fff', border: orderingEnabled() ? 'none' : '1.5px solid #f0e5cf', boxShadow: orderingEnabled() ? '0 8px 22px rgba(21,56,38,.25)' : '0 2px 8px rgba(21,56,38,.04)' }}>
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <span className="text-2xl">🛒</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-black text-sm" style={{ color: orderingEnabled() ? '#fff' : GREEN }}>Bestellsystem</div>
+                        <div className="text-[11px] font-semibold" style={{ color: orderingEnabled() ? '#d9c9a3' : '#a4906c' }}>{orderingEnabled() ? 'Aktiv — Kunden können bestellen' : 'Ausgeschaltet — Kunden sehen nur die Speisekarte'}</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const next = !orderingEnabled();
+                        await safeSet('siteconfig:orderingEnabled', next);
+                        dbOrderingEnabled = next;
+                        window.location.reload();
+                      }}
+                      className="w-full py-3 rounded-xl font-bold text-sm"
+                      style={orderingEnabled() ? { background: '#fff', color: CHILI } : { background: GREEN, color: '#fff', boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}
+                    >
+                      {orderingEnabled() ? 'Jetzt ausschalten' : 'Jetzt für alle Kunden einschalten'}
+                    </button>
+                    <p className="text-[10px] font-semibold mt-2.5 text-center" style={{ color: orderingEnabled() ? '#d9c9a3' : '#c4b697' }}>Seite lädt nach der Umstellung automatisch neu.</p>
+                  </div>
+
                   <SettingsRow id="testOrder" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
                     <button onClick={createTestOrder} className="w-full py-3 rounded-xl font-bold text-sm text-white mb-2" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🧪 {t('testOrderBtn')}</button>
@@ -9167,23 +9308,6 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'messages' && (
             <div className="px-5">
-              {orderingEnabled() && (
-                <button
-                  onClick={() => setTab('orders')}
-                  className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-3 relative overflow-hidden"
-                  style={{ background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, boxShadow: '0 10px 26px rgba(21,56,38,.35)' }}
-                >
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: 140, height: 140, top: -50, right: -40, background: 'rgba(255,255,255,.08)' }} />
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 relative" style={{ background: 'rgba(255,255,255,.15)' }}>
-                    <span className="text-2xl">🧾</span>
-                  </div>
-                  <div className="min-w-0 relative">
-                    <div className="font-black text-[15px] text-white">Bestellungen {orders.length > 0 && `(${orders.length})`}</div>
-                    <div className="text-[11px] font-semibold" style={{ color: '#d9c9a3' }}>Eingehende Bestellungen ansehen & bearbeiten</div>
-                  </div>
-                  <span className="ml-auto text-white text-xl relative">→</span>
-                </button>
-              )}
               <button
                 onClick={() => setTab('wheel')}
                 className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
@@ -9447,13 +9571,14 @@ function StaffPanelView({ back }) {
             <div className="relative" style={{ height: 66 }}>
               {(() => {
                 const staffTabs = [
+                  ...(orderingEnabled() ? [{ key: 'orders', icon: '🧾', label: 'Bestellungen' }] : []),
                   { key: 'messages', icon: '💬', label: 'Nachrichten' },
                   { key: 'loyalty', icon: '🎟️', label: 'Stempelkarten' },
                   { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                   { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                   { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
                 ];
-                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' || tab === 'orders' ? 'messages' : tab);
+                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'messages' : tab);
                 const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
                 return (
                   <>
@@ -9984,6 +10109,13 @@ export default function App() {
   const [view, setView] = useState(isTischMenu ? 'tischmenu' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
+  const [, forceRerender] = useState(0);
+  useEffect(() => {
+    safeGet('siteconfig:orderingEnabled').then((v) => {
+      dbOrderingEnabled = v === true;
+      forceRerender((n) => n + 1);
+    });
+  }, []);
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
