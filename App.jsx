@@ -6771,12 +6771,22 @@ function OrderTrackView({ back, initialAction, onConsumeAction }) {
 function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   const isOpen = openId === id;
   return (
-    <div className="rounded-2xl mb-2.5 overflow-hidden" style={{ background: '#fff', border: `1.5px solid ${isOpen ? '#e9d19a' : '#f0e5cf'}`, boxShadow: isOpen ? '0 6px 18px rgba(21,56,38,.08)' : '0 2px 6px rgba(21,56,38,.04)', transition: 'box-shadow .2s, border-color .2s' }}>
-      <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
-        <span className="flex items-center gap-2 font-black text-sm" style={{ color: GREEN }}>{icon} {title}</span>
+    <div className="rounded-2xl mb-3 overflow-hidden" style={{ background: '#fff', border: `1.5px solid ${isOpen ? '#e9d19a' : '#f0e5cf'}`, boxShadow: isOpen ? '0 8px 22px rgba(21,56,38,.1)' : '0 2px 8px rgba(21,56,38,.04)', transition: 'box-shadow .2s, border-color .2s' }}>
+      <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center gap-3 px-4 py-4 text-left">
+        <span
+          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+          style={{ background: isOpen ? `linear-gradient(135deg, ${GOLD}, #ffb020)` : '#f7f0e2', transition: 'background .2s' }}
+        >
+          {icon}
+        </span>
+        <span className="flex-1 font-black text-sm" style={{ color: GREEN, letterSpacing: '.01em' }}>{title}</span>
         <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px]" style={{ background: isOpen ? GOLD : '#f7f0e2', color: GREEN, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s, background .2s' }}>▼</span>
       </button>
-      {isOpen && <div className="px-4 pb-4">{children}</div>}
+      {isOpen && (
+        <div className="px-4 pb-4 pt-0.5" style={{ borderTop: '1px solid #f5ecd8' }}>
+          <div className="pt-3.5">{children}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -8780,26 +8790,25 @@ function StaffPanelView({ back }) {
             const langOrder = Object.entries(byLang).sort((a, b) => b[1] - a[1]);
             return (
               <div className="px-5">
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
+                <div className="rounded-2xl p-5 text-center mb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, boxShadow: '0 10px 26px rgba(21,56,38,.28)' }}>
+                  <div className="font-black text-4xl text-white mb-0.5">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
+                  <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
+                </div>
+                <div className="text-[10px] font-black tracking-widest mb-2.5" style={{ color: '#a4906c' }}>📊 ÜBERBLICK</div>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf' }}>
+                  <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
                   </button>
-                </div>
-                <div className="rounded-2xl p-4 text-center mb-3" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.2)' }}>
-                  <div className="font-black text-3xl text-white">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
-                  <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="rounded-xl p-4 text-center" style={{ background: `${ORANGE}14`, boxShadow: '0 4px 14px rgba(21,56,38,.08)' }}>
+                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </button>
