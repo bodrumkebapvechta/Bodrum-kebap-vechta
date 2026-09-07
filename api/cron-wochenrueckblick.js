@@ -15,6 +15,19 @@ async function fetchPrefix(prefix, limit = 3000) {
   return res.json();
 }
 
+async function saveReport(key, value) {
+  await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates',
+    },
+    body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+  });
+}
+
 export default async function handler(req, res) {
   const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
   if (!REST_API_KEY) {
@@ -52,6 +65,20 @@ export default async function handler(req, res) {
     if (avgRating) lines.push(`⭐ ${avgRating}/5 (${surveysThisWeek.length} Bewertungen)`);
 
     const message = lines.join(' · ');
+
+    // Bericht dauerhaft speichern, damit er im Personal-Bereich (Statistik)
+    // jederzeit nachgelesen werden kann — nicht nur als flüchtige Push-Nachricht.
+    await saveReport(`weeklyreport:${now}`, {
+      ts: now,
+      weekStart: since,
+      visits: visitsThisWeek,
+      newCards: newCardsThisWeek,
+      stamps: stampsThisWeek,
+      fullCards: fullCardsNow,
+      wheelSpins: wheelSpinsThisWeek,
+      avgRating,
+      surveyCount: surveysThisWeek.length,
+    });
 
     const response = await fetch('https://api.onesignal.com/notifications', {
       method: 'POST',
