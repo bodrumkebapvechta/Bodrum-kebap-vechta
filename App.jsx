@@ -75,7 +75,14 @@ const SITE_PHOTOS = [
 /* ============ I18N ============ */
 const LANGS = ['de', 'en', 'tr', 'ro', 'nl', 'sq', 'ku', 'pl'];
 // Sipariş akışı (WhatsApp/Sepet/Kurucu/Grup/Çark) geçici olarak kapalı — donanım hazır olunca true yapılabilir.
-const ORDERING_ENABLED = false;
+const ORDERING_ENABLED_GLOBAL = false;
+// Erlaubt es, das Bestellsystem NUR auf einem einzelnen Gerät zum Testen zu
+// aktivieren (über einen geheimen Link: ?ordertest=1), ohne es für echte
+// Kunden live zu schalten. Der globale Schalter bleibt dabei unverändert aus.
+function orderingEnabled() {
+  if (ORDERING_ENABLED_GLOBAL) return true;
+  try { return localStorage.getItem('bk_order_test_device') === '1'; } catch { return false; }
+}
 const LANG_NAMES = { de: 'Deutsch', en: 'English', tr: 'Türkçe', ro: 'Română', nl: 'Nederlands', sq: 'Shqip', ku: 'Kurdî', pl: 'Polski' };
 const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧', tr: '🇹🇷', ro: '🇷🇴', nl: '🇳🇱', sq: '🇦🇱', ku: '☀️', pl: '🇵🇱' };
 
@@ -1581,9 +1588,9 @@ function TopBar({ onHome, title, dark = true }) {
             <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
             <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
               <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
-              {ORDERING_ENABLED ? <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => { setGlobalNavOpen(false); go('tischmenu'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
-              {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>}
-              {ORDERING_ENABLED && <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>}
+              {orderingEnabled() ? <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => { setGlobalNavOpen(false); go('tischmenu'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
+              {orderingEnabled() && <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>}
+              {orderingEnabled() && <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>}
               <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
               <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
               <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
@@ -2428,13 +2435,13 @@ function WeekendComboPromo({ go, top }) {
   }, []);
 
   const confirmDoener = () => {
-    if (!ORDERING_ENABLED) { go('tischmenu', { initialCatHint: 'kebap' }); return; }
+    if (!orderingEnabled()) { go('tischmenu', { initialCatHint: 'kebap' }); return; }
     const opt = WEEKEND_MEAT_OPTIONS.find((m) => m.key === meat);
     const total = DOENER_COMBO.price + (opt?.extra || 0);
     go('whatsapp', { pendingCombo: { title: `${DOENER_COMBO.title} (${opt.label})`, price: total } });
   };
   const goToPizzaCombo = () => {
-    if (!ORDERING_ENABLED) { go('tischmenu', { initialCatHint: 'pizza' }); return; }
+    if (!orderingEnabled()) { go('tischmenu', { initialCatHint: 'pizza' }); return; }
     go('whatsapp', { pizzaComboMode: true });
   };
 
@@ -2554,7 +2561,7 @@ function WeekendComboPromo({ go, top }) {
 function WeekendTeaser({ go }) {
   const { t } = React.useContext(LangContext);
   return (
-    <button onClick={() => go(ORDERING_ENABLED ? 'whatsapp' : 'tischmenu')} className="w-full flex items-center justify-center gap-2 flex-wrap text-center py-2.5 px-4 rounded-xl mt-3" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
+    <button onClick={() => go(orderingEnabled() ? 'whatsapp' : 'tischmenu')} className="w-full flex items-center justify-center gap-2 flex-wrap text-center py-2.5 px-4 rounded-xl mt-3" style={{ background: '#fdecd4', border: '1px solid #f0d4a8' }}>
       <span className="text-xs font-black" style={{ color: '#8a5a1f' }}>{t('weekendTeaserOnly')}</span>
       <span className="text-xs font-semibold" style={{ color: '#8a5a1f' }}>28cm Pizza + {fmt(PIZZA_COMBO_PRICE)} · {DOENER_COMBO.title.split(' + ')[0]} + {fmt(DOENER_COMBO.price)}</span>
     </button>
@@ -2648,7 +2655,7 @@ function getAssistantReply(qRaw, lang) {
     return { intent: 'payment', text: ar('paymentYes', lang) };
   }
   if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
-    return { intent: 'order', text: ORDERING_ENABLED ? ar('orderOn', lang) : ar('orderOff', lang) };
+    return { intent: 'order', text: orderingEnabled() ? ar('orderOn', lang) : ar('orderOff', lang) };
   }
   if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag', 'polec')) {
     const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
@@ -3778,7 +3785,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
   const displayPrice = isLunchWindow ? 9.5 : item.price;
 
   const orderNow = () => {
-    if (!ORDERING_ENABLED) { go('tischmenu', item.cat ? { initialCatHint: item.cat } : undefined); return; }
+    if (!orderingEnabled()) { go('tischmenu', item.cat ? { initialCatHint: item.cat } : undefined); return; }
     go('whatsapp', { pendingCombo: { title: item.name, price: displayPrice } });
   };
 
@@ -4010,7 +4017,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const confirmSurprise = () => {
     const item = surpriseItem;
     if (!item) return;
-    if (!ORDERING_ENABLED) { setSurpriseItem(null); go('tischmenu', item.cat ? { initialCatHint: item.cat } : undefined); return; }
+    if (!orderingEnabled()) { setSurpriseItem(null); go('tischmenu', item.cat ? { initialCatHint: item.cat } : undefined); return; }
     if (isLunchWindowNow() && LUNCH_CATEGORIES.includes(item.cat)) {
       go('whatsapp', { lunchSurprise: { label: mx(item.name, lang), deLabel: item.name } });
     } else if (new Date().getDay() === 6 && item.cat === 'pizza') {
@@ -4121,7 +4128,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <span style={{ fontSize: 30, animation: 'sideFloatHome2 4.8s ease-in-out infinite' }}>🍝</span>
       </div>
       <div className="hidden 2xl:flex flex-col items-center gap-12 fixed right-8 top-1/4 opacity-90 pointer-events-none z-10">
-        {ORDERING_ENABLED && (
+        {orderingEnabled() && (
           <button onClick={() => go('group')} className="pointer-events-auto flex flex-col items-center gap-1.5 px-4 py-4 rounded-2xl text-center" style={{ background: ORANGE, animation: 'goldGlow 2.2s ease-in-out infinite', boxShadow: '0 10px 26px rgba(255,106,26,.4)' }}>
             <span style={{ fontSize: 30 }}>👥</span>
             <span className="text-white font-black text-[11px] leading-tight">{t('featGroupTitle')}!</span>
@@ -4159,7 +4166,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7">
-            {ORDERING_ENABLED ? <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
+            {orderingEnabled() ? <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => setWishModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>💡 {t('wishBoxNavLabel')}</button>
             <button onClick={() => setLoyaltyModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>🎟️ {t('titleLoyalty')}</button>
@@ -4171,8 +4178,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }} title="@BodrumKebapVechta">
               <Instagram size={16} color="#fff" />
             </a>
-            {ORDERING_ENABLED && <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
-            {!ORDERING_ENABLED && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
+            {orderingEnabled() && <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
+            {!orderingEnabled() && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <div className="flex items-center rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.1)' }}>
@@ -4202,7 +4209,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
             <div className="flex-1 overflow-y-auto px-6 pt-6 flex flex-col gap-2.5">
               {[
-                { onClick: () => (ORDERING_ENABLED ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
+                { onClick: () => (orderingEnabled() ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
                 { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
                 { onClick: () => { setNavOpen(false); setLoyaltyModalOpen(true); }, icon: '🎟️', label: t('titleLoyalty') },
@@ -4231,7 +4238,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
 
             <div className="px-6 pb-8 pt-3">
-              {ORDERING_ENABLED
+              {orderingEnabled()
                 ? <button onClick={() => go('whatsapp')} className="w-full py-4 rounded-2xl font-black text-base text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 26px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
                 : <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-base text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 26px rgba(230,90,10,.4)' }}><Phone size={17} /> 04441 95 16 104</a>}
             </div>
@@ -4291,7 +4298,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="h-48 sm:h-56" />
-            {!ORDERING_ENABLED && (
+            {!orderingEnabled() && (
               <div className="flex flex-wrap gap-3 mb-5">
                 <button
                   onClick={() => { logEvent('hero_menu'); go('tischmenu'); }}
@@ -4311,7 +4318,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </a>
               </div>
             )}
-            {ORDERING_ENABLED && (
+            {orderingEnabled() && (
               <>
                 <button
                   onClick={() => go('whatsapp', { focusSearch: true })}
@@ -4348,7 +4355,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               </button>
             </div>
             <div className="flex flex-wrap gap-2.5 mt-2.5">
-              {ORDERING_ENABLED && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
+              {orderingEnabled() && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
@@ -4385,7 +4392,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <Testimonials />
 
       {/* EXTRAS */}
-      {ORDERING_ENABLED && favorites.length > 0 && (
+      {orderingEnabled() && favorites.length > 0 && (
         <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-8">
           <div className="text-xs font-bold tracking-widest mb-3 flex items-center gap-1.5" style={{ color: '#a4906c' }}><Heart size={13} fill={CHILI} color={CHILI} /> {t('favoritesTitle')}</div>
           <div className="flex gap-2.5 overflow-x-auto pb-2">
@@ -4401,7 +4408,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         </section>
       )}
-      {ORDERING_ENABLED && (
+      {orderingEnabled() && (
       <section id="extras" className="max-w-7xl mx-auto px-5 lg:px-10 py-14">
         <Reveal className="text-center mb-9">
           <div className="text-xs font-bold tracking-[3px] mb-2" style={{ color: '#e4550a' }}>{t('extrasKicker')}</div>
@@ -9940,9 +9947,22 @@ function isQrVisit() {
 function getReferralCode() {
   try { return new URLSearchParams(window.location.search).get('ref'); } catch { return null; }
 }
+// Geheimer Testmodus für das Bestellsystem — NUR auf diesem einen Gerät aktiv:
+// https://www.bodrumkebapvechta.de/?ordertest=1  → aktiviert
+// https://www.bodrumkebapvechta.de/?ordertest=0  → deaktiviert
+// Wirkt sich NICHT auf andere Kunden aus, da es nur lokal (localStorage)
+// auf dem Gerät gespeichert wird, das den Link öffnet.
+function applyOrderTestParam() {
+  try {
+    const val = new URLSearchParams(window.location.search).get('ordertest');
+    if (val === '1') localStorage.setItem('bk_order_test_device', '1');
+    else if (val === '0') localStorage.removeItem('bk_order_test_device');
+  } catch {}
+}
 
 export default function App() {
   const isTischMenu = isTischMenuUrl();
+  applyOrderTestParam();
   const [booted, setBooted] = useState(isTischMenu);
   const [view, setView] = useState(isTischMenu ? 'tischmenu' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
