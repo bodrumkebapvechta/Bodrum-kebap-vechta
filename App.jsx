@@ -4586,6 +4586,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
     setBurst(true); setTimeout(() => setBurst(false), 5200); setDrawerView('sent');
     const itemsList = lines.map(([, v]) => ({ name: v.deName || v.name, qty: v.qty, price: v.qty * v.price }));
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: totalCount, total: totalPrice, name: name || null, items: itemsList.map(({ name, qty }) => ({ name, qty })), pickupTime: pickupTime || null });
+    sendOwnerPushNotification('🧾 Neue Bestellung: ' + orderCode, `${totalCount}x Artikel · ${fmt(totalPrice)}${name ? ' · ' + name : ''}`);
     setSentSnapshot({ code: orderCode, items: itemsList, total: totalPrice, name, pickupTime, note });
     setOrderCode(makeNumericCode(4));
   };
@@ -5502,6 +5503,7 @@ function DonerBuilderView({ back, go }) {
       ? `${pastaType} (${pastaSauce}${pastaExtras.length ? ', ' + pastaExtras.join(', ') : ''})`
       : `Döner (${base?.label}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
+    sendOwnerPushNotification('🧾 Neue Bestellung: ' + orderCode, `${itemName} · ${fmt(total)}${name ? ' · ' + name : ''}`);
     setSentSnapshot({ code: orderCode, items: [{ name: itemName, qty: 1, price: total }], total, name, pickupTime: null, note: '' });
     setOrderCode(makeNumericCode(4));
   };
@@ -7543,6 +7545,12 @@ function StaffPanelView({ back }) {
   const knownOrderKeysRef = useRef(null);
   const [nowTick, setNowTick] = useState(Date.now());
   const beepAudioRef = useRef(null);
+  const [notifySound, setNotifySoundState] = useState('klassisch');
+  useEffect(() => { safeGet('siteconfig:notifySound').then((r) => { if (r && r.key) setNotifySoundState(r.key); }); }, []);
+  const setNotifySound = async (key) => {
+    setNotifySoundState(key);
+    await safeSet('siteconfig:notifySound', { key });
+  };
   const getBeepAudio = () => {
     if (!beepAudioRef.current) {
       beepAudioRef.current = new Audio(NOTIFY_BEEP_URI);
@@ -7574,6 +7582,50 @@ function StaffPanelView({ back }) {
       osc.stop(base + delay + 0.16);
     });
   };
+  const playTone = (ctx, delay, freq, dur, type = 'sine', vol = 0.4) => {
+    const base = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, base + delay);
+    gain.gain.setValueAtTime(vol, base + delay + dur * 0.7);
+    gain.gain.linearRampToValueAtTime(0, base + delay + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(base + delay);
+    osc.stop(base + delay + dur + 0.02);
+  };
+
+  const SOUND_OPTIONS = [
+    { key: 'klassisch', label: '🔔 Klassisch', play: (ctx) => playBeeps(ctx) },
+    {
+      key: 'doppelding', label: '🎵 Doppel-Ding',
+      play: (ctx) => { playTone(ctx, 0, 1200, 0.22, 'sine', 0.45); playTone(ctx, 0.24, 1600, 0.28, 'sine', 0.45); },
+    },
+    {
+      key: 'dreifach', label: '📍 Dreifach-Piep',
+      play: (ctx) => { [0, 0.16, 0.32].forEach((d) => playTone(ctx, d, 1100, 0.12, 'square', 0.35)); },
+    },
+    {
+      key: 'sanft', label: '🌙 Sanft',
+      play: (ctx) => {
+        const base = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, base);
+        osc.frequency.linearRampToValueAtTime(1000, base + 0.35);
+        gain.gain.setValueAtTime(0.35, base);
+        gain.gain.linearRampToValueAtTime(0, base + 0.4);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(base); osc.stop(base + 0.42);
+      },
+    },
+    {
+      key: 'alarm', label: '🚨 Alarm',
+      play: (ctx) => { [0, 0.2, 0.4, 0.6].forEach((d, i) => playTone(ctx, d, i % 2 === 0 ? 1000 : 700, 0.18, 'sawtooth', 0.3)); },
+    },
+  ];
   const unlockAudio = () => {
     try {
       const el = getBeepAudio();
@@ -7594,18 +7646,23 @@ function StaffPanelView({ back }) {
   };
   const notifyNewOrder = () => {
     try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
-    try {
-      const el = getBeepAudio();
-      el.currentTime = 0;
-      const p = el.play();
-      if (p && p.catch) p.catch(() => {});
-      setTimeout(() => { try { const el2 = getBeepAudio(); el2.currentTime = 0; el2.play().catch(() => {}); } catch {} }, 750);
-    } catch {}
+    const selected = SOUND_OPTIONS.find((s) => s.key === notifySound) || SOUND_OPTIONS[0];
+    if (notifySound === 'klassisch') {
+      // Klassisch: wie bisher — Audiodatei + Web-Audio-Fallback zusammen, für
+      // maximale Zuverlässigkeit über verschiedene Browser hinweg.
+      try {
+        const el = getBeepAudio();
+        el.currentTime = 0;
+        const p = el.play();
+        if (p && p.catch) p.catch(() => {});
+        setTimeout(() => { try { const el2 = getBeepAudio(); el2.currentTime = 0; el2.play().catch(() => {}); } catch {} }, 750);
+      } catch {}
+    }
     try {
       const ctx = getAudioCtx();
       if (!ctx) return;
       ctx.resume();
-      playBeeps(ctx);
+      selected.play(ctx);
     } catch {}
   };
   const deleteOrder = async (o) => {
@@ -8769,6 +8826,31 @@ function StaffPanelView({ back }) {
 
                   <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
+                  </SettingsRow>
+
+                  <SettingsRow id="notifySoundPicker" icon="🎵" title="Klingelton für neue Bestellungen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Dieser Ton spielt, wenn im Bestellungen-Tab eine neue Bestellung eingeht.</p>
+                    <div className="flex flex-col gap-2">
+                      {SOUND_OPTIONS.map((s) => (
+                        <div key={s.key} className="flex items-center gap-2">
+                          <button
+                            onClick={() => setNotifySound(s.key)}
+                            className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl text-left"
+                            style={notifySound === s.key ? { background: GREEN, boxShadow: '0 4px 12px rgba(21,56,38,.25)' } : { background: '#f7f0e2' }}
+                          >
+                            <span className="font-bold text-sm" style={{ color: notifySound === s.key ? '#fff' : GREEN }}>{s.label}</span>
+                            {notifySound === s.key && <span className="text-xs font-black" style={{ color: GOLD }}>✓ Aktiv</span>}
+                          </button>
+                          <button
+                            onClick={() => { try { const ctx = getAudioCtx(); if (ctx) { ctx.resume(); s.play(ctx); } } catch {} }}
+                            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: '#fff', border: '1.5px solid #e3d5bd' }}
+                          >
+                            ▶️
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </SettingsRow>
                 </>
               )}
