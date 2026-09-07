@@ -3033,8 +3033,22 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
   const [numInput, setNumInput] = useState('');
   const [entries, setEntries] = useState([]);
   const [error, setError] = useState('');
+  const [pendingSizeItem, setPendingSizeItem] = useState(null);
   const inputRef = React.useRef(null);
 
+  const addResolvedItem = (item, price, sizeLabel) => {
+    const idKey = sizeLabel ? `${item.id}-${sizeLabel}` : item.id;
+    const displayName = sizeLabel ? `${mx(item.name, lang)} (${sizeLabel})` : mx(item.name, lang);
+    setEntries((prev) => {
+      const existing = prev.find((e) => e.id === idKey);
+      if (existing) return prev.map((e) => (e.id === idKey ? { ...e, qty: e.qty + 1 } : e));
+      return [...prev, { id: idKey, number: item.number, name: displayName, price, qty: 1 }];
+    });
+    setNumInput('');
+    setError('');
+    setPendingSizeItem(null);
+    inputRef.current?.focus();
+  };
   const addByNumber = () => {
     const num = numInput.trim();
     if (!num) return;
@@ -3043,15 +3057,14 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
       setError(`Nummer "${num}" nicht gefunden`);
       return;
     }
-    const price = item.priceLarge !== undefined ? item.priceSmall : item.price;
-    setEntries((prev) => {
-      const existing = prev.find((e) => e.id === item.id);
-      if (existing) return prev.map((e) => (e.id === item.id ? { ...e, qty: e.qty + 1 } : e));
-      return [...prev, { id: item.id, number: item.number, name: mx(item.name, lang), price, qty: 1 }];
-    });
-    setNumInput('');
-    setError('');
-    inputRef.current?.focus();
+    if (item.priceLarge !== undefined) {
+      // Zwei Preise (z.B. Pizza klein/groß) — erst Größe abfragen, statt
+      // automatisch die kleine Größe zu wählen.
+      setPendingSizeItem(item);
+      setError('');
+      return;
+    }
+    addResolvedItem(item, item.price, null);
   };
   const changeQty = (id, delta) => {
     setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, qty: Math.max(1, e.qty + delta) } : e)).filter((e) => e.qty > 0));
@@ -3088,6 +3101,20 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
         {error && <p className="text-xs font-bold mb-2" style={{ color: '#ff8a8a' }}>{error}</p>}
         <p className="text-[11px] font-medium mb-3" style={{ color: '#a89878' }}>Nummer steht auf der Speisekarte neben jedem Produkt.</p>
 
+        {pendingSizeItem && (
+          <div className="rounded-xl p-3.5 mb-3" style={{ background: 'rgba(255,199,56,.12)', border: '1px solid rgba(255,199,56,.3)' }}>
+            <p className="text-xs font-bold mb-2.5" style={{ color: GOLD }}>Größe für "{mx(pendingSizeItem.name, lang)}" wählen:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={() => addResolvedItem(pendingSizeItem, pendingSizeItem.priceSmall, 'Klein')} className="py-2.5 rounded-lg font-bold text-sm" style={{ background: '#fff', color: GREEN }}>
+                Klein · {fmt(pendingSizeItem.priceSmall)}
+              </button>
+              <button onClick={() => addResolvedItem(pendingSizeItem, pendingSizeItem.priceLarge, 'Groß')} className="py-2.5 rounded-lg font-bold text-sm" style={{ background: '#fff', color: GREEN }}>
+                Groß · {fmt(pendingSizeItem.priceLarge)}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex-1 overflow-y-auto min-h-0 mb-3">
           {entries.length === 0 ? (
             <p className="text-sm text-center py-8 font-semibold" style={{ color: '#a89878' }}>Noch keine Artikel hinzugefügt.</p>
@@ -3120,6 +3147,66 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
         >
           Weiter →
         </button>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function OrderTrackModal({ onClose }) {
+  const { t } = React.useContext(LangContext);
+  const [codeInput, setCodeInput] = useState('');
+  const [order, setOrder] = useState(undefined);
+  const [searched, setSearched] = useState(false);
+
+  const search = async (c) => {
+    const code = (c || codeInput).trim().toUpperCase();
+    if (!code) return;
+    setSearched(true);
+    setOrder(await safeGet(`order:${code}`));
+  };
+
+  useEffect(() => {
+    if (!order) return;
+    const iv = setInterval(async () => {
+      const c = (order.code || codeInput).trim().toUpperCase();
+      const fresh = await safeGet(`order:${c}`);
+      if (fresh) setOrder(fresh);
+    }, 5000);
+    return () => clearInterval(iv);
+  }, [order?.code]);
+
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={onClose}>
+      <div
+        className="w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6"
+        style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 -10px 40px rgba(0,0,0,.4)', animation: 'modalCardUp .3s cubic-bezier(.25,.46,.45,.94)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="font-black text-base" style={{ color: GOLD }}>📦 {t('titleTrack')}</div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.1)' }}><X size={15} color="#fff" /></button>
+        </div>
+
+        <div className="flex gap-2 mb-5">
+          <input autoFocus value={codeInput} onChange={(e) => setCodeInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && search()} placeholder={t('trackCodePh')} className="flex-1 px-4 py-3.5 rounded-xl text-base font-black tracking-[0.15em] outline-none text-center" style={{ background: '#fff', color: GREEN }} />
+          <button onClick={() => search()} className="px-5 rounded-xl font-bold text-sm text-white flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>{t('searchBtn')}</button>
+        </div>
+
+        {searched && order === null && <p className="text-sm font-bold text-center py-6" style={{ color: '#ff8a8a' }}>{t('codeNotFound')}</p>}
+        {!searched && (
+          <div className="text-center py-8 opacity-70">
+            <div className="text-5xl mb-3">📦</div>
+            <p className="text-sm font-semibold" style={{ color: '#a89878' }}>{t('trackEmptyHint')}</p>
+          </div>
+        )}
+        {order && (
+          <div className="rounded-2xl p-6 text-center" style={{ background: 'linear-gradient(160deg, #fdf6e8, #f0e2c2)' }}>
+            <div className="text-5xl mb-3" style={{ animation: order.status === 'ready' ? 'popIn .5s ease' : 'none' }}>{order.status === 'ready' ? '🎉' : '👨‍🍳'}</div>
+            <div className="font-black text-xl mb-1.5" style={{ color: GREEN }}>{order.status === 'ready' ? t('orderStatusReady') : t('orderStatusPreparing')}</div>
+            <p className="text-xs font-bold" style={{ color: '#8a7c62' }}>{t('orderCodeLabel')}: {order.code}</p>
+          </div>
+        )}
       </div>
     </div>,
     document.body
@@ -4055,6 +4142,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [wishModalOpen, setWishModalOpen] = useState(false);
   const [quickOrderModalOpen, setQuickOrderModalOpen] = useState(false);
+  const [trackModalOpen, setTrackModalOpen] = useState(false);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
   const [tuesdayWheelOpen, setTuesdayWheelOpen] = useState(false);
   const isTuesdayToday = useMemo(() => new Date().getDay() === 2, []);
@@ -4438,22 +4526,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 </button>
               </>
             )}
-            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
-              <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.35)', animation: windSway('', 2.6, 0.15) }}>
-                <span className="text-base flex-shrink-0">⭐</span> <span className="truncate">{t('dailyRecommendation')}</span>
-              </button>
-              <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-xs text-center text-white leading-tight" style={{ background: `linear-gradient(135deg, ${CHILI}, #ff6b35)`, boxShadow: '0 8px 22px rgba(214,40,40,.45)', animation: windSway('pulseGlow 1.8s ease-in-out infinite', 2.7, 0.2) }}>
-                <span className="text-xl flex-shrink-0">🎟️</span> <span className="truncate">{t('loyaltyTabLabel')}</span>
-              </button>
-              <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 8px 20px rgba(45,106,79,.35)', animation: windSway('', 2.8, 0.3) }}>
-                <span className="text-base flex-shrink-0">💡</span> <span className="truncate">{t('wishBoxNavLabel')}</span>
-              </button>
-              <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-12 flex items-center justify-center gap-1.5 px-1.5 rounded-xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 8px 20px rgba(47,158,143,.35)', animation: windSway('', 3.0, 0.45) }}>
-                <span className="text-base flex-shrink-0">🎲</span> <span className="truncate">{t('surpriseMeBtn')}</span>
-              </button>
-            </div>
             <div className="flex flex-wrap gap-2.5 mt-2.5">
-              {orderingEnabled() && <button onClick={() => go('track')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
+              {orderingEnabled() && <button onClick={() => setTrackModalOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
@@ -4478,6 +4552,24 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         </div>
         <svg viewBox="0 0 1440 60" className="w-full block relative z-10" style={{ marginBottom: -1 }} preserveAspectRatio="none"><path d="M0,32 C240,64 480,0 720,20 C960,40 1200,60 1440,24 L1440,60 L0,60 Z" fill={CREAM} /></svg>
+      </section>
+
+      {/* SCHNELLZUGRIFF (aus dem Hero ausgelagert, damit dieser nicht überladen wirkt) */}
+      <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-6">
+        <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 6px 16px rgba(255,199,56,.3)' }}>
+            <span className="text-lg flex-shrink-0">⭐</span> <span className="truncate w-full">{t('dailyRecommendation')}</span>
+          </button>
+          <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: `linear-gradient(135deg, ${CHILI}, #ff6b35)`, boxShadow: '0 6px 16px rgba(214,40,40,.35)' }}>
+            <span className="text-lg flex-shrink-0">🎟️</span> <span className="truncate w-full">{t('loyaltyTabLabel')}</span>
+          </button>
+          <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 6px 16px rgba(45,106,79,.3)' }}>
+            <span className="text-lg flex-shrink-0">💡</span> <span className="truncate w-full">{t('wishBoxNavLabel')}</span>
+          </button>
+          <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 6px 16px rgba(47,158,143,.3)' }}>
+            <span className="text-lg flex-shrink-0">🎲</span> <span className="truncate w-full">{t('surpriseMeBtn')}</span>
+          </button>
+        </div>
       </section>
 
       {/* SHOWCASE GALLERY */}
@@ -4581,6 +4673,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       })()}
 
       {wishModalOpen && <WishModal lang={lang} t={t} onClose={() => setWishModalOpen(false)} />}
+      {trackModalOpen && <OrderTrackModal onClose={() => setTrackModalOpen(false)} />}
       {quickOrderModalOpen && (
         <QuickOrderByNumberModal
           onClose={() => setQuickOrderModalOpen(false)}
@@ -7786,8 +7879,7 @@ function StaffPanelView({ back }) {
     try {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      ctx.resume();
-      selected.play(ctx);
+      ctx.resume().then(() => selected.play(ctx)).catch(() => { try { selected.play(ctx); } catch {} });
     } catch {}
   };
   const deleteOrder = async (o) => {
@@ -8990,7 +9082,7 @@ function StaffPanelView({ back }) {
                             {notifySound === s.key && <span className="text-xs font-black" style={{ color: GOLD }}>✓ Aktiv</span>}
                           </button>
                           <button
-                            onClick={() => { try { const ctx = getAudioCtx(); if (ctx) { ctx.resume(); s.play(ctx); } } catch {} }}
+                            onClick={() => { try { const ctx = getAudioCtx(); if (ctx) { ctx.resume().then(() => s.play(ctx)).catch(() => { try { s.play(ctx); } catch {} }); } } catch {} }}
                             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                             style={{ background: '#fff', border: '1.5px solid #e3d5bd' }}
                           >
