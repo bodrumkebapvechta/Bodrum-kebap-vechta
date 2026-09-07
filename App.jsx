@@ -8355,14 +8355,15 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'settings' && (
             <div className="px-5">
-              <div className="flex gap-2 overflow-x-auto pb-1 mb-4" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>⚙️ BEREICH WÄHLEN</div>
+              <div className="flex gap-2 overflow-x-auto pb-1 mb-5" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {[
                   { key: 'sicherheit', label: '🔒 Sicherheit' },
                   { key: 'fotos', label: '📸 Fotos & Werbung' },
                   { key: 'kommunikation', label: '💬 Kommunikation' },
                   { key: 'erweitert', label: '🧪 Erweitert' },
                 ].map((g) => (
-                  <button key={g.key} onClick={() => setSettingsGroup(g.key)} className="flex-shrink-0 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap" style={settingsGroup === g.key ? { background: GREEN, color: '#fff', boxShadow: '0 4px 12px rgba(21,56,38,.25)' } : { background: '#fff', color: '#7c6d55', border: '1.5px solid #e9dcc0' }}>
+                  <button key={g.key} onClick={() => setSettingsGroup(g.key)} className="flex-shrink-0 px-4 py-3 rounded-2xl font-bold text-xs whitespace-nowrap" style={settingsGroup === g.key ? { background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, color: '#fff', boxShadow: '0 6px 16px rgba(21,56,38,.3)' } : { background: '#fff', color: '#7c6d55', border: '1.5px solid #e9dcc0' }}>
                     {g.label}
                   </button>
                 ))}
@@ -9026,6 +9027,7 @@ function StaffPanelView({ back }) {
                   </div>
                 )}
               </div>
+              <div className="text-[10px] font-black tracking-widest mb-2 mt-1" style={{ color: '#a4906c' }}>🔍 PRODUKT SUCHEN & BEARBEITEN</div>
               <div className="relative mb-3">
                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" color="#c4b697" />
                 <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.06)' }} />
