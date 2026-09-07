@@ -7176,6 +7176,7 @@ function StaffPanelView({ back }) {
   const [wishes, setWishes] = useState([]);
   const [loyaltyStats, setLoyaltyStats] = useState(null);
   const [surveyStats, setSurveyStats] = useState(null);
+  const [weeklyReports, setWeeklyReports] = useState([]);
   const [allLoyaltyCards, setAllLoyaltyCards] = useState([]);
   const [recentStamps, setRecentStamps] = useState([]);
   const [contactMessagesArchive, setContactMessagesArchive] = useState([]);
@@ -7418,6 +7419,7 @@ function StaffPanelView({ back }) {
     if (ok && tab === 'analytics') {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
       safeListPrefix('wish:', 100).then((rows) => setWishes(rows.sort((a, b) => b.value.ts - a.value.ts)));
+      safeListPrefix('weeklyreport:', 52).then((rows) => setWeeklyReports(rows.map((r) => r.value).sort((a, b) => b.ts - a.ts)));
       // Nur lesen, NICHT löschen — anders als im Nachrichten-Tab, der ältere
       // Nachrichten automatisch aufräumt. Hier soll nichts verschwinden,
       // damit eine E-Mail-Benachrichtigung, die übersehen wurde, hier
@@ -8802,6 +8804,26 @@ function StaffPanelView({ back }) {
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </button>
                 </div>
+                {weeklyReports.length > 0 && (
+                  <SettingsRow id="statWeeklyReports" icon="📅" title={`Wochenrückblicke (${weeklyReports.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    {weeklyReports.map((r) => (
+                      <div key={r.ts} className="rounded-xl p-3 mb-2.5" style={{ background: '#f7f0e2' }}>
+                        <div className="text-[11px] font-black mb-2" style={{ color: '#8a5a1f' }}>
+                          Woche bis {new Date(r.ts).toLocaleDateString('de-DE')}
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                          <div className="text-xs font-semibold" style={{ color: GREEN }}>👥 {r.visits} Besuche</div>
+                          <div className="text-xs font-semibold" style={{ color: GREEN }}>🎟️ {r.newCards} neue Karten</div>
+                          <div className="text-xs font-semibold" style={{ color: GREEN }}>🥙 {r.stamps} Stempel</div>
+                          <div className="text-xs font-semibold" style={{ color: GREEN }}>🍕 {r.fullCards} warten auf Einlösung</div>
+                          {r.wheelSpins > 0 && <div className="text-xs font-semibold" style={{ color: GREEN }}>🎡 {r.wheelSpins}x gedreht</div>}
+                          {r.avgRating && <div className="text-xs font-semibold" style={{ color: GREEN }}>⭐ {r.avgRating}/5 ({r.surveyCount})</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </SettingsRow>
+                )}
+
                 <SettingsRow id="statKundenwuensche" icon="💡" title={`Kundenwünsche (${wishes.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                   {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
                   {wishes.slice(0, 30).map((w) => (
