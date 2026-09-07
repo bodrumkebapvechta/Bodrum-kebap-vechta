@@ -2582,7 +2582,7 @@ function StoppelmarktBanner() {
   );
 }
 
-const ALL_MENU_ITEMS = MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta).map((i) => ({ ...i, number: menuNum(i.id) })));
+const ALL_MENU_ITEMS = MENU.flatMap((cat) => cat.items.filter((i) => !i.customPizza && !i.customPasta).map((i) => ({ ...i, number: menuNum(i.id), catKey: cat.key })));
 function formatItemPriceText(item) {
   if (item.priceLarge !== undefined) return `22cm ${fmt(item.priceSmall)} / 28cm ${fmt(item.priceLarge)}`;
   return fmt(item.price);
@@ -3028,17 +3028,38 @@ function ContactMessageForm({ lang, t }) {
   );
 }
 
+const QUICK_MEAT_OPTIONS = [
+  { label: 'Kalbfleisch', emoji: '🥩', extra: 0 },
+  { label: 'Hähnchen', emoji: '🍗', extra: 0 },
+  { label: 'Steak', emoji: '🔥', extra: 2.0 },
+];
+function needsMeatChoice(item) {
+  // Kebap-Artikel, deren Beschreibung "Fleisch vom Drehspieß" enthält, haben
+  // online einen festen Preis — am Tresen kann die Fleischsorte aber
+  // trotzdem gewählt werden, daher hier zusätzlich abfragen.
+  return item.catKey === 'kebap' && item.desc && item.desc.includes('Fleisch vom Drehspieß');
+}
 function QuickOrderByNumberModal({ onClose, onContinue }) {
   const { lang } = React.useContext(LangContext);
   const [numInput, setNumInput] = useState('');
   const [entries, setEntries] = useState([]);
   const [error, setError] = useState('');
   const [pendingSizeItem, setPendingSizeItem] = useState(null);
+  const [pendingMeatItem, setPendingMeatItem] = useState(null);
+  const [soldOutIds, setSoldOutIds] = useState([]);
+  const [chickenSoldOut, setChickenSoldOut] = useState(false);
+  const [soldOutExtras, setSoldOutExtras] = useState([]);
   const inputRef = React.useRef(null);
 
-  const addResolvedItem = (item, price, sizeLabel) => {
-    const idKey = sizeLabel ? `${item.id}-${sizeLabel}` : item.id;
-    const displayName = sizeLabel ? `${mx(item.name, lang)} (${sizeLabel})` : mx(item.name, lang);
+  useEffect(() => {
+    safeGet('siteconfig:soldOut').then((r) => { if (r) setSoldOutIds(r); });
+    safeGet('siteconfig:soldOutExtras').then((r) => { if (r) setSoldOutExtras(r); });
+    safeGet('siteconfig:chickenSoldOut').then((r) => { setChickenSoldOut(!!r); });
+  }, []);
+
+  const addResolvedItem = (item, price, extraLabel) => {
+    const idKey = extraLabel ? `${item.id}-${extraLabel}` : item.id;
+    const displayName = extraLabel ? `${mx(item.name, lang)} (${extraLabel})` : mx(item.name, lang);
     setEntries((prev) => {
       const existing = prev.find((e) => e.id === idKey);
       if (existing) return prev.map((e) => (e.id === idKey ? { ...e, qty: e.qty + 1 } : e));
@@ -3047,6 +3068,7 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
     setNumInput('');
     setError('');
     setPendingSizeItem(null);
+    setPendingMeatItem(null);
     inputRef.current?.focus();
   };
   const addByNumber = () => {
@@ -3057,10 +3079,23 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
       setError(`Nummer "${num}" nicht gefunden`);
       return;
     }
+    if (soldOutIds.includes(item.id)) {
+      setError(`"${mx(item.name, lang)}" ist gerade ausverkauft`);
+      return;
+    }
+    if (item.weekend && !isWeekendDay()) {
+      setError(`"${mx(item.name, lang)}" gibt es nur Fr+Sa+So`);
+      return;
+    }
     if (item.priceLarge !== undefined) {
       // Zwei Preise (z.B. Pizza klein/groß) — erst Größe abfragen, statt
       // automatisch die kleine Größe zu wählen.
       setPendingSizeItem(item);
+      setError('');
+      return;
+    }
+    if (needsMeatChoice(item)) {
+      setPendingMeatItem(item);
       setError('');
       return;
     }
@@ -3088,15 +3123,16 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
           <input
             ref={inputRef}
             autoFocus
+            disabled={!!(pendingSizeItem || pendingMeatItem)}
             value={numInput}
             onChange={(e) => { setNumInput(e.target.value); setError(''); }}
             onKeyDown={(e) => e.key === 'Enter' && addByNumber()}
             inputMode="numeric"
             placeholder="z.B. 205"
-            className="flex-1 px-4 py-3.5 rounded-xl text-base font-black tracking-[0.05em] outline-none"
+            className="flex-1 px-4 py-3.5 rounded-xl text-base font-black tracking-[0.05em] outline-none disabled:opacity-50"
             style={{ background: '#fff', color: GREEN }}
           />
-          <button onClick={addByNumber} className="px-5 rounded-xl font-bold text-sm text-white flex-shrink-0" style={{ background: ORANGE }}>+ Add</button>
+          <button onClick={addByNumber} disabled={!!(pendingSizeItem || pendingMeatItem)} className="px-5 rounded-xl font-bold text-sm text-white flex-shrink-0 disabled:opacity-50" style={{ background: ORANGE }}>+ Add</button>
         </div>
         {error && <p className="text-xs font-bold mb-2" style={{ color: '#ff8a8a' }}>{error}</p>}
         <p className="text-[11px] font-medium mb-3" style={{ color: '#a89878' }}>Nummer steht auf der Speisekarte neben jedem Produkt.</p>
@@ -3111,6 +3147,22 @@ function QuickOrderByNumberModal({ onClose, onContinue }) {
               <button onClick={() => addResolvedItem(pendingSizeItem, pendingSizeItem.priceLarge, 'Groß')} className="py-2.5 rounded-lg font-bold text-sm" style={{ background: '#fff', color: GREEN }}>
                 Groß · {fmt(pendingSizeItem.priceLarge)}
               </button>
+            </div>
+          </div>
+        )}
+
+        {pendingMeatItem && (
+          <div className="rounded-xl p-3.5 mb-3" style={{ background: 'rgba(255,199,56,.12)', border: '1px solid rgba(255,199,56,.3)' }}>
+            <p className="text-xs font-bold mb-2.5" style={{ color: GOLD }}>Fleisch für "{mx(pendingMeatItem.name, lang)}" wählen:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {QUICK_MEAT_OPTIONS.map((m) => {
+                const disabled = m.label === 'Hähnchen' && chickenSoldOut;
+                return (
+                  <button key={m.label} disabled={disabled} onClick={() => addResolvedItem(pendingMeatItem, pendingMeatItem.price + m.extra, m.label)} className="py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-1.5 disabled:opacity-40" style={{ background: '#fff', color: GREEN }}>
+                    {m.emoji} {m.label}{m.extra > 0 && ` +${fmt(m.extra)}`}{disabled && ' (ausverkauft)'}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
