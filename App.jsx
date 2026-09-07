@@ -9167,6 +9167,23 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'messages' && (
             <div className="px-5">
+              {orderingEnabled() && (
+                <button
+                  onClick={() => setTab('orders')}
+                  className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-3 relative overflow-hidden"
+                  style={{ background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, boxShadow: '0 10px 26px rgba(21,56,38,.35)' }}
+                >
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: 140, height: 140, top: -50, right: -40, background: 'rgba(255,255,255,.08)' }} />
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 relative" style={{ background: 'rgba(255,255,255,.15)' }}>
+                    <span className="text-2xl">🧾</span>
+                  </div>
+                  <div className="min-w-0 relative">
+                    <div className="font-black text-[15px] text-white">Bestellungen {orders.length > 0 && `(${orders.length})`}</div>
+                    <div className="text-[11px] font-semibold" style={{ color: '#d9c9a3' }}>Eingehende Bestellungen ansehen & bearbeiten</div>
+                  </div>
+                  <span className="ml-auto text-white text-xl relative">→</span>
+                </button>
+              )}
               <button
                 onClick={() => setTab('wheel')}
                 className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
@@ -9436,7 +9453,7 @@ function StaffPanelView({ back }) {
                   { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
                   { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
                 ];
-                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'messages' : tab);
+                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' || tab === 'orders' ? 'messages' : tab);
                 const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
                 return (
                   <>
