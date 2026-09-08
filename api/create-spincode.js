@@ -37,11 +37,13 @@ export default async function handler(req, res) {
 
   const { prize } = req.body || {};
   if (!prize || !ALLOWED_PRIZES.has(prize)) {
+    console.error('[create-spincode] Ungültiger Preis empfangen:', JSON.stringify(prize));
     return res.status(400).json({ error: 'Ungültiger oder unbekannter Preis' });
   }
 
   const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!SERVICE_ROLE_KEY) {
+    console.error('[create-spincode] SUPABASE_SERVICE_ROLE_KEY fehlt in den Vercel Env Vars');
     return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY ist auf dem Server nicht konfiguriert' });
   }
 
@@ -55,6 +57,18 @@ export default async function handler(req, res) {
         `${SUPABASE_URL}/rest/v1/kv_store?key=eq.spincode:${code}&select=key`,
         { headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}` } }
       );
+
+      if (!check.ok) {
+        const checkErrText = await check.text();
+        console.error('[create-spincode] Check-Request fehlgeschlagen. Status:', check.status, 'Body:', checkErrText);
+        return res.status(500).json({
+          error: 'Prüfung des Codes fehlgeschlagen',
+          stage: 'check',
+          status: check.status,
+          detail: checkErrText,
+        });
+      }
+
       const rows = await check.json();
       exists = Array.isArray(rows) && rows.length > 0;
       attempts++;
@@ -74,11 +88,19 @@ export default async function handler(req, res) {
 
     if (!saveRes.ok) {
       const errText = await saveRes.text();
-      return res.status(500).json({ error: 'Speichern fehlgeschlagen', detail: errText });
+      console.error('[create-spincode] Save-Request fehlgeschlagen. Status:', saveRes.status, 'Body:', errText);
+      return res.status(500).json({
+        error: 'Speichern fehlgeschlagen',
+        stage: 'save',
+        status: saveRes.status,
+        detail: errText,
+      });
     }
 
+    console.log('[create-spincode] Erfolgreich erstellt. Code:', code, 'Preis:', prize);
     return res.status(200).json({ code, prize });
   } catch (err) {
-    return res.status(500).json({ error: err.message || String(err) });
+    console.error('[create-spincode] Unerwarteter Fehler:', err);
+    return res.status(500).json({ error: err.message || String(err), stage: 'exception' });
   }
 }
