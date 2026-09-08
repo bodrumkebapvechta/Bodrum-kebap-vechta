@@ -1933,20 +1933,20 @@ function WheelWidget({ onWin, compact, prizes }) {
           transform: `rotate(${rotation}deg)`, transition: spinning ? 'transform 4.2s cubic-bezier(0.17,0.67,0.16,0.99)' : 'none',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.06), inset 0 3px 12px rgba(0,0,0,.15)',
         }}>
-          {/* Segment-Trennlinien */}
-          {activePrizes.map((_, i) => (
-            <div key={'div' + i} className="absolute left-1/2 top-1/2 origin-left" style={{ width: size / 2, height: 1.5, background: 'rgba(255,255,255,.35)', transform: `rotate(${i * activeSlice}deg)` }} />
-          ))}
           {activePrizes.map((p, i) => {
             const angle = i * activeSlice + activeSlice / 2;
-            // Rechnerisch + per Bild-Simulation geprüft (nicht nur angenommen):
-            // Bei dieser Positionierung (rotate(angle-90) + translateX, origin-left)
-            // steht der Text auf dem Kopf, sobald das Segment in der UNTEREN
-            // Hälfte des Rads liegt (angle >= 180°) — NICHT bei 90°–270°, wie
-            // man vermuten könnte. Erst nachträglich per Simulation bestätigt.
-            const needsFlip = angle >= 180;
+            const localRotation = angle - 90;
+            // WICHTIG: Die Lesbarkeit hängt nicht nur von der eigenen
+            // Segmentposition ab, sondern auch von der AKTUELLEN
+            // Raddrehung (rotation) — nach dem Drehen landet das Rad bei
+            // einem beliebigen Winkel, und ohne diese Berücksichtigung
+            // stehen die meisten Texte nach dem Drehen auf dem Kopf (per
+            // Simulation nachgewiesen). Deshalb hier live neu berechnen,
+            // nicht nur einmalig bei rotation=0.
+            const preFlipScreenAngle = ((localRotation + rotation) % 360 + 360) % 360;
+            const needsFlip = preFlipScreenAngle > 90 && preFlipScreenAngle < 270;
             return (
-              <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${angle - 90}deg) translateX(14px)` }}>
+              <div key={i} className="absolute left-1/2 top-1/2 origin-left text-center" style={{ width: size * 0.4, transform: `rotate(${localRotation}deg) translateX(14px)` }}>
                 <span className="block font-black leading-[1.15]" style={{ color: p.text, fontSize: 13, transform: `translateY(-6px) rotate(${needsFlip ? 180 : 0}deg)`, textShadow: '0 1px 2px rgba(0,0,0,.25)' }}>{mx(p.label, lang)}</span>
               </div>
             );
