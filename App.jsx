@@ -2610,6 +2610,45 @@ function formatItemPriceText(item) {
   return fmt(item.price);
 }
 
+// Erkennt generische Kategorie-Fragen ("was kostet eine Pizza", "pizza fiyat")
+// OHNE konkreten Artikelnamen, damit der Assistent nicht in den Fallback läuft,
+// nur weil kein Artikel exakt "Pizza" heißt. Reihenfolge = Spezifität: engere
+// Kategorien (z.B. Pizzabrot) vor der allgemeinen "pizza"-Kategorie prüfen,
+// da deren Schlüsselwörter sonst als Teilstring immer mit-treffen würden.
+const CATEGORY_KEYWORDS = [
+  ['familienpizza', ['familienpizza', 'family pizza', 'aile pizza']],
+  ['pizzabrot', ['pizzabrot', 'pizza brot', 'pizza bread', 'brötchen', 'brotchen']],
+  ['ueberbacken', ['überbacken', 'uberbacken', 'gratin']],
+  ['rollo', ['rollo']],
+  ['calzone', ['calzone', 'kalzone']],
+  ['baguette', ['baguette', 'bagett']],
+  ['nudeln', ['nudeln', 'nudel', 'pasta', 'makarna', 'makarona', 'makaron']],
+  ['schnitzel', ['schnitzel', 'şnitzel', 'snitel']],
+  ['salat', ['salat', 'salad', 'sallatë', 'sallate', 'selate', 'sałatka', 'salatka']],
+  ['finger', ['finger food', 'chicken nugget', 'nuggets', 'nugget']],
+  ['getraenke', ['getränk', 'getrank', 'içecek', 'icecek', 'drink', 'beverage', 'napój', 'napoj']],
+  ['kebap', ['kebap', 'kebab', 'döner', 'doner', 'dürüm', 'durum']],
+  ['pizza', ['pizza']],
+];
+function detectCategory(q) {
+  for (const [catKey, words] of CATEGORY_KEYWORDS) {
+    if (words.some((w) => q.includes(w))) return catKey;
+  }
+  return null;
+}
+function categoryPriceRange(catKey) {
+  const items = ALL_MENU_ITEMS.filter((it) => it.catKey === catKey);
+  if (!items.length) return null;
+  let min = Infinity, max = -Infinity;
+  items.forEach((it) => {
+    const lo = it.price !== undefined ? it.price : it.priceSmall;
+    const hi = it.price !== undefined ? it.price : (it.priceLarge !== undefined ? it.priceLarge : it.priceSmall);
+    if (lo < min) min = lo;
+    if (hi > max) max = hi;
+  });
+  return { min, max };
+}
+
 const ASSISTANT_R = {
   openYes: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Dienstags haben wir Ruhetag.", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're closed on Tuesdays.", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız.", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Marțea suntem închiși.", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. Op dinsdag zijn we gesloten.", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Të martave jemi mbyllur.", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Roja Sêşemê em girtî ne.", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. We wtorki mamy zamknięte." },
   openYesEveryDay: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Wir haben jeden Tag geöffnet, auch dienstags!", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're open every day, including Tuesdays!", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı dahil her gün açığız!", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Suntem deschiși în fiecare zi, inclusiv marțea!", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. We zijn elke dag geopend, ook op dinsdag!", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Jemi hapur çdo ditë, edhe të martave!", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Em her roj vekirî ne, Sêşem jî tê de!", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. Jesteśmy otwarci codziennie, także we wtorki!" },
@@ -2629,6 +2668,7 @@ const ASSISTANT_R = {
   recommendPrefix: { de: "🎲 Meine Empfehlung für heute:", en: "🎲 My recommendation for today:", tr: "🎲 Bugün için önerim:", ro: "🎲 Recomandarea mea de azi:", nl: "🎲 Mijn aanbeveling voor vandaag:", sq: "🎲 Rekomandimi im për sot:", ku: "🎲 Pêşniyara min a îro:", pl: "🎲 Moje polecenie na dziś:" },
   enjoy: { de: "Guten Appetit! 😋", en: "Enjoy your meal! 😋", tr: "Afiyet olsun! 😋", ro: "Poftă bună! 😋", nl: "Eet smakelijk! 😋", sq: "Ju bëftë mirë! 😋", ku: "Nûşê te be! 😋", pl: "Smacznego! 😋" },
   menuList: { de: "📋 Unsere Kategorien: Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat. Tippe oben auf \"Speisekarte\" für die komplette Karte.", en: '📋 Our categories: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salad. Tap "Menu" at the top for the full menu.', tr: "📋 Kebap, Pizza, Rollo, Calzone, Baguette, Nudeln, Schnitzel, Salat kategorilerimiz var — üstteki \"Speisekarte\" butonuyla tüm menüyü görebilirsin.", ro: '📋 Categoriile noastre: Kebap, Pizza, Rollo, Calzone, Baguette, Paste, Șnițel, Salată. Apasă "Meniu" sus pentru meniul complet.', nl: '📋 Onze categorieën: Kebap, Pizza, Rollo, Calzone, Baguette, Pasta, Schnitzel, Salade. Tik boven op "Menu" voor de volledige kaart.', sq: '📋 Kategoritë tona: Kebap, Pica, Rollo, Kalcone, Bagetë, Makarona, Shnicel, Sallatë. Troko "Menuja" lart për menynë e plotë.', ku: '📋 Kategoriyên me: Kebap, Pizza, Rollo, Calzone, Baguette, Nûdile, Schnitzel, Selate. Li jor li ser "Menû" bitikîne bo menuya tevahî.', pl: '📋 Nasze kategorie: Kebap, Pizza, Rollo, Calzone, Baguette, Makaron, Sznycel, Sałatka. Dotknij "Menu" u góry, aby zobaczyć pełną kartę.' },
+  categoryPriceIntro: { de: "{icon} Unsere {cat}-Auswahl kostet {range}. Tippe unten, um direkt zur Kategorie zu springen.", en: "{icon} Our {cat} range from {range}. Tap below to jump straight to that category.", tr: "{icon} {cat} fiyatlarımız {range} arasında. Kategoriye direkt gitmek için aşağıya dokun.", ro: "{icon} Categoria noastră {cat} costă {range}. Apasă mai jos pentru a ajunge direct la categorie.", nl: "{icon} Onze {cat} kosten {range}. Tik hieronder om direct naar de categorie te gaan.", sq: "{icon} {cat} jonë kushtojnë {range}. Troko poshtë për të shkuar direkt te kategoria.", ku: "{icon} {cat} me bi {range} e. Li jêr bitikîne da ku rasterast biçî kategoriyê.", pl: "{icon} Nasze {cat} kosztują {range}. Dotknij poniżej, aby przejść bezpośrednio do kategorii." },
   itemFound: { de: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", en: "🍽️ No. {num} — **{name}** — {price}\n{desc}", tr: "🍽️ No. {num} — **{name}** — {price}\n{desc}", ro: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", nl: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", sq: "🍽️ Nr. {num} — **{name}** — {price}\n{desc}", ku: "🍽️ Hej. {num} — **{name}** — {price}\n{desc}", pl: "🍽️ Nr {num} — **{name}** — {price}\n{desc}" },
   itemFoundNoNum: { de: "🍽️ **{name}** — {price}\n{desc}", en: "🍽️ **{name}** — {price}\n{desc}", tr: "🍽️ **{name}** — {price}\n{desc}", ro: "🍽️ **{name}** — {price}\n{desc}", nl: "🍽️ **{name}** — {price}\n{desc}", sq: "🍽️ **{name}** — {price}\n{desc}", ku: "🍽️ **{name}** — {price}\n{desc}", pl: "🍽️ **{name}** — {price}\n{desc}" },
   fallback: { de: "Das habe ich nicht ganz verstanden 🤔 Frag mich z.B. \"Habt ihr geöffnet?\", \"Wo seid ihr?\", \"Was empfehlt ihr?\" oder gib eine Artikelnummer/-name ein. Oder ruf direkt an: 📞 04441 / 95 16 104", en: '🤔 I didn\'t quite catch that. Try asking "Are you open?", "Where are you?", "What do you recommend?", or type an item number/name. Or call directly: 📞 04441 / 95 16 104', tr: "Bunu tam anlayamadım 🤔 Ama şunları sorabilirsin: \"açık mısınız\", \"adresiniz nerede\", \"ne önerirsiniz\", ya da bir ürün ismi/numarası yazabilirsin. Ya da direkt ara: 📞 04441 / 95 16 104", ro: '🤔 Nu am înțeles bine. Încearcă "Sunteți deschiși?", "Unde sunteți?", "Ce recomandați?" sau scrie un număr/nume de produs. Sau sună direct: 📞 04441 / 95 16 104', nl: '🤔 Dat begreep ik niet helemaal. Probeer "Zijn jullie open?", "Waar zijn jullie?", "Wat raden jullie aan?" of typ een artikelnummer/-naam. Of bel direct: 📞 04441 / 95 16 104', sq: '🤔 Nuk e kuptova plotësisht. Provo "A jeni hapur?", "Ku jeni?", "Çfarë rekomandoni?" ose shkruaj një numër/emër artikulli. Ose telefono direkt: 📞 04441 / 95 16 104', ku: '🤔 Min ev baş fêm nekir. Biceribîne "Hûn vekirî ne?", "Hûn li ku ne?", "Hûn çi pêşniyar dikin?", an hejmar/navê tiştekî binivîse. An rasterast telefon bike: 📞 04441 / 95 16 104', pl: '🤔 Nie do końca to zrozumiałem. Zapytaj np. "Czy jesteście otwarci?", "Gdzie jesteście?", "Co polecacie?" albo wpisz numer/nazwę dania. Albo zadzwoń bezpośrednio: 📞 04441 / 95 16 104' },
@@ -2716,6 +2756,19 @@ function getAssistantReply(qRaw, lang) {
       return { intent: 'item', text: ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
     }
   }
+  // 3) Generische Kategorie-Frage ohne konkreten Artikelnamen (z.B. "was
+  // kostet eine Pizza", "pizza fiyat ne kadar") — bevor wir aufgeben, direkt
+  // die Preisspanne nennen und einen Sprung in die Kategorie anbieten.
+  const catKey = detectCategory(q);
+  if (catKey) {
+    const range = categoryPriceRange(catKey);
+    if (range) {
+      const rangeText = range.min === range.max ? fmt(range.min) : `${fmt(range.min)}–${fmt(range.max)}`;
+      const icon = CATEGORY_ICONS[catKey] || '🍽️';
+      const text = ar('categoryPriceIntro', lang).replace('{icon}', icon).replace('{cat}', catLabel(catKey, lang)).replace('{range}', rangeText);
+      return { intent: 'category', catKey, text };
+    }
+  }
   return { intent: 'fallback', text: ar('fallback', lang) };
 }
 
@@ -2771,11 +2824,11 @@ function AIAssistant() {
   const send = (text) => {
     const q = (text ?? input).trim();
     if (!q) return;
-    const { intent, text: reply } = getAssistantReply(q, lang);
+    const { intent, text: reply, catKey } = getAssistantReply(q, lang);
     logEvent('assistant_' + intent, { q: q.slice(0, 200) });
     setInput('');
     if (intent !== 'fallback') {
-      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply, intent }]);
+      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply, intent, catKey }]);
       return;
     }
     // Kein Keyword-Treffer: an die echte KI weiterreichen (kostet etwas,
@@ -2850,6 +2903,15 @@ function AIAssistant() {
                 )}
                 {m.from === 'bot' && (m.intent === 'order' || m.intent === 'quickorder') && orderingEnabled() && (
                   <button onClick={() => go('whatsapp')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📋 Zur Speisekarte</button>
+                )}
+                {m.from === 'bot' && m.intent === 'category' && m.catKey && (
+                  <button
+                    onClick={() => (orderingEnabled() ? go('whatsapp', { categoryMode: m.catKey }) : go('tischmenu', { initialCatHint: m.catKey }))}
+                    className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white"
+                    style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}
+                  >
+                    {CATEGORY_ICONS[m.catKey] || '🍽️'} {catLabel(m.catKey, lang)}
+                  </button>
                 )}
               </div>
             ))}
@@ -9359,7 +9421,7 @@ function StaffPanelView({ back }) {
                     const key = v.value.event.replace('assistant_', '');
                     byIntent[key] = (byIntent[key] || 0) + 1;
                   });
-                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', fallback: '🤔 Nicht verstanden' };
+                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', category: '🍕 Kategorie-Frage', fallback: '🤔 Nicht verstanden' };
                   const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
                   const unrecognized = assistantEvents
                     .filter((v) => v.value.event === 'assistant_fallback' && v.value.q)
