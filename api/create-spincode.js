@@ -47,6 +47,30 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY ist auf dem Server nicht konfiguriert' });
   }
 
+  // --- TEMPORÄRE DIAGNOSE: prüft, OHNE den Key selbst preiszugeben, ob der
+  // gespeicherte Wert ein gültiges Supabase-JWT mit role=service_role ist,
+  // und ob er zum richtigen Projekt (ref) gehört. Dies erklärt "Invalid API
+  // key"-Fehler, die trotz korrektem Rotate weiter auftreten (z.B. falscher
+  // Key-Typ kopiert, oder unsichtbares Leerzeichen/Zeilenumbruch beim Einfügen).
+  try {
+    const trimmedLen = SERVICE_ROLE_KEY.trim().length;
+    const rawLen = SERVICE_ROLE_KEY.length;
+    const parts = SERVICE_ROLE_KEY.trim().split('.');
+    let decoded = null;
+    if (parts.length === 3) {
+      const payloadJson = Buffer.from(parts[1], 'base64').toString('utf8');
+      decoded = JSON.parse(payloadJson);
+    }
+    console.error('[create-spincode][DIAG] rawLen:', rawLen, 'trimmedLen:', trimmedLen,
+      'hasWhitespace:', rawLen !== trimmedLen,
+      'jwtParts:', parts.length,
+      'role:', decoded?.role, 'ref:', decoded?.ref, 'exp:', decoded?.exp,
+      'expIsPast:', decoded?.exp ? (decoded.exp * 1000 < Date.now()) : 'n/a');
+  } catch (diagErr) {
+    console.error('[create-spincode][DIAG] Key ist kein gültiges JWT / Decode-Fehler:', diagErr.message);
+  }
+  // --- ENDE DIAGNOSE ---
+
   try {
     let code, exists = true, attempts = 0;
     // Sehr unwahrscheinlich, aber zur Sicherheit: prüft, dass der 4-stellige
