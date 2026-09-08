@@ -198,7 +198,7 @@ const UI = {
   extraSearchPh: { de: 'z.B. Brokkoli, Zwiebeln...', en: 'e.g. broccoli, onions...', tr: 'örn. brokoli, soğan...', ro: 'ex. broccoli, ceapă...', nl: 'bijv. broccoli, uien...', sq: 'p.sh. brokoli, qepë...', ku: 'mînak brokolî, pîvaz...' , pl: 'np. brokuł, cebula...' },
   quickSearchPh: { de: '🔍 Nummer oder Name eingeben (z.B. 24)', en: '🔍 Enter number or name (e.g. 24)', tr: '🔍 Numara veya isim yaz (örn. 24)', ro: '🔍 Introdu numărul sau numele (ex. 24)', nl: '🔍 Nummer of naam invoeren (bijv. 24)', sq: '🔍 Vendos numrin ose emrin (p.sh. 24)', ku: '🔍 Hejmar an nav binivîse (mînak 24)' , pl: '🔍 Wpisz numer lub nazwę (np. 24)' },
   quickSearchNoResults: { de: 'Nichts gefunden', en: 'Nothing found', tr: 'Bir şey bulunamadı', ro: 'Nimic găsit', nl: 'Niets gevonden', sq: 'Nuk u gjet asgjë', ku: 'Tiştek nehat dîtin' , pl: 'Nic nie znaleziono' },
-  quickOrderByNumberBtn: { de: 'Mit Nummer bestellen', en: 'Order by number', tr: 'Numara ile sipariş ver', ro: 'Comandă după număr', nl: 'Bestellen met nummer', sq: 'Porosit me numër', ku: 'Bi hejmarê sifariş bide' , pl: 'Zamów po numerze' },
+  quickOrderByNumberBtn: { de: 'Nummer bestellen', en: 'Order by number', tr: 'Numara ile sipariş ver', ro: 'Comandă după număr', nl: 'Bestellen met nummer', sq: 'Porosit me numër', ku: 'Bi hejmarê sifariş bide' , pl: 'Zamów po numerze' },
   quantityLabel: { de: 'MENGE', en: 'QUANTITY', tr: 'ADET', ro: 'CANTITATE', nl: 'AANTAL', sq: 'SASIA', ku: 'HEJMAR' , pl: 'ILOŚĆ' },
   comboFreeDrinkHint: { de: 'Dein erstes Getränk ist gratis!', en: 'Your first drink is free!', tr: 'İlk içeceğin ücretsiz!', ro: 'Prima ta băutură este gratuită!', nl: 'Je eerste drankje is gratis!', sq: 'Pija jote e parë është falas!', ku: 'Vexwarina te ya yekem belaş e!' , pl: 'Twój pierwszy napój jest gratis!' },
   staffQuickLookupTitle: { de: '🔍 Nummer nachschlagen', en: '🔍 Look up number', tr: '🔍 Numara sorgula', ro: '🔍 Caută numărul', nl: '🔍 Nummer opzoeken', sq: '🔍 Kërko numrin', ku: '🔍 Hejmarê bigere' , pl: '🔍 Sprawdź numer' },
@@ -1526,10 +1526,10 @@ async function incrementCategoryClick(catKey) {
 /* ============ WHEEL DATA ============ */
 const WHEEL_PRIZES = [
   { label: '10% Rabatt', weight: 18, color: GREEN, text: '#fff' },
-  { label: 'Nochmal Glück!', weight: 20, color: '#e8d9b8', text: GREEN },
+  { label: 'Nochmal Glück!', weight: 25, color: '#e8d9b8', text: GREEN },
   { label: 'Gratis Getränk', weight: 15, color: ORANGE, text: '#fff' },
   { label: 'Gratis Pommes', weight: 15, color: GREEN, text: '#fff' },
-  { label: 'Nochmal Glück!', weight: 20, color: '#e8d9b8', text: GREEN },
+  { label: 'Gratis Sigara Böreği', weight: 15, color: CHILI, text: '#fff' },
   { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
 ];
 const WHEEL_N = WHEEL_PRIZES.length;
@@ -1877,19 +1877,35 @@ function WheelWidget({ onWin, compact, prizes }) {
         // Der Code wird jetzt server-seitig erstellt (statt direkt vom
         // Browser in die Datenbank geschrieben), damit niemand einen
         // "Gewinn"-Code fälschen kann, ohne wirklich am Rad gedreht zu haben.
-        try {
+        const tryCreateCode = async () => {
           const r = await fetch('/api/create-spincode', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prize: prize.label }),
           });
+          if (!r.ok) throw new Error('server error');
           const data = await r.json();
-          res = { prize: prize.label, code: data.code || null };
+          if (!data.code) throw new Error('no code returned');
+          return data.code;
+        };
+        try {
+          const code = await tryCreateCode();
+          res = { prize: prize.label, code, codeError: false };
         } catch {
-          res = { prize: prize.label, code: null };
+          // Ein zweiter Versuch, falls es nur ein kurzer Netzwerk-Hänger war.
+          try {
+            const code = await tryCreateCode();
+            res = { prize: prize.label, code, codeError: false };
+          } catch {
+            // WICHTIG: Der Gewinn ist trotzdem echt — nur die Code-Erstellung
+            // ist fehlgeschlagen. Das darf NIEMALS als "nichts gewonnen"
+            // angezeigt werden, sonst denkt der Kunde, er hätte verloren,
+            // obwohl er tatsächlich gewonnen hat.
+            res = { prize: prize.label, code: null, codeError: true };
+          }
         }
       } else {
-        res = { prize: prize.label, code: null };
+        res = { prize: prize.label, code: null, codeError: false };
       }
       setResult(res);
       setSpinning(false);
@@ -1946,13 +1962,20 @@ function WheelWidget({ onWin, compact, prizes }) {
         </button>
       )}
       {result && (
-        <div className="mt-8 w-full rounded-2xl p-6 text-center relative overflow-hidden" style={{ background: result.code ? `linear-gradient(160deg, #fdf6e8, #f0e2c2)` : '#fff', boxShadow: '0 12px 28px rgba(21,56,38,.18)', border: result.code ? `1.5px solid ${GOLD}` : '1.5px solid #e3d5bd' }}>
+        <div className="mt-8 w-full rounded-2xl p-6 text-center relative overflow-hidden" style={{ background: (result.code || result.codeError) ? `linear-gradient(160deg, #fdf6e8, #f0e2c2)` : '#fff', boxShadow: '0 12px 28px rgba(21,56,38,.18)', border: (result.code || result.codeError) ? `1.5px solid ${GOLD}` : '1.5px solid #e3d5bd' }}>
           {result.code ? (
             <>
               <div className="text-4xl mb-2">{prizeEmoji(result.prize)}</div>
               <div className="font-black text-lg mb-1.5" style={{ color: GREEN }}>{mx(result.prize, lang)}</div>
               <div className="text-xs font-semibold mb-4" style={{ color: '#8a7c62' }}>{t('showCodeAtCounter')}</div>
               <div className="text-2xl font-black tracking-[0.3em] py-3 rounded-xl" style={{ background: '#fff', color: GREEN, boxShadow: 'inset 0 0 0 1.5px #e3d5bd' }}>{result.code}</div>
+            </>
+          ) : result.codeError ? (
+            <>
+              <div className="text-4xl mb-2">{prizeEmoji(result.prize)}</div>
+              <div className="font-black text-lg mb-1.5" style={{ color: GREEN }}>{mx(result.prize, lang)}</div>
+              <div className="text-xs font-bold" style={{ color: CHILI }}>⚠️ Technisches Problem beim Erstellen deines Codes.</div>
+              <div className="text-xs font-semibold mt-1.5" style={{ color: '#8a7c62' }}>Zeig diesen Bildschirm direkt dem Personal — dein Gewinn gilt trotzdem!</div>
             </>
           ) : (
             <>
@@ -2612,6 +2635,11 @@ const ASSISTANT_R = {
   chipOpen: { de: "Habt ihr geöffnet?", en: "Are you open?", tr: "Açık mısınız?", ro: "Sunteți deschiși?", nl: "Zijn jullie open?", sq: "A jeni hapur?", ku: "Hûn vekirî ne?", pl: "Czy jesteście otwarci?" },
   chipRecommend: { de: "Was empfehlt ihr?", en: "What do you recommend?", tr: "Ne önerirsiniz?", ro: "Ce recomandați?", nl: "Wat raden jullie aan?", sq: "Çfarë rekomandoni?", ku: "Hûn çi pêşniyar dikin?", pl: "Co polecacie?" },
   chipAddress: { de: "Wo seid ihr?", en: "Where are you?", tr: "Adresiniz nerede?", ro: "Unde sunteți?", nl: "Waar zijn jullie?", sq: "Ku jeni?", ku: "Hûn li ku ne?", pl: "Gdzie jesteście?" },
+  loyaltyInfo: { de: "🎟️ Ja! Wir haben eine Stempelkarte: 8 Stempel = 1 Gratis-Pizza. Öffne sie über den 🎟️-Button oder das Menü — dort bekommst du direkt einen Stempel geschenkt!", en: "🎟️ Yes! We have a stamp card: 8 stamps = 1 free pizza. Open it via the 🎟️ button or the menu — you get a free stamp right away!", tr: "🎟️ Evet! Stempelkarte'miz var: 8 damga = 1 bedava pizza. 🎟️ butonundan ya da menüden açabilirsin, hemen 1 hoş geldin damgası kazanıyorsun!" },
+  referralInfo: { de: "🎁 Öffne deine Stempelkarte und tippe auf \"Freund einladen\" — wenn dein Freund über deinen Link seine erste Karte erstellt und zum ersten Mal bei uns bestellt, bekommt ihr BEIDE einen Bonus-Stempel!", en: "🎁 Open your stamp card and tap \"Invite a friend\" — when your friend creates their card via your link and visits for the first time, you BOTH get a bonus stamp!", tr: "🎁 Stempelkarte'ni aç, \"Freund einladen\" butonuna bas — arkadaşın senin linkinle kart oluşturup ilk kez sipariş verirse, ikinize de bonus damga düşer!" },
+  wheelInfo: { de: "🎡 Dienstags gibt es bei uns im Laden ein Glücksrad mit Gewinnen wie Gratis-Getränk oder Rabatt — einfach dienstags vorbeikommen und auf der Startseite drehen!", en: "🎡 On Tuesdays we have a prize wheel in the shop with prizes like a free drink or discount — just come by on Tuesday and spin it on the homepage!", tr: "🎡 Salı günleri dükkanımızda bir Şans Çarkı var, gratis içecek ya da indirim gibi ödüller çıkabiliyor — Salı günü gel, ana sayfadan çevir!" },
+  quickOrderInfo: { de: "🔢 Du kannst auch einfach die Nummer deines Wunschprodukts eingeben! Tippe oben auf \"Nummer bestellen\" und gib die Nummer von der Speisekarte ein.", en: "🔢 You can also just enter the number of the item you want! Tap \"Order by number\" at the top and enter the number from the menu.", tr: "🔢 İstediğin ürünün numarasını da girebilirsin! Üstteki \"Nummer bestellen\" butonuna bas, menüdeki numarayı yaz." },
+  trackOrderInfo: { de: "📦 Tippe oben auf \"Sipariş Takip\" / \"Bestellung verfolgen\" und gib deinen Bestellcode ein — dann siehst du live, ob deine Bestellung noch vorbereitet wird oder schon fertig ist.", en: "📦 Tap \"Track order\" at the top and enter your order code — you'll see live whether your order is still being prepared or already ready.", tr: "📦 Üstteki \"Sipariş Takip\" butonuna bas, sipariş kodunu gir — siparişinin hazırlanıyor mu yoksa hazır mı olduğunu canlı görürsün." },
 };
 function ar(key, lang) { return ASSISTANT_R[key][lang] || ASSISTANT_R[key].de; }
 
@@ -2628,6 +2656,21 @@ function getAssistantReply(qRaw, lang) {
     if (found) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', formatItemPriceText(found)).replace('{desc}', found.desc ? mx(found.desc, lang) : '') };
   }
 
+  if (has('sipariş takip', 'wo ist meine bestellung', 'bestellung verfolgen', 'track order', 'sipariş nerede', 'bestellstatus')) {
+    return { intent: 'trackorder', text: ar('trackOrderInfo', lang) };
+  }
+  if (has('stempelkarte', 'damga kart', 'stamp card', 'sadakat kart', 'loyalty', 'stempel karte')) {
+    return { intent: 'loyalty', text: ar('loyaltyInfo', lang) };
+  }
+  if (has('arkadaş davet', 'arkadaşını davet', 'freund einladen', 'invite a friend', 'referral', 'bonus stempel')) {
+    return { intent: 'referral', text: ar('referralInfo', lang) };
+  }
+  if (has('glücksrad', 'şans çark', 'salı çark', 'dienstags-rad', 'prize wheel', 'wheel', 'çevir')) {
+    return { intent: 'wheel', text: ar('wheelInfo', lang) };
+  }
+  if (has('numara ile sipariş', 'nummer bestellen', 'order by number', 'nummerneingabe')) {
+    return { intent: 'quickorder', text: ar('quickOrderInfo', lang) };
+  }
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
     const tueOpen = isTuesdayOpenNow(now);
     if (status.open) return { intent: 'hours', text: ar(tueOpen ? 'openYesEveryDay' : 'openYes', lang) };
@@ -2690,7 +2733,7 @@ function speakText(text, lang) {
 }
 
 function AIAssistant() {
-  const { lang, t } = React.useContext(LangContext);
+  const { lang, t, go } = React.useContext(LangContext);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -2732,7 +2775,7 @@ function AIAssistant() {
     logEvent('assistant_' + intent, { q: q.slice(0, 200) });
     setInput('');
     if (intent !== 'fallback') {
-      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply }]);
+      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply, intent }]);
       return;
     }
     // Kein Keyword-Treffer: an die echte KI weiterreichen (kostet etwas,
@@ -2790,7 +2833,7 @@ function AIAssistant() {
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3.5 py-3 space-y-2.5">
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div key={i} className={`flex flex-col ${m.from === 'user' ? 'items-end' : 'items-start'}`}>
                 <div
                   className="px-3.5 py-2.5 rounded-2xl text-sm font-medium max-w-[85%] whitespace-pre-wrap flex items-end gap-1.5"
                   style={m.from === 'user'
@@ -2802,6 +2845,12 @@ function AIAssistant() {
                     <button onClick={() => speakText(m.text, lang)} className="flex-shrink-0 opacity-60" title="Vorlesen">🔊</button>
                   )}
                 </div>
+                {m.from === 'bot' && m.intent === 'trackorder' && (
+                  <button onClick={() => go('track')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📦 Jetzt verfolgen</button>
+                )}
+                {m.from === 'bot' && (m.intent === 'order' || m.intent === 'quickorder') && orderingEnabled() && (
+                  <button onClick={() => go('whatsapp')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📋 Zur Speisekarte</button>
+                )}
               </div>
             ))}
           </div>
@@ -4452,6 +4501,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
                 { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
                 { onClick: () => { setNavOpen(false); setLoyaltyModalOpen(true); }, icon: '🎟️', label: t('titleLoyalty') },
+                { onClick: () => { setNavOpen(false); scrollTo('nachricht'); }, icon: '📩', label: 'Kontakt' },
               ].map((item, i) => (
                 <button key={i} onClick={item.onClick} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
                   <span className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>{item.icon}</span>
@@ -4561,12 +4611,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <>
                 <button
                   onClick={() => setQuickOrderModalOpen(true)}
-                  className="quick-order-btn w-full sm:w-auto flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-base mb-3 relative overflow-hidden"
-                  style={{ background: `linear-gradient(120deg, #ff3d68, #ff6a1a 55%, ${GOLD})`, backgroundSize: '200% 100%', color: '#fff', boxShadow: '0 14px 34px rgba(255,61,104,.4)' }}
+                  className="quick-order-btn w-full sm:w-auto flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-sm mb-3 relative overflow-hidden"
+                  style={{ background: `linear-gradient(120deg, #ff3d68, #ff6a1a 55%, ${GOLD})`, backgroundSize: '200% 100%', color: '#fff', boxShadow: '0 10px 26px rgba(255,61,104,.4)' }}
                 >
-                  <span className="text-2xl relative">🔢</span>
+                  <span className="text-lg relative">🔢</span>
                   <span className="relative">{t('quickOrderByNumberBtn')}</span>
-                  <ArrowRight size={18} className="relative ml-auto sm:ml-1" />
+                  <ArrowRight size={16} className="relative ml-auto sm:ml-1" />
                 </button>
                 <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                   <button onClick={() => go('whatsapp')} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>📋 {t('heroCtaWhatsapp')}</button>
@@ -4582,16 +4632,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               {installPrompt && (
                 <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
               )}
-              <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
-                target="_blank" rel="noopener noreferrer"
-                onClick={() => logEvent('route')}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs text-white"
-                style={{ background: `linear-gradient(135deg, #ff3b3b, ${CHILI})`, boxShadow: '0 6px 16px rgba(255,30,30,.4)' }}
-              >
-                📍 {t('contactRoute')}
-              </a>
-              <button onClick={() => scrollTo('nachricht')} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>{t('contactMsgTitle')}</button>
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
@@ -7815,6 +7855,7 @@ function StaffPanelView({ back }) {
   const [nowTick, setNowTick] = useState(Date.now());
   const beepAudioRef = useRef(null);
   const [notifySound, setNotifySoundState] = useState('klassisch');
+  const [playingPreview, setPlayingPreview] = useState(null);
   useEffect(() => { safeGet('siteconfig:notifySound').then((r) => { if (r && r.key) setNotifySoundState(r.key); }); }, []);
   const setNotifySound = async (key) => {
     setNotifySoundState(key);
@@ -7930,7 +7971,8 @@ function StaffPanelView({ back }) {
     try {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      ctx.resume().then(() => selected.play(ctx)).catch(() => { try { selected.play(ctx); } catch {} });
+      ctx.resume();
+      selected.play(ctx);
     } catch {}
   };
   const deleteOrder = async (o) => {
@@ -9133,11 +9175,25 @@ function StaffPanelView({ back }) {
                             {notifySound === s.key && <span className="text-xs font-black" style={{ color: GOLD }}>✓ Aktiv</span>}
                           </button>
                           <button
-                            onClick={() => { try { const ctx = getAudioCtx(); if (ctx) { ctx.resume().then(() => s.play(ctx)).catch(() => { try { s.play(ctx); } catch {} }); } } catch {} }}
+                            onClick={() => {
+                              try { if (navigator.vibrate) navigator.vibrate(60); } catch {}
+                              try {
+                                const ctx = getAudioCtx();
+                                if (ctx) {
+                                  // Sowohl SOFORT (synchron, im selben Klick — wichtig für iOS,
+                                  // das Audio sonst nach einem "await" blockieren kann) ABPIELEN
+                                  // als auch parallel resume() aufrufen, für maximale Kompatibilität.
+                                  ctx.resume();
+                                  s.play(ctx);
+                                }
+                              } catch {}
+                              setPlayingPreview(s.key);
+                              setTimeout(() => setPlayingPreview(null), 600);
+                            }}
                             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ background: '#fff', border: '1.5px solid #e3d5bd' }}
+                            style={playingPreview === s.key ? { background: GOLD, border: '1.5px solid #e3d5bd' } : { background: '#fff', border: '1.5px solid #e3d5bd' }}
                           >
-                            ▶️
+                            {playingPreview === s.key ? '🔊' : '▶️'}
                           </button>
                         </div>
                       ))}
