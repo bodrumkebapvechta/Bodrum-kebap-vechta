@@ -500,6 +500,7 @@ const CATEGORY_IMAGES = {
   getraenke: [FRITZ_KOLA_IMG, FRITZ_LIMO_IMG, FRITZ_SPRITZ_TRAUBE_IMG, FRITZ_MISCHMASCH_IMG, FRITZ_KOLA_SUPERZERO_IMG],
 };
 const CATEGORY_LABELS = {
+  neu: { de: 'Neu hinzugefügt', en: 'Newly Added', tr: 'Yeni Eklenenler', ro: 'Nou adăugat', nl: 'Nieuw toegevoegd' },
   kebap: { de: 'Kebap', en: 'Kebap', tr: 'Kebap', ro: 'Kebap', nl: 'Kebap' },
   pizza: { de: 'Pizza', en: 'Pizza', tr: 'Pizza', ro: 'Pizza', nl: 'Pizza' },
   familienpizza: { de: 'Familienpizza', en: 'Family Pizza', tr: 'Aile Boyu Pizza', ro: 'Pizza de familie', nl: 'Familiepizza' },
@@ -729,6 +730,12 @@ function mx(text, lang) {
 
 /* ============ MENU DATA ============ */
 const MENU = [
+  // Leer, bis das erste neue Produkt hinzugefügt wird — der Tab bleibt dank
+  // des Filters in WhatsAppOrderView/GroupOrderView (MENU.filter(m =>
+  // m.items.length > 0)) für Kunden unsichtbar, solange kein Eintrag drin ist.
+  { key: 'neu', label: 'Neu hinzugefügt', items: [
+    { id: 'na192', name: 'Kapsalon', price: 6.0, desc: 'Pommes Frites, Dönerfleisch, geschmolzener Käse, frischer Salat (Eisberg, Tomaten, Zwiebeln), Knoblauchsauce & Sauce nach Wahl', alg: 'a,i,15' },
+  ]},
   { key: 'kebap', label: 'Kebap', items: [
     { id: 'k0-steak', name: 'Steak Kebap', price: 10.0, desc: 'Steak Fleisch, Knoblauchsoße, Salat und Zwiebeln', weekend: true, alg: 'a,i,e' },
     { id: 'k1', name: 'Kalb Kebap', price: 8.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln', alg: 'a,i,15' },
@@ -1626,7 +1633,7 @@ function QtyRow({ label, qty, onAdd, onRemove }) {
 }
 
 const CATEGORY_ICONS = {
-  kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥟', baguette: '🥖', ueberbacken: '🧀',
+  neu: '✨', kebap: '🥙', pizza: '🍕', pizzabrot: '🥖', calzone: '🥟', baguette: '🥖', ueberbacken: '🧀',
   rollo: '🌯', nudeln: '🍝', schnitzel: '🍗', salat: '🥗', finger: '🍟', getraenke: '🥤',
 };
 
@@ -5216,7 +5223,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       )}
 
       <div className="flex gap-2.5 overflow-x-auto px-5 pt-3 pb-3">
-        {MENU.map((m) => (
+        {MENU.filter((m) => m.items.length > 0).map((m) => (
           <button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1.5"
             style={tab === m.key ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 6px 16px rgba(21,56,38,.3)', border: '1.5px solid transparent' } : { background: '#fff', color: GREEN, border: `1.5px solid #e3d5bd` }}>
             <span className="text-base">{CATEGORY_ICONS[m.key]}</span> {catLabel(m.key, lang)}
@@ -6442,7 +6449,7 @@ function GroupOrderView({ back }) {
             </div>
           )}
           <div className="flex gap-2 overflow-x-auto px-5 pt-2 pb-2">
-            {MENU.map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1.5" style={tab === m.key ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 6px 16px rgba(21,56,38,.3)', border: '1.5px solid transparent' } : { background: '#fff', color: GREEN, border: `1.5px solid #e3d5bd` }}><span className="text-base">{CATEGORY_ICONS[m.key]}</span> {catLabel(m.key, lang)}</button>))}
+            {MENU.filter((m) => m.items.length > 0).map((m) => (<button key={m.key} onClick={() => setTab(m.key)} className="flex-none px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1.5" style={tab === m.key ? { background: `linear-gradient(135deg, ${GREEN}, #1d4530)`, color: GOLD, boxShadow: '0 6px 16px rgba(21,56,38,.3)', border: '1.5px solid transparent' } : { background: '#fff', color: GREEN, border: `1.5px solid #e3d5bd` }}><span className="text-base">{CATEGORY_ICONS[m.key]}</span> {catLabel(m.key, lang)}</button>))}
           </div>
           {CATEGORY_IMAGES[tab] && (
             <div className="px-5 pt-2">
