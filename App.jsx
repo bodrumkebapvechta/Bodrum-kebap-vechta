@@ -304,6 +304,7 @@ const UI = {
   confirmPickupNote: { de: 'Die Abholzeit bestätigen wir euch direkt per WhatsApp-Antwort.', en: "We'll confirm the pickup time directly via WhatsApp reply.", tr: 'Teslim alma saatini WhatsApp üzerinden doğrudan onaylayacağız.', ro: 'Vă confirmăm ora de ridicare direct prin răspuns pe WhatsApp.', nl: 'We bevestigen de ophaaltijd rechtstreeks via WhatsApp.' , sq: 'Orën e marrjes do ta konfirmojmë direkt me përgjigje në WhatsApp.', ku: 'Em ê dema standinê rasterast bi bersiveke WhatsApp piştrast bikin.', pl: 'Godzinę odbioru potwierdzimy bezpośrednio w odpowiedzi na WhatsApp.'},
   chooseBase: { de: 'Wähle deine Basis', en: 'Choose your base', tr: 'Bazını seç', ro: 'Alege baza', nl: 'Kies je basis' , sq: 'Zgjidh bazën tënde', ku: 'Bingeha xwe hilbijêre', pl: 'Wybierz swoją bazę'},
   chooseBaseSub: { de: 'Wie soll dein Döner serviert werden?', en: 'How would you like your Döner served?', tr: 'Dönerin nasıl servis edilsin?', ro: 'Cum dorești să fie servit kebap-ul tău?', nl: 'Hoe wil je je Döner geserveerd hebben?' , sq: 'Si dëshiron ta shërbejmë Dönerin tënd?', ku: 'Döner çawa were pêşkêşkirin?', pl: 'Jak podać Twojego kebaba?'},
+  chooseSideTitle: { de: 'Pommes oder Reis?', en: 'Fries or rice?', tr: 'Patates mi pirinç mi?', ro: 'Cartofi prăjiți sau orez?', nl: 'Friet of rijst?', sq: 'Patate a oriz?', ku: 'Patate an brinc?', pl: 'Frytki czy ryż?' },
   chooseMeatTitle: { de: 'Wähle dein Lieblingsfleisch.', en: 'Choose your favorite meat.', tr: 'Favori etini seç.', ro: 'Alege carnea preferată.', nl: 'Kies je favoriete vlees.' , sq: 'Zgjidh mishin tënd të preferuar.', ku: 'Goştê xwe yê hezkirî hilbijêre.', pl: 'Wybierz swoje ulubione mięso.'},
   chooseSauceTitle: { de: 'Welche Soße?', en: 'Which sauce?', tr: 'Hangi sos?', ro: 'Ce sos?', nl: 'Welke saus?' , sq: 'Cila salcë?', ku: 'Kîjan soz?', pl: 'Jaki sos?'},
   chooseSauceSub: { de: 'Eine Soße aussuchen.', en: 'Pick one sauce.', tr: 'Bir sos seç.', ro: 'Alege un sos.', nl: 'Kies één saus.' , sq: 'Zgjidh një salcë.', ku: 'Sozekê hilbijêre.', pl: 'Wybierz jeden sos.'},
@@ -749,14 +750,14 @@ const MENU = [
     { id: 'k9', name: 'Bodrum Gemüse Dürüm Kebap', price: 10.0, desc: 'Lavasbrot, Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und fritiertes Gemüse', alg: 'a,e,i,15' },
     { id: 'k10', name: 'Türkische Pizza Salat (Lahmacun)', price: 8.0, desc: 'Mit Salat, Knoblauchsoße und Zwiebeln', alg: 'a,i' },
     { id: 'k11', name: 'Türkische Pizza Kebap (Lahmacun)', price: 10.0, desc: 'Fleisch vom Drehspieß, Knoblauchsoße, Salat und Zwiebeln', alg: 'a,i,15' },
-    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes', weekend: true, alg: 'a,i,e' },
-    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes', alg: 'a,i,15' },
-    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes', alg: 'a,i,15' },
-    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes', alg: 'a,e,i,15' },
-    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes', alg: 'a,i,15' },
+    { id: 'k12', name: 'Steak Teller', price: 14.0, desc: 'Steak Fleisch, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis', weekend: true, sideChoice: true, alg: 'a,i,e' },
+    { id: 'k13', name: 'Kebap Teller', price: 12.0, desc: 'Fleisch vom Drehspieß, Salat, Knoblauchsoße, Zwiebeln und Pommes oder Reis', sideChoice: true, alg: 'a,i,15' },
+    { id: 'k14', name: 'Kebap Teller Bodrum', price: 13.0, desc: 'Salat, Knoblauchsoße, Zwiebeln, Weichkäse, Peperoni und Pommes oder Reis', sideChoice: true, alg: 'a,i,15' },
+    { id: 'k15', name: 'Kebap Teller Hollandaise Soße', price: 13.0, desc: 'Salat, Zwiebeln, Hollandaise und Pommes oder Reis', sideChoice: true, alg: 'a,e,i,15' },
+    { id: 'k16', name: 'Gemüse Kebap Teller', price: 13.5, desc: 'Fritiertes Gemüse, Salat, Knoblauchsoße, Zwiebeln, Pommes oder Reis', sideChoice: true, alg: 'a,i,15' },
     { id: 'k17', name: 'Falafel Tasche', price: 7.0, desc: 'Mit Salat und Knoblauchsoße', alg: 'a,c,g,i' },
     { id: 'k18', name: 'Falafel Tortilla Dürüm', price: 8.0, desc: 'Mit Salat und Knoblauchsoße', alg: 'a,c,g,i' },
-    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes', alg: 'a,c,g,i' },
+    { id: 'k19', name: 'Falafel Teller (7 Stück)', price: 10.0, desc: 'Mit Salat und Pommes oder Reis', sideChoice: true, alg: 'a,c,g,i' },
   ]},
   { key: 'pizza', label: 'Pizza', items: [
     { id: 'custom-pizza', name: 'Baue deine eigene Pizza 🎨', price: 8.0, desc: 'Tomatensoße inklusive — wähle deine Beläge', customPizza: true },
@@ -855,14 +856,14 @@ const MENU = [
     { id: 'n169', name: 'Soja Salsa', price: 11.0, desc: 'Hähnchenbrust mit Paprika & Pilzen in Sojasoße, serviert mit Kurkuma-Penne & Marktsalat', alg: 'a,i,h,1,4' },
   ]},
   { key: 'schnitzel', label: 'Schnitzel', items: [
-    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', alg: 'a,e,i,14' },
-    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes', alg: 'a,e,i,14' },
-    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes', alg: 'a,e,i,14' },
-    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes', alg: 'a,e,i,14' },
-    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes, überbacken mit Käse', alg: 'a,e,i,13,14' },
-    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes', alg: 'a,e,i,14' },
-    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes, überbacken mit Käse und Salat', alg: 'a,e,i,14' },
-    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes', alg: 'a,e,i,14' },
+    { id: 's184', name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes oder Reis', sideChoice: true, alg: 'a,e,i,14' },
+    { id: 's185', name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Salat, Zigeunersoße, Pommes oder Reis', sideChoice: true, alg: 'a,e,i,14' },
+    { id: 's186', name: 'Jäger Schnitzel', price: 11.0, desc: 'Salat, Jägersoße, Pommes oder Reis', sideChoice: true, alg: 'a,e,i,14' },
+    { id: 's187', name: 'Brokkoli Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Brokkoli, Pommes oder Reis', sideChoice: true, alg: 'a,e,i,14' },
+    { id: 's188', name: 'Hawaii Schnitzel', price: 11.0, desc: 'Salat, Putenschinken, Ananas, Pommes oder Reis, überbacken mit Käse', sideChoice: true, alg: 'a,e,i,13,14' },
+    { id: 's189', name: 'Gorgonzola Schnitzel', price: 11.0, desc: 'Salat, Sahnesoße, Gorgonzola, Pommes oder Reis', sideChoice: true, alg: 'a,e,i,14' },
+    { id: 's190', name: 'Mozzarella Schnitzel', price: 11.0, desc: 'Frische Tomaten, Mozzarella, Sahnesoße, Pommes oder Reis, überbacken mit Käse und Salat', sideChoice: true, alg: 'a,e,i,14' },
+    { id: 's191', name: 'Rahm Schnitzel', price: 11.0, desc: 'Salat, Pilzen, Rahmpulver, Pommes oder Reis', sideChoice: true, alg: 'a,e,i,14' },
   ]},
   { key: 'salat', label: 'Salat', items: [
     { id: 'sa95', name: 'Nizza Salat', price: 8.0, desc: 'Grüner Salat, Tomaten, Gurken, Zwiebeln, Weißkohl, Putenschinken und Käse', alg: 'a,i,13' },
@@ -1553,6 +1554,20 @@ const TUESDAY_WHEEL_PRIZES = [
   { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
   { label: 'Gratis Sigara Böreği', weight: 13, color: CHILI, text: '#fff' },
 ];
+// Drittes, eigenständiges Rad — NICHT an Bestellung oder Wochentag gekoppelt.
+// Aufgerufen über einen allgemeinen QR-Code auf physischen Karten (siehe
+// KartenWheelView / isKartenradUrl). Da der QR-Code potenziell fotografiert
+// und weitergegeben werden könnte, bleibt "Nochmal Glück!" bewusst mit
+// spürbarem Gewicht drin, um die Ausgabenquote zu begrenzen — Gewichte bei
+// Bedarf anpassen.
+const KARTEN_WHEEL_PRIZES = [
+  { label: 'Nochmal Glück!', weight: 25, color: '#e8d9b8', text: GREEN },
+  { label: '10% Rabatt', weight: 20, color: GREEN, text: '#fff' },
+  { label: 'Gratis Getränk', weight: 18, color: ORANGE, text: '#fff' },
+  { label: 'Gratis Pommes', weight: 15, color: GREEN, text: '#fff' },
+  { label: 'Gratis Bulgur Salat', weight: 12, color: CHILI, text: '#fff' },
+  { label: 'Gratis Baklava', weight: 10, color: GOLD, text: GREEN },
+];
 function pickWheelPrize() {
   const total = WHEEL_PRIZES.reduce((s, p) => s + p.weight, 0);
   let r = Math.random() * total;
@@ -1926,6 +1941,8 @@ function WheelWidget({ onWin, compact, prizes }) {
     if (label.includes('Pommes')) return '🍟';
     if (label.includes('Nuggets')) return '🍗';
     if (label.includes('Böreği') || label.includes('Sigara')) return '🥟';
+    if (label.includes('Baklava')) return '🍯';
+    if (label.includes('Salat')) return '🥗';
     return '🎁';
   };
 
@@ -2432,10 +2449,10 @@ const DAILY_SPECIALS = [
   ]},
   { day: 3, items: [
     { name: 'Spaghetti Bodrum', price: 9.0, desc: 'Fleisch vom Drehspieß, Brokkoli & Sahnesoße', img: 'spaghetti', cat: 'nudeln' },
-    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes', img: 'schnitzel', cat: 'schnitzel' },
+    { name: 'Schnitzel Wiener Art', price: 10.0, desc: 'Mit Salat, Pommes oder Reis', img: 'schnitzel', cat: 'schnitzel' },
   ]},
   { day: 4, items: [
-    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes', img: 'schnitzel', cat: 'schnitzel' },
+    { name: 'Zigeuner Schnitzel', price: 11.0, desc: 'Mit Salat, Pommes oder Reis', img: 'schnitzel', cat: 'schnitzel' },
     { name: 'Pizza Spinat', price: 8.5, desc: 'Knoblauch und Weichkäse in Salzlake', img: 'g2', cat: 'pizza' },
   ]},
   { day: 5, items: [
@@ -4945,6 +4962,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const [pizzaComboActive, setPizzaComboActive] = useState(!!initialAction?.pizzaComboMode);
   const [comboDrinkFreeUsed, setComboDrinkFreeUsed] = useState(false);
   const [itemNotes, setItemNotes] = useState({});
+  const [sideNotes, setSideNotes] = useState({});
   const [burst, setBurst] = useState(false);
   const [sentSnapshot, setSentSnapshot] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -5060,7 +5078,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
   const waLink = useMemo(() => {
     if (lines.length === 0) return null;
     let msg = `Hallo Bodrum Kebap Vechta, ich möchte gerne folgendes bestellen:\n\n`;
-    lines.forEach(([key, v]) => { const note = itemNotes[key]; msg += `• ${v.qty}x ${v.deName || v.name}${note ? ` – ${note}` : ''} (${fmt(v.qty * v.price)})\n`; });
+    lines.forEach(([key, v]) => { const note = [sideNotes[key], itemNotes[key]].filter(Boolean).join(', '); msg += `• ${v.qty}x ${v.deName || v.name}${note ? ` – ${note}` : ''} (${fmt(v.qty * v.price)})\n`; });
     msg += `\nGesamt: ${fmt(totalPrice)}\n`;
     if (name) msg += `\nName: ${name}`;
     if (pickupTime) msg += `\nGewünschte Abholzeit: ${pickupTime}`;
@@ -5512,7 +5530,23 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                   ))}
                 </div>
               )}
-              {qty > 0 && !item.sauceChoice && (
+              {qty > 0 && item.sideChoice && (
+                <>
+                  <div className="mt-2.5 flex gap-2">
+                    {['Pommes', 'Reis'].map((s) => (
+                      <button key={s} onClick={() => setSideNotes((n) => ({ ...n, [item.id]: s }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] font-bold" style={sideNotes[item.id] === s ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(s, lang)}</button>
+                    ))}
+                  </div>
+                  <input
+                    value={itemNotes[item.id] || ''}
+                    onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
+                    placeholder={t('noteExampleOnions')}
+                    className="w-full mt-2 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                    style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                  />
+                </>
+              )}
+              {qty > 0 && !item.sauceChoice && !item.sideChoice && (
                 <input
                   value={itemNotes[item.id] || ''}
                   onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
@@ -5786,7 +5820,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
 const BASES = [
   { id: 'brot', label: 'Im Brot (klassisch)', desc: 'Klassischer Döner im Fladenbrot', price: 8.0, emoji: '🥙' },
   { id: 'duerum', label: 'Dürüm', desc: 'Im Lavasbrot gerollt', price: 9.0, emoji: '🌯' },
-  { id: 'teller', label: 'Teller', desc: 'Mit Pommes', price: 12.0, emoji: '🍽️' },
+  { id: 'teller', label: 'Teller', desc: 'Mit Pommes oder Reis', price: 12.0, emoji: '🍽️' },
   { id: 'box', label: 'Box', desc: 'Mit Pommes & Soße', price: 8.0, emoji: '🥡' },
 ];
 const MEATS = [
@@ -5861,6 +5895,7 @@ function DonerBuilderView({ back, go }) {
   useEffect(() => { safeGet('siteconfig:soldOutExtras').then((r) => { if (r) setSoldOutExtras(r); }); }, []);
   const [step, setStep] = useState(0);
   const [base, setBase] = useState(null);
+  const [tellerSide, setTellerSide] = useState(null); // 'Pommes' | 'Reis' — nur relevant wenn base.id === 'teller'
   const [meat, setMeat] = useState(null);
   const [sauce, setSauce] = useState(null);
   const [extras, setExtras] = useState([]);
@@ -5879,13 +5914,13 @@ function DonerBuilderView({ back, go }) {
     setBurst(true); setSent(true); setTimeout(() => setBurst(false), 5200);
     const itemName = kind === 'pasta'
       ? `${pastaType} (${pastaSauce}${pastaExtras.length ? ', ' + pastaExtras.join(', ') : ''})`
-      : `Döner (${base?.label}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
+      : `Döner (${base?.label}${base?.id === 'teller' && tellerSide ? ' – ' + tellerSide : ''}, ${meat?.label}, ${SAUCES.find((s) => s.id === sauce)?.label}${extras.length ? ', ' + extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ') : ''})`;
     safeSet(`order:${orderCode}`, { code: orderCode, status: 'preparing', createdAt: Date.now(), itemCount: 1, total, name: name || null, items: [{ name: itemName, qty: 1 }] });
     sendOwnerPushNotification('🧾 Neue Bestellung: ' + orderCode, `${itemName} · ${fmt(total)}${name ? ' · ' + name : ''}`);
     setSentSnapshot({ code: orderCode, items: [{ name: itemName, qty: 1, price: total }], total, name, pickupTime: null, note: '' });
     setOrderCode(makeNumericCode(4));
   };
-  const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
+  const resetBuilder = () => { setKind(null); setStep(0); setBase(null); setTellerSide(null); setMeat(null); setSauce(null); setExtras([]); setPastaType(null); setPastaSauce(null); setPastaExtras([]); setName(''); setWheelResult(null); setSent(false); setShowWheel(false); };
 
   const toggleExtra = (id) => {
     const extraDef = BUILDER_EXTRAS.find((e) => e.id === id);
@@ -5915,7 +5950,7 @@ function DonerBuilderView({ back, go }) {
 
   const canNext = kind === 'pasta'
     ? [!!pastaType, !!pastaSauce, true, false][step]
-    : [!!base, !!meat, !!sauce, true, false][step];
+    : [!!base && (base.id !== 'teller' || !!tellerSide), !!meat, !!sauce, true, false][step];
   const totalSteps = kind === 'pasta' ? 3 : 4;
 
   const waLink = useMemo(() => {
@@ -5934,7 +5969,7 @@ function DonerBuilderView({ back, go }) {
     }
     if (!base || !meat || !sauce) return null;
     let msg = `Hallo Bodrum Kebap Vechta, ich möchte mir gerne meinen Döner selbst zusammenstellen:\n\n`;
-    msg += `🌯 Basis: ${base.label}\n🍖 Fleisch: ${meat.label}\n🧂 Soße: ${SAUCES.find((s) => s.id === sauce)?.label}\n`;
+    msg += `🌯 Basis: ${base.label}${base.id === 'teller' && tellerSide ? ` (${tellerSide})` : ''}\n🍖 Fleisch: ${meat.label}\n🧂 Soße: ${SAUCES.find((s) => s.id === sauce)?.label}\n`;
     if (extras.length > 0) msg += `➕ Extras: ${extras.map((id) => BUILDER_EXTRAS.find((e) => e.id === id)?.label).join(', ')}\n`;
     msg += `\nPreis: ${fmt(total)}\n`;
     if (name) msg += `\nName: ${name}`;
@@ -5943,7 +5978,7 @@ function DonerBuilderView({ back, go }) {
     msg += `\n\n(Abholung, keine Lieferung) Bitte sagt mir kurz, wann die Bestellung abholbereit ist. Danke!`;
     if (waExtraText) msg += `\n\n${waExtraText}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  }, [kind, base, meat, sauce, extras, pastaType, pastaSauce, pastaExtras, name, total, wheelResult, orderCode]);
+  }, [kind, base, tellerSide, meat, sauce, extras, pastaType, pastaSauce, pastaExtras, name, total, wheelResult, orderCode]);
 
   return (
     <div className="pb-10">
@@ -5982,7 +6017,18 @@ function DonerBuilderView({ back, go }) {
       {kind === 'doener' && (
       <div className="px-5 pt-3">
         {step === 0 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseBase')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseBaseSub')}</p>
-          <div className="flex flex-col gap-2.5">{BASES.map((b) => (<OptionCard key={b.id} selected={base?.id === b.id} onClick={() => setBase(b)}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{b.emoji}</span> {mx(b.label, lang)}<span className="text-xs font-medium opacity-80">· {mx(b.desc, lang)}</span></span></OptionCard>))}</div></div>)}
+          <div className="flex flex-col gap-2.5">{BASES.map((b) => (<OptionCard key={b.id} selected={base?.id === b.id} onClick={() => { setBase(b); if (b.id !== 'teller') setTellerSide(null); }}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{b.emoji}</span> {mx(b.label, lang)}<span className="text-xs font-medium opacity-80">· {mx(b.desc, lang)}</span></span></OptionCard>))}</div>
+          {base?.id === 'teller' && (
+            <div className="mt-3.5">
+              <div className="text-xs font-bold mb-2" style={{ color: '#7c6d55' }}>{t('chooseSideTitle')}</div>
+              <div className="flex gap-2.5">
+                {['Pommes', 'Reis'].map((s) => (
+                  <OptionCard key={s} selected={tellerSide === s} onClick={() => setTellerSide(s)}><span className="font-bold text-sm">{mx(s, lang)}</span></OptionCard>
+                ))}
+              </div>
+            </div>
+          )}
+          </div>)}
         {step === 1 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseMeatQ')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseMeatTitle')}</p>
           <div className="flex flex-col gap-2.5">{MEATS.map((m) => (<OptionCard key={m.id} selected={meat?.id === m.id} disabled={m.id === 'haehnchen' && chickenSoldOut} onClick={() => { if (m.id === 'haehnchen' && chickenSoldOut) return; if (m.weekendOnly && !isWeekendDay()) { alert(t('yaprakWeekendOnly')); return; } setMeat(m); }}><span className="font-bold text-sm flex items-center gap-2.5"><span className="text-lg">{m.emoji}</span> {mx(m.label, lang)}{m.extra !== 0 && <span className="text-xs font-medium opacity-80">({m.extra > 0 ? '+' : ''}{fmt(m.extra)})</span>}{m.weekendOnly && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: CHILI, color: '#fff' }}>FR·SA·SO</span>}{m.id === 'haehnchen' && chickenSoldOut && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}</span></OptionCard>))}</div></div>)}
         {step === 2 && (<div><h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('chooseSauceTitle')}</h2><p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseSauceSub')}</p>
@@ -5994,7 +6040,7 @@ function DonerBuilderView({ back, go }) {
             <h2 className="font-black text-xl mb-1" style={{ color: GREEN }}>{t('doenerReadyTitle')}</h2>
             <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('doenerReadySub')}</p>
             <div className="bg-white rounded-xl p-5 mb-4" style={{ borderLeft: `4px solid ${ORANGE}` }}>
-              <Row label={t('rowBasis')} value={mx(base?.label, lang)} /><Row label={t('rowMeat')} value={mx(meat?.label, lang)} /><Row label={t('rowSauce')} value={mx(SAUCES.find((s) => s.id === sauce)?.label, lang)} />
+              <Row label={t('rowBasis')} value={mx(base?.label, lang) + (base?.id === 'teller' && tellerSide ? ` (${mx(tellerSide, lang)})` : '')} /><Row label={t('rowMeat')} value={mx(meat?.label, lang)} /><Row label={t('rowSauce')} value={mx(SAUCES.find((s) => s.id === sauce)?.label, lang)} />
               {extras.length > 0 && <Row label={t('rowExtras')} value={extras.map((id) => mx(BUILDER_EXTRAS.find((e) => e.id === id)?.label, lang)).join(', ')} />}
               <div className="flex justify-between items-center pt-3 mt-2" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('rowPrice')}</span><span className="text-xl font-black" style={{ color: GREEN }}>{fmt(total)}</span></div>
             </div>
@@ -6128,6 +6174,7 @@ function GroupOrderView({ back }) {
   const [configMeat, setConfigMeat] = useState(null);
   const [configNote, setConfigNote] = useState('');
   const [itemNotes, setItemNotes] = useState({});
+  const [sideNotes, setSideNotes] = useState({});
   const [burst, setBurst] = useState(false);
   const [bigBurst, setBigBurst] = useState(false);
 
@@ -6192,7 +6239,7 @@ function GroupOrderView({ back }) {
     if (myLines.length === 0) return;
     const fresh = (await safeGet(`grouporder:${code}`)) || { code, people: [] };
     const people = fresh.people.filter((p) => p.name !== name);
-    people.push({ name, items: myLines.map(([key, v]) => ({ name: itemNotes[key] ? `${v.deName || v.name} – ${itemNotes[key]}` : (v.deName || v.name), price: v.price, qty: v.qty })), total: myTotal });
+    people.push({ name, items: myLines.map(([key, v]) => { const note = [sideNotes[key], itemNotes[key]].filter(Boolean).join(', '); return { name: note ? `${v.deName || v.name} – ${note}` : (v.deName || v.name), price: v.price, qty: v.qty }; }), total: myTotal });
     const pending = (fresh.pending || []).filter((p) => p !== name);
     const updated = { ...fresh, people, pending };
     await safeSet(`grouporder:${code}`, updated); setGroup(updated); setView('summary');
@@ -6712,7 +6759,23 @@ function GroupOrderView({ back }) {
                       ))}
                     </div>
                   )}
-                  {qty > 0 && !item.sauceChoice && (
+                  {qty > 0 && item.sideChoice && (
+                    <>
+                      <div className="mt-2.5 flex gap-2">
+                        {['Pommes', 'Reis'].map((s) => (
+                          <button key={s} onClick={() => setSideNotes((n) => ({ ...n, [item.id]: s }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] font-bold" style={sideNotes[item.id] === s ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(s, lang)}</button>
+                        ))}
+                      </div>
+                      <input
+                        value={itemNotes[item.id] || ''}
+                        onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
+                        placeholder={t('noteExampleOnions')}
+                        className="w-full mt-2 px-3 py-2 rounded-lg text-[11px] font-medium outline-none"
+                        style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }}
+                      />
+                    </>
+                  )}
+                  {qty > 0 && !item.sauceChoice && !item.sideChoice && (
                     <input
                       value={itemNotes[item.id] || ''}
                       onChange={(e) => setItemNotes((n) => ({ ...n, [item.id]: e.target.value }))}
@@ -10024,6 +10087,56 @@ function PizzaToppingCard({ item, color, resolvedImg, lang }) {
   );
 }
 
+// Eigenständige Seite für das Karten-Rad (physische Karten, allgemeiner
+// QR-Code) — komplett unabhängig von Bestellung und Dienstags-Rad. Läuft
+// jeden Tag, kein Mindestbestellwert, kein Wochentag nötig. Begrenzung auf
+// einen Spin pro Tag über localStorage (gleiches Muster wie beim
+// Dienstags-Rad) — kein 100%iger Schutz gegen Mehrfachnutzung, aber ein
+// wirksames Hindernis für den Alltagsbetrieb.
+function KartenWheelView() {
+  const { lang, t } = React.useContext(LangContext);
+  const [alreadySpun, setAlreadySpun] = useState(false);
+
+  useEffect(() => {
+    try {
+      const today = new Date().toDateString();
+      if (localStorage.getItem('bk_kartenrad_day') === today) setAlreadySpun(true);
+    } catch {}
+  }, []);
+
+  const handleWin = (res) => {
+    logEvent('kartenrad_spin', { prize: res.prize });
+    try { localStorage.setItem('bk_kartenrad_day', new Date().toDateString()); } catch {}
+  };
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center p-6" style={{ background: GREEN, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <div className="w-full max-w-sm rounded-3xl p-6" style={{ background: GREEN, border: '1px solid rgba(255,199,56,.25)', boxShadow: '0 30px 70px rgba(21,56,38,.5)' }}>
+        <div className="flex flex-col items-center mb-1">
+          <div className="font-black text-lg text-center" style={{ color: GOLD }}>🎡 Glücksrad</div>
+          <div className="text-xs font-bold text-center mt-0.5" style={{ color: CREAM }}>Bodrum Kebap Vechta</div>
+        </div>
+
+        {alreadySpun ? (
+          <div className="text-center py-8">
+            <p className="text-4xl mb-3">🎡</p>
+            <p className="text-sm font-bold" style={{ color: CREAM }}>Du hast heute schon gedreht!</p>
+            <p className="text-xs font-medium mt-1.5" style={{ color: '#a89878' }}>Komm morgen wieder vorbei.</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-xs font-medium mb-4 text-center mt-3" style={{ color: '#a89878' }}>
+              Dreh am Rad und zeig das Ergebnis direkt an der Kasse — dein Personal gibt dir den Gewinn sofort!
+            </p>
+            <WheelWidget prizes={KARTEN_WHEEL_PRIZES} onWin={handleWin} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -10417,6 +10530,12 @@ function CookieBanner() {
 function isTischMenuUrl() {
   try { return new URLSearchParams(window.location.search).get('menu') === '1'; } catch { return false; }
 }
+// Für das dritte, eigenständige Rad (physische Karten mit allgemeinem
+// QR-Code) — komplett unabhängig von Bestellsystem und Dienstags-Rad.
+// URL: https://www.bodrumkebapvechta.de/?kartenrad=1
+function isKartenradUrl() {
+  try { return new URLSearchParams(window.location.search).get('kartenrad') === '1'; } catch { return false; }
+}
 function isQrVisit() {
   try { return new URLSearchParams(window.location.search).get('qr') === '1'; } catch { return false; }
 }
@@ -10438,9 +10557,14 @@ function applyOrderTestParam() {
 
 export default function App() {
   const isTischMenu = isTischMenuUrl();
+  // Vorübergehend deaktiviert (kommt später zurück) — auf false setzen,
+  // um alle Effekte an einer Stelle auszuschalten, ohne den bereits
+  // gebauten Code (KartenWheelView, KARTEN_WHEEL_PRIZES, Routing) zu löschen.
+  const KARTENRAD_ENABLED = false;
+  const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [booted, setBooted] = useState(isTischMenu);
-  const [view, setView] = useState(isTischMenu ? 'tischmenu' : 'home');
+  const [booted, setBooted] = useState(isTischMenu || isKartenrad);
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const [, forceRerender] = useState(0);
@@ -10604,6 +10728,12 @@ export default function App() {
 
   if (view === 'tischmenu') {
     return <LangContext.Provider value={ctxValue}><WeatherEffect /><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
+  }
+
+  if (view === 'kartenrad') {
+    // Bewusst MINIMAL: kein Header, keine Navigation, kein Warenkorb — die
+    // Karte soll direkt auf dem Rad landen, ohne Ablenkung.
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><KartenWheelView /></LangContext.Provider>;
   }
 
   return (
