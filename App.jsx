@@ -4236,31 +4236,33 @@ function ShowcaseCarousel() {
 // Mitte: arabisch حلال + "HALAL" in Markenfarben.
 function HalalSeal({ size = 120 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 8px 18px rgba(0,0,0,.45))' }}>
+    <svg width={size * 1.6} height={size * 1.6} viewBox="-40 -40 280 280">
       <defs>
-        <path id="halalTextArc" d="M 28,108 a 74,74 0 1,1 144,0" fill="none" />
-        <radialGradient id="halalFace" cx="42%" cy="34%" r="75%">
-          <stop offset="0%" stopColor="#1f5138" />
-          <stop offset="65%" stopColor={GREEN} />
-          <stop offset="100%" stopColor="#0e2417" />
+        <path id="halalFullCircle" d="M 100,25 a 75,75 0 1,1 -0.1,0 Z" fill="none" />
+        <radialGradient id="halalGlowHalo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#3fae74" stopOpacity="0.55" />
+          <stop offset="45%" stopColor="#2f8f5e" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="#2f8f5e" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="halalRing" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#fff1c2" />
-          <stop offset="45%" stopColor={GOLD} />
-          <stop offset="100%" stopColor="#c8941f" />
-        </linearGradient>
+        <radialGradient id="halalFaceGlow" cx="38%" cy="32%" r="80%">
+          <stop offset="0%" stopColor="#1f6b45" />
+          <stop offset="60%" stopColor={GREEN} />
+          <stop offset="100%" stopColor="#0f2a1c" />
+        </radialGradient>
+        <radialGradient id="halalRingGlow" cx="38%" cy="32%" r="80%">
+          <stop offset="0%" stopColor="#3a9968" />
+          <stop offset="100%" stopColor="#1a5636" />
+        </radialGradient>
       </defs>
-      <path d="M 100.00,3.00 L 107.14,9.28 L 115.17,4.19 L 121.24,11.51 L 129.97,7.75 L 134.82,15.93 L 144.04,13.57 L 147.55,22.41 L 157.02,21.53 L 159.10,30.80 L 168.59,31.41 L 169.20,40.90 L 178.47,42.98 L 177.59,52.45 L 186.43,55.96 L 184.07,65.18 L 192.25,70.03 L 188.49,78.76 L 195.81,84.83 L 190.72,92.86 L 197.00,100.00 L 190.72,107.14 L 195.81,115.17 L 188.49,121.24 L 192.25,129.97 L 184.07,134.82 L 186.43,144.04 L 177.59,147.55 L 178.47,157.02 L 169.20,159.10 L 168.59,168.59 L 159.10,169.20 L 157.02,178.47 L 147.55,177.59 L 144.04,186.43 L 134.82,184.07 L 129.97,192.25 L 121.24,188.49 L 115.17,195.81 L 107.14,190.72 L 100.00,197.00 L 92.86,190.72 L 84.83,195.81 L 78.76,188.49 L 70.03,192.25 L 65.18,184.07 L 55.96,186.43 L 52.45,177.59 L 42.98,178.47 L 40.90,169.20 L 31.41,168.59 L 30.80,159.10 L 21.53,157.02 L 22.41,147.55 L 13.57,144.04 L 15.93,134.82 L 7.75,129.97 L 11.51,121.24 L 4.19,115.17 L 9.28,107.14 L 3.00,100.00 L 9.28,92.86 L 4.19,84.83 L 11.51,78.76 L 7.75,70.03 L 15.93,65.18 L 13.57,55.96 L 22.41,52.45 L 21.53,42.98 L 30.80,40.90 L 31.41,31.41 L 40.90,30.80 L 42.98,21.53 L 52.45,22.41 L 55.96,13.57 L 65.18,15.93 L 70.03,7.75 L 78.76,11.51 L 84.83,4.19 L 92.86,9.28 Z"
-        fill="url(#halalFace)" stroke="url(#halalRing)" strokeWidth="2.5" />
-      <circle cx="100" cy="100" r="78" fill="none" stroke="url(#halalRing)" strokeWidth="1" opacity="0.55" />
-      <circle cx="100" cy="100" r="63" fill="none" stroke="url(#halalRing)" strokeWidth="0.75" opacity="0.35" />
-      <text fontSize="12.5" fontWeight="700" fill="url(#halalRing)" letterSpacing="2.8">
-        <textPath xlinkHref="#halalTextArc" href="#halalTextArc" startOffset="50%" textAnchor="middle">100% HALAL CERTIFIED</textPath>
+      <circle cx="100" cy="100" r="135" fill="url(#halalGlowHalo)" />
+      <path d="M 100.00,3.00 L 106.28,12.22 L 113.80,3.99 L 118.71,14.01 L 127.33,6.93 L 130.75,17.55 L 140.30,11.77 L 142.17,22.76 L 152.44,18.40 L 152.74,29.55 L 163.52,26.69 L 162.23,37.77 L 173.31,36.48 L 170.45,47.26 L 181.60,47.56 L 177.24,57.83 L 188.23,59.70 L 182.45,69.25 L 193.07,72.67 L 185.99,81.29 L 196.01,86.20 L 187.78,93.72 L 197.00,100.00 L 187.78,106.28 L 196.01,113.80 L 185.99,118.71 L 193.07,127.33 L 182.45,130.75 L 188.23,140.30 L 177.24,142.17 L 181.60,152.44 L 170.45,152.74 L 173.31,163.52 L 162.23,162.23 L 163.52,173.31 L 152.74,170.45 L 152.44,181.60 L 142.17,177.24 L 140.30,188.23 L 130.75,182.45 L 127.33,193.07 L 118.71,185.99 L 113.80,196.01 L 106.28,187.78 L 100.00,197.00 L 93.72,187.78 L 86.20,196.01 L 81.29,185.99 L 72.67,193.07 L 69.25,182.45 L 59.70,188.23 L 57.83,177.24 L 47.56,181.60 L 47.26,170.45 L 36.48,173.31 L 37.77,162.23 L 26.69,163.52 L 29.55,152.74 L 18.40,152.44 L 22.76,142.17 L 11.77,140.30 L 17.55,130.75 L 6.93,127.33 L 14.01,118.71 L 3.99,113.80 L 12.22,106.28 L 3.00,100.00 L 12.22,93.72 L 3.99,86.20 L 14.01,81.29 L 6.93,72.67 L 17.55,69.25 L 11.77,59.70 L 22.76,57.83 L 18.40,47.56 L 29.55,47.26 L 26.69,36.48 L 37.77,37.77 L 36.48,26.69 L 47.26,29.55 L 47.56,18.40 L 57.83,22.76 L 59.70,11.77 L 69.25,17.55 L 72.67,6.93 L 81.29,14.01 L 86.20,3.99 L 93.72,12.22 Z"
+        fill="url(#halalRingGlow)" stroke="#ffffff" strokeWidth="2" />
+      <circle cx="100" cy="100" r="70" fill="url(#halalFaceGlow)" stroke="#ffffff" strokeWidth="1.5" />
+      <text fontSize="9.3" fontWeight="700" fill="#ffffff" letterSpacing="1.3">
+        <textPath xlinkHref="#halalFullCircle" href="#halalFullCircle" startOffset="0%">100% HALAL CERTIFIED • 100% HALAL CERTIFIED • </textPath>
       </text>
-      <text x="100" y="108" textAnchor="middle" fontSize="27" fill={CREAM} fontFamily="'Traditional Arabic','Geeza Pro','Noto Naskh Arabic',serif" opacity="0.95">حلال</text>
-      <line x1="76" y1="122" x2="124" y2="122" stroke="url(#halalRing)" strokeWidth="0.75" opacity="0.6" />
-      <text x="100" y="140" textAnchor="middle" fontSize="15" fontWeight="800" fill="url(#halalRing)" letterSpacing="3.5">HALAL</text>
-      <text x="100" y="155" textAnchor="middle" fontSize="8" fontWeight="600" fill={CREAM} letterSpacing="1.8" opacity="0.7">BODRUM KEBAP</text>
+      <text x="103" y="108" textAnchor="middle" direction="rtl" unicodeBidi="bidiOverride" fontSize="30" fill="#ffffff" fontFamily="'Traditional Arabic','Geeza Pro','Noto Naskh Arabic',serif">حلال</text>
+      <text x="100" y="138" textAnchor="middle" fontSize="16" fontWeight="800" fill="#ffffff" letterSpacing="4">HALAL</text>
     </svg>
   );
 }
