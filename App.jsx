@@ -4231,42 +4231,6 @@ function ShowcaseCarousel() {
   );
 }
 
-// Rundes Halal-Zertifikatssiegel (reines SVG, kein Bild nötig) — gezackter
-// Münzrand, Text "100% HALAL CERTIFIED" läuft am oberen Bogen entlang,
-// Mitte: arabisch حلال + "HALAL" in Markenfarben.
-function HalalSeal({ size = 120 }) {
-  return (
-    <svg width={size * 1.6} height={size * 1.6} viewBox="-40 -40 280 280">
-      <defs>
-        <path id="halalFullCircle" d="M 100,25 a 75,75 0 1,1 -0.1,0 Z" fill="none" />
-        <radialGradient id="halalGlowHalo" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#3fae74" stopOpacity="0.55" />
-          <stop offset="45%" stopColor="#2f8f5e" stopOpacity="0.28" />
-          <stop offset="100%" stopColor="#2f8f5e" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="halalFaceGlow" cx="38%" cy="32%" r="80%">
-          <stop offset="0%" stopColor="#1f6b45" />
-          <stop offset="60%" stopColor={GREEN} />
-          <stop offset="100%" stopColor="#0f2a1c" />
-        </radialGradient>
-        <radialGradient id="halalRingGlow" cx="38%" cy="32%" r="80%">
-          <stop offset="0%" stopColor="#3a9968" />
-          <stop offset="100%" stopColor="#1a5636" />
-        </radialGradient>
-      </defs>
-      <circle cx="100" cy="100" r="135" fill="url(#halalGlowHalo)" />
-      <path d="M 100.00,3.00 L 106.28,12.22 L 113.80,3.99 L 118.71,14.01 L 127.33,6.93 L 130.75,17.55 L 140.30,11.77 L 142.17,22.76 L 152.44,18.40 L 152.74,29.55 L 163.52,26.69 L 162.23,37.77 L 173.31,36.48 L 170.45,47.26 L 181.60,47.56 L 177.24,57.83 L 188.23,59.70 L 182.45,69.25 L 193.07,72.67 L 185.99,81.29 L 196.01,86.20 L 187.78,93.72 L 197.00,100.00 L 187.78,106.28 L 196.01,113.80 L 185.99,118.71 L 193.07,127.33 L 182.45,130.75 L 188.23,140.30 L 177.24,142.17 L 181.60,152.44 L 170.45,152.74 L 173.31,163.52 L 162.23,162.23 L 163.52,173.31 L 152.74,170.45 L 152.44,181.60 L 142.17,177.24 L 140.30,188.23 L 130.75,182.45 L 127.33,193.07 L 118.71,185.99 L 113.80,196.01 L 106.28,187.78 L 100.00,197.00 L 93.72,187.78 L 86.20,196.01 L 81.29,185.99 L 72.67,193.07 L 69.25,182.45 L 59.70,188.23 L 57.83,177.24 L 47.56,181.60 L 47.26,170.45 L 36.48,173.31 L 37.77,162.23 L 26.69,163.52 L 29.55,152.74 L 18.40,152.44 L 22.76,142.17 L 11.77,140.30 L 17.55,130.75 L 6.93,127.33 L 14.01,118.71 L 3.99,113.80 L 12.22,106.28 L 3.00,100.00 L 12.22,93.72 L 3.99,86.20 L 14.01,81.29 L 6.93,72.67 L 17.55,69.25 L 11.77,59.70 L 22.76,57.83 L 18.40,47.56 L 29.55,47.26 L 26.69,36.48 L 37.77,37.77 L 36.48,26.69 L 47.26,29.55 L 47.56,18.40 L 57.83,22.76 L 59.70,11.77 L 69.25,17.55 L 72.67,6.93 L 81.29,14.01 L 86.20,3.99 L 93.72,12.22 Z"
-        fill="url(#halalRingGlow)" stroke="#ffffff" strokeWidth="2" />
-      <circle cx="100" cy="100" r="70" fill="url(#halalFaceGlow)" stroke="#ffffff" strokeWidth="1.5" />
-      <text fontSize="9.3" fontWeight="700" fill="#ffffff" letterSpacing="1.3">
-        <textPath xlinkHref="#halalFullCircle" href="#halalFullCircle" startOffset="0%">100% HALAL CERTIFIED • 100% HALAL CERTIFIED • </textPath>
-      </text>
-      <text x="103" y="108" textAnchor="middle" direction="rtl" unicodeBidi="bidiOverride" fontSize="30" fill="#ffffff" fontFamily="'Traditional Arabic','Geeza Pro','Noto Naskh Arabic',serif">حلال</text>
-      <text x="100" y="138" textAnchor="middle" fontSize="16" fontWeight="800" fill="#ffffff" letterSpacing="4">HALAL</text>
-    </svg>
-  );
-}
-
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -4700,9 +4664,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: img === TERRACE_IMG ? 'center 15%' : 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
         ))}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(21,56,38,.55), rgba(21,56,38,.72))', zIndex: 1 }} />
-        <div className="absolute pointer-events-none" style={{ top: '5%', right: '4%', zIndex: 3 }}>
-          <HalalSeal size={100} />
-        </div>
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {HERO_IMAGES.map((_, i) => (
             <span key={i} style={{ width: i === heroIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === heroIdx ? GOLD : 'rgba(255,246,234,.4)', transition: 'all .4s ease' }} />
@@ -4713,7 +4674,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-16 lg:pt-8 lg:pb-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)}</div>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
             {liveViewers > 1 && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold mb-5" style={{ background: 'rgba(74,222,128,.12)', color: '#4ade80', border: '1px solid rgba(74,222,128,.3)' }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80', animation: 'liveDot 1.6s ease-in-out infinite' }} /> {liveViewers} {t('liveViewers')}
