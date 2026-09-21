@@ -4231,6 +4231,28 @@ function ShowcaseCarousel() {
   );
 }
 
+// Rundes Halal-Zertifikatssiegel (reines SVG, kein Bild nötig) — gezackter
+// Münzrand, Text "100% HALAL CERTIFIED" läuft am oberen Bogen entlang,
+// Mitte: arabisch حلال + "HALAL" in Markenfarben.
+function HalalSeal({ size = 120 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" style={{ filter: 'drop-shadow(0 6px 16px rgba(0,0,0,.35))' }}>
+      <defs>
+        <path id="halalTextArc" d="M 30,105 a 75,75 0 1,1 140,0" fill="none" />
+      </defs>
+      <path d="M 100.00,4.00 L 108.63,12.42 L 118.73,5.84 L 125.55,15.79 L 136.74,11.31 L 141.48,22.39 L 153.33,20.18 L 155.83,31.98 L 167.88,32.12 L 168.02,44.17 L 179.82,46.67 L 177.61,58.52 L 188.69,63.26 L 184.21,74.45 L 194.16,81.27 L 187.58,91.37 L 196.00,100.00 L 187.58,108.63 L 194.16,118.73 L 184.21,125.55 L 188.69,136.74 L 177.61,141.48 L 179.82,153.33 L 168.02,155.83 L 167.88,167.88 L 155.83,168.02 L 153.33,179.82 L 141.48,177.61 L 136.74,188.69 L 125.55,184.21 L 118.73,194.16 L 108.63,187.58 L 100.00,196.00 L 91.37,187.58 L 81.27,194.16 L 74.45,184.21 L 63.26,188.69 L 58.52,177.61 L 46.67,179.82 L 44.17,168.02 L 32.12,167.88 L 31.98,155.83 L 20.18,153.33 L 22.39,141.48 L 11.31,136.74 L 15.79,125.55 L 5.84,118.73 L 12.42,108.63 L 4.00,100.00 L 12.42,91.37 L 5.84,81.27 L 15.79,74.45 L 11.31,63.26 L 22.39,58.52 L 20.18,46.67 L 31.98,44.17 L 32.12,32.12 L 44.17,31.98 L 46.67,20.18 L 58.52,22.39 L 63.26,11.31 L 74.45,15.79 L 81.27,5.84 L 91.37,12.42 Z"
+        fill={GREEN} stroke={GOLD} strokeWidth="3" />
+      <circle cx="100" cy="100" r="70" fill="none" stroke={GOLD} strokeWidth="1.5" opacity="0.5" />
+      <text fontSize="13.5" fontWeight="700" fill={GOLD} letterSpacing="2.5">
+        <textPath href="#halalTextArc" startOffset="50%" textAnchor="middle">100% HALAL CERTIFIED</textPath>
+      </text>
+      <text x="100" y="112" textAnchor="middle" fontSize="30" fill={CREAM} fontFamily="'Traditional Arabic','Geeza Pro','Noto Naskh Arabic',serif">حلال</text>
+      <text x="100" y="150" textAnchor="middle" fontSize="17" fontWeight="800" fill={GOLD} letterSpacing="3">HALAL</text>
+      <text x="100" y="166" textAnchor="middle" fontSize="9" fontWeight="600" fill={CREAM} letterSpacing="1.5" opacity="0.85">BODRUM KEBAP</text>
+    </svg>
+  );
+}
+
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -4664,6 +4686,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: img === TERRACE_IMG ? 'center 15%' : 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
         ))}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(21,56,38,.55), rgba(21,56,38,.72))', zIndex: 1 }} />
+        <div className="absolute pointer-events-none" style={{ top: '5%', right: '4%', zIndex: 3 }}>
+          <HalalSeal size={100} />
+        </div>
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {HERO_IMAGES.map((_, i) => (
             <span key={i} style={{ width: i === heroIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === heroIdx ? GOLD : 'rgba(255,246,234,.4)', transition: 'all .4s ease' }} />
