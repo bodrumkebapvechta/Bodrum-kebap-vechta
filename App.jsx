@@ -167,6 +167,7 @@ const UI = {
   liveViewers: { de: 'schauen gerade', en: 'viewing right now', tr: 'kişi şu an bakıyor', ro: 'privesc chiar acum', nl: 'kijken nu', sq: 'po shikojnë tani', ku: 'niha temaşe dikin', pl: 'ogląda teraz' },
   analyticsNote: { de: 'Zeigt die letzten 500 Besuche. Keine persönlichen Daten, nur Sprache & Gerätetyp.', en: 'Shows the last 500 visits. No personal data, only language & device type.', tr: 'Son 500 ziyareti gösterir. Kişisel veri yok, sadece dil ve cihaz türü.', ro: 'Arată ultimele 500 de vizite. Fără date personale, doar limba și tipul dispozitivului.', nl: 'Toont de laatste 500 bezoeken. Geen persoonlijke gegevens, alleen taal & apparaattype.' , sq: 'Tregon 500 vizitat e fundit. Pa të dhëna personale, vetëm gjuha & lloji i pajisjes.', ku: '500 serdanên dawî nîşan dide. Tu daneyên kesane tune, tenê ziman & cureyê amîr.', pl: 'Pokazuje ostatnie 500 odwiedzin. Brak danych osobowych, tylko język i typ urządzenia.'},
   trackEmptyHint: { de: 'Gib deinen Bestellcode ein, um den Status zu sehen.', en: 'Enter your order code to see the status.', tr: 'Durumu görmek için sipariş kodunu gir.', ro: 'Introdu codul comenzii pentru a vedea starea.', nl: 'Voer je bestelcode in om de status te zien.' , sq: 'Fut kodin e porosisë për të parë statusin.', ku: 'Ji bo dîtina rewşê koda sifarişê binivîse.', pl: 'Wpisz swój kod zamówienia, aby zobaczyć status.'},
+  quizTileLabel: { de: 'Was esse ich?', en: 'What to eat?', tr: 'Ne yesem?', ro: 'Ce mănânc?', nl: 'Wat eet ik?', sq: 'Çfarë të ha?', ku: 'Ez çi bixwim?', pl: 'Co zjeść?' },
   surpriseMeBtn: { de: 'Überrasch mich!', en: 'Surprise me!', tr: 'Sürpriz beni!', ro: 'Surprinde-mă!', nl: 'Verras me!' , sq: 'Më surprizo!', ku: 'Min ecêbmayî bihêle!', pl: 'Zaskocz mnie!'},
   surpriseTitle: { de: 'Wie wäre es damit?', en: 'How about this?', tr: 'Buna ne dersin?', ro: 'Ce zici de asta?', nl: 'Wat dacht je hiervan?' , sq: 'Si të duket kjo?', ku: 'Ev çawa ye?', pl: 'Co powiesz na to?'},
   surpriseRolling: { de: 'Wir überlegen...', en: 'Thinking...', tr: 'Düşünüyoruz...', ro: 'Ne gândim...', nl: 'We denken na...' , sq: 'Po mendojmë...', ku: 'Em difikirin...', pl: 'Zastanawiamy się...'},
@@ -624,6 +625,9 @@ const MENU_PHRASES = {
   'Kurkuma-Penne': { en: 'Turmeric penne', tr: 'Zerdeçallı penne', ro: 'Penne cu turmeric', nl: 'Kurkumapenne' , sq: 'Penne me kurkumë', ku: 'Penne bi kurkumê', pl: 'Penne kurkumowe'},
   'Steak Fleisch': { en: 'Steak meat', tr: 'Biftek et', ro: 'Carne de vită (steak)', nl: 'Steakvlees' , sq: 'Mish biftek', ku: 'Goştê stêkê', pl: 'Mięso stekowe'},
   'Knoblauchsoße': { en: 'Garlic sauce', tr: 'Sarımsak sos', ro: 'Sos de usturoi', nl: 'Knoflooksaus' , sq: 'Salcë hudhre', ku: 'Soza sîr', pl: 'Sos czosnkowy'},
+  'Holländische Kultsoße – cremig, leicht süß mit Curry & Zwiebeln': { en: 'Dutch cult sauce – creamy, slightly sweet with curry & onions', tr: 'Hollanda\'nın efsane sosu – kremamsı, hafif tatlı, köri ve soğanlı', ro: 'Sos olandez de cult – cremos, ușor dulce, cu curry și ceapă', nl: 'Hollandse cultsaus – romig, licht zoet met kerrie & ui', sq: 'Salcë kult holandeze – kremoze, pak e ëmbël me kerri & qepë', ku: 'Soza navdar a Holandayê – kremî, hinekî şîrîn bi kerî û pîvaz', pl: 'Kultowy holenderski sos – kremowy, lekko słodki z curry i cebulą' },
+  'z.B. Joppiesauce': { en: 'e.g. Joppie sauce', tr: 'örn. Joppie sos', ro: 'de ex. sos Joppie', nl: 'bijv. joppiesaus', sq: 'p.sh. salcë Joppie', ku: 'wek soza Joppie', pl: 'np. sos Joppie' },
+  'Joppiesauce': { en: 'Joppie sauce', tr: 'Joppie sos', ro: 'sos Joppie', nl: 'joppiesaus', sq: 'salcë Joppie', ku: 'soza Joppie', pl: 'sos Joppie' },
   'Cocktailsauce': { en: 'Cocktail sauce', tr: 'Kokteyl sos', ro: 'Sos cocktail', nl: 'Cocktailsaus' , sq: 'Salcë kokteil', ku: 'Soza koktêlê', pl: 'Sos koktajlowy'},
   'Beilagensalat': { en: 'Side salad', tr: 'Yan salata', ro: 'Salată garnitură', nl: 'Bijgerechtsalade' , sq: 'Sallatë shoqëruese', ku: 'Salata alîkar', pl: 'Sałatka jako dodatek'},
   'Meeresfrüchte': { en: 'Seafood', tr: 'Deniz ürünleri', ro: 'Fructe de mare', nl: 'Zeevruchten' , sq: 'Fruta deti', ku: 'Fêkiyên deryayê', pl: 'Owoce morza'},
@@ -735,7 +739,8 @@ const MENU = [
   // des Filters in WhatsAppOrderView/GroupOrderView (MENU.filter(m =>
   // m.items.length > 0)) für Kunden unsichtbar, solange kein Eintrag drin ist.
   { key: 'neu', label: 'Neu hinzugefügt', items: [
-    { id: 'na192', name: 'Kapsalon', price: 6.0, desc: 'Pommes Frites, Dönerfleisch, geschmolzener Käse, frischer Salat (Eisberg, Tomaten, Zwiebeln), Knoblauchsauce & Sauce nach Wahl', alg: 'a,i,15' },
+    { id: 'na192', name: 'Kapsalon', price: 6.0, desc: 'Pommes Frites, Dönerfleisch, geschmolzener Käse, frischer Salat (Eisberg, Tomaten, Zwiebeln), Knoblauchsauce & Sauce nach Wahl – z.B. Joppiesauce', alg: 'a,i,15' },
+    { id: 'na193', name: 'Portion Joppiesauce', price: 2.0, desc: 'Holländische Kultsoße – cremig, leicht süß mit Curry & Zwiebeln', alg: 'e,k' },
   ]},
   { key: 'kebap', label: 'Kebap', items: [
     { id: 'k0-steak', name: 'Steak Kebap', price: 10.0, desc: 'Steak Fleisch, Knoblauchsoße, Salat und Zwiebeln', weekend: true, alg: 'a,i,e' },
@@ -1658,6 +1663,7 @@ const UPSELL_FOOD = [
   { id: 'f201', name: 'Chicken Strips (5 Stück)', price: 5.0, emoji: '🍤' },
   { id: 'f204a', name: 'Knoblauchsauce', price: 2.0, emoji: '🥫' },
   { id: 'f204b', name: 'Cocktailsauce', price: 2.0, emoji: '🥫' },
+  { id: 'na193', name: 'Joppiesauce', price: 2.0, emoji: '🥫' },
   { id: 'f204c', name: 'Ketchup', price: 1.0, emoji: '🍅' },
   { id: 'f204d', name: 'Mayonnaise', price: 1.0, emoji: '🥫' },
   { id: 'f204e', name: 'Hollandaise Sauce', price: 2.5, emoji: '🧈' },
@@ -2682,6 +2688,7 @@ const ASSISTANT_R = {
   openNoSuffixEveryDay: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, auch dienstags — keine Ruhetage mehr!", en: "We're open daily 11:30 AM–10:00 PM, including Tuesdays — no closed days anymore!", tr: "Her gün 11:30–22:00 arası açığız, Salı dahil — artık kapalı günümüz yok!", ro: "Suntem deschiși zilnic 11:30–22:00, inclusiv marțea — fără zile de închidere!", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, ook op dinsdag — geen sluitingsdagen meer!", sq: "Jemi hapur çdo ditë 11:30–22:00, edhe të martave — nuk ka më ditë pushimi!", ku: "Em her roj saet 11:30–22:00 vekirî ne, Sêşem jî tê de — êdî roja girtî tune!", pl: "Jesteśmy otwarci codziennie 11:30–22:00, także we wtorki — nie ma już dni zamknięcia!" },
   address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
   phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
+  joppie: { de: "🥫 Ja! Neu bei uns: Joppiesauce – die holländische Kultsoße, cremig und leicht süß mit Curry & Zwiebeln. Als Portion für 2,00 € oder als Dip zu Pommes, Kapsalon & Co.", en: "🥫 Yes! New at our place: Joppie sauce – the Dutch cult sauce, creamy and slightly sweet with curry & onions. As a portion for €2.00 or as a dip with fries, Kapsalon & more.", tr: "🥫 Evet! Yeni: Joppie sos – Hollanda'nın efsane sosu, kremamsı ve hafif tatlı, köri ve soğanlı. Porsiyon 2,00 € ya da patates, Kapsalon gibi ürünlerin yanında dip sos olarak.", ro: "🥫 Da! Nou la noi: sos Joppie – sosul olandez de cult, cremos și ușor dulce, cu curry și ceapă. Porție 2,00 € sau ca dip la cartofi, Kapsalon și altele.", nl: "🥫 Ja! Nieuw bij ons: joppiesaus – de Hollandse cultsaus, romig en licht zoet met kerrie & ui. Als portie voor € 2,00 of als dip bij friet, Kapsalon & meer.", sq: "🥫 Po! E re te ne: salcë Joppie – salca kult holandeze, kremoze dhe pak e ëmbël me kerri & qepë. Racion 2,00 € ose si dip me patate, Kapsalon etj.", ku: "🥫 Erê! Nû li cem me: soza Joppie – soza navdar a Holandayê, kremî û hinekî şîrîn bi kerî û pîvaz. Wek porsiyon 2,00 € an wek dip bi kartol, Kapsalon û yên din re.", pl: "🥫 Tak! Nowość u nas: sos Joppie – kultowy holenderski sos, kremowy i lekko słodki z curry i cebulą. Porcja za 2,00 € albo jako dip do frytek, Kapsalonu i innych." },
   halal: { de: "☪️ Ja, 100% Halal! Alle unsere Produkte sind halal-zertifiziert.", en: "☪️ Yes, 100% Halal! All our products are halal-certified.", tr: "☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.", ro: "☪️ Da, 100% Halal! Toate produsele noastre sunt certificate halal.", nl: "☪️ Ja, 100% Halal! Al onze producten zijn halal-gecertificeerd.", sq: "☪️ Po, 100% Hallall! Të gjitha produktet tona janë të certifikuara hallall.", ku: "☪️ Erê, %100 Helal e! Hemû berhemên me bawernameya helal hene.", pl: "☪️ Tak, 100% Halal! Wszystkie nasze produkty mają certyfikat halal." },
   allergen: { de: "ⓘ Allergen- und Zusatzstoffinfos stehen bei jedem Artikel in der Speisekarte klein daneben, oder tippe oben auf \"ⓘ Allergene\".", en: "ⓘ Allergen and additive info is shown next to each item on the menu, or tap \"ⓘ Allergens\" at the top.", tr: "ⓘ Alerjen ve katkı madde bilgileri Speisekarte'de her ürünün yanında küçük harflerle yazıyor, üstteki \"ⓘ Allergene\" butonuna da bakabilirsin.", ro: "ⓘ Informațiile despre alergeni sunt afișate lângă fiecare produs din meniu, sau apasă \"ⓘ Alergeni\" sus.", nl: "ⓘ Allergie- en toevoegingsinfo staat bij elk artikel op de kaart, of tik boven op \"ⓘ Allergenen\".", sq: "ⓘ Informacioni për alergjenët shfaqet pranë çdo artikulli në menu, ose troko \"ⓘ Alergjenët\" lart.", ku: "ⓘ Agahiyên alerjiyê li tenişta her tiştî di menuyê de tê nîşandan, an li jor li ser \"ⓘ Alerji\" bitikîne.", pl: "ⓘ Informacje o alergenach są przy każdej pozycji w menu, lub dotknij \"ⓘ Alergeny\" u góry." },
   orderOn: { de: "🥙 Zum Bestellen tippe oben auf \"Per WhatsApp bestellen\"!", en: '🥙 To order, tap "Order via WhatsApp" at the top!', tr: "🥙 Sipariş vermek için üstteki \"WhatsApp'tan sipariş ver\" butonuna basabilirsin!", ro: "🥙 Pentru a comanda, apasă \"Comandă prin WhatsApp\" sus!", nl: '🥙 Om te bestellen, tik boven op "Bestellen via WhatsApp"!', sq: '🥙 Për të porositur, troko "Porosit me WhatsApp" lart!', ku: '🥙 Bo sifarişê, li jor li ser "Bi WhatsAppê sifariş bike" bitikîne!', pl: '🥙 Aby zamówić, dotknij "Zamów przez WhatsApp" u góry!' },
@@ -2746,6 +2753,9 @@ function getAssistantReply(qRaw, lang) {
   }
   if (has('telefon', ' ara', 'anruf', 'phone', 'zadzwoń')) {
     return { intent: 'phone', text: ar('phone', lang) };
+  }
+  if (has('joppie')) {
+    return { intent: 'joppie', catKey: 'neu', text: ar('joppie', lang) };
   }
   if (has('helal', 'halal')) {
     return { intent: 'halal', text: ar('halal', lang) };
@@ -2938,7 +2948,7 @@ function AIAssistant() {
                 {m.from === 'bot' && (m.intent === 'order' || m.intent === 'quickorder') && orderingEnabled() && (
                   <button onClick={() => go('whatsapp')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📋 Zur Speisekarte</button>
                 )}
-                {m.from === 'bot' && m.intent === 'category' && m.catKey && (
+                {m.from === 'bot' && (m.intent === 'category' || m.intent === 'joppie') && m.catKey && (
                   <button
                     onClick={() => (orderingEnabled() ? go('whatsapp', { categoryMode: m.catKey }) : go('tischmenu', { initialCatHint: m.catKey }))}
                     className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white"
@@ -4231,6 +4241,132 @@ function ShowcaseCarousel() {
   );
 }
 
+const QUIZ_T = {
+  de: { title: 'Was passt zu mir?', sub: '4 kurze Fragen – wir finden dein Gericht', q1: 'Wie hungrig bist du?', h1: 'Kleiner Hunger', h2: 'Normal', h3: 'Riesenhunger', q2: 'Worauf hast du Lust?', l1: 'Kebap', l2: 'Pizza & Calzone', l3: 'Pasta', l4: 'Schnitzel', l5: 'Salat', l6: 'Vegetarisch', q3: 'Wie isst du?', a1: 'Auf die Hand', a2: 'Am Tisch', a3: 'Zum Teilen', q4: 'Darf es scharf sein?', s1: 'Lieber mild', s2: 'Ja, scharf!', match: 'Dein Match', menu: 'Zur Speisekarte', again: 'Nochmal', surprise: 'Überrasch mich 🎲', tipHot: 'Tipp: mit Peperoni oder scharfer Soße bestellen 🌶️', tipJoppie: 'Dazu passt unsere neue Joppiesauce 🥫', back: 'Zurück' },
+  en: { title: 'What should I eat?', sub: "4 quick questions – we'll find your dish", q1: 'How hungry are you?', h1: 'A little', h2: 'Normal', h3: 'Starving', q2: 'What are you craving?', l1: 'Kebap', l2: 'Pizza & calzone', l3: 'Pasta', l4: 'Schnitzel', l5: 'Salad', l6: 'Vegetarian', q3: 'How are you eating?', a1: 'On the go', a2: 'At the table', a3: 'To share', q4: 'Spicy?', s1: 'Keep it mild', s2: 'Yes, spicy!', match: 'Your match', menu: 'Go to menu', again: 'Again', surprise: 'Surprise me 🎲', tipHot: 'Tip: order it with peperoni or hot sauce 🌶️', tipJoppie: 'Goes great with our new Joppie sauce 🥫', back: 'Back' },
+  tr: { title: 'Bana ne uyar?', sub: '4 kısa soru – sana uygun yemeği bulalım', q1: 'Ne kadar açsın?', h1: 'Biraz', h2: 'Normal', h3: 'Çok açım', q2: 'Canın ne çekiyor?', l1: 'Kebap', l2: 'Pizza & calzone', l3: 'Makarna', l4: 'Şnitzel', l5: 'Salata', l6: 'Vejetaryen', q3: 'Nasıl yiyeceksin?', a1: 'Elde', a2: 'Masada', a3: 'Paylaşarak', q4: 'Acılı olsun mu?', s1: 'Hafif olsun', s2: 'Evet, acılı!', match: 'Senin eşleşmen', menu: 'Menüye git', again: 'Tekrar', surprise: 'Şaşırt beni 🎲', tipHot: 'İpucu: peperoni veya acı sosla iste 🌶️', tipJoppie: 'Yanına yeni Joppie sosumuz çok yakışır 🥫', back: 'Geri' },
+  ro: { title: 'Ce mi se potrivește?', sub: '4 întrebări scurte – găsim preparatul tău', q1: 'Cât de flămând ești?', h1: 'Puțin', h2: 'Normal', h3: 'Foarte flămând', q2: 'Ce poftă ai?', l1: 'Kebap', l2: 'Pizza & calzone', l3: 'Paste', l4: 'Șnițel', l5: 'Salată', l6: 'Vegetarian', q3: 'Cum mănânci?', a1: 'Din mână', a2: 'La masă', a3: 'La comun', q4: 'Să fie picant?', s1: 'Mai bine blând', s2: 'Da, picant!', match: 'Potrivirea ta', menu: 'Spre meniu', again: 'Încă o dată', surprise: 'Surprinde-mă 🎲', tipHot: 'Sfat: comandă cu peperoni sau sos iute 🌶️', tipJoppie: 'Se potrivește cu noul nostru sos Joppie 🥫', back: 'Înapoi' },
+  nl: { title: 'Wat past bij mij?', sub: '4 korte vragen – wij vinden jouw gerecht', q1: 'Hoeveel honger heb je?', h1: 'Kleine honger', h2: 'Normaal', h3: 'Rammelende honger', q2: 'Waar heb je zin in?', l1: 'Kebap', l2: 'Pizza & calzone', l3: 'Pasta', l4: 'Schnitzel', l5: 'Salade', l6: 'Vegetarisch', q3: 'Hoe eet je?', a1: 'Uit de hand', a2: 'Aan tafel', a3: 'Om te delen', q4: 'Mag het pittig?', s1: 'Liever mild', s2: 'Ja, pittig!', match: 'Jouw match', menu: 'Naar de menukaart', again: 'Opnieuw', surprise: 'Verras me 🎲', tipHot: 'Tip: bestel met peperoni of hete saus 🌶️', tipJoppie: 'Lekker met onze nieuwe joppiesaus 🥫', back: 'Terug' },
+  sq: { title: 'Çfarë më përshtatet?', sub: '4 pyetje të shkurtra – gjejmë gjellën tënde', q1: 'Sa i uritur je?', h1: 'Pak', h2: 'Normal', h3: 'Shumë i uritur', q2: 'Për çfarë ke dëshirë?', l1: 'Kebap', l2: 'Pica & kalcone', l3: 'Makarona', l4: 'Shnicel', l5: 'Sallatë', l6: 'Vegjetariane', q3: 'Si do të hash?', a1: 'Në dorë', a2: 'Në tavolinë', a3: 'Për ta ndarë', q4: 'Pikante?', s1: 'Më mirë e butë', s2: 'Po, pikante!', match: 'Përputhja jote', menu: 'Te menyja', again: 'Përsëri', surprise: 'Më befaso 🎲', tipHot: 'Këshillë: porosite me piperka ose salcë pikante 🌶️', tipJoppie: 'Shkon shumë mirë me salcën tonë të re Joppie 🥫', back: 'Mbrapa' },
+  ku: { title: 'Çi li min tê?', sub: '4 pirsên kurt – em xwarina te dibînin', q1: 'Tu çiqas birçî yî?', h1: 'Hinekî', h2: 'Normal', h3: 'Pir birçî', q2: 'Dilê te çi dixwaze?', l1: 'Kebap', l2: 'Pizza & calzone', l3: 'Makarne', l4: 'Şnîtzel', l5: 'Selete', l6: 'Vejetaryen', q3: 'Tu çawa dixwî?', a1: 'Bi dest', a2: 'Li ser maseyê', a3: 'Bo parvekirinê', q4: 'Bila tûj be?', s1: 'Nerm be', s2: 'Erê, tûj!', match: 'Lihevhatina te', menu: 'Biçe menûyê', again: 'Dîsa', surprise: 'Min ecêb bihêle 🎲', tipHot: 'Şîret: bi bîberê tûj an soza tûj bixwaze 🌶️', tipJoppie: 'Bi soza me ya nû Joppie re pir baş e 🥫', back: 'Paş' },
+  pl: { title: 'Co mi pasuje?', sub: '4 krótkie pytania – znajdziemy twoje danie', q1: 'Jak bardzo jesteś głodny?', h1: 'Trochę', h2: 'Normalnie', h3: 'Bardzo głodny', q2: 'Na co masz ochotę?', l1: 'Kebab', l2: 'Pizza i calzone', l3: 'Makaron', l4: 'Sznycel', l5: 'Sałatka', l6: 'Wegetariańskie', q3: 'Jak jesz?', a1: 'Na wynos', a2: 'Przy stole', a3: 'Do podziału', q4: 'Ostre?', s1: 'Raczej łagodne', s2: 'Tak, ostre!', match: 'Twoje dopasowanie', menu: 'Do menu', again: 'Jeszcze raz', surprise: 'Zaskocz mnie 🎲', tipHot: 'Wskazówka: zamów z peperoni lub ostrym sosem 🌶️', tipJoppie: 'Pasuje do naszego nowego sosu Joppie 🥫', back: 'Wstecz' },
+};
+const QUIZ_HOT_RE = /jalape|peperoni|sucuk|scharf|zigeuner|rastaa|curry|türkei/i;
+const QUIZ_VEG_RE = /vegetar|falafel|margherita|spinat|vier käse|bauern salat|mais salat|mozzarella|pomodoro|pizzabrot|brötchen mit käse/i;
+// Empfiehlt aus der GANZEN Speisekarte (ALL_MENU_ITEMS), nicht aus einer
+// festen Liste — neue Artikel werden dadurch automatisch berücksichtigt.
+function quizPick(a) {
+  const base = ALL_MENU_ITEMS.filter((it) => !['getraenke', 'finger'].includes(it.catKey) && !/^Portion /.test(it.name) && (!it.weekend || isWeekendDay()));
+  const cats = (...c) => base.filter((it) => c.includes(it.catKey));
+  let pool;
+  if (a.lust === 'kebap') {
+    if (a.art === 'hand') pool = cats('kebap', 'rollo', 'baguette').filter((it) => !/teller/i.test(it.name));
+    else if (a.art === 'tisch') pool = [...cats('kebap').filter((it) => /teller/i.test(it.name)), ...cats('ueberbacken')];
+    else pool = [...cats('neu'), ...cats('ueberbacken')];
+  } else if (a.lust === 'pizza') {
+    if (a.art === 'hand') pool = cats('pizzabrot', 'calzone');
+    else if (a.art === 'tisch') pool = cats('pizza');
+    else pool = cats('familienpizza', 'pizza');
+  } else if (a.lust === 'pasta') pool = cats('nudeln');
+  else if (a.lust === 'schnitzel') pool = cats('schnitzel');
+  else if (a.lust === 'salat') pool = cats('salat');
+  else pool = base.filter((it) => QUIZ_VEG_RE.test(it.name) || /vegetar/i.test(it.desc || ''));
+  if (!pool.length) pool = base;
+  const price = (it) => it.price ?? it.priceSmall ?? 0;
+  let slice = [...pool].sort((x, y) => price(x) - price(y));
+  if (slice.length >= 4) {
+    if (a.hunger === 's') slice = slice.slice(0, Math.ceil(slice.length / 2));
+    else if (a.hunger === 'b') slice = slice.slice(Math.floor(slice.length / 2));
+  }
+  if (a.scharf === 'y') {
+    const hot = slice.filter((it) => QUIZ_HOT_RE.test(`${it.name} ${it.desc || ''}`));
+    if (hot.length) slice = hot;
+  }
+  return slice[Math.floor(Math.random() * slice.length)];
+}
+
+function QuizModal({ onClose, onSurprise, go }) {
+  const { lang } = React.useContext(LangContext);
+  const T = QUIZ_T[lang] || QUIZ_T.de;
+  const [step, setStep] = useState(0);
+  const [ans, setAns] = useState({});
+  const [res, setRes] = useState(null);
+  const QS = [
+    { k: 'hunger', q: T.q1, o: [['s', T.h1, '🙂'], ['n', T.h2, '😋'], ['b', T.h3, '🤤']] },
+    { k: 'lust', q: T.q2, o: [['kebap', T.l1, '🥙'], ['pizza', T.l2, '🍕'], ['pasta', T.l3, '🍝'], ['schnitzel', T.l4, '🍗'], ['salat', T.l5, '🥗'], ['veggie', T.l6, '🌱']] },
+    { k: 'art', q: T.q3, o: [['hand', T.a1, '🤲'], ['tisch', T.a2, '🍽️'], ['teilen', T.a3, '👫']] },
+    { k: 'scharf', q: T.q4, o: [['n', T.s1, '😌'], ['y', T.s2, '🌶️']] },
+  ];
+  const choose = (k, v) => {
+    const next = { ...ans, [k]: v };
+    setAns(next);
+    if (step < QS.length - 1) { setStep(step + 1); return; }
+    const it = quizPick(next);
+    setRes(it);
+    logEvent('quiz_result', { item: it?.name || '-' });
+  };
+  const restart = () => { setStep(0); setAns({}); setRes(null); };
+  const openMenu = () => {
+    const cat = res?.catKey;
+    onClose();
+    if (orderingEnabled()) go('whatsapp', { categoryMode: cat });
+    else go('tischmenu', { initialCatHint: cat });
+  };
+  const tips = [];
+  if (res) {
+    const txt = `${res.name} ${res.desc || ''}`;
+    if (ans.scharf === 'y' && !QUIZ_HOT_RE.test(txt)) tips.push(T.tipHot);
+    if (/pommes/i.test(res.desc || '') || res.catKey === 'schnitzel' || res.id === 'na192') tips.push(T.tipJoppie);
+  }
+  const cur = QS[step];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(10,25,17,.6)', animation: 'modalBgFade .25s ease both' }} onClick={onClose}>
+      <div className="w-full max-w-sm rounded-3xl p-5 relative" style={{ background: CREAM, boxShadow: '0 24px 60px rgba(0,0,0,.35)' }} onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} aria-label="Close" className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.08)', color: GREEN }}><X size={18} /></button>
+        <div className="font-black text-lg pr-10" style={{ color: GREEN }}>🤔 {T.title}</div>
+        <div className="text-xs font-semibold mb-3" style={{ color: '#8a7c62' }}>{T.sub}</div>
+        <div className="h-1.5 rounded-full mb-4" style={{ background: '#e8dcc6' }}>
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${res ? 100 : (step + 1) * 25}%`, background: `linear-gradient(90deg, ${ORANGE}, ${GOLD})` }} />
+        </div>
+        {!res ? (
+          <div key={step} style={{ animation: 'cardIn .35s ease both' }}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="font-black text-base" style={{ color: GREEN }}>{cur.q}</div>
+              <div className="text-xs font-bold" style={{ color: '#a4906c' }}>{step + 1}/4</div>
+            </div>
+            <div className="grid gap-2" style={{ gridTemplateColumns: cur.o.length > 3 ? 'repeat(2, minmax(0,1fr))' : '1fr' }}>
+              {cur.o.map(([v, label, emo]) => (
+                <button key={v} onClick={() => choose(cur.k, v)} className="flex items-center gap-2.5 px-4 py-3 rounded-2xl font-bold text-sm text-left active:scale-95 transition-transform" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}>
+                  <span className="text-xl">{emo}</span><span>{label}</span>
+                </button>
+              ))}
+            </div>
+            {step > 0 && <button onClick={() => setStep(step - 1)} className="mt-3 text-xs font-bold" style={{ color: '#a4906c' }}>← {T.back}</button>}
+          </div>
+        ) : (
+          <div style={{ animation: 'resultPop .4s ease both' }}>
+            <div className="text-xs font-black tracking-widest mb-1" style={{ color: ORANGE }}>{T.match.toUpperCase()}</div>
+            <div className="rounded-2xl p-4 mb-3" style={{ background: GREEN }}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="font-black text-lg leading-tight" style={{ color: CREAM }}>{CATEGORY_ICONS[res.catKey] || '🍽️'} {mx(res.name, lang)}</div>
+                {res.number && <div className="text-xs font-bold flex-shrink-0 px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,199,56,.18)', color: GOLD }}>#{res.number}</div>}
+              </div>
+              <div className="font-black text-base mt-1" style={{ color: GOLD }}>{formatItemPriceText(res)}</div>
+              {res.desc && <div className="text-xs font-medium mt-1.5 leading-snug" style={{ color: '#cfe3d6' }}>{mx(res.desc, lang)}</div>}
+            </div>
+            {tips.map((tp) => <div key={tp} className="text-xs font-bold mb-1.5" style={{ color: '#b0520b' }}>{tp}</div>)}
+            <button onClick={openMenu} className="w-full mt-2 py-3 rounded-2xl font-black text-sm text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>📋 {T.menu}</button>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button onClick={restart} className="py-2.5 rounded-2xl font-bold text-xs" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}>↺ {T.again}</button>
+              <button onClick={() => { onClose(); onSurprise(); }} className="py-2.5 rounded-2xl font-bold text-xs" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}>{T.surprise}</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -4337,6 +4473,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState(null);
   const [wishModalOpen, setWishModalOpen] = useState(false);
+  const [quizOpen, setQuizOpen] = useState(false);
   const [quickOrderModalOpen, setQuickOrderModalOpen] = useState(false);
   const [trackModalOpen, setTrackModalOpen] = useState(false);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
@@ -4754,8 +4891,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 6px 16px rgba(45,106,79,.3)' }}>
             <span className="text-lg flex-shrink-0">💡</span> <span className="truncate w-full">{t('wishBoxNavLabel')}</span>
           </button>
-          <button onClick={() => { logEvent('hero_surprise'); rollSurprise(); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 6px 16px rgba(47,158,143,.3)' }}>
-            <span className="text-lg flex-shrink-0">🎲</span> <span className="truncate w-full">{t('surpriseMeBtn')}</span>
+          <button onClick={() => { logEvent('hero_quiz'); setQuizOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 6px 16px rgba(47,158,143,.3)' }}>
+            <span className="text-lg flex-shrink-0">🤔</span> <span className="truncate w-full">{t('quizTileLabel')}</span>
           </button>
         </div>
       </section>
@@ -4861,6 +4998,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       })()}
 
       {wishModalOpen && <WishModal lang={lang} t={t} onClose={() => setWishModalOpen(false)} />}
+      {quizOpen && <QuizModal go={go} onClose={() => setQuizOpen(false)} onSurprise={rollSurprise} />}
       {trackModalOpen && <OrderTrackModal onClose={() => setTrackModalOpen(false)} />}
       {quickOrderModalOpen && (
         <QuickOrderByNumberModal
@@ -5546,7 +5684,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
               </div>
               {qty > 0 && item.sauceChoice && (
                 <div className="mt-2.5 flex gap-2">
-                  {['Knoblauchsoße', 'Cocktailsauce'].map((s) => (
+                  {['Knoblauchsoße', 'Cocktailsauce', 'Joppiesauce'].map((s) => (
                     <button key={s} onClick={() => setItemNotes((n) => ({ ...n, [item.id]: s }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] font-bold" style={itemNotes[item.id] === s ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(s, lang)} · {t('freeLabel')}</button>
                   ))}
                 </div>
@@ -5854,7 +5992,7 @@ const MEATS = [
 ];
 const SAUCES = [
   { id: 'knoblauch', label: 'Knoblauchsoße' }, { id: 'hollandaise', label: 'Hollandaise' },
-  { id: 'scharf', label: 'Scharfe Soße' }, { id: 'ohne', label: 'Ohne Soße' },
+  { id: 'scharf', label: 'Scharfe Soße' }, { id: 'joppie', label: 'Joppiesauce' }, { id: 'ohne', label: 'Ohne Soße' },
 ];
 const BUILDER_EXTRAS = [
   { id: 'kaese', label: 'Käse', price: 1.0 }, { id: 'peperoni', label: 'Peperoni', price: 1.0 },
@@ -6775,7 +6913,7 @@ function GroupOrderView({ back }) {
                   </div>
                   {qty > 0 && item.sauceChoice && (
                     <div className="mt-2.5 flex gap-2">
-                      {['Knoblauchsoße', 'Cocktailsauce'].map((s) => (
+                      {['Knoblauchsoße', 'Cocktailsauce', 'Joppiesauce'].map((s) => (
                         <button key={s} onClick={() => setItemNotes((n) => ({ ...n, [item.id]: s }))} className="flex-1 px-2 py-2 rounded-lg text-[11px] font-bold" style={itemNotes[item.id] === s ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(s, lang)} · {t('freeLabel')}</button>
                       ))}
                     </div>
@@ -9508,7 +9646,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
@@ -9578,7 +9716,7 @@ function StaffPanelView({ back }) {
                     const key = v.value.event.replace('assistant_', '');
                     byIntent[key] = (byIntent[key] || 0) + 1;
                   });
-                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', category: '🍕 Kategorie-Frage', fallback: '🤔 Nicht verstanden' };
+                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', category: '🍕 Kategorie-Frage', joppie: '🥫 Joppiesauce', fallback: '🤔 Nicht verstanden' };
                   const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
                   const unrecognized = assistantEvents
                     .filter((v) => v.value.event === 'assistant_fallback' && v.value.q)
