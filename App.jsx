@@ -9646,7 +9646,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', zettel_add: '📝 Bestellzettel: Artikel hinzugefügt', zettel_call: '📝 Bestellzettel: Anruf', zettel_show: '📝 Bestellzettel: an der Kasse gezeigt',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
@@ -10296,6 +10296,47 @@ function KartenWheelView() {
 }
 
 
+const ZETTEL_T = {
+  de: { bar: 'Bestellzettel', items: 'Artikel', title: '📝 Dein Bestellzettel', info: 'Das ist keine Online-Bestellung. Ruf uns an und lies die Liste vor – oder zeig sie direkt an der Kasse.', total: 'Gesamt', call: 'Anrufen', show: 'An der Kasse zeigen', clear: 'Liste leeren', empty: 'Noch leer – tippe bei einem Gericht auf +', added: 'Hinzugefügt', close: 'Schließen' },
+  en: { bar: 'Order list', items: 'items', title: '📝 Your order list', info: "This isn't an online order. Call us and read the list out – or show it at the counter.", total: 'Total', call: 'Call', show: 'Show at the counter', clear: 'Clear list', empty: 'Still empty – tap + on a dish', added: 'Added', close: 'Close' },
+  tr: { bar: 'Sipariş notu', items: 'ürün', title: '📝 Sipariş notun', info: 'Bu bir online sipariş değil. Bizi ara ve listeyi oku – ya da kasada göster.', total: 'Toplam', call: 'Ara', show: 'Kasada göster', clear: 'Listeyi temizle', empty: 'Henüz boş – bir yemekte + işaretine dokun', added: 'Eklendi', close: 'Kapat' },
+  ro: { bar: 'Listă comandă', items: 'produse', title: '📝 Lista ta de comandă', info: 'Aceasta nu este o comandă online. Sună-ne și citește lista – sau arat-o la casă.', total: 'Total', call: 'Sună', show: 'Arată la casă', clear: 'Golește lista', empty: 'Încă goală – apasă + la un preparat', added: 'Adăugat', close: 'Închide' },
+  nl: { bar: 'Bestellijstje', items: 'items', title: '📝 Jouw bestellijstje', info: 'Dit is geen online bestelling. Bel ons en lees de lijst voor – of laat hem zien aan de kassa.', total: 'Totaal', call: 'Bellen', show: 'Aan de kassa laten zien', clear: 'Lijst leegmaken', empty: 'Nog leeg – tik op + bij een gerecht', added: 'Toegevoegd', close: 'Sluiten' },
+  sq: { bar: 'Lista e porosisë', items: 'artikuj', title: '📝 Lista jote e porosisë', info: 'Kjo nuk është porosi online. Na telefono dhe lexoje listën – ose tregoje në arkë.', total: 'Totali', call: 'Telefono', show: 'Trego në arkë', clear: 'Pastro listën', empty: 'Ende bosh – shtyp + te një gjellë', added: 'U shtua', close: 'Mbyll' },
+  ku: { bar: 'Lîsteya sifarişê', items: 'tişt', title: '📝 Lîsteya te ya sifarişê', info: 'Ev ne sifarişa online ye. Telefonî me bike û lîsteyê bixwîne – an li kasê nîşan bide.', total: 'Hemû', call: 'Telefon bike', show: 'Li kasê nîşan bide', clear: 'Lîsteyê paqij bike', empty: 'Hîn vala ye – li ser xwarinekê + bitikîne', added: 'Hat zêdekirin', close: 'Bigire' },
+  pl: { bar: 'Lista zamówienia', items: 'pozycji', title: '📝 Twoja lista zamówienia', info: 'To nie jest zamówienie online. Zadzwoń i przeczytaj listę – albo pokaż ją przy kasie.', total: 'Razem', call: 'Zadzwoń', show: 'Pokaż przy kasie', clear: 'Wyczyść listę', empty: 'Jeszcze pusta – dotknij + przy daniu', added: 'Dodano', close: 'Zamknij' },
+};
+const ZETTEL_KEY = 'bk_bestellzettel';
+function loadZettel() { try { const v = JSON.parse(localStorage.getItem(ZETTEL_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } }
+function zettelTotal(z) { return z.reduce((sum, l) => sum + l.price * l.qty, 0); }
+
+// Vollbild-Ansicht für die Kasse: bewusst auf DEUTSCH und mit Menü-Nummern,
+// damit das Personal sofort weiß, was gemeint ist — egal in welcher Sprache
+// der Kunde die Seite benutzt.
+function ZettelKasseView({ zettel, onClose }) {
+  return (
+    <div className="fixed inset-0 z-[210] overflow-y-auto" style={{ background: '#fff' }}>
+      <div className="max-w-md mx-auto p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div className="font-black text-2xl" style={{ color: GREEN }}>🧾 Bestellung</div>
+          <button onClick={onClose} aria-label="Close" className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.08)' }}><X size={22} color={GREEN} /></button>
+        </div>
+        {zettel.map((l) => (
+          <div key={l.key} className="flex items-start justify-between gap-3 py-3" style={{ borderBottom: '2px dashed #e3d5bd' }}>
+            <div className="font-black text-xl leading-snug" style={{ color: GREEN }}>
+              {l.qty}× {l.number ? <span style={{ color: ORANGE }}>#{l.number} </span> : null}{l.name}{l.size ? ` (${l.size} cm)` : ''}{l.side ? ` – ${l.side}` : ''}
+            </div>
+            <div className="font-black text-lg flex-shrink-0" style={{ color: GREEN }}>{fmt(l.price * l.qty)}</div>
+          </div>
+        ))}
+        <div className="flex justify-between items-center pt-4 font-black text-2xl" style={{ color: GREEN }}>
+          <span>Gesamt</span><span style={{ color: ORANGE }}>{fmt(zettelTotal(zettel))}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -10304,6 +10345,33 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [legendOpen, setLegendOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [tmLightbox, setTmLightbox] = useState(null);
+  // Bestellzettel: nur eine Merkliste, KEINE Online-Bestellung — aktiv, solange
+  // das Bestellsystem ausgeschaltet ist. Im localStorage, damit die Liste beim
+  // Neuladen/Zurückkommen erhalten bleibt.
+  const zettelEnabled = !orderingEnabled();
+  const ZT = ZETTEL_T[lang] || ZETTEL_T.de;
+  const [zettel, setZettel] = useState(loadZettel);
+  const [zettelOpen, setZettelOpen] = useState(false);
+  const [zettelKasse, setZettelKasse] = useState(false);
+  const [zettelFlash, setZettelFlash] = useState(null);
+  useEffect(() => { try { localStorage.setItem(ZETTEL_KEY, JSON.stringify(zettel)); } catch {} }, [zettel]);
+  const zettelCount = zettel.reduce((n, l) => n + l.qty, 0);
+  const zettelQty = (id) => zettel.filter((l) => l.id === id).reduce((n, l) => n + l.qty, 0);
+  const addToZettel = (item, size) => {
+    const name = tischText(item.name, 'de');
+    const price = size === '28' ? item.priceLarge : item.price;
+    const key = `${item.id}|${size || ''}`;
+    setZettel((z) => {
+      const ex = z.find((l) => l.key === key);
+      if (ex) return z.map((l) => (l.key === key ? { ...l, qty: l.qty + 1 } : l));
+      return [...z, { key, id: item.id, name, number: item.number || '', size: size || null, price, qty: 1, side: null, sideChoice: /pommes oder reis/i.test(tischText(item.desc || '', 'de')) }];
+    });
+    logEvent('zettel_add', { item: name });
+    setZettelFlash(item.id);
+    setTimeout(() => setZettelFlash((f) => (f === item.id ? null : f)), 900);
+  };
+  const changeZettelQty = (key, d) => setZettel((z) => z.map((l) => (l.key === key ? { ...l, qty: l.qty + d } : l)).filter((l) => l.qty > 0));
+  const setZettelSide = (key, side) => setZettel((z) => z.map((l) => (l.key === key ? { ...l, side: l.side === side ? null : side } : l)));
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
   const [tischPhotos, setTischPhotos] = useState({});
@@ -10544,6 +10612,17 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                       <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}>{fmt(item.price)}</span>
                     )}
                     <button onClick={() => speakText(item.priceLarge !== undefined ? `${mx(tischText(item.name, 'de'), lang)}. 22 cm: ${fmt(item.price)}. 28 cm: ${fmt(item.priceLarge)}` : `${mx(tischText(item.name, 'de'), lang)}. ${fmt(item.price)}`, lang)} className="text-sm opacity-50" title="Vorlesen">🔊</button>
+                    {zettelEnabled && !item.soldOut && (item.priceLarge !== undefined ? (
+                      <div className="flex gap-1">
+                        {['22', '28'].map((sz) => (
+                          <button key={sz} onClick={() => addToZettel(item, sz)} aria-label={`+ ${sz} cm`} className="h-8 px-2 rounded-full flex items-center justify-center gap-0.5 text-[10px] font-black active:scale-90 transition-transform" style={{ background: GREEN, color: GOLD }}><Plus size={12} />{sz}</button>
+                        ))}
+                      </div>
+                    ) : (
+                      <button onClick={() => addToZettel(item)} aria-label={ZT.added} className="h-8 min-w-[32px] px-2 rounded-full flex items-center justify-center gap-1 text-xs font-black active:scale-90 transition-transform" style={{ background: zettelFlash === item.id ? ORANGE : GREEN, color: GOLD }}>
+                        {zettelFlash === item.id ? <Check size={14} /> : <Plus size={14} />}{zettelQty(item.id) > 0 && <span>{zettelQty(item.id)}</span>}
+                      </button>
+                    ))}
                   </div>
                 </div>
               );
@@ -10561,6 +10640,56 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
+      {zettelEnabled && zettelCount > 0 && !zettelOpen && !zettelKasse && (
+        <button onClick={() => setZettelOpen(true)} className="fixed left-4 right-4 z-[90] flex items-center justify-between px-5 py-3.5 rounded-2xl font-black text-sm" style={{ bottom: 'calc(16px + env(safe-area-inset-bottom))', background: GREEN, color: CREAM, boxShadow: '0 12px 30px rgba(21,56,38,.45)', animation: 'modalCardUp .3s ease' }}>
+          <span className="flex items-center gap-2">📝 {ZT.bar} <span className="px-2 py-0.5 rounded-full text-xs" style={{ background: GOLD, color: GREEN }}>{zettelCount}</span></span>
+          <span style={{ color: GOLD }}>{fmt(zettelTotal(zettel))} ›</span>
+        </button>
+      )}
+      {zettelOpen && (
+        <div className="fixed inset-0 z-[150] flex items-end justify-center" style={{ background: 'rgba(10,25,17,.55)', animation: 'modalBgFade .25s ease both' }} onClick={() => setZettelOpen(false)}>
+          <div className="w-full max-w-md rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto" style={{ background: CREAM, animation: 'modalCardUp .3s ease', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="font-black text-lg" style={{ color: GREEN }}>{ZT.title}</div>
+              <button onClick={() => setZettelOpen(false)} aria-label={ZT.close} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.08)' }}><X size={18} color={GREEN} /></button>
+            </div>
+            <div className="text-xs font-semibold mb-3 leading-snug" style={{ color: '#8a7c62' }}>{ZT.info}</div>
+            {zettel.length === 0 ? (
+              <div className="text-sm font-bold py-6 text-center" style={{ color: '#a4906c' }}>{ZT.empty}</div>
+            ) : zettel.map((l) => (
+              <div key={l.key} className="bg-white rounded-2xl p-3 mb-2" style={{ boxShadow: '0 2px 10px rgba(21,56,38,.06)' }}>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black text-sm leading-snug" style={{ color: GREEN }}>{l.number && <span style={{ color: ORANGE }}>#{l.number} </span>}{mx(l.name, lang)}{l.size ? ` (${l.size} cm)` : ''}</div>
+                    <div className="text-xs font-bold" style={{ color: '#a4906c' }}>{fmt(l.price)}</div>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button onClick={() => changeZettelQty(l.key, -1)} aria-label="-" className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#f1e8d6', color: GREEN }}><Minus size={14} /></button>
+                    <span className="font-black text-sm w-5 text-center" style={{ color: GREEN }}>{l.qty}</span>
+                    <button onClick={() => changeZettelQty(l.key, 1)} aria-label="+" className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: GREEN, color: GOLD }}><Plus size={14} /></button>
+                  </div>
+                </div>
+                {l.sideChoice && (
+                  <div className="flex gap-2 mt-2">
+                    {['Pommes', 'Reis'].map((sd) => (
+                      <button key={sd} onClick={() => setZettelSide(l.key, sd)} className="flex-1 py-1.5 rounded-lg text-[11px] font-bold" style={l.side === sd ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(sd, lang)}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            {zettel.length > 0 && (
+              <>
+                <div className="flex justify-between items-center py-3 font-black text-base" style={{ color: GREEN }}><span>{ZT.total}</span><span style={{ color: ORANGE }}>{fmt(zettelTotal(zettel))}</span></div>
+                <a href="tel:+4944419516104" onClick={() => { logEvent('call'); logEvent('zettel_call', { count: zettelCount, total: zettelTotal(zettel).toFixed(2) }); }} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-sm text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}><Phone size={16} /> {ZT.call} · 04441 / 95 16 104</a>
+                <button onClick={() => { logEvent('zettel_show', { count: zettelCount }); setZettelOpen(false); setZettelKasse(true); }} className="w-full mt-2 py-3 rounded-2xl font-black text-sm" style={{ background: GREEN, color: CREAM }}>🧾 {ZT.show}</button>
+                <button onClick={() => { setZettel([]); setZettelOpen(false); }} className="w-full mt-2 py-2 text-xs font-bold" style={{ color: '#a4906c' }}>🗑️ {ZT.clear}</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      {zettelKasse && <ZettelKasseView zettel={zettel} onClose={() => setZettelKasse(false)} />}
       {tmLightbox && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.85)' }} onClick={() => setTmLightbox(null)}>
           <img src={tmLightbox} alt="" className="max-w-full max-h-full rounded-2xl" style={{ animation: 'modalCardUp .3s ease' }} />
