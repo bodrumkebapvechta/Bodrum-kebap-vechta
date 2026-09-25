@@ -10306,6 +10306,15 @@ const ZETTEL_T = {
   ku: { bar: 'Lîsteya sifarişê', items: 'tişt', title: '📝 Lîsteya te ya sifarişê', info: 'Ev ne sifarişa online ye. Telefonî me bike û lîsteyê bixwîne – an li kasê nîşan bide.', total: 'Hemû', call: 'Telefon bike', show: 'Li kasê nîşan bide', clear: 'Lîsteyê paqij bike', empty: 'Hîn vala ye – li ser xwarinekê + bitikîne', added: 'Hat zêdekirin', close: 'Bigire' },
   pl: { bar: 'Lista zamówienia', items: 'pozycji', title: '📝 Twoja lista zamówienia', info: 'To nie jest zamówienie online. Zadzwoń i przeczytaj listę – albo pokaż ją przy kasie.', total: 'Razem', call: 'Zadzwoń', show: 'Pokaż przy kasie', clear: 'Wyczyść listę', empty: 'Jeszcze pusta – dotknij + przy daniu', added: 'Dodano', close: 'Zamknij' },
 };
+const ZETTEL_MODS = [
+  ['Ohne Zwiebeln', { en: 'No onions', tr: 'Soğansız', ro: 'Fără ceapă', nl: 'Zonder ui', sq: 'Pa qepë', ku: 'Bê pîvaz', pl: 'Bez cebuli' }],
+  ['Scharf', { en: 'Spicy', tr: 'Acılı', ro: 'Picant', nl: 'Pittig', sq: 'Pikante', ku: 'Tûj', pl: 'Ostre' }],
+  ['Ohne Tomaten', { en: 'No tomatoes', tr: 'Domatessiz', ro: 'Fără roșii', nl: 'Zonder tomaat', sq: 'Pa domate', ku: 'Bê bacanên sor', pl: 'Bez pomidorów' }],
+  ['Ohne Salat', { en: 'No salad', tr: 'Salatasız', ro: 'Fără salată', nl: 'Zonder sla', sq: 'Pa sallatë', ku: 'Bê selete', pl: 'Bez sałaty' }],
+  ['Ohne Soße', { en: 'No sauce', tr: 'Sossuz', ro: 'Fără sos', nl: 'Zonder saus', sq: 'Pa salcë', ku: 'Bê soz', pl: 'Bez sosu' }],
+  ['Extra Soße', { en: 'Extra sauce', tr: 'Ekstra sos', ro: 'Sos în plus', nl: 'Extra saus', sq: 'Salcë shtesë', ku: 'Soza zêde', pl: 'Dodatkowy sos' }],
+];
+const ZETTEL_NOTE_PH = { de: 'Weitere Wünsche, z.B. „1× ohne Zwiebeln"', en: 'Other wishes, e.g. "1× no onions"', tr: 'Diğer istekler, örn. „1 tanesi soğansız"', ro: 'Alte dorințe, ex. „1× fără ceapă"', nl: 'Andere wensen, bijv. „1× zonder ui"', sq: 'Dëshira të tjera, p.sh. „1× pa qepë"', ku: 'Daxwazên din, wek „1× bê pîvaz"', pl: 'Inne życzenia, np. „1× bez cebuli"' };
 const ZETTEL_KEY = 'bk_bestellzettel';
 function loadZettel() { try { const v = JSON.parse(localStorage.getItem(ZETTEL_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } }
 function zettelTotal(z) { return z.reduce((sum, l) => sum + l.price * l.qty, 0); }
@@ -10325,6 +10334,8 @@ function ZettelKasseView({ zettel, onClose }) {
           <div key={l.key} className="flex items-start justify-between gap-3 py-3" style={{ borderBottom: '2px dashed #e3d5bd' }}>
             <div className="font-black text-xl leading-snug" style={{ color: GREEN }}>
               {l.qty}× {l.number ? <span style={{ color: ORANGE }}>#{l.number} </span> : null}{l.name}{l.size ? ` (${l.size} cm)` : ''}{l.side ? ` – ${l.side}` : ''}
+              {(l.mods || []).length > 0 && <div className="text-lg mt-0.5" style={{ color: CHILI }}>{l.mods.join(', ')}</div>}
+              {l.note && <div className="text-base font-bold mt-0.5" style={{ color: '#8a5a1a' }}>„{l.note}"</div>}
             </div>
             <div className="font-black text-lg flex-shrink-0" style={{ color: GREEN }}>{fmt(l.price * l.qty)}</div>
           </div>
@@ -10364,13 +10375,15 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
     setZettel((z) => {
       const ex = z.find((l) => l.key === key);
       if (ex) return z.map((l) => (l.key === key ? { ...l, qty: l.qty + 1 } : l));
-      return [...z, { key, id: item.id, name, number: item.number || '', size: size || null, price, qty: 1, side: null, sideChoice: /pommes oder reis/i.test(tischText(item.desc || '', 'de')) }];
+      return [...z, { key, id: item.id, name, number: item.number || '', size: size || null, price, qty: 1, side: null, sideChoice: /pommes oder reis/i.test(tischText(item.desc || '', 'de')), drink: /getr/i.test(item.category || ''), mods: [], note: '' }];
     });
     logEvent('zettel_add', { item: name });
     setZettelFlash(item.id);
     setTimeout(() => setZettelFlash((f) => (f === item.id ? null : f)), 900);
   };
   const changeZettelQty = (key, d) => setZettel((z) => z.map((l) => (l.key === key ? { ...l, qty: l.qty + d } : l)).filter((l) => l.qty > 0));
+  const toggleZettelMod = (key, mod) => setZettel((z) => z.map((l) => (l.key === key ? { ...l, mods: (l.mods || []).includes(mod) ? l.mods.filter((m) => m !== mod) : [...(l.mods || []), mod] } : l)));
+  const setZettelNote = (key, note) => setZettel((z) => z.map((l) => (l.key === key ? { ...l, note: note.slice(0, 120) } : l)));
   const setZettelSide = (key, side) => setZettel((z) => z.map((l) => (l.key === key ? { ...l, side: l.side === side ? null : side } : l)));
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
@@ -10675,6 +10688,17 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                       <button key={sd} onClick={() => setZettelSide(l.key, sd)} className="flex-1 py-1.5 rounded-lg text-[11px] font-bold" style={l.side === sd ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{mx(sd, lang)}</button>
                     ))}
                   </div>
+                )}
+                {!l.drink && (
+                  <>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {ZETTEL_MODS.map(([de, tr]) => {
+                        const on = (l.mods || []).includes(de);
+                        return <button key={de} onClick={() => toggleZettelMod(l.key, de)} className="px-2.5 py-1 rounded-full text-[11px] font-bold" style={on ? { background: ORANGE, color: '#fff' } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{on ? '✓ ' : ''}{lang === 'de' ? de : (tr[lang] || de)}</button>;
+                      })}
+                    </div>
+                    <input value={l.note || ''} onChange={(e) => setZettelNote(l.key, e.target.value)} placeholder={ZETTEL_NOTE_PH[lang] || ZETTEL_NOTE_PH.de} className="w-full mt-2 px-3 py-2 rounded-lg text-[12px] font-medium outline-none" style={{ background: '#f7f0e2', border: '1px solid #e3d5bd', color: GREEN }} />
+                  </>
                 )}
               </div>
             ))}
