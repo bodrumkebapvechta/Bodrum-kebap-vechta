@@ -4734,6 +4734,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold" style={{ color: GREEN }}>{lang === 'de' ? 'Täglich 11:30–22:00' : '11:30–22:00'}</span></div>
             {!isTuesdayOpenNow(new Date()) && <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : lang === 'ku' ? 'Sêşem' : 'Dinsdag'}</span></div>}
             <div className="flex justify-between py-2.5 text-sm"><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroAddress')}</span><span className="font-bold text-right" style={{ color: GREEN }}>Oyther Straße 37,<br />49377 Vechta</span></div>
+            <div className="flex justify-between py-2.5 text-sm" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>🅿️</span><span className="font-bold text-right text-xs" style={{ color: GREEN }}>{lang === 'de' ? 'Kostenlose Parkplätze vor der Tür' : lang === 'en' ? 'Free parking outside' : lang === 'tr' ? 'Kapıda ücretsiz otopark' : lang === 'ro' ? 'Parcare gratuită afară' : lang === 'sq' ? 'Parkim falas jashtë' : lang === 'ku' ? 'Parkkirina belaş li derve' : 'Gratis parkeren buiten'}</span></div>
             <img src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
             <img src={PENNE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 78, height: 78, bottom: -18, left: -18, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(-8deg)' }} />
           </div>
@@ -4894,6 +4895,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
             <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" onClick={() => logEvent('call')} className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
             <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : lang === 'ku' ? 'Her roj 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div>{!isTuesdayOpenNow(new Date()) && <div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : lang === 'ku' ? 'Sêşeman girtî' : 'Dinsdag gesloten'}</div>}</div></div>
+            <div className="flex items-start gap-3 mb-6"><span style={{ color: GOLD, fontSize: 16, lineHeight: '16px', marginTop: 2 }}>🅿️</span><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Kostenlose Parkplätze direkt vor der Tür' : lang === 'en' ? 'Free parking right in front of the door' : lang === 'tr' ? 'Kapının hemen önünde ücretsiz otopark' : lang === 'ro' ? 'Parcare gratuită chiar în fața ușii' : lang === 'sq' ? 'Parkim falas direkt para derës' : lang === 'ku' ? 'Cîhê parkkirinê yê belaş rasterast li ber derî' : 'Gratis parkeren direct voor de deur'}</div></div>
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta"
@@ -4905,6 +4907,15 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 {t('contactRoute')}
               </a>
               <DistanceWidget lang={lang} inline />
+              <a
+                href="https://g.page/r/CSJY6J4WXr1SEAE/review"
+                target="_blank" rel="noopener noreferrer"
+                onClick={() => logEvent('google_review_click')}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-sm w-fit"
+                style={{ background: CREAM, color: GREEN, boxShadow: '0 8px 20px rgba(0,0,0,.18)' }}
+              >
+                <Star size={16} fill={GOLD} color={GOLD} /> {lang === 'de' ? 'Auf Google bewerten' : lang === 'en' ? 'Rate us on Google' : lang === 'tr' ? "Google'da değerlendir" : lang === 'ro' ? 'Evaluează-ne pe Google' : lang === 'sq' ? 'Na vlerëso në Google' : lang === 'ku' ? 'Li Google-ê hilsengîne' : 'Beoordeel ons op Google'}
+              </a>
               <a
                 href="https://instagram.com/BodrumKebapVechta"
                 target="_blank" rel="noopener noreferrer"
