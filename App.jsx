@@ -2951,6 +2951,35 @@ function speakText(text, lang) {
   } catch {}
 }
 
+// Erkennt die Sprache der FRAGE (nicht der Seite): Wer auf der deutschen
+// Seite türkisch schreibt, bekommt eine türkische Antwort. Zuerst eindeutige
+// Sonderzeichen, dann typische kurze Wörter. Bei Gleichstand/Unklarheit null
+// → dann bleibt es bei der Seitensprache (z.B. bei nur "Pizza?").
+function detectQueryLang(qRaw) {
+  const q = ` ${String(qRaw).toLowerCase().replace(/[?!.,;:()"'’]/g, ' ').replace(/\s+/g, ' ')} `;
+  if (/[ığ]/.test(q)) return 'tr';
+  if (/[êîû]/.test(q)) return 'ku';
+  if (/ë/.test(q)) return 'sq';
+  if (/[ăâșț]/.test(q)) return 'ro';
+  if (/[ąęłńśźż]/.test(q)) return 'pl';
+  const W = {
+    tr: [' ne ', ' var ', ' mı ', ' mi ', ' mu ', ' kaç ', ' nerede', ' nasıl', ' için ', ' bir ', ' çok ', ' yok ', ' fiyat', ' açık', ' kapalı', ' ile ', ' bu ', ' ben ', ' var mi', ' ne kadar', ' yemek', ' istiyorum'],
+    de: [' ist ', ' habt ', ' ihr ', ' gibt ', ' was ', ' wie ', ' wo ', ' bitte', ' ohne ', ' mit ', ' und ', ' ich ', ' der ', ' die ', ' das ', ' ein ', ' noch ', ' auch ', ' heute', ' kann ', ' nicht ', ' euch', ' welche'],
+    en: [' the ', ' is ', ' are ', ' do ', ' you ', ' what', ' how ', ' where', ' have ', ' can ', ' with ', ' without', ' today', ' open ', ' price', ' please', ' does ', ' any '],
+    nl: [' het ', ' een ', ' jullie', ' hebben', ' wat ', ' hoe ', ' waar ', ' zonder', ' graag', ' ik ', ' is er', ' vandaag', ' niet ', ' met ', ' kan ik'],
+    ro: [' este ', ' aveți', ' aveti', ' ce ', ' cum ', ' unde ', ' fără', ' fara ', ' vă ', ' si ', ' pentru', ' azi '],
+    sq: [' keni ', ' çfarë', ' cfare', ' ku ', ' pa ', ' dhe ', ' për ', ' per ', ' sot ', ' është', ' eshte'],
+    ku: [' heye', ' çi ', ' çawa', ' li ', ' bê ', ' û ', ' ji ', ' îro'],
+    pl: [' czy ', ' jest ', ' macie', ' co ', ' jak ', ' gdzie', ' bez ', ' dziś', ' dzis', ' proszę', ' prosze'],
+  };
+  const score = {};
+  Object.entries(W).forEach(([l, ws]) => { score[l] = ws.reduce((n, w) => n + (q.includes(w) ? 1 : 0), 0); });
+  if (/[çş]/.test(q)) score.tr += 1;
+  if (/[äß]/.test(q)) score.de += 1;
+  const best = Object.entries(score).sort((a, b) => b[1] - a[1]);
+  return best[0][1] >= 1 && best[0][1] > best[1][1] ? best[0][0] : null;
+}
+
 function AIAssistant() {
   const { lang, t, go } = React.useContext(LangContext);
   const [open, setOpen] = useState(false);
@@ -3018,14 +3047,15 @@ function AIAssistant() {
   const send = (text) => {
     const q = (text ?? input).trim();
     if (!q) return;
-    const res0 = getAssistantReply(q, lang);
+    const qLang = detectQueryLang(q) || lang;
+    const res0 = getAssistantReply(q, qLang);
     let { intent, text: reply, catKey } = res0;
     if (res0.itemId) {
       const it = ALL_MENU_ITEMS.find((x) => x.id === res0.itemId);
       if (isSoldOut(it)) {
         const alts = ALL_MENU_ITEMS.filter((x) => x.catKey === it.catKey && x.id !== it.id && !isSoldOut(x));
         const alt = alts[Math.floor(Math.random() * alts.length)];
-        reply = ar('soldOut', lang).replace('{name}', mx(it.name, lang)) + (alt ? ar('soldOutAlt', lang).replace('{alt}', mx(alt.name, lang)).replace('{price}', formatItemPriceText(alt)) : '');
+        reply = ar('soldOut', qLang).replace('{name}', mx(it.name, qLang)) + (alt ? ar('soldOutAlt', qLang).replace('{alt}', mx(alt.name, qLang)).replace('{price}', formatItemPriceText(alt)) : '');
         intent = 'soldout';
         catKey = it.catKey;
       }
@@ -3033,7 +3063,7 @@ function AIAssistant() {
     logEvent('assistant_' + intent, { q: q.slice(0, 200) });
     setInput('');
     if (intent !== 'fallback') {
-      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply, intent, catKey }]);
+      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply, intent, catKey, lang: qLang }]);
       return;
     }
     // Kein Keyword-Treffer: an die echte KI weiterreichen (kostet etwas,
@@ -3043,7 +3073,7 @@ function AIAssistant() {
     fetch('/api/ask-ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: q, lang }),
+      body: JSON.stringify({ question: q, lang: qLang }),
     }).then((r) => r.json()).then((d) => {
       setMessages((m) => m.map((msg) => (msg.id === thinkingId ? { from: 'bot', text: d.answer || reply } : msg)));
     }).catch(() => {
@@ -3122,7 +3152,7 @@ function AIAssistant() {
                     className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white"
                     style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}
                   >
-                    {CATEGORY_ICONS[m.catKey] || '🍽️'} {catLabel(m.catKey, lang)}
+                    {CATEGORY_ICONS[m.catKey] || '🍽️'} {catLabel(m.catKey, m.lang || lang)}
                   </button>
                 )}
               </div>
@@ -4676,6 +4706,100 @@ function StoryShareButton({ variant = 'pill' }) {
         </div>
       )}
     </>
+  );
+}
+
+// ---- Instagram-Text-Generator (Personal-Bereich) ----
+// Versucht zuerst die vorhandene KI (/api/ask-ai). Klappt das nicht (Fehler,
+// Zeitüberschreitung, zu kurze Antwort), wird eine Vorlage verwendet — das
+// Personal bekommt also IMMER einen brauchbaren Text. Im Ergebnis steht, ob
+// der Text von der KI oder aus der Vorlage kommt.
+const INSTA_OCCASIONS = [['neu', '✨ Neu'], ['angebot', '🔥 Angebot'], ['heute', '📅 Heute'], ['allgemein', '😋 Allgemein']];
+const INSTA_HOOKS = {
+  neu: ['NEU bei uns! ✨', 'Frisch auf der Karte:', 'Ihr habt gefragt – hier ist es:'],
+  angebot: ['🔥 ANGEBOT!', 'Nur für kurze Zeit:', 'Deal-Alarm 🚨'],
+  heute: ['Heute bei uns:', 'Heute Lust auf was Leckeres?', 'Euer Tipp für heute:'],
+  allgemein: ['Hunger? 😋', 'Frisch vom Spieß 🔥', 'Das gibt’s bei uns:'],
+};
+const INSTA_BODY = ['Täglich frisch zubereitet und 100% halal.', 'Kommt vorbei und probiert selbst!', 'Wir freuen uns auf euch! 🙌', 'Frisch, lecker und mit Liebe gemacht. ❤️'];
+function instaEmoji(topic) {
+  const t = topic.toLowerCase();
+  if (/pizza/.test(t)) return '🍕';
+  if (/kapsalon/.test(t)) return '🍟🧀';
+  if (/soße|sauce|joppie/.test(t)) return '🥫';
+  if (/schnitzel/.test(t)) return '🍗';
+  if (/salat/.test(t)) return '🥗';
+  if (/pasta|nudel|makkaroni|spaghetti/.test(t)) return '🍝';
+  if (/calzone/.test(t)) return '🥟';
+  if (/döner|doner|kebap|kebab|dürüm|rollo/.test(t)) return '🥙';
+  return '😋';
+}
+function instaHashtags(topic) {
+  const base = ['#bodrumkebap', '#bodrumkebapvechta', '#vechta', '#vechtafood', '#döner', '#kebap', '#halal', '#foodie'];
+  const extra = topic.split(/[\s,+&/]+/).map((w) => w.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')).filter((w) => w.length > 2 && !/^\d+$/.test(w)).map((w) => `#${w}`);
+  return [...new Set([...extra, ...base])].slice(0, 12).join(' ');
+}
+const INSTA_FOOTER = '📍 Oyther Straße 37, 49377 Vechta\n🕚 Täglich 11:30–22:00 Uhr';
+function instaTemplate(topic, price, occ) {
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const hook = pick(INSTA_HOOKS[occ] || INSTA_HOOKS.allgemein);
+  const pricePart = price ? ` für nur ${price.includes('€') ? price : `${price} €`}` : '';
+  return `${hook} ${topic}${pricePart} ${instaEmoji(topic)}\n\n${pick(INSTA_BODY)}\n\n${INSTA_FOOTER}\n\n${instaHashtags(topic)}`;
+}
+function InstaCaptionTool() {
+  const [topic, setTopic] = useState('');
+  const [price, setPrice] = useState('');
+  const [occ, setOcc] = useState('neu');
+  const [busy, setBusy] = useState(false);
+  const [out, setOut] = useState('');
+  const [source, setSource] = useState('');
+  const [copied, setCopied] = useState(false);
+  const generate = async () => {
+    const tpc = topic.trim();
+    if (!tpc) return;
+    setBusy(true); setCopied(false);
+    const occLabel = { neu: 'neues Produkt', angebot: 'Sonderangebot', heute: 'Tagesempfehlung', allgemein: 'allgemeiner Beitrag' }[occ];
+    const prompt = `Schreibe als Social-Media-Texter von Bodrum Kebap Vechta eine kurze, lockere Instagram-Bildunterschrift auf Deutsch. Maximal 50 Wörter, 2 bis 4 passende Emojis, am Ende ein Aufruf zum Vorbeikommen. KEINE Hashtags, keine Einleitung, keine Anführungszeichen, nur der fertige Text. Thema: ${tpc}.${price.trim() ? ` Preis: ${price.trim()}.` : ''} Anlass: ${occLabel}.`;
+    let text = '';
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 15000);
+      const r = await fetch('/api/ask-ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: prompt, lang: 'de' }), signal: ctrl.signal });
+      clearTimeout(timer);
+      const d = await r.json();
+      text = String(d?.answer || '').trim().replace(/^["„“']+|["“”']+$/g, '').split('\n').filter((l) => !l.trim().startsWith('#')).join('\n').trim();
+    } catch { text = ''; }
+    if (text.length >= 25) {
+      setOut(`${text}\n\n${INSTA_FOOTER}\n\n${instaHashtags(tpc)}`);
+      setSource('KI');
+    } else {
+      setOut(instaTemplate(tpc, price.trim(), occ));
+      setSource('Vorlage');
+    }
+    setBusy(false);
+  };
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(out); setCopied(true); } catch { setCopied(false); }
+  };
+  return (
+    <div>
+      <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Kurz eintippen, worum es geht – der Text für deinen Instagram-Post wird erstellt. Danach kannst du ihn noch anpassen und kopieren.</p>
+      <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Worum geht's? z.B. Kapsalon mit Joppiesauce" className="w-full px-3 py-2.5 rounded-xl text-sm font-medium outline-none mb-2" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+      <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Preis (optional), z.B. 6 €" className="w-full px-3 py-2.5 rounded-xl text-sm font-medium outline-none mb-2" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {INSTA_OCCASIONS.map(([k, l]) => (
+          <button key={k} onClick={() => setOcc(k)} className="px-3 py-1.5 rounded-full text-xs font-bold" style={occ === k ? { background: GREEN, color: GOLD } : { background: '#f7f0e2', color: GREEN, border: '1px solid #e3d5bd' }}>{l}</button>
+        ))}
+      </div>
+      <button onClick={generate} disabled={busy || !topic.trim()} className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }}>{busy ? '⏳ Wird erstellt…' : out ? '🔄 Neuen Text erstellen' : '✍️ Text erstellen'}</button>
+      {out && (
+        <div className="mt-3">
+          <div className="text-[10px] font-black tracking-widest mb-1" style={{ color: '#a4906c' }}>{source === 'KI' ? '🤖 VON DER KI GESCHRIEBEN' : '📋 AUS VORLAGE (KI GERADE NICHT ERREICHBAR)'} · BITTE KURZ PRÜFEN</div>
+          <textarea value={out} onChange={(e) => { setOut(e.target.value); setCopied(false); }} rows={9} className="w-full px-3 py-2.5 rounded-xl text-sm font-medium outline-none" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
+          <button onClick={copy} className="w-full mt-2 py-2.5 rounded-xl font-bold text-sm" style={{ background: copied ? '#34a065' : GREEN, color: '#fff' }}>{copied ? '✅ Kopiert – jetzt in Instagram einfügen' : '📋 Text kopieren'}</button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -9373,6 +9497,9 @@ function StaffPanelView({ back }) {
 
               {settingsGroup === 'fotos' && (
                 <>
+                  <SettingsRow id="instaCaption" icon="✍️" title="Instagram-Text erstellen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <InstaCaptionTool />
+                  </SettingsRow>
                   <SettingsRow id="migratePhotos" icon="🚀" title="Alte Fotos beschleunigen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Verschiebt alle bisher hochgeladenen Fotos in den schnellen Speicher (Storage). Einmal antippen genügt — kann ein paar Minuten dauern, du kannst währenddessen weiterarbeiten.</p>
                     <button onClick={migrateOldPhotosToStorage} disabled={migrateBusy} className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{migrateBusy ? '…' : 'Jetzt migrieren'}</button>
