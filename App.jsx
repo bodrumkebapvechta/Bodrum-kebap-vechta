@@ -3146,6 +3146,9 @@ function AIAssistant() {
                 {m.from === 'bot' && (m.intent === 'order' || m.intent === 'quickorder') && orderingEnabled() && (
                   <button onClick={() => go('whatsapp')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📋 Zur Speisekarte</button>
                 )}
+                {m.from === 'bot' && m.intent === 'address' && (
+                  <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'assistant' })} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white inline-block" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>{t('contactRoute')}</a>
+                )}
                 {m.from === 'bot' && (m.intent === 'category' || m.intent === 'joppie' || m.intent === 'campaign' || m.intent === 'new' || m.intent === 'soldout') && m.catKey && (
                   <button
                     onClick={() => (orderingEnabled() ? go('whatsapp', { categoryMode: m.catKey }) : go('tischmenu', { initialCatHint: m.catKey }))}
@@ -5121,6 +5124,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.soon ? GOLD : status.open ? '#4ade80' : '#ff4d4d', animation: status.soon ? 'liveDot 1.2s ease-in-out infinite' : status.open ? 'liveDot 1.6s ease-in-out infinite' : 'closedBlink 1.1s ease-in-out infinite' }} />
               <span className="text-[10.5px] font-black" style={{ color: status.soon ? GOLD : status.open ? '#4ade80' : '#ff6b6b' }}>{t(status.labelKey)}{!status.open && status.nextOpen && <span className="opacity-80 font-bold"> · {formatCountdown(status.nextOpen - now)}</span>}</span>
             </div>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'header' })} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-black active:scale-95 transition-transform" style={{ background: GOLD, color: GREEN, boxShadow: '0 4px 12px rgba(255,199,56,.3)' }}>{t('contactRoute')}</a>
           </div>
           <nav className="hidden md:flex items-center gap-7">
             {orderingEnabled() ? <button onClick={() => go('whatsapp')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => go('tischmenu')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
