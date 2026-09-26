@@ -4367,6 +4367,150 @@ function QuizModal({ onClose, onSurprise, go }) {
   );
 }
 
+const STORY_T = {
+  de: { btn: 'Story-Foto erstellen', title: '📸 Dein Story-Foto', sub: 'Foto von deinem Essen machen – wir packen es in unseren Rahmen.', pick: 'Foto aufnehmen / auswählen', making: 'Wird erstellt…', share: 'Teilen (Instagram & Co.)', save: 'Bild speichern', again: 'Anderes Foto', tip: 'Markiere uns in deiner Story: @BodrumKebapVechta', err: 'Das Foto konnte nicht geladen werden. Bitte ein anderes probieren.' },
+  en: { btn: 'Create story photo', title: '📸 Your story photo', sub: "Snap your food – we'll put it in our frame.", pick: 'Take / choose photo', making: 'Creating…', share: 'Share (Instagram & more)', save: 'Save image', again: 'Another photo', tip: 'Tag us in your story: @BodrumKebapVechta', err: "The photo couldn't be loaded. Please try another one." },
+  tr: { btn: 'Hikâye fotoğrafı oluştur', title: '📸 Hikâye fotoğrafın', sub: 'Yemeğinin fotoğrafını çek – biz çerçevemize yerleştirelim.', pick: 'Fotoğraf çek / seç', making: 'Hazırlanıyor…', share: 'Paylaş (Instagram vb.)', save: 'Resmi kaydet', again: 'Başka fotoğraf', tip: 'Hikâyende bizi etiketle: @BodrumKebapVechta', err: 'Fotoğraf yüklenemedi. Lütfen başka bir tane dene.' },
+  ro: { btn: 'Creează foto pentru story', title: '📸 Foto-ul tău pentru story', sub: 'Fă o poză mâncării – o punem în rama noastră.', pick: 'Fă / alege o poză', making: 'Se creează…', share: 'Distribuie (Instagram etc.)', save: 'Salvează imaginea', again: 'Altă poză', tip: 'Etichetează-ne în story: @BodrumKebapVechta', err: 'Poza nu a putut fi încărcată. Încearcă alta.' },
+  nl: { btn: 'Story-foto maken', title: '📸 Jouw story-foto', sub: 'Maak een foto van je eten – wij zetten hem in onze lijst.', pick: 'Foto maken / kiezen', making: 'Wordt gemaakt…', share: 'Delen (Instagram & meer)', save: 'Afbeelding opslaan', again: 'Andere foto', tip: 'Tag ons in je story: @BodrumKebapVechta', err: 'De foto kon niet worden geladen. Probeer een andere.' },
+  sq: { btn: 'Krijo foto për story', title: '📸 Fotoja jote për story', sub: 'Bëj foto ushqimit – ne e vendosim në kornizën tonë.', pick: 'Bëj / zgjidh foto', making: 'Po krijohet…', share: 'Ndaj (Instagram etj.)', save: 'Ruaj imazhin', again: 'Foto tjetër', tip: 'Na shëno në story: @BodrumKebapVechta', err: 'Fotoja nuk u ngarkua. Provo një tjetër.' },
+  ku: { btn: 'Wêneyê story çêke', title: '📸 Wêneyê te yê story', sub: 'Wêneyê xwarina xwe bikişîne – em wê dixin çarçoveya xwe.', pick: 'Wêne bikişîne / hilbijêre', making: 'Tê çêkirin…', share: 'Parve bike (Instagram û yên din)', save: 'Wêneyê tomar bike', again: 'Wêneyekî din', tip: 'Me di story-ya xwe de nîşan bide: @BodrumKebapVechta', err: 'Wêne nehat barkirin. Ji kerema xwe yekî din biceribîne.' },
+  pl: { btn: 'Zrób zdjęcie do story', title: '📸 Twoje zdjęcie do story', sub: 'Zrób zdjęcie jedzenia – włożymy je w naszą ramkę.', pick: 'Zrób / wybierz zdjęcie', making: 'Tworzenie…', share: 'Udostępnij (Instagram itd.)', save: 'Zapisz obraz', again: 'Inne zdjęcie', tip: 'Oznacz nas w story: @BodrumKebapVechta', err: 'Nie udało się wczytać zdjęcia. Spróbuj innego.' },
+};
+
+function loadImg(src) {
+  return new Promise((resolve, reject) => { const im = new Image(); im.onload = () => resolve(im); im.onerror = reject; im.src = src; });
+}
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+}
+// 1080×1920 = Instagram-Story-Format. Alles lokal im Browser, das Foto wird
+// NICHT hochgeladen oder gespeichert (Datenschutz).
+async function drawStoryImage(photo) {
+  const W = 1080, H = 1920;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#1b4a31'); bg.addColorStop(1, '#0e2a1c');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  const font = (w, px) => `${w} ${px}px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif`;
+  const spaced = (txt, y, px, color, gap) => {
+    ctx.font = font(800, px); ctx.fillStyle = color;
+    const widths = [...txt].map((ch) => ctx.measureText(ch).width);
+    const total = widths.reduce((a, b) => a + b, 0) + gap * (txt.length - 1);
+    let x = (W - total) / 2;
+    [...txt].forEach((ch, i) => { ctx.fillText(ch, x, y); x += widths[i] + gap; });
+  };
+  ctx.textBaseline = 'alphabetic';
+  spaced('ICH WAR BEI', 292, 38, GOLD, 10);
+  ctx.textAlign = 'center';
+  ctx.font = font(900, 100); ctx.fillStyle = CREAM; ctx.fillText('BODRUM KEBAP', W / 2, 398);
+  ctx.textAlign = 'left';
+  spaced('VECHTA', 458, 38, GOLD, 22);
+  // Foto (cover-fit) mit abgerundeten Ecken und goldenem Rand
+  const px = 80, py = 500, pw = W - 160, ph = 905, r = 44;
+  ctx.save(); roundRectPath(ctx, px, py, pw, ph, r); ctx.clip();
+  const sc = Math.max(pw / photo.width, ph / photo.height);
+  const dw = photo.width * sc, dh = photo.height * sc;
+  ctx.drawImage(photo, px + (pw - dw) / 2, py + (ph - dh) / 2, dw, dh);
+  ctx.restore();
+  ctx.lineWidth = 10; ctx.strokeStyle = GOLD; roundRectPath(ctx, px, py, pw, ph, r); ctx.stroke();
+  // Logo unten
+  let textY = 1500;
+  try {
+    const logo = await loadImg(LOGO_ICON);
+    const ls = 100, lx = (W - ls) / 2, ly = 1432;
+    ctx.save(); ctx.beginPath(); ctx.arc(W / 2, ly + ls / 2, ls / 2 + 8, 0, Math.PI * 2); ctx.fillStyle = CREAM; ctx.fill(); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.arc(W / 2, ly + ls / 2, ls / 2, 0, Math.PI * 2); ctx.clip(); ctx.drawImage(logo, lx, ly, ls, ls); ctx.restore();
+    textY = 1592;
+  } catch { /* ohne Logo weiter */ }
+  ctx.textAlign = 'center';
+  ctx.font = font(800, 42); ctx.fillStyle = CREAM; ctx.fillText('@BodrumKebapVechta', W / 2, textY);
+  ctx.font = font(600, 30); ctx.fillStyle = '#b9d3c3'; ctx.fillText('Oyther Straße 37 · 49377 Vechta', W / 2, textY + 44);
+  return c;
+}
+
+function StoryShareButton({ variant = 'pill' }) {
+  const { lang } = React.useContext(LangContext);
+  const T = STORY_T[lang] || STORY_T.de;
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [result, setResult] = useState(null); // { url, blob }
+  const fileRef = useRef(null);
+  const reset = () => { if (result?.url) URL.revokeObjectURL(result.url); setResult(null); setErr(''); };
+  const close = () => { reset(); setOpen(false); };
+  const onFile = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    reset(); setBusy(true);
+    try {
+      const url = URL.createObjectURL(f);
+      const photo = await loadImg(url);
+      URL.revokeObjectURL(url);
+      const canvas = await drawStoryImage(photo);
+      const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.92));
+      if (!blob) throw new Error('blob');
+      setResult({ url: URL.createObjectURL(blob), blob });
+      logEvent('story_created');
+    } catch { setErr(T.err); }
+    setBusy(false);
+  };
+  const share = async () => {
+    if (!result) return;
+    const file = new File([result.blob], 'bodrum-kebap-story.jpg', { type: 'image/jpeg' });
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], text: '@BodrumKebapVechta 🥙' });
+        logEvent('story_shared');
+        return;
+      }
+    } catch { return; }
+    const a = document.createElement('a'); a.href = result.url; a.download = 'bodrum-kebap-story.jpg'; a.click();
+    logEvent('story_saved');
+  };
+  const trigger = variant === 'link' ? (
+    <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 text-xs font-bold mt-1" style={{ color: GOLD }}>📸 {T.btn}</button>
+  ) : (
+    <button onClick={() => setOpen(true)} className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-sm w-fit" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(0,0,0,.18)' }}>📸 {T.btn}</button>
+  );
+  return (
+    <>
+      {trigger}
+      {open && (
+        <div className="fixed inset-0 z-[160] flex items-end sm:items-center justify-center" style={{ background: 'rgba(10,25,17,.6)', animation: 'modalBgFade .25s ease both' }} onClick={close}>
+          <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto" style={{ background: CREAM, animation: 'modalCardUp .3s ease', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="font-black text-lg" style={{ color: GREEN }}>{T.title}</div>
+              <button onClick={close} aria-label="Close" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.08)' }}><X size={18} color={GREEN} /></button>
+            </div>
+            <div className="text-xs font-semibold mb-4" style={{ color: '#8a7c62' }}>{T.sub}</div>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onFile} />
+            {result ? (
+              <>
+                <img src={result.url} alt="" className="w-full max-w-[260px] mx-auto rounded-2xl mb-3" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.25)' }} />
+                <div className="text-xs font-bold text-center mb-3" style={{ color: ORANGE }}>{T.tip}</div>
+                <button onClick={share} className="w-full py-3.5 rounded-2xl font-black text-sm text-white" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }}>📤 {T.share}</button>
+                <button onClick={() => fileRef.current && fileRef.current.click()} className="w-full mt-2 py-2.5 rounded-2xl font-bold text-xs" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}>↺ {T.again}</button>
+              </>
+            ) : (
+              <button onClick={() => fileRef.current && fileRef.current.click()} disabled={busy} className="w-full py-10 rounded-2xl font-black text-sm flex flex-col items-center gap-2" style={{ background: '#fff', color: GREEN, border: '2px dashed #d9c8a6', opacity: busy ? 0.6 : 1 }}>
+                <span className="text-4xl">📷</span>{busy ? T.making : T.pick}
+              </button>
+            )}
+            {err && <div className="text-xs font-bold mt-3 text-center" style={{ color: CHILI }}>{err}</div>}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -5062,6 +5206,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               >
                 <Instagram size={16} /> @BodrumKebapVechta
               </a>
+              <StoryShareButton />
             </div>
             <ContactMessageForm lang={lang} t={t} />
           </div>
@@ -9646,7 +9791,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', zettel_add: '📝 Bestellzettel: Artikel hinzugefügt', zettel_call: '📝 Bestellzettel: Anruf', zettel_show: '📝 Bestellzettel: an der Kasse gezeigt',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', zettel_add: '📝 Bestellzettel: Artikel hinzugefügt', zettel_call: '📝 Bestellzettel: Anruf', zettel_show: '📝 Bestellzettel: an der Kasse gezeigt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
@@ -10650,6 +10795,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         <div className="relative flex flex-col items-center gap-1.5">
           <div className="flex items-center gap-1.5 text-white font-bold text-sm"><MapPin size={14} color={GOLD} /> Oyther Straße 37, 49377 Vechta</div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> 04441 / 95 16 104</div>
+          <StoryShareButton variant="link" />
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
