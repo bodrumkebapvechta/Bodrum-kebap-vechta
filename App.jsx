@@ -2688,6 +2688,28 @@ const ASSISTANT_R = {
   openNoSuffixEveryDay: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, auch dienstags — keine Ruhetage mehr!", en: "We're open daily 11:30 AM–10:00 PM, including Tuesdays — no closed days anymore!", tr: "Her gün 11:30–22:00 arası açığız, Salı dahil — artık kapalı günümüz yok!", ro: "Suntem deschiși zilnic 11:30–22:00, inclusiv marțea — fără zile de închidere!", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, ook op dinsdag — geen sluitingsdagen meer!", sq: "Jemi hapur çdo ditë 11:30–22:00, edhe të martave — nuk ka më ditë pushimi!", ku: "Em her roj saet 11:30–22:00 vekirî ne, Sêşem jî tê de — êdî roja girtî tune!", pl: "Jesteśmy otwarci codziennie 11:30–22:00, także we wtorki — nie ma już dni zamknięcia!" },
   address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
   phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
+  budgetList: { de: "💶 Für bis zu {max} bekommst du z.B.:", en: "💶 For up to {max} you can get e.g.:", tr: "💶 {max}'ya kadar örneğin şunları alabilirsin:", ro: "💶 Pentru până la {max} poți lua de ex.:", nl: "💶 Voor maximaal {max} krijg je bijv.:", sq: "💶 Deri në {max} mund të marrësh p.sh.:", ku: "💶 Heta {max} tu dikarî wek van bistînî:", pl: "💶 Do {max} dostaniesz np.:" },
+  budgetMore: { de: "…und {n} weitere in der Speisekarte.", en: "…and {n} more on the menu.", tr: "…ve menüde {n} tane daha.", ro: "…și încă {n} în meniu.", nl: "…en nog {n} op de menukaart.", sq: "…dhe {n} të tjera në meny.", ku: "…û {n} yên din di menûyê de.", pl: "…i {n} więcej w menu." },
+  budgetNone: { de: "😅 Für {max} haben wir leider kein Gericht – unsere günstigsten Sachen starten bei {min}.", en: "😅 Sorry, nothing for {max} – our cheapest dishes start at {min}.", tr: "😅 Maalesef {max}'ya uygun yemeğimiz yok – en uygun ürünlerimiz {min}'dan başlıyor.", ro: "😅 Din păcate nimic pentru {max} – cele mai ieftine preparate încep de la {min}.", nl: "😅 Helaas niets voor {max} – onze goedkoopste gerechten beginnen bij {min}.", sq: "😅 Fatkeqësisht asgjë për {max} – gjellët më të lira fillojnë nga {min}.", ku: "😅 Mixabin bi {max} tiştek tune – xwarinên me yên herî erzan ji {min} dest pê dikin.", pl: "😅 Niestety nic za {max} – najtańsze dania zaczynają się od {min}." },
+  dietList: { de: "{label} – laut unserer Allergenkennzeichnung passen z.B.:", en: "{label} – according to our allergen labelling, these fit:", tr: "{label} – alerjen bilgilerimize göre şunlar uygun:", ro: "{label} – conform etichetării alergenilor, se potrivesc:", nl: "{label} – volgens onze allergeneninformatie passen bijv.:", sq: "{label} – sipas etiketimit të alergjenëve përshtaten p.sh.:", ku: "{label} – li gorî nîşandana alerjenan, ev li hev tên:", pl: "{label} – według naszego oznaczenia alergenów pasują np.:" },
+  dietNone: { de: "Dazu habe ich leider kein passendes Gericht gefunden. Frag gern direkt bei uns nach.", en: "Sorry, I couldn't find a matching dish. Feel free to ask us directly.", tr: "Maalesef buna uygun bir yemek bulamadım. Bize direkt sorabilirsin.", ro: "Din păcate n-am găsit un preparat potrivit. Întreabă-ne direct.", nl: "Helaas geen passend gerecht gevonden. Vraag het ons gerust direct.", sq: "Fatkeqësisht nuk gjeta gjellë të përshtatshme. Na pyet direkt.", ku: "Mixabin min xwarinek guncaw nedît. Rasterast ji me bipirse.", pl: "Niestety nie znalazłem pasującego dania. Zapytaj nas bezpośrednio." },
+  allergyWarn: { de: "⚠️ Spuren und Kreuzkontamination in der Küche sind möglich. Bei einer echten Allergie bitte vor der Bestellung kurz das Personal fragen.", en: "⚠️ Traces and cross-contamination in the kitchen are possible. With a real allergy, please check with our staff before ordering.", tr: "⚠️ Mutfakta eser miktar bulaşma olabilir. Gerçek bir alerjin varsa sipariş öncesi lütfen personele sor.", ro: "⚠️ Urme și contaminare încrucișată sunt posibile. În caz de alergie reală, întreabă personalul înainte de comandă.", nl: "⚠️ Sporen en kruisbesmetting in de keuken zijn mogelijk. Bij een echte allergie vraag het even aan het personeel.", sq: "⚠️ Gjurmë dhe ndotje e kryqëzuar në kuzhinë janë të mundshme. Në rast alergjie, pyet personelin para porosisë.", ku: "⚠️ Di metbexê de şop û têkelbûn gengaz e. Heke alerjiya te ya rastîn hebe, berî sifarişê ji personelê bipirse.", pl: "⚠️ Śladowe ilości i zanieczyszczenie krzyżowe są możliwe. Przy prawdziwej alergii zapytaj personel przed zamówieniem." },
+  veganNote: { de: "🌱 Als vegan gekennzeichnete Gerichte haben wir leider (noch) nicht. Frag gern das Personal, ob sich ein Gericht anpassen lässt.", en: "🌱 We don't have dishes labelled vegan (yet). Ask our staff whether a dish can be adapted.", tr: "🌱 Vegan olarak işaretlenmiş yemeğimiz (henüz) yok. Bir yemeğin uyarlanıp uyarlanamayacağını personele sorabilirsin.", ro: "🌱 Nu avem (încă) preparate marcate ca vegane. Întreabă personalul dacă un preparat poate fi adaptat.", nl: "🌱 We hebben (nog) geen als veganistisch gemarkeerde gerechten. Vraag het personeel of een gerecht aangepast kan worden.", sq: "🌱 Nuk kemi (ende) gjellë të shënuara vegane. Pyet personelin nëse një gjellë mund të përshtatet.", ku: "🌱 Xwarinên wek vegan nîşankirî (hîn) tune. Ji personelê bipirse ka xwarinek dikare were guhertin.", pl: "🌱 Nie mamy (jeszcze) dań oznaczonych jako wegańskie. Zapytaj personel, czy danie można dostosować." },
+  newList: { de: "✨ Neu bei uns:", en: "✨ New at our place:", tr: "✨ Yeni ürünlerimiz:", ro: "✨ Nou la noi:", nl: "✨ Nieuw bij ons:", sq: "✨ E re te ne:", ku: "✨ Nû li cem me:", pl: "✨ Nowość u nas:" },
+  soldOut: { de: "😕 {name} ist heute leider ausverkauft.", en: "😕 Sorry, {name} is sold out today.", tr: "😕 {name} bugün maalesef tükendi.", ro: "😕 {name} s-a terminat azi, din păcate.", nl: "😕 {name} is vandaag helaas uitverkocht.", sq: "😕 {name} sot fatkeqësisht ka mbaruar.", ku: "😕 {name} îro mixabin qediya.", pl: "😕 {name} jest dziś niestety wyprzedany." },
+  soldOutAlt: { de: " Wie wäre es stattdessen mit {alt} ({price})?", en: " How about {alt} ({price}) instead?", tr: " Onun yerine {alt} ({price}) nasıl olur?", ro: " Ce zici în schimb de {alt} ({price})?", nl: " Wat dacht je in plaats daarvan van {alt} ({price})?", sq: " Po në vend të saj {alt} ({price})?", ku: " Li şûna wê {alt} ({price}) çawa ye?", pl: " Może zamiast tego {alt} ({price})?" },
+  bubbleLunch: { de: "🔥 Mittagsangebot läuft – noch {min} Min.!", en: "🔥 Lunch special on – {min} min left!", tr: "🔥 Öğle kampanyası sürüyor – {min} dk kaldı!", ro: "🔥 Oferta de prânz – mai sunt {min} min!", nl: "🔥 Lunchaanbod loopt – nog {min} min!", sq: "🔥 Oferta e drekës – edhe {min} min!", ku: "🔥 Pêşniyara nîvro – {min} deqe man!", pl: "🔥 Oferta lunchowa – zostało {min} min!" },
+  bubbleSaturday: { de: "🎉 Heute Samstagsangebot – frag mich!", en: "🎉 Saturday special today – ask me!", tr: "🎉 Bugün Cumartesi kampanyası – bana sor!", ro: "🎉 Azi oferta de sâmbătă – întreabă-mă!", nl: "🎉 Vandaag zaterdagaanbieding – vraag het me!", sq: "🎉 Sot oferta e së shtunës – më pyet!", ku: "🎉 Îro pêşniyara Şemiyê – ji min bipirse!", pl: "🎉 Dziś oferta sobotnia – zapytaj mnie!" },
+  dietGluten: { de: "🌾 Ohne Gluten", en: "🌾 Gluten-free", tr: "🌾 Glütensiz", ro: "🌾 Fără gluten", nl: "🌾 Glutenvrij", sq: "🌾 Pa gluten", ku: "🌾 Bê gluten", pl: "🌾 Bez glutenu" },
+  dietEgg: { de: "🥚 Ohne Ei", en: "🥚 Egg-free", tr: "🥚 Yumurtasız", ro: "🥚 Fără ou", nl: "🥚 Zonder ei", sq: "🥚 Pa vezë", ku: "🥚 Bê hêk", pl: "🥚 Bez jajek" },
+  dietMilk: { de: "🥛 Ohne Milch/Laktose", en: "🥛 Dairy-free", tr: "🥛 Sütsüz / laktozsuz", ro: "🥛 Fără lapte/lactoză", nl: "🥛 Zonder melk/lactose", sq: "🥛 Pa qumësht/laktozë", ku: "🥛 Bê şîr/laktoz", pl: "🥛 Bez mleka/laktozy" },
+  dietNuts: { de: "🥜 Ohne Nüsse", en: "🥜 Nut-free", tr: "🥜 Kuruyemişsiz", ro: "🥜 Fără nuci", nl: "🥜 Zonder noten", sq: "🥜 Pa arra", ku: "🥜 Bê gûz", pl: "🥜 Bez orzechów" },
+  dietVeg: { de: "🌱 Vegetarisch", en: "🌱 Vegetarian", tr: "🌱 Vejetaryen", ro: "🌱 Vegetarian", nl: "🌱 Vegetarisch", sq: "🌱 Vegjetariane", ku: "🌱 Vejetaryen", pl: "🌱 Wegetariańskie" },
+  campLunch: { de: "🔥 Gerade läuft unser Mittagsangebot – nur noch {min} Min.! Jedes Schnitzel, jedes Nudelgericht, jeder Salat oder jede 28er-Pizza inkl. 1 Softgetränk für nur 9,50 €. Meine Empfehlung: jetzt zuschlagen 😉", en: "🔥 Our lunch special is on right now – only {min} min left! Any schnitzel, pasta dish, salad or 28cm pizza incl. 1 soft drink for just €9.50. My tip: grab it now 😉", tr: "🔥 Şu an öğle kampanyamız devam ediyor – sadece {min} dk kaldı! Her şnitzel, her makarna, her salata ya da her 28'lik pizza + 1 içecek sadece 9,50 €. Önerim: kaçırma 😉", ro: "🔥 Acum e oferta noastră de prânz – mai sunt doar {min} min! Orice șnițel, fel de paste, salată sau pizza de 28cm + 1 băutură doar 9,50 €. Sfatul meu: profită acum 😉", nl: "🔥 Ons lunchaanbod loopt nu – nog maar {min} min! Elke schnitzel, elk pastagerecht, elke salade of elke 28cm-pizza incl. 1 frisdrank voor maar € 9,50. Mijn tip: nu toeslaan 😉", sq: "🔥 Tani vlen oferta jonë e drekës – vetëm {min} min të mbetura! Çdo shnicel, pjatë makaronash, sallatë ose pica 28cm + 1 pije vetëm 9,50 €. Këshilla ime: përfito tani 😉", ku: "🔥 Niha pêşniyara me ya nîvro heye – tenê {min} deqe man! Her şnîtzel, her makarne, her selete an pizzaya 28cm + 1 vexwarin tenê 9,50 €. Şîreta min: niha bigire 😉", pl: "🔥 Właśnie trwa nasza oferta lunchowa – zostało tylko {min} min! Każdy sznycel, makaron, sałatka lub pizza 28cm + 1 napój tylko 9,50 €. Moja rada: łap teraz 😉" },
+  campSaturday: { de: "🎉 Heute ist Samstag – also Samstagsangebot! 28cm-Pizza nach Wahl + Dose Getränk für 10,00 € oder Dönerteller + Dose Getränk für 12,50 €. Das würde ich heute nehmen!", en: "🎉 It's Saturday – so it's Saturday special time! Any 28cm pizza + canned drink for €10.00 or döner plate + canned drink for €12.50. That's what I'd go for today!", tr: "🎉 Bugün Cumartesi – yani Cumartesi kampanyası! İstediğin 28cm pizza + kutu içecek 10,00 € ya da döner tabağı + kutu içecek 12,50 €. Ben bugün bunu seçerdim!", ro: "🎉 Azi e sâmbătă – deci oferta de sâmbătă! Pizza 28cm la alegere + băutură la doză 10,00 € sau farfurie döner + băutură la doză 12,50 €. Asta aș lua azi!", nl: "🎉 Vandaag is het zaterdag – dus zaterdagaanbieding! 28cm-pizza naar keuze + blikje drinken voor € 10,00 of dönerbord + blikje drinken voor € 12,50. Dat zou ik vandaag nemen!", sq: "🎉 Sot është e shtunë – pra oferta e së shtunës! Pica 28cm sipas dëshirës + pije në kanaçe 10,00 € ose pjatë döner + pije në kanaçe 12,50 €. Këtë do të merrja sot!", ku: "🎉 Îro Şemî ye – ango pêşniyara Şemiyê! Pizzaya 28cm li gorî dilê te + vexwarina qutî 10,00 € an teyra dönerê + vexwarina qutî 12,50 €. Min ê îro ev bigirta!", pl: "🎉 Dziś sobota – czyli oferta sobotnia! Dowolna pizza 28cm + napój w puszce za 10,00 € albo talerz kebaba + napój w puszce za 12,50 €. Ja bym to dziś wziął!" },
+  hintLunchToday: { de: "💡 Tipp: Heute ab 11:30 gibt's unser Mittagsangebot – Schnitzel, Pasta, Salat oder 28er-Pizza inkl. Getränk für 9,50 €.", en: "💡 Tip: from 11:30 today there's our lunch special – schnitzel, pasta, salad or 28cm pizza incl. drink for €9.50.", tr: "💡 İpucu: Bugün 11:30'dan itibaren öğle kampanyamız var – şnitzel, makarna, salata ya da 28'lik pizza + içecek 9,50 €.", ro: "💡 Sfat: azi de la 11:30 avem oferta de prânz – șnițel, paste, salată sau pizza 28cm + băutură 9,50 €.", nl: "💡 Tip: vandaag vanaf 11:30 ons lunchaanbod – schnitzel, pasta, salade of 28cm-pizza incl. drankje voor € 9,50.", sq: "💡 Këshillë: sot nga ora 11:30 oferta jonë e drekës – shnicel, makarona, sallatë ose pica 28cm + pije 9,50 €.", ku: "💡 Şîret: îro ji 11:30 ve pêşniyara me ya nîvro heye – şnîtzel, makarne, selete an pizzaya 28cm + vexwarin 9,50 €.", pl: "💡 Wskazówka: dziś od 11:30 oferta lunchowa – sznycel, makaron, sałatka lub pizza 28cm + napój za 9,50 €." },
+  hintLunchGeneral: { de: "💡 Tipp: Mo–Fr 11:30–14:00 gibt's unser Mittagsangebot – Schnitzel, Pasta, Salat oder 28er-Pizza inkl. Getränk für 9,50 €.", en: "💡 Tip: Mon–Fri 11:30–14:00 lunch special – schnitzel, pasta, salad or 28cm pizza incl. drink for €9.50.", tr: "💡 İpucu: Pzt–Cuma 11:30–14:00 öğle kampanyası – şnitzel, makarna, salata ya da 28'lik pizza + içecek 9,50 €.", ro: "💡 Sfat: Lun–Vin 11:30–14:00 oferta de prânz – șnițel, paste, salată sau pizza 28cm + băutură 9,50 €.", nl: "💡 Tip: ma–vr 11:30–14:00 lunchaanbod – schnitzel, pasta, salade of 28cm-pizza incl. drankje voor € 9,50.", sq: "💡 Këshillë: Hën–Pre 11:30–14:00 oferta e drekës – shnicel, makarona, sallatë ose pica 28cm + pije 9,50 €.", ku: "💡 Şîret: Duş–În 11:30–14:00 pêşniyara nîvro – şnîtzel, makarne, selete an pizzaya 28cm + vexwarin 9,50 €.", pl: "💡 Wskazówka: pon–pt 11:30–14:00 oferta lunchowa – sznycel, makaron, sałatka lub pizza 28cm + napój za 9,50 €." },
+  hintSaturday: { de: "💡 Tipp: Samstags gibt's 28cm-Pizza + Getränk für 10 € und Dönerteller + Getränk für 12,50 €.", en: "💡 Tip: on Saturdays there's 28cm pizza + drink for €10 and döner plate + drink for €12.50.", tr: "💡 İpucu: Cumartesileri 28cm pizza + içecek 10 €, döner tabağı + içecek 12,50 €.", ro: "💡 Sfat: sâmbăta pizza 28cm + băutură 10 € și farfurie döner + băutură 12,50 €.", nl: "💡 Tip: op zaterdag 28cm-pizza + drankje voor € 10 en dönerbord + drankje voor € 12,50.", sq: "💡 Këshillë: të shtunave pica 28cm + pije 10 € dhe pjatë döner + pije 12,50 €.", ku: "💡 Şîret: Şemiyan pizzaya 28cm + vexwarin 10 € û teyra dönerê + vexwarin 12,50 €.", pl: "💡 Wskazówka: w soboty pizza 28cm + napój za 10 € i talerz kebaba + napój za 12,50 €." },
   joppie: { de: "🥫 Ja! Neu bei uns: Joppiesauce – die holländische Kultsoße, cremig und leicht süß mit Curry & Zwiebeln. Als Portion für 2,00 € oder als Dip zu Pommes, Kapsalon & Co.", en: "🥫 Yes! New at our place: Joppie sauce – the Dutch cult sauce, creamy and slightly sweet with curry & onions. As a portion for €2.00 or as a dip with fries, Kapsalon & more.", tr: "🥫 Evet! Yeni: Joppie sos – Hollanda'nın efsane sosu, kremamsı ve hafif tatlı, köri ve soğanlı. Porsiyon 2,00 € ya da patates, Kapsalon gibi ürünlerin yanında dip sos olarak.", ro: "🥫 Da! Nou la noi: sos Joppie – sosul olandez de cult, cremos și ușor dulce, cu curry și ceapă. Porție 2,00 € sau ca dip la cartofi, Kapsalon și altele.", nl: "🥫 Ja! Nieuw bij ons: joppiesaus – de Hollandse cultsaus, romig en licht zoet met kerrie & ui. Als portie voor € 2,00 of als dip bij friet, Kapsalon & meer.", sq: "🥫 Po! E re te ne: salcë Joppie – salca kult holandeze, kremoze dhe pak e ëmbël me kerri & qepë. Racion 2,00 € ose si dip me patate, Kapsalon etj.", ku: "🥫 Erê! Nû li cem me: soza Joppie – soza navdar a Holandayê, kremî û hinekî şîrîn bi kerî û pîvaz. Wek porsiyon 2,00 € an wek dip bi kartol, Kapsalon û yên din re.", pl: "🥫 Tak! Nowość u nas: sos Joppie – kultowy holenderski sos, kremowy i lekko słodki z curry i cebulą. Porcja za 2,00 € albo jako dip do frytek, Kapsalonu i innych." },
   halal: { de: "☪️ Ja, 100% Halal! Alle unsere Produkte sind halal-zertifiziert.", en: "☪️ Yes, 100% Halal! All our products are halal-certified.", tr: "☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.", ro: "☪️ Da, 100% Halal! Toate produsele noastre sunt certificate halal.", nl: "☪️ Ja, 100% Halal! Al onze producten zijn halal-gecertificeerd.", sq: "☪️ Po, 100% Hallall! Të gjitha produktet tona janë të certifikuara hallall.", ku: "☪️ Erê, %100 Helal e! Hemû berhemên me bawernameya helal hene.", pl: "☪️ Tak, 100% Halal! Wszystkie nasze produkty mają certyfikat halal." },
   allergen: { de: "ⓘ Allergen- und Zusatzstoffinfos stehen bei jedem Artikel in der Speisekarte klein daneben, oder tippe oben auf \"ⓘ Allergene\".", en: "ⓘ Allergen and additive info is shown next to each item on the menu, or tap \"ⓘ Allergens\" at the top.", tr: "ⓘ Alerjen ve katkı madde bilgileri Speisekarte'de her ürünün yanında küçük harflerle yazıyor, üstteki \"ⓘ Allergene\" butonuna da bakabilirsin.", ro: "ⓘ Informațiile despre alergeni sunt afișate lângă fiecare produs din meniu, sau apasă \"ⓘ Alergeni\" sus.", nl: "ⓘ Allergie- en toevoegingsinfo staat bij elk artikel op de kaart, of tik boven op \"ⓘ Allergenen\".", sq: "ⓘ Informacioni për alergjenët shfaqet pranë çdo artikulli në menu, ose troko \"ⓘ Alergjenët\" lart.", ku: "ⓘ Agahiyên alerjiyê li tenişta her tiştî di menuyê de tê nîşandan, an li jor li ser \"ⓘ Alerji\" bitikîne.", pl: "ⓘ Informacje o alergenach są przy każdej pozycji w menu, lub dotknij \"ⓘ Alergeny\" u góry." },
@@ -2715,17 +2737,110 @@ const ASSISTANT_R = {
 };
 function ar(key, lang) { return ASSISTANT_R[key][lang] || ASSISTANT_R[key].de; }
 
+// ---- Zusatz-Intents: Budget, Ernährung/Allergene, Neuheiten ----
+const assistantPrice = (it) => it.price ?? it.priceSmall ?? 0;
+const assistantPool = () => ALL_MENU_ITEMS.filter((it) => it.catKey !== 'getraenke' && !/^Portion /.test(it.name) && (!it.weekend || isWeekendDay()));
+const assistantLine = (it, lang) => `• ${it.number ? `#${it.number} ` : ''}${mx(it.name, lang)} – ${formatItemPriceText(it)}`;
+function budgetReply(q, lang) {
+  const m1 = q.match(/(\d{1,3}(?:[.,]\d{1,2})?)\s*(?:€|euro|eur\b|avro|evro)/);
+  const m2 = q.match(/(?:unter|bis|budget|bütçe|under|below|max|onder|poniżej|nën|sub)\s*(\d{1,3}(?:[.,]\d{1,2})?)/);
+  const raw = (m1 && m1[1]) || (m2 && m2[1]);
+  if (!raw) return null;
+  const max = parseFloat(raw.replace(',', '.'));
+  if (!(max >= 2 && max <= 150)) return null;
+  const pool = assistantPool();
+  const fits = pool.filter((it) => assistantPrice(it) > 0 && assistantPrice(it) <= max).sort((a, b) => assistantPrice(b) - assistantPrice(a));
+  if (!fits.length) {
+    const min = Math.min(...pool.map(assistantPrice).filter((v) => v > 0));
+    return { intent: 'budget', text: ar('budgetNone', lang).replace('{max}', fmt(max)).replace('{min}', fmt(min)) };
+  }
+  const shown = fits.slice(0, 6);
+  let text = `${ar('budgetList', lang).replace('{max}', fmt(max))}\n${shown.map((it) => assistantLine(it, lang)).join('\n')}`;
+  if (fits.length > shown.length) text += `\n${ar('budgetMore', lang).replace('{n}', String(fits.length - shown.length))}`;
+  return { intent: 'budget', text };
+}
+const ASSISTANT_DIETS = [
+  { key: 'vegan', words: ['vegan'] },
+  { key: 'dietVeg', words: ['vegetar', 'vejetaryen', 'wegetaria', 'vegjetar', 'veggie', 'fleischlos', 'etsiz', 'meatless'] },
+  { key: 'dietGluten', words: ['gluten', 'glüten'], excl: ['a'] },
+  { key: 'dietEgg', words: ['ohne ei', 'eifrei', 'yumurta', 'egg', 'fără ou', 'zonder ei', 'pa vez', 'bê hêk', 'bez jaj'], excl: ['e'] },
+  { key: 'dietMilk', words: ['laktose', 'lactose', 'laktoz', 'lactoz', 'milchfrei', 'ohne milch', 'sütsüz', 'dairy', 'zonder melk', 'bez mleka', 'pa qumësht', 'bê şîr'], excl: ['i'] },
+  { key: 'dietNuts', words: ['nuss', 'nüss', 'fındık', 'fıstık', 'nuts', 'peanut', 'noten', 'nuci', 'arrë', 'orzech', 'gûz'], excl: ['c', 'g'] },
+];
+function dietReply(q, lang) {
+  const d = ASSISTANT_DIETS.find((x) => x.words.some((w) => q.includes(w)));
+  if (!d) return null;
+  if (d.key === 'vegan') return { intent: 'diet', text: ar('veganNote', lang) };
+  const pool = assistantPool();
+  let fits;
+  if (d.key === 'dietVeg') fits = pool.filter((it) => QUIZ_VEG_RE.test(it.name) || /vegetar/i.test(it.desc || ''));
+  else fits = pool.filter((it) => {
+    if (!it.alg) return false; // ohne Kennzeichnung keine Aussage
+    const codes = String(it.alg).split(',').map((c) => c.trim().toLowerCase());
+    return !d.excl.some((e) => codes.includes(e));
+  });
+  if (!fits.length) return { intent: 'diet', text: ar('dietNone', lang) + (d.key !== 'dietVeg' ? `\n\n${ar('allergyWarn', lang)}` : '') };
+  const shown = fits.slice(0, 8);
+  let text = `${ar('dietList', lang).replace('{label}', ar(d.key, lang))}\n${shown.map((it) => assistantLine(it, lang)).join('\n')}`;
+  if (fits.length > shown.length) text += `\n${ar('budgetMore', lang).replace('{n}', String(fits.length - shown.length))}`;
+  if (d.key !== 'dietVeg') text += `\n\n${ar('allergyWarn', lang)}`;
+  return { intent: 'diet', text };
+}
+function newItemsReply(q, lang) {
+  if (!['was ist neu', 'was gibt es neu', "was gibt's neu", 'neuheit', 'neues', 'yeni ne', 'yeni ürün', 'yenilik', "what's new", 'whats new', 'anything new', 'ce e nou', 'ce este nou', 'wat is nieuw', 'nieuwe', 'çfarë ka të re', 'të reja', 'çi nû', 'tiştên nû', 'co nowego', 'nowości'].some((w) => q.includes(w))) return null;
+  const items = ALL_MENU_ITEMS.filter((it) => it.catKey === 'neu');
+  if (!items.length) return null;
+  return { intent: 'new', catKey: 'neu', text: `${ar('newList', lang)}\n${items.map((it) => assistantLine(it, lang)).join('\n')}` };
+}
+function campaignBubble(lang) {
+  const now = new Date();
+  if (!getOpenStatus(now).open) return null;
+  const day = now.getDay();
+  const h = now.getHours() + now.getMinutes() / 60;
+  if (day >= 1 && day <= 5 && h >= 11.5 && h < 14) return ar('bubbleLunch', lang).replace('{min}', String(Math.max(1, Math.round((14 - h) * 60))));
+  if (day === 6) return ar('bubbleSaturday', lang);
+  return null;
+}
+
+// Liefert eine Antwort, wenn GERADE eine Aktion läuft (und der Laden offen
+// ist) — sonst null. Zeiten wie im LunchCountdown bzw. WeekendComboPromo.
+function activeCampaignReply(lang) {
+  const now = new Date();
+  if (!getOpenStatus(now).open) return null;
+  const day = now.getDay();
+  const h = now.getHours() + now.getMinutes() / 60;
+  if (day >= 1 && day <= 5 && h >= 11.5 && h < 14) {
+    const left = Math.max(1, Math.round((14 - h) * 60));
+    return { intent: 'campaign', text: ar('campLunch', lang).replace('{min}', String(left)) };
+  }
+  if (day === 6) return { intent: 'campaign', catKey: 'pizza', text: ar('campSaturday', lang) };
+  return null;
+}
+// Hinweis auf die NÄCHSTE Aktion, wenn gerade keine läuft.
+function nextCampaignHint(lang) {
+  const now = new Date();
+  const day = now.getDay();
+  const h = now.getHours() + now.getMinutes() / 60;
+  if ((day === 5 && h >= 14) || day === 6) return ar('hintSaturday', lang);
+  if (day >= 1 && day <= 5 && h < 11.5) return ar('hintLunchToday', lang);
+  return ar('hintLunchGeneral', lang);
+}
+
 function getAssistantReply(qRaw, lang) {
   const q = qRaw.toLowerCase().trim();
   const now = new Date();
   const status = getOpenStatus(now);
   const has = (...words) => words.some((w) => q.includes(w));
 
+  const budget = budgetReply(q, lang); if (budget) return budget;
+  const diet = dietReply(q, lang); if (diet) return diet;
+  const neu = newItemsReply(q, lang); if (neu) return neu;
+
   // 1) Numeric item lookup takes priority (e.g. "201", "25 numaralı pizza")
   const numMatch = q.match(/\d+/);
   if (numMatch) {
     const found = ALL_MENU_ITEMS.find((it) => it.number === numMatch[0]);
-    if (found) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', formatItemPriceText(found)).replace('{desc}', found.desc ? mx(found.desc, lang) : '') };
+    if (found) return { intent: 'item', itemId: found.id, text: ar('itemFound', lang).replace('{num}', found.number).replace('{name}', mx(found.name, lang)).replace('{price}', formatItemPriceText(found)).replace('{desc}', found.desc ? mx(found.desc, lang) : '') };
   }
 
   if (has('sipariş takip', 'wo ist meine bestellung', 'bestellung verfolgen', 'track order', 'sipariş nerede', 'bestellstatus')) {
@@ -2742,6 +2857,18 @@ function getAssistantReply(qRaw, lang) {
   }
   if (has('numara ile sipariş', 'nummer bestellen', 'order by number', 'nummerneingabe')) {
     return { intent: 'quickorder', text: ar('quickOrderInfo', lang) };
+  }
+  // Empfehlungs- UND Aktionsfragen zuerst: läuft gerade eine Aktion, wird
+  // die empfohlen, damit Kunden die Angebote tatsächlich mitbekommen.
+  const asksCampaign = has('angebot', 'aktion', 'rabatt', 'kampanya', 'indirim', 'fırsat', 'deal', 'discount', 'special offer', 'promo', 'ofert', 'aanbied', 'korting', 'zniżk', 'promocj', 'pêşniyar', 'zbritj');
+  const asksRecommend = has('öner', 'empfehl', 'empfiehl', 'ne yesem', 'was soll ich', 'recommend', 'suggest', 'vorschlag', 'polec', 'tipp');
+  if (asksCampaign || asksRecommend) {
+    const camp = activeCampaignReply(lang);
+    if (camp) return camp;
+    if (asksCampaign && !asksRecommend) return { intent: 'campaign_info', text: nextCampaignHint(lang) };
+    const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
+    const descPart = item.desc ? ` ${mx(item.desc, lang)}.` : '';
+    return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}.${descPart} ${ar('enjoy', lang)}\n\n${nextCampaignHint(lang)}` };
   }
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
     const tueOpen = isTuesdayOpenNow(now);
@@ -2775,11 +2902,6 @@ function getAssistantReply(qRaw, lang) {
   if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
     return { intent: 'order', text: orderingEnabled() ? ar('orderOn', lang) : ar('orderOff', lang) };
   }
-  if (has('öner', 'empfehl', 'ne yesem', 'was soll ich', 'recommend', 'vorschlag', 'polec')) {
-    const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
-    const descPart = item.desc ? ` ${mx(item.desc, lang)}.` : '';
-    return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}.${descPart} ${ar('enjoy', lang)}` };
-  }
   if (has('menü', 'menu', 'speisekarte', 'karte')) {
     return { intent: 'menu', text: ar('menuList', lang) };
   }
@@ -2787,8 +2909,8 @@ function getAssistantReply(qRaw, lang) {
   if (q.length > 2) {
     const nameMatch = ALL_MENU_ITEMS.find((it) => it.name.toLowerCase().includes(q) || q.includes(it.name.toLowerCase()));
     if (nameMatch) {
-      if (nameMatch.number) return { intent: 'item', text: ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
-      return { intent: 'item', text: ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
+      if (nameMatch.number) return { intent: 'item', itemId: nameMatch.id, text: ar('itemFound', lang).replace('{num}', nameMatch.number).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
+      return { intent: 'item', itemId: nameMatch.id, text: ar('itemFoundNoNum', lang).replace('{name}', mx(nameMatch.name, lang)).replace('{price}', formatItemPriceText(nameMatch)).replace('{desc}', nameMatch.desc ? mx(nameMatch.desc, lang) : '') };
     }
   }
   // 2b) "Grillteller" gibt es bei uns nicht als eigenes Gericht — häufig
@@ -2837,6 +2959,34 @@ function AIAssistant() {
   const [listening, setListening] = useState(false);
   const scrollRef = useRef(null);
   const recogRef = useRef(null);
+  // Ausverkauft-Daten (Bestellseite: IDs, Speisekarte: Flag am Artikel)
+  const [soldOut, setSoldOut] = useState({ ids: [], names: [] });
+  const soldOutLoaded = useRef(false);
+  useEffect(() => {
+    if (!open || soldOutLoaded.current) return;
+    soldOutLoaded.current = true;
+    Promise.all([safeGet('siteconfig:soldOut'), safeGet('siteconfig:tischMenu')]).then(([ids, tm]) => {
+      const names = (tm?.items || []).filter((it) => it.soldOut).map((it) => String(tischText(it.name, 'de')).toLowerCase());
+      setSoldOut({ ids: Array.isArray(ids) ? ids : [], names });
+    }).catch(() => {});
+  }, [open]);
+  const isSoldOut = (it) => !!it && (soldOut.ids.includes(it.id) || soldOut.names.includes(it.name.toLowerCase()));
+  // Aktions-Sprechblase am Roboter-Button
+  const [bubble, setBubble] = useState(null);
+  const [bubbleClosed, setBubbleClosed] = useState(() => { try { return !!sessionStorage.getItem('bk_camp_bubble_x'); } catch { return false; } });
+  useEffect(() => {
+    const upd = () => setBubble(campaignBubble(lang));
+    upd();
+    const tm = setInterval(upd, 60000);
+    return () => clearInterval(tm);
+  }, [lang]);
+  const closeBubble = (e) => { e.stopPropagation(); setBubbleClosed(true); try { sessionStorage.setItem('bk_camp_bubble_x', '1'); } catch {} };
+  const openFromBubble = () => {
+    const camp = activeCampaignReply(lang);
+    setOpen(true);
+    logEvent('assistant_bubble_click');
+    if (camp) setMessages((m) => [...(m.length ? m : [{ from: 'bot', text: t('assistantGreeting') }]), { from: 'bot', text: camp.text, intent: camp.intent, catKey: camp.catKey }]);
+  };
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -2868,7 +3018,18 @@ function AIAssistant() {
   const send = (text) => {
     const q = (text ?? input).trim();
     if (!q) return;
-    const { intent, text: reply, catKey } = getAssistantReply(q, lang);
+    const res0 = getAssistantReply(q, lang);
+    let { intent, text: reply, catKey } = res0;
+    if (res0.itemId) {
+      const it = ALL_MENU_ITEMS.find((x) => x.id === res0.itemId);
+      if (isSoldOut(it)) {
+        const alts = ALL_MENU_ITEMS.filter((x) => x.catKey === it.catKey && x.id !== it.id && !isSoldOut(x));
+        const alt = alts[Math.floor(Math.random() * alts.length)];
+        reply = ar('soldOut', lang).replace('{name}', mx(it.name, lang)) + (alt ? ar('soldOutAlt', lang).replace('{alt}', mx(alt.name, lang)).replace('{price}', formatItemPriceText(alt)) : '');
+        intent = 'soldout';
+        catKey = it.catKey;
+      }
+    }
     logEvent('assistant_' + intent, { q: q.slice(0, 200) });
     setInput('');
     if (intent !== 'fallback') {
@@ -2913,6 +3074,13 @@ function AIAssistant() {
 
   return (
     <>
+      {bubble && !open && !bubbleClosed && (
+        <div onClick={openFromBubble} role="button" className="fixed right-5 z-40 max-w-[230px] pl-3.5 pr-8 py-2.5 rounded-2xl text-xs font-black cursor-pointer" style={{ bottom: 92, background: CREAM, color: GREEN, boxShadow: '0 10px 26px rgba(21,56,38,.28)', border: `2px solid ${ORANGE}`, animation: 'modalCardUp .35s ease' }}>
+          {bubble}
+          <button onClick={closeBubble} aria-label="Close" className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.08)' }}><X size={11} color={GREEN} /></button>
+          <span className="absolute -bottom-2 right-6 w-3.5 h-3.5 rotate-45" style={{ background: CREAM, borderRight: `2px solid ${ORANGE}`, borderBottom: `2px solid ${ORANGE}` }} />
+        </div>
+      )}
       <button
         onClick={() => setOpen((v) => !v)}
         className="fixed bottom-5 right-5 z-40 w-16 h-16 rounded-full flex items-center justify-center"
@@ -2937,7 +3105,7 @@ function AIAssistant() {
                     ? { background: GREEN, color: '#fff', borderBottomRightRadius: 4 }
                     : { background: '#fff', color: GREEN, borderBottomLeftRadius: 4, boxShadow: '0 2px 8px rgba(21,56,38,.08)' }}
                 >
-                  <span>{m.text}</span>
+                  <span>{String(m.text).split('**').map((part, pi) => (pi % 2 === 1 ? <strong key={pi}>{part}</strong> : <React.Fragment key={pi}>{part}</React.Fragment>))}</span>
                   {m.from === 'bot' && (
                     <button onClick={() => speakText(m.text, lang)} className="flex-shrink-0 opacity-60" title="Vorlesen">🔊</button>
                   )}
@@ -2948,7 +3116,7 @@ function AIAssistant() {
                 {m.from === 'bot' && (m.intent === 'order' || m.intent === 'quickorder') && orderingEnabled() && (
                   <button onClick={() => go('whatsapp')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📋 Zur Speisekarte</button>
                 )}
-                {m.from === 'bot' && (m.intent === 'category' || m.intent === 'joppie') && m.catKey && (
+                {m.from === 'bot' && (m.intent === 'category' || m.intent === 'joppie' || m.intent === 'campaign' || m.intent === 'new' || m.intent === 'soldout') && m.catKey && (
                   <button
                     onClick={() => (orderingEnabled() ? go('whatsapp', { categoryMode: m.catKey }) : go('tischmenu', { initialCatHint: m.catKey }))}
                     className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white"
@@ -9861,7 +10029,7 @@ function StaffPanelView({ back }) {
                     const key = v.value.event.replace('assistant_', '');
                     byIntent[key] = (byIntent[key] || 0) + 1;
                   });
-                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', category: '🍕 Kategorie-Frage', joppie: '🥫 Joppiesauce', fallback: '🤔 Nicht verstanden' };
+                  const intentLabels = { hours: '🕐 Öffnungszeiten', address: '📍 Adresse', phone: '📞 Telefon', halal: '☪️ Halal', allergen: 'ⓘ Allergene', order: '🥙 Bestellung', delivery: '🚫 Lieferung', payment: '💳 Zahlung', steak: '🥩 Steak', recommend: '🎲 Empfehlung', menu: '📋 Speisekarte', item: '🍽️ Artikel-Suche', category: '🍕 Kategorie-Frage', joppie: '🥫 Joppiesauce', campaign: '🔥 Aktion empfohlen (lief gerade)', campaign_info: '💡 Aktionen erfragt', budget: '💶 Budget-Frage', bubble_click: '💬 Aktions-Blase angetippt', diet: '🌱 Ernährung/Allergene', new: '✨ Was ist neu?', soldout: '😕 Ausverkauft-Artikel gefragt', fallback: '🤔 Nicht verstanden' };
                   const intentOrder = Object.entries(byIntent).sort((a, b) => b[1] - a[1]);
                   const unrecognized = assistantEvents
                     .filter((v) => v.value.event === 'assistant_fallback' && v.value.q)
