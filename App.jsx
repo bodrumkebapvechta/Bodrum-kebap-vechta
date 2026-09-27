@@ -10740,6 +10740,40 @@ function KartenWheelView() {
 }
 
 
+// ---- Aktionspreise direkt in der Speisekarte ----
+// Zeigt während einer laufenden Aktion bei passenden Gerichten den Aktions-
+// preis und durchgestrichen den Normalpreis (Gericht + Dose Getränk), da die
+// Aktionen ein Getränk enthalten. Ohne echte Ersparnis wird nichts angezeigt.
+const CAMP_DRINK_PRICE = 2.5; // Dose (siehe Getränke g301 ff.)
+const CAMP_T = {
+  lunch: { de: '🔥 Mittagsangebot', en: '🔥 Lunch special', tr: '🔥 Öğle kampanyası', ro: '🔥 Ofertă prânz', nl: '🔥 Lunchaanbod', sq: '🔥 Oferta e drekës', ku: '🔥 Pêşniyara nîvro', pl: '🔥 Oferta lunchowa' },
+  saturday: { de: '🎉 Samstagsangebot', en: '🎉 Saturday special', tr: '🎉 Cumartesi kampanyası', ro: '🎉 Ofertă sâmbătă', nl: '🎉 Zaterdagaanbod', sq: '🎉 Oferta e së shtunës', ku: '🎉 Pêşniyara Şemiyê', pl: '🎉 Oferta sobotnia' },
+  inclDrink: { de: 'inkl. Getränk', en: 'incl. drink', tr: 'içecek dahil', ro: 'cu băutură', nl: 'incl. drankje', sq: 'me pije', ku: 'bi vexwarin', pl: 'z napojem' },
+  pizzaDrink: { de: '28 cm + Getränk', en: '28 cm + drink', tr: '28 cm + içecek', ro: '28 cm + băutură', nl: '28 cm + drankje', sq: '28 cm + pije', ku: '28 cm + vexwarin', pl: '28 cm + napój' },
+  tellerDrink: { de: 'inkl. Dose Getränk', en: 'incl. canned drink', tr: 'kutu içecek dahil', ro: 'cu băutură la doză', nl: 'incl. blikje', sq: 'me pije në kanaçe', ku: 'bi vexwarina qutî', pl: 'z napojem w puszce' },
+};
+function menuCampaignKind(now) {
+  if (!getOpenStatus(now).open) return null;
+  const day = now.getDay();
+  const h = now.getHours() + now.getMinutes() / 60;
+  if (day >= 1 && day <= 5 && h >= 11.5 && h < 14) return 'lunch';
+  if (day === 6) return 'saturday';
+  return null;
+}
+function itemCampaign(item, kind) {
+  if (!kind || item.soldOut) return null;
+  const cat = item.category || '';
+  let c = null;
+  if (kind === 'lunch') {
+    if (['imp-schnitzel', 'imp-nudeln', 'imp-salat'].includes(cat) && item.price && item.priceLarge === undefined) c = { price: 9.5, regular: item.price + CAMP_DRINK_PRICE, note: 'inclDrink' };
+    else if (cat === 'imp-pizza' && item.priceLarge) c = { price: 9.5, regular: item.priceLarge + CAMP_DRINK_PRICE, note: 'pizzaDrink' };
+  } else if (kind === 'saturday') {
+    if (cat === 'imp-pizza' && item.priceLarge) c = { price: PIZZA_COMBO_PRICE, regular: item.priceLarge + CAMP_DRINK_PRICE, note: 'pizzaDrink' };
+    else if (tischText(item.name, 'de') === 'Kebap Teller' && item.price) c = { price: DOENER_COMBO.price, regular: item.price + CAMP_DRINK_PRICE, note: 'tellerDrink' };
+  }
+  return c && c.regular - c.price >= 0.1 ? { ...c, kind } : null;
+}
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -10748,6 +10782,9 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [legendOpen, setLegendOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [tmLightbox, setTmLightbox] = useState(null);
+  const [campTick, setCampTick] = useState(() => Date.now());
+  useEffect(() => { const tm = setInterval(() => setCampTick(Date.now()), 60000); return () => clearInterval(tm); }, []);
+  const campKind = menuCampaignKind(new Date(campTick));
   const [photoOverrides, setPhotoOverrides] = useState({});
   useEffect(() => { safeGet('siteconfig:photoOverrides').then((r) => { if (r) setPhotoOverrides(r); }); }, []);
   const [tischPhotos, setTischPhotos] = useState({});
@@ -10987,6 +11024,19 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                     ) : (
                       <span className="text-sm font-black px-2.5 py-1 rounded-full" style={{ background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' }}>{fmt(item.price)}</span>
                     )}
+                    {(() => {
+                      const camp = itemCampaign(item, campKind);
+                      if (!camp) return null;
+                      const L = (k) => CAMP_T[k][lang] || CAMP_T[k].de;
+                      return (
+                        <div className="flex flex-col items-end px-2 py-1 rounded-xl mt-0.5" style={{ background: '#fdecd4', border: `1.5px solid ${ORANGE}` }}>
+                          <span className="text-[9px] font-black whitespace-nowrap" style={{ color: ORANGE }}>{L(camp.kind)}</span>
+                          <span className="text-[10px] font-bold line-through" style={{ color: '#a4906c' }}>{fmt(camp.regular)}</span>
+                          <span className="text-sm font-black leading-tight" style={{ color: CHILI }}>{fmt(camp.price)}</span>
+                          <span className="text-[9px] font-bold whitespace-nowrap" style={{ color: '#8a5a1f' }}>{L(camp.note)}</span>
+                        </div>
+                      );
+                    })()}
                     <button onClick={() => speakText(item.priceLarge !== undefined ? `${mx(tischText(item.name, 'de'), lang)}. 22 cm: ${fmt(item.price)}. 28 cm: ${fmt(item.priceLarge)}` : `${mx(tischText(item.name, 'de'), lang)}. ${fmt(item.price)}`, lang)} className="text-sm opacity-50" title="Vorlesen">🔊</button>
                   </div>
                 </div>
