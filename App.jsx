@@ -7842,20 +7842,15 @@ function OrderTrackView({ back, initialAction, onConsumeAction }) {
 function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
   const isOpen = openId === id;
   return (
-    <div className="rounded-2xl mb-3 overflow-hidden" style={{ background: '#fff', border: `1.5px solid ${isOpen ? '#e9d19a' : '#f0e5cf'}`, boxShadow: isOpen ? '0 8px 22px rgba(21,56,38,.1)' : '0 2px 8px rgba(21,56,38,.04)', transition: 'box-shadow .2s, border-color .2s' }}>
-      <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center gap-3 px-4 py-4 text-left">
-        <span
-          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
-          style={{ background: isOpen ? `linear-gradient(135deg, ${GOLD}, #ffb020)` : '#f7f0e2', transition: 'background .2s' }}
-        >
-          {icon}
-        </span>
-        <span className="flex-1 font-black text-sm" style={{ color: GREEN, letterSpacing: '.01em' }}>{title}</span>
-        <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px]" style={{ background: isOpen ? GOLD : '#f7f0e2', color: GREEN, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s, background .2s' }}>▼</span>
+    <div className="rounded-[14px] mb-2 overflow-hidden bg-white" style={{ border: `1px solid ${isOpen ? '#cfdcd3' : '#e4dfd4'}`, transition: 'border-color .2s' }}>
+      <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center gap-3 px-3.5 py-3 text-left">
+        <span className="w-8 h-8 rounded-[10px] flex items-center justify-center flex-shrink-0 text-[15px]" style={{ background: isOpen ? '#e3eee7' : '#f4f2ed', transition: 'background .2s' }}>{icon}</span>
+        <span className="flex-1 font-semibold text-[14px]" style={{ color: '#1c2b22' }}>{title}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a8478" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s', flexShrink: 0 }}><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {isOpen && (
-        <div className="px-4 pb-4 pt-0.5" style={{ borderTop: '1px solid #f5ecd8' }}>
-          <div className="pt-3.5">{children}</div>
+        <div className="px-3.5 pb-3.5" style={{ borderTop: '1px solid #efebe3' }}>
+          <div className="pt-3">{children}</div>
         </div>
       )}
     </div>
@@ -8077,6 +8072,12 @@ function StatsDetailModal({ data, onClose }) {
     </div>
   );
 }
+
+// Design-Tokens für den Personal-Bereich (hell, ruhig, klar)
+const PANEL_BG = '#f4f2ed';
+const PANEL_LINE = '#e4dfd4';
+const PANEL_TEXT = '#1c2b22';
+const PANEL_MUTED = '#8a8478';
 
 function StaffPanelView({ back }) {
   const { t, lang } = React.useContext(LangContext);
@@ -9375,17 +9376,15 @@ function StaffPanelView({ back }) {
           </div>
         </div>
       ) : (
-        <div className="relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.09), transparent 55%), linear-gradient(165deg, #16241c, #1d3527 45%, #17281e)`, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 280, height: 280, top: -80, right: -70, background: 'radial-gradient(circle, rgba(255,199,56,.11), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 10s ease-in-out infinite' }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 240, height: 240, top: '40%', left: -80, background: 'radial-gradient(circle, rgba(45,106,79,.2), transparent 70%)', filter: 'blur(16px)', animation: 'softFloat 12s ease-in-out infinite reverse' }} />
+        <div className="relative overflow-hidden" style={{ background: PANEL_BG, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
           {lastLoginAt && (
             <div className="px-5 pb-3 text-center">
-              <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,.45)' }}>🕐 Letzter Zugang: {new Date(lastLoginAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} Uhr</span>
+              <span className="text-[11px] font-semibold" style={{ color: PANEL_MUTED }}>🕐 Letzter Zugang: {new Date(lastLoginAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} Uhr</span>
             </div>
           )}
           {tab === 'wheel' && (
             <div className="px-5">
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎡 GEWINNCODE PRÜFEN</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>🎡 GEWINNCODE PRÜFEN</div>
               <div className="flex gap-2 mb-4">
                 <input value={wheelCode} onChange={(e) => setWheelCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && wheelSearch()} placeholder={t('prizeCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#fff', color: GREEN, border: '1.5px solid #f0e5cf' }} />
                 <button onClick={wheelSearch} className="px-5 rounded-xl font-bold text-sm" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{t('searchBtn')}</button>
@@ -9427,7 +9426,7 @@ function StaffPanelView({ back }) {
                           <div className="text-[9px] font-bold" style={{ color: '#a4906c' }}>Offen</div>
                         </div>
                       </div>
-                      <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>NACH GEWINN</div>
+                      <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>NACH GEWINN</div>
                       {Object.entries(wheelStats.byPrize).sort((a, b) => b[1] - a[1]).map(([prize, count]) => (
                         <div key={prize} className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid #f7f0e2' }}>
                           <span className="text-sm font-semibold" style={{ color: GREEN }}>{prize}</span>
@@ -9442,7 +9441,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'orders' && (
             <div className="px-5">
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📦 {t('staffOrdersTab').toUpperCase()}</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>📦 {t('staffOrdersTab').toUpperCase()}</div>
               {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
               {sortedOrders.length === 0 && (
                 <div className="text-center py-14 rounded-2xl" style={{ background: '#fff', border: '1.5px dashed #e3d5bd' }}>
@@ -9495,15 +9494,15 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'settings' && (
             <div className="px-5">
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>⚙️ BEREICH WÄHLEN</div>
-              <div className="flex gap-2 overflow-x-auto pb-1 mb-5" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>⚙️ BEREICH WÄHLEN</div>
+              <div className="flex gap-1 overflow-x-auto p-1 mb-5 rounded-[14px]" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}`, WebkitOverflowScrolling: 'touch' }}>
                 {[
                   { key: 'sicherheit', label: '🔒 Sicherheit' },
                   { key: 'fotos', label: '📸 Fotos & Werbung' },
                   { key: 'kommunikation', label: '💬 Kommunikation' },
                   { key: 'erweitert', label: '🧪 Erweitert' },
                 ].map((g) => (
-                  <button key={g.key} onClick={() => setSettingsGroup(g.key)} className="flex-shrink-0 px-4 py-3 rounded-2xl font-bold text-xs whitespace-nowrap" style={settingsGroup === g.key ? { background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, color: '#fff', boxShadow: '0 6px 16px rgba(21,56,38,.3)' } : { background: '#fff', color: '#7c6d55', border: '1.5px solid #e9dcc0' }}>
+                  <button key={g.key} onClick={() => setSettingsGroup(g.key)} className="flex-shrink-0 px-3.5 py-2 rounded-[10px] font-semibold text-xs whitespace-nowrap transition-colors" style={settingsGroup === g.key ? { background: GREEN, color: '#fff' } : { background: 'transparent', color: PANEL_MUTED }}>
                     {g.label}
                   </button>
                 ))}
@@ -10000,21 +9999,21 @@ function StaffPanelView({ back }) {
                   <div className="font-black text-4xl text-white mb-0.5">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
                   <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
                 </div>
-                <div className="text-[10px] font-black tracking-widest mb-2.5" style={{ color: '#a4906c' }}>📊 ÜBERBLICK</div>
+                <div className="text-[10px] font-bold tracking-[.14em] mb-2.5" style={{ color: PANEL_MUTED }}>📊 ÜBERBLICK</div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
+                  <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
+                  <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
+                  <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
                   </button>
-                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="bg-white rounded-2xl p-4 text-center" style={{ border: '1.5px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.05)' }}>
+                  <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </button>
@@ -10249,7 +10248,7 @@ function StaffPanelView({ back }) {
                   <div className="text-[11px] text-white/80 truncate">Galerie, Foto-Upload, Ankündigung-Bilder</div>
                 </div>
               </button>
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📋 {t('staffMenuTab').toUpperCase()}</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>📋 {t('staffMenuTab').toUpperCase()}</div>
               <div className="bg-white rounded-2xl p-4 mb-5" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
                 <div className="flex items-center gap-2.5 mb-3">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#fdecd4' }}>🥦</div>
@@ -10351,7 +10350,7 @@ function StaffPanelView({ back }) {
                 </div>
                 <span className="ml-auto text-white text-xl relative">→</span>
               </button>
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>💬 NACHRICHTEN</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>💬 NACHRICHTEN</div>
               {contactMessages.length === 0 && (
                 <div className="text-center py-14 rounded-2xl" style={{ background: '#fff', border: '1.5px dashed #e3d5bd' }}>
                   <div className="text-5xl mb-3 opacity-70">📭</div>
@@ -10377,7 +10376,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'loyalty' && (
             <div className="px-5">
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>🎟️ STEMPELKARTEN</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>🎟️ STEMPELKARTEN</div>
 
               {loyaltyStats && (
                 <div className="bg-white rounded-2xl p-4 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
@@ -10500,7 +10499,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'photos' && (
             <div className="px-5">
-              <div className="text-[10px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>📷 {t('staffPhotosTab').toUpperCase()}</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>📷 {t('staffPhotosTab').toUpperCase()}</div>
               <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('photoUrlHint')}</p>
               <input value={photoSearch} onChange={(e) => { setPhotoSearch(e.target.value); setEditingPhotoItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
               {!editingPhotoItem && photoSearchResults.map((item) => (
@@ -10553,9 +10552,9 @@ function StaffPanelView({ back }) {
                   {photoSaveMsg && <div className="text-center text-sm font-bold mt-3 py-2 rounded-lg" style={{ background: '#e8f5ec', color: '#1d6b3a' }}>{photoSaveMsg}</div>}
                 </div>
               )}
-              <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
-                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">👁️</span><h3 className="font-black text-sm" style={{ color: CREAM }}>Foto-Galerie verwalten ({SITE_PHOTOS.length - hiddenPhotos.filter((s) => SITE_PHOTOS.some((p) => p.src === s)).length + extraGalleryPhotos.length}/{SITE_PHOTOS.length + extraGalleryPhotos.length})</h3></div>
-                <p className="text-[11px] mb-3" style={{ color: '#d9cdb4' }}>Feste Fotos kannst du nicht löschen, nur ausblenden. Eigene hochgeladene Fotos (mit ✕) kannst du direkt löschen.</p>
+              <div className="mt-6 pt-5" style={{ borderTop: `1px solid ${PANEL_LINE}` }}>
+                <div className="flex items-center gap-2 mb-1.5"><span className="text-lg">👁️</span><h3 className="font-black text-sm" style={{ color: PANEL_TEXT }}>Foto-Galerie verwalten ({SITE_PHOTOS.length - hiddenPhotos.filter((s) => SITE_PHOTOS.some((p) => p.src === s)).length + extraGalleryPhotos.length}/{SITE_PHOTOS.length + extraGalleryPhotos.length})</h3></div>
+                <p className="text-[11px] mb-3" style={{ color: PANEL_MUTED }}>Feste Fotos kannst du nicht löschen, nur ausblenden. Eigene hochgeladene Fotos (mit ✕) kannst du direkt löschen.</p>
                 <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-4 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: galleryUploadBusy ? 0.6 : 1 }}>
                   <span className="text-base">📷</span> {galleryUploadBusy ? '…' : t('uploadGalleryPhotoBtn')}
                   <input type="file" accept="image/*" className="hidden" disabled={galleryUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleGalleryFileUpload(f); e.target.value = ''; }} />
@@ -10595,62 +10594,33 @@ function StaffPanelView({ back }) {
             </div>
           )}
 
-          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: '#faf3e4', borderTop: '1px solid #f0e5cf', boxShadow: '0 -8px 24px rgba(0,0,0,.18)' }}>
-            <div className="relative" style={{ height: 66 }}>
-              {(() => {
-                const staffTabs = [
-                  ...(orderingEnabled() ? [{ key: 'orders', icon: '🧾', label: 'Bestellungen' }] : []),
-                  { key: 'messages', icon: '💬', label: 'Nachrichten' },
-                  { key: 'loyalty', icon: '🎟️', label: 'Stempelkarten' },
-                  { key: 'menu', icon: '📋', label: t('staffMenuTab') },
-                  { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
-                  { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
-                ];
-                const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'messages' : tab);
-                const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
-                return (
-                  <>
-                    <div className="flex items-center h-full">
-                      {staffTabs.map((item, i) => (
-                        <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full">
-                          <span className="text-lg" style={{ opacity: i === activeIdx ? 0 : 0.5, transition: 'opacity .2s' }}>{item.icon}</span>
-                          <span className="font-bold text-center leading-[1.1]" style={{ fontSize: 8.5, color: i === activeIdx ? ORANGE : '#a4906c', opacity: i === activeIdx ? 0 : 1, transition: 'opacity .2s' }}>{item.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                    <div
-                      className="rounded-full flex items-center justify-center pointer-events-none"
-                      style={{
-                        width: 58, height: 58,
-                        position: 'absolute', top: -26,
-                        left: `${(activeIdx + 0.5) * (100 / staffTabs.length)}%`,
-                        transform: 'translateX(-50%)',
-                        background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`,
-                        boxShadow: '0 8px 20px rgba(230,90,10,.5)',
-                        border: '5px solid #faf3e4',
-                        transition: 'left .32s cubic-bezier(.34,1.3,.64,1)',
-                      }}
-                    >
-                      <span className="text-2xl">{staffTabs[activeIdx].icon}</span>
-                    </div>
-                    <div
-                      className="absolute pointer-events-none font-bold text-center"
-                      style={{
-                        bottom: 6,
-                        left: `${(activeIdx + 0.5) * (100 / staffTabs.length)}%`,
-                        transform: 'translateX(-50%)',
-                        fontSize: 8.5,
-                        color: ORANGE,
-                        transition: 'left .32s cubic-bezier(.34,1.3,.64,1)',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {staffTabs[activeIdx].label}
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
+          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-5xl mx-auto" style={{ background: 'rgba(255,255,255,.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderTop: `1px solid ${PANEL_LINE}`, paddingBottom: 'env(safe-area-inset-bottom)' }}>
+            {(() => {
+              const staffTabs = [
+                ...(orderingEnabled() ? [{ key: 'orders', icon: '🧾', label: 'Bestellungen' }] : []),
+                { key: 'messages', icon: '💬', label: 'Nachrichten' },
+                { key: 'loyalty', icon: '🎟️', label: 'Stempel' },
+                { key: 'menu', icon: '📋', label: t('staffMenuTab') },
+                { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
+                { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
+              ];
+              const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'messages' : tab);
+              return (
+                <div className="flex items-stretch" style={{ height: 62 }}>
+                  {staffTabs.map((item) => {
+                    const active = item.key === effectiveTab;
+                    return (
+                      <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-center gap-1 flex-1">
+                        <span className="flex items-center justify-center rounded-full transition-all" style={{ width: 44, height: 26, background: active ? '#e3eee7' : 'transparent' }}>
+                          <span className="text-[17px] transition-all" style={{ filter: active ? 'none' : 'grayscale(1)', opacity: active ? 1 : 0.55 }}>{item.icon}</span>
+                        </span>
+                        <span className="text-center leading-none" style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? GREEN : PANEL_MUTED }}>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
