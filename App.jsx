@@ -1587,7 +1587,7 @@ function wheelConicGradient() {
 }
 
 /* ============ SHARED UI ============ */
-function TopBar({ onHome, title, dark = true }) {
+function TopBar({ onHome, title, dark = true, staffActions }) {
   const { t, go, lang, setLang } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
   return (
@@ -1610,7 +1610,36 @@ function TopBar({ onHome, title, dark = true }) {
         <button onClick={() => setGlobalNavOpen((v) => !v)} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.45)' }}>
           {globalNavOpen ? <X size={19} color="#fff" /> : <MenuIcon size={19} color="#fff" />}
         </button>
-        {globalNavOpen && (
+        {globalNavOpen && staffActions && (
+          <>
+            <div className="fixed inset-0" style={{ zIndex: 199, background: 'rgba(20,28,24,.18)' }} onClick={() => setGlobalNavOpen(false)} />
+            <div className="absolute top-12 right-0 w-64 rounded-[16px] overflow-hidden" style={{ background: '#fff', border: '1px solid #e4dfd4', boxShadow: '0 16px 40px rgba(20,28,24,.18)', zIndex: 200, animation: 'modalCardUp .22s cubic-bezier(.25,.46,.45,.94)' }}>
+              <div className="px-4 pt-3.5 pb-2 text-[10px] font-bold tracking-[.14em]" style={{ color: '#8a8478' }}>PERSONAL-MENÜ</div>
+              {[
+                { icon: '🔍', label: 'Gericht / Nummer suchen', run: staffActions.onLookup },
+                { icon: '📋', label: 'Speisekarte ansehen', run: () => go('tischmenu') },
+                { icon: '🌐', label: 'Zur Website', run: () => go('home') },
+              ].map((it) => (
+                <button key={it.label} onClick={() => { setGlobalNavOpen(false); it.run(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left active:bg-[#f7f5f0]">
+                  <span className="w-8 h-8 rounded-[9px] flex items-center justify-center flex-shrink-0 text-[15px]" style={{ background: '#f4f2ed' }}>{it.icon}</span>
+                  <span className="text-[14px] font-medium" style={{ color: '#1c2b22' }}>{it.label}</span>
+                </button>
+              ))}
+              <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="w-full flex items-center gap-3 px-4 py-2.5 active:bg-[#f7f5f0]">
+                <span className="w-8 h-8 rounded-[9px] flex items-center justify-center flex-shrink-0" style={{ background: '#f4f2ed' }}><Instagram size={15} color="#1c2b22" /></span>
+                <span className="text-[14px] font-medium" style={{ color: '#1c2b22' }}>Instagram</span>
+              </a>
+              <div className="px-4 py-2.5" style={{ borderTop: '1px solid #efebe3' }}>
+                <LanguageSwitcher lang={lang} setLang={setLang} />
+              </div>
+              <button onClick={() => { setGlobalNavOpen(false); staffActions.onLogout(); }} className="w-full flex items-center gap-3 px-4 py-3 text-left" style={{ borderTop: '1px solid #efebe3' }}>
+                <span className="w-8 h-8 rounded-[9px] flex items-center justify-center flex-shrink-0" style={{ background: '#fdf1ef' }}><Lock size={15} color={CHILI} /></span>
+                <span className="text-[14px] font-semibold" style={{ color: CHILI }}>Abmelden</span>
+              </button>
+            </div>
+          </>
+        )}
+        {globalNavOpen && !staffActions && (
           <>
             <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
             <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
@@ -8073,6 +8102,14 @@ function StatsDetailModal({ data, onClose }) {
   );
 }
 
+function PanelSwitch({ on, onColor }) {
+  return (
+    <span className="relative inline-block flex-shrink-0" style={{ width: 42, height: 24, borderRadius: 999, background: on ? (onColor || CHILI) : '#d9d4c9', transition: 'background .2s' }}>
+      <span style={{ position: 'absolute', top: 2, left: on ? 20 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.25)', transition: 'left .2s' }} />
+    </span>
+  );
+}
+
 // Design-Tokens für den Personal-Bereich (hell, ruhig, klar)
 const PANEL_BG = '#f4f2ed';
 const PANEL_LINE = '#e4dfd4';
@@ -9276,7 +9313,10 @@ function StaffPanelView({ back }) {
 
   return (
     <div className="pb-10">
-      <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} /></div>
+      <div style={{ background: GREEN }}><TopBar onHome={back} title={t('titleStaff')} staffActions={ok ? {
+        onLookup: () => { setTab('menu'); setEditingItem(null); window.scrollTo({ top: 0, behavior: 'smooth' }); },
+        onLogout: () => { try { localStorage.removeItem('bk_staff_remember_v1'); } catch {} setOk(false); },
+      } : undefined} /></div>
 
       {!ok ? (
         <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.1), transparent 60%), linear-gradient(165deg, #081209, #123420 50%, #0a1a10)` }}>
@@ -10226,71 +10266,70 @@ function StaffPanelView({ back }) {
           <StatsDetailModal data={statsModal} onClose={() => setStatsModal(null)} />
           {tab === 'menu' && (
             <div className="px-5">
-              <button
-                onClick={() => setTischAdminOpen(true)}
-                className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-3"
-                style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.3)' }}
-              >
-                <span className="text-2xl">🍽️</span>
-                <div className="min-w-0">
-                  <div className="font-black text-sm text-white truncate">Speisekarte bearbeiten →</div>
-                  <div className="text-[11px] text-white/80 truncate">Preise, Namen, Fotos, neue Produkte, löschen</div>
-                </div>
-              </button>
-              <button
-                onClick={() => setTab('photos')}
-                className="w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-left mb-5"
-                style={{ background: GREEN, boxShadow: '0 8px 20px rgba(21,56,38,.25)' }}
-              >
-                <span className="text-2xl">📷</span>
-                <div className="min-w-0">
-                  <div className="font-black text-sm text-white truncate">Fotos verwalten →</div>
-                  <div className="text-[11px] text-white/80 truncate">Galerie, Foto-Upload, Ankündigung-Bilder</div>
-                </div>
-              </button>
+              <div className="bg-white rounded-[14px] mb-5 overflow-hidden" style={{ border: `1px solid ${PANEL_LINE}` }}>
+                {[
+                  { onClick: () => setTischAdminOpen(true), icon: '🍽️', tile: '#fdecd4', title: 'Speisekarte bearbeiten', sub: 'Preise, Namen, Fotos, neue Produkte, löschen' },
+                  { onClick: () => setTab('photos'), icon: '📷', tile: '#e3eee7', title: 'Fotos verwalten', sub: 'Galerie, Foto-Upload, Ankündigung-Bilder' },
+                ].map((row, i) => (
+                  <button key={row.title} onClick={row.onClick} className="w-full flex items-center gap-3 px-3.5 py-3 text-left active:bg-[#f7f5f0]" style={i ? { borderTop: '1px solid #efebe3' } : undefined}>
+                    <span className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg" style={{ background: row.tile }}>{row.icon}</span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block font-semibold text-[14px] truncate" style={{ color: PANEL_TEXT }}>{row.title}</span>
+                      <span className="block text-[11.5px] truncate" style={{ color: PANEL_MUTED }}>{row.sub}</span>
+                    </span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a8478" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="m9 6 6 6-6 6" /></svg>
+                  </button>
+                ))}
+              </div>
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>📋 {t('staffMenuTab').toUpperCase()}</div>
-              <div className="bg-white rounded-2xl p-4 mb-5" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
-                <div className="flex items-center gap-2.5 mb-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm" style={{ background: '#fdecd4' }}>🥦</div>
-                  <div className="font-black text-sm" style={{ color: GREEN }}>{t('extrasSoldOutTitle')}</div>
+              <div className="bg-white rounded-[14px] mb-5 overflow-hidden" style={{ border: `1px solid ${PANEL_LINE}` }}>
+                <div className="flex items-center gap-3 px-3.5 pt-3 pb-2">
+                  <span className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg" style={{ background: '#fdecd4' }}>🥦</span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-semibold text-[14px]" style={{ color: PANEL_TEXT }}>{t('extrasSoldOutTitle')}</span>
+                    <span className="block text-[11.5px] leading-snug" style={{ color: PANEL_MUTED }}>{t('extrasSoldOutHint')}</span>
+                  </span>
                 </div>
-                <button onClick={toggleChickenSoldOut} className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl mb-2.5" style={{ background: chickenSoldOut ? CHILI : '#f7f0e2' }}>
-                  <span className="text-lg flex-shrink-0">🍗</span>
-                  <span className="flex-1 min-w-0 text-left font-bold text-sm" style={{ color: chickenSoldOut ? '#fff' : GREEN }}>{t('chickenSoldOutLabel')}</span>
-                  <span className="text-[10px] font-black px-2 py-1 rounded-full flex-shrink-0" style={chickenSoldOut ? { background: '#fff', color: CHILI } : { background: '#fff', color: '#7c6d55' }}>{chickenSoldOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+                <button onClick={toggleChickenSoldOut} className="w-full flex items-center gap-3 px-3.5 py-3 text-left" style={{ borderTop: '1px solid #efebe3', background: chickenSoldOut ? '#fdf1ef' : 'transparent' }}>
+                  <span className="text-lg flex-shrink-0 w-9 text-center">🍗</span>
+                  <span className="flex-1 min-w-0 font-medium text-[14px]" style={{ color: chickenSoldOut ? CHILI : PANEL_TEXT }}>{t('chickenSoldOutLabel')}</span>
+                  <PanelSwitch on={chickenSoldOut} />
                 </button>
-                <p className="text-[11px] mb-3 leading-relaxed" style={{ color: '#a4906c' }}>{t('extrasSoldOutHint')}</p>
+                <div className="px-3.5 pb-3 pt-2.5" style={{ borderTop: '1px solid #efebe3' }}>
                 <div className="relative mb-2">
-                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" color="#c4b697" />
-                  <input value={extraSearch} onChange={(e) => setExtraSearch(e.target.value)} placeholder={t('extraSearchPh')} className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" color="#a9a397" />
+                  <input value={extraSearch} onChange={(e) => setExtraSearch(e.target.value)} placeholder={t('extraSearchPh')} className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] text-sm font-medium outline-none" style={{ background: PANEL_BG, color: PANEL_TEXT, border: `1px solid ${PANEL_LINE}` }} />
                 </div>
                 {extraSearchResults.length > 0 && (
                   <div className="flex flex-col gap-1.5">
                     {extraSearchResults.map((name) => {
                       const isOut = soldOutExtras.includes(name);
                       return (
-                        <button key={name} onClick={() => toggleSoldOutExtra(name)} className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl" style={isOut ? { background: CHILI } : { background: '#f7f0e2' }}>
-                          <span className="font-bold text-sm" style={{ color: isOut ? '#fff' : GREEN }}>{mx(name, lang)}</span>
-                          <span className="text-[10px] font-black px-2 py-1 rounded-full" style={isOut ? { background: '#fff', color: CHILI } : { background: '#fff', color: '#7c6d55' }}>{isOut ? t('markSoldOutOn') : t('markSoldOutOff')}</span>
+                        <button key={name} onClick={() => toggleSoldOutExtra(name)} className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-[10px]" style={{ background: isOut ? '#fdf1ef' : 'transparent' }}>
+                          <span className="font-medium text-sm" style={{ color: isOut ? CHILI : PANEL_TEXT }}>{mx(name, lang)}</span>
+                          <PanelSwitch on={isOut} />
                         </button>
                       );
                     })}
                   </div>
                 )}
                 {soldOutExtras.length > 0 && !extraSearch && (
-                  <div className="flex items-center gap-1.5 mt-2 px-0.5">
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{soldOutExtras.length}</span>
-                    <span className="text-[11px] font-bold" style={{ color: '#8a5a1f' }}>{t('editedPricesCount')}</span>
+                  <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                    <span className="text-[11px] font-semibold" style={{ color: CHILI }}>Ausverkauft:</span>
+                    {soldOutExtras.map((n) => (
+                      <button key={n} onClick={() => toggleSoldOutExtra(n)} className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#fdf1ef', color: CHILI, border: '1px solid #f5d0c9' }}>{mx(n, lang)} ✕</button>
+                    ))}
                   </div>
                 )}
+                </div>
               </div>
-              <div className="text-[10px] font-black tracking-widest mb-2 mt-1" style={{ color: '#a4906c' }}>🔍 PRODUKT SUCHEN & BEARBEITEN</div>
+              <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>🔍 PRODUKT SUCHEN & BEARBEITEN</div>
               <div className="relative mb-3">
                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" color="#c4b697" />
-                <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#fff', color: GREEN, boxShadow: '0 2px 8px rgba(21,56,38,.06)' }} />
+                <input value={menuSearch} onChange={(e) => { setMenuSearch(e.target.value); setEditingItem(null); }} placeholder={t('menuSearchPh')} className="w-full pl-10 pr-4 py-3 rounded-[12px] text-sm font-medium outline-none" style={{ background: '#fff', color: PANEL_TEXT, border: `1px solid ${PANEL_LINE}` }} />
               </div>
               {!editingItem && menuSearchResults.map((item) => (
-                <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left rounded-2xl p-3.5 mb-2.5 flex items-center justify-between" style={{ background: '#fff', border: '1px solid #f0e5cf', boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+                <button key={item.id} onClick={() => selectMenuItem(item)} className="w-full text-left rounded-[12px] px-3.5 py-3 mb-1.5 flex items-center justify-between gap-3" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}` }}>
                   <span className="font-bold text-sm" style={{ color: GREEN }}>{menuNum(item.id) && <span style={{ color: ORANGE }}>{menuNum(item.id)} · </span>}{item.name}{priceOverrides[item.id] && <span className="ml-2 text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: GOLD, color: GREEN }}>{t('editedBadge')}</span>}</span>
                   <span className="text-xs font-semibold" style={{ color: CHILI }}>{item.priceLarge !== undefined ? `${fmt(item.priceSmall)} / ${fmt(item.priceLarge)}` : fmt(item.price)}</span>
                 </button>
@@ -10605,19 +10644,21 @@ function StaffPanelView({ back }) {
                 { key: 'analytics', icon: '📊', label: t('staffAnalyticsTab') },
               ];
               const effectiveTab = tab === 'photos' ? 'menu' : (tab === 'wheel' ? 'messages' : tab);
+              const activeIdx = Math.max(0, staffTabs.findIndex((it) => it.key === effectiveTab));
               return (
-                <div className="flex items-stretch" style={{ height: 62 }}>
-                  {staffTabs.map((item) => {
-                    const active = item.key === effectiveTab;
+                <div className="relative flex items-stretch" style={{ height: 62 }}>
+                  {staffTabs.map((item, i) => {
+                    const active = i === activeIdx;
                     return (
-                      <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-center gap-1 flex-1">
-                        <span className="flex items-center justify-center rounded-full transition-all" style={{ width: 44, height: 26, background: active ? '#e3eee7' : 'transparent' }}>
-                          <span className="text-[17px] transition-all" style={{ filter: active ? 'none' : 'grayscale(1)', opacity: active ? 1 : 0.55 }}>{item.icon}</span>
-                        </span>
-                        <span className="text-center leading-none" style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? GREEN : PANEL_MUTED }}>{item.label}</span>
+                      <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-end gap-1 flex-1 pb-2">
+                        <span className="text-[18px] transition-opacity" style={{ filter: 'grayscale(1)', opacity: active ? 0 : 0.55 }}>{item.icon}</span>
+                        <span className="text-center leading-none" style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? ORANGE : PANEL_MUTED }}>{item.label}</span>
                       </button>
                     );
                   })}
+                  <div className="absolute rounded-full flex items-center justify-center pointer-events-none" style={{ width: 58, height: 58, top: -24, left: `${(activeIdx + 0.5) * (100 / staffTabs.length)}%`, transform: 'translateX(-50%)', background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.45)', border: '5px solid #fff', transition: 'left .32s cubic-bezier(.34,1.3,.64,1)' }}>
+                    <span className="text-2xl">{staffTabs[activeIdx].icon}</span>
+                  </div>
                 </div>
               );
             })()}
