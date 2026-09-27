@@ -4888,7 +4888,35 @@ function DailySpecial({ go }) {
   );
 }
 
+// ---- Tageszeit-Stimmung für die Startseite ----
+// morning (5–11): frisch/hell · midday (11–17): normal/klar
+// evening (17–21): warme Terrakotta-Töne · night (21–5): dunkel mit
+// leuchtenden Gold/Grün-Akzenten. Aktualisiert sich jede Minute.
+function dayPhaseNow() {
+  const h = new Date().getHours();
+  if (h >= 21 || h < 5) return 'night';
+  if (h >= 17) return 'evening';
+  if (h >= 11) return 'midday';
+  return 'morning';
+}
+function useDayPhase() {
+  const [phase, setPhase] = useState(dayPhaseNow);
+  useEffect(() => {
+    const tm = setInterval(() => setPhase(dayPhaseNow()), 60000);
+    return () => clearInterval(tm);
+  }, []);
+  return phase;
+}
+const DAY_PHASE_THEME = {
+  morning: { pageBg: '#fffaf1', heroOverlay: 'linear-gradient(rgba(21,56,38,.42), rgba(21,56,38,.62))', accentGlow: 'none', label: { de: 'Guten Morgen', en: 'Good morning', tr: 'Günaydın', ro: 'Bună dimineața', nl: 'Goedemorgen', sq: 'Mirëmëngjes', ku: 'Beyanî baş', pl: 'Dzień dobry' } },
+  midday: { pageBg: CREAM, heroOverlay: 'linear-gradient(rgba(21,56,38,.55), rgba(21,56,38,.72))', accentGlow: 'none', label: { de: 'Guten Tag', en: 'Hello', tr: 'Merhaba', ro: 'Bună ziua', nl: 'Hallo', sq: 'Mirëdita', ku: 'Rojbaş', pl: 'Dzień dobry' } },
+  evening: { pageBg: '#fbeee0', heroOverlay: 'linear-gradient(rgba(74,32,10,.5), rgba(41,18,8,.72))', accentGlow: '0 0 14px rgba(255,138,61,.45)', label: { de: 'Guten Abend', en: 'Good evening', tr: 'İyi akşamlar', ro: 'Bună seara', nl: 'Goedenavond', sq: 'Mirëmbrëma', ku: 'Êvar baş', pl: 'Dobry wieczór' } },
+  night: { pageBg: '#0d1f16', heroOverlay: 'linear-gradient(rgba(6,18,12,.6), rgba(4,12,8,.82))', accentGlow: '0 0 16px rgba(255,199,56,.55)', label: { de: 'Noch hungrig?', en: 'Still hungry?', tr: 'Hâlâ aç mısın?', ro: 'Încă flămând?', nl: 'Nog trek?', sq: 'Ende i uritur?', ku: 'Hîn birçî?', pl: 'Wciąż głodny?' } },
+};
+
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
+  const dayPhase = useDayPhase();
+  const dpTheme = DAY_PHASE_THEME[dayPhase];
   const { lang, setLang, t } = React.useContext(LangContext);
   const weather = useWeather();
   const windSway = (base = '', dur = 2.6, delay = 0) => weather?.windy ? `${base ? base + ', ' : ''}windSway ${dur}s ease-in-out ${delay}s infinite` : (base || undefined);
@@ -5039,7 +5067,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   };
 
   return (
-    <div style={{ background: `${CREAM} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)', zoom: textScale }}>
+    <div style={{ background: `${dpTheme.pageBg} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, transition: 'background 1.2s ease', fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)', zoom: textScale }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
@@ -5240,7 +5268,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         {HERO_IMAGES.map((img, i) => (
           <div key={img} className="absolute inset-0" style={{ backgroundImage: `url('${img}')`, backgroundSize: 'cover', backgroundPosition: img === TERRACE_IMG ? 'center 15%' : 'center', opacity: i === heroIdx ? 1 : 0, transition: 'opacity 1.8s ease-in-out', zIndex: 0 }} />
         ))}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(21,56,38,.55), rgba(21,56,38,.72))', zIndex: 1 }} />
+        <div className="absolute inset-0" style={{ background: dpTheme.heroOverlay, transition: 'background 1.2s ease', zIndex: 1 }} />
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {HERO_IMAGES.map((_, i) => (
             <span key={i} style={{ width: i === heroIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === heroIdx ? GOLD : 'rgba(255,246,234,.4)', transition: 'all .4s ease' }} />
@@ -5251,7 +5279,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-16 lg:pt-8 lg:pb-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{getGreeting(now)} · ☪ {t('heroHalal')}</div>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{dpTheme.label[lang] || dpTheme.label.de} · ☪ {t('heroHalal')}</div>
             {liveViewers > 1 && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold mb-5" style={{ background: 'rgba(74,222,128,.12)', color: '#4ade80', border: '1px solid rgba(74,222,128,.3)' }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80', animation: 'liveDot 1.6s ease-in-out infinite' }} /> {liveViewers} {t('liveViewers')}
@@ -5265,7 +5293,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 <button
                   onClick={() => { logEvent('hero_menu'); go('tischmenu'); }}
                   className="h-12 flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
-                  style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 10px 24px rgba(230,90,10,.4)', animation: windSway('goldGlow 2.4s ease-in-out infinite', 2.4, 0) }}
+                  style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: `0 10px 24px rgba(230,90,10,.4), ${dpTheme.accentGlow}`, transition: 'box-shadow 1.2s ease', animation: windSway('goldGlow 2.4s ease-in-out infinite', 2.4, 0) }}
                 >
                   <span className="text-lg">📋</span> {t('navMenu')}
                   <ArrowRight size={16} />
