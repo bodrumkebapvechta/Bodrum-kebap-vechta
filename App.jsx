@@ -1051,7 +1051,7 @@ async function uploadImageToStorage(dataUrl, keyHint) {
     const path = `${(keyHint || 'photo').replace(/[^a-z0-9-]/gi, '_')}-${Date.now()}.jpg`;
     const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
       method: 'POST',
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'image/jpeg' },
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'image/jpeg', 'cache-control': 'max-age=31536000' },
       body: blob,
     });
     if (!res.ok) return null;
@@ -1598,7 +1598,7 @@ function TopBar({ onHome, title, dark = true, staffActions }) {
         </button>
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: ORANGE }}>
-            <img src={LOGO_ICON} alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={LOGO_ICON} alt="" className="w-full h-full object-cover" />
           </div>
           <div>
             <div className="font-extrabold text-sm leading-tight tracking-wide" style={{ color: dark ? '#fff' : GREEN }}>BODRUM KEBAP</div>
@@ -2250,7 +2250,7 @@ function SplashScreen({ onDone }) {
             opacity: stage >= 1 ? 1 : 0,
           }}
         >
-          <img src={LOGO_ICON} alt="logo" style={{ width: 78, height: 78, objectFit: 'contain' }} />
+          <img loading="lazy" decoding="async" src={LOGO_ICON} alt="logo" style={{ width: 78, height: 78, objectFit: 'contain' }} />
         </div>
         <div style={{ opacity: stage >= 2 ? 1 : 0, animation: stage >= 2 ? 'riseFade .6s ease forwards' : 'none' }}>
           <div className="text-white font-black text-2xl tracking-wide">BODRUM KEBAP</div>
@@ -2317,7 +2317,7 @@ function FeatureCard({ icon, title, sub, color, textColor = '#fff', onClick, ind
         animation: `cardIn .6s cubic-bezier(.22,1,.36,1) ${index * 0.12}s both`,
       }}
     >
-      {img && <img src={img} className="feature-card-bg absolute inset-0 w-full h-full object-cover" style={{ opacity: .08, transition: 'opacity .3s ease, transform .3s ease' }} />}
+      {img && <img loading="lazy" decoding="async" src={img} className="feature-card-bg absolute inset-0 w-full h-full object-cover" style={{ opacity: .08, transition: 'opacity .3s ease, transform .3s ease' }} />}
       <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl icon-wobble relative" style={{ background: 'rgba(255,255,255,0.2)' }}>{icon}</div>
       <div className="relative">
         <div className="font-black text-lg leading-tight" style={{ color: textColor }}>{title}</div>
@@ -2537,7 +2537,7 @@ function WeekendComboPromo({ go, top }) {
           <div className="grid grid-cols-2 gap-3">
             <button onClick={goToPizzaCombo} className="rounded-2xl overflow-hidden text-left" style={{ background: '#fff', boxShadow: '0 10px 24px rgba(0,0,0,.28)', border: `2.5px solid ${GOLD}` }}>
               <div className="relative">
-                <img src={comboPhotos.pizza} className="w-full object-cover" style={{ height: 100 }} />
+                <img loading="lazy" decoding="async" src={comboPhotos.pizza} className="w-full object-cover" style={{ height: 100 }} />
                 <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full font-black text-sm" style={{ background: GOLD, color: GREEN, boxShadow: '0 3px 8px rgba(0,0,0,.25)' }}>{fmt(PIZZA_COMBO_PRICE)}</div>
               </div>
               <div className="px-3 py-2.5">
@@ -2546,7 +2546,7 @@ function WeekendComboPromo({ go, top }) {
             </button>
             <button onClick={() => setOpenDoener((v) => !v)} className="rounded-2xl overflow-hidden text-left" style={{ background: '#fff', boxShadow: '0 10px 24px rgba(0,0,0,.28)', border: `2.5px solid ${GOLD}` }}>
               <div className="relative">
-                <img src={comboPhotos.doener} className="w-full object-cover" style={{ height: 100 }} />
+                <img loading="lazy" decoding="async" src={comboPhotos.doener} className="w-full object-cover" style={{ height: 100 }} />
                 <div className="absolute top-2 right-2 px-2.5 py-1 rounded-full font-black text-sm" style={{ background: GOLD, color: GREEN, boxShadow: '0 3px 8px rgba(0,0,0,.25)' }}>{fmt(DOENER_COMBO.price)}</div>
               </div>
               <div className="px-3 py-2.5">
@@ -2587,7 +2587,7 @@ function WeekendComboPromo({ go, top }) {
           {/* PIZZA CARD — leitet zur echten Pizza-Auswahl */}
           <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
             <div className="relative">
-              <img src={comboPhotos.pizza} className="w-full h-56 sm:h-64 object-cover" />
+              <img loading="lazy" decoding="async" src={comboPhotos.pizza} className="w-full h-56 sm:h-64 object-cover" />
               <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(PIZZA_COMBO_PRICE)}</div>
             </div>
             <div className="p-4">
@@ -2602,7 +2602,7 @@ function WeekendComboPromo({ go, top }) {
           {/* DÖNERTELLER CARD */}
           <div className="combo-card rounded-2xl overflow-hidden shadow-lg" style={{ background: '#fff' }}>
             <div className="relative">
-              <img src={comboPhotos.doener} className="w-full h-56 sm:h-64 object-cover" />
+              <img loading="lazy" decoding="async" src={comboPhotos.doener} className="w-full h-56 sm:h-64 object-cover" />
               <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full font-black text-lg" style={{ background: GOLD, color: GREEN }}>{fmt(DOENER_COMBO.price)}</div>
             </div>
             <div className="p-4">
@@ -3302,7 +3302,7 @@ function MoodPicker({ onClose, items }) {
             <h3 className="font-black text-lg mb-4" style={{ color: GREEN }}>{mr('result', lang)}</h3>
             {result.img && (
               <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: result.imgContain ? 'rgba(255,255,255,.4)' : 'transparent' }}>
-                <img src={result.img} alt={result.name} className={result.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
+                <img loading="lazy" decoding="async" src={result.img} alt={result.name} className={result.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
               </div>
             )}
             <div className="font-black text-xl mb-1" style={{ color: GREEN }}>{mx(result.name, lang)}<AllergenTag alg={result.alg} /></div>
@@ -4389,7 +4389,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
           {sidePhotos && (
             <div onClick={() => onPhotoClick?.(sidePhotos[photoIdx % sidePhotos.length])} className="flex-shrink-0 relative rounded-2xl overflow-hidden cursor-pointer" style={{ width: 100, height: 100, boxShadow: '0 10px 24px rgba(0,0,0,.32)', border: '3px solid rgba(255,255,255,.55)' }}>
               {sidePhotos.map((url, i) => (
-                <img key={url + i} src={url} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: i === photoIdx % sidePhotos.length ? 1 : 0, transition: 'opacity 1.2s ease-in-out' }} />
+                <img loading="lazy" decoding="async" key={url + i} src={url} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: i === photoIdx % sidePhotos.length ? 1 : 0, transition: 'opacity 1.2s ease-in-out' }} />
               ))}
             </div>
           )}
@@ -4413,7 +4413,7 @@ function DailySpecialCard({ item, isLunchWindow, go }) {
 
   return (
     <div className="daily-card rounded-2xl overflow-hidden flex flex-col" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
-      <div className="overflow-hidden"><img src={item.imgSrc} className="daily-card-img w-full h-40 object-cover" /></div>
+      <div className="overflow-hidden"><img loading="lazy" decoding="async" src={item.imgSrc} className="daily-card-img w-full h-40 object-cover" /></div>
       <div className="p-5 flex flex-col flex-1">
         <div className="text-white font-black text-lg mb-1">{mx(item.name, lang)}<AllergenTag alg={item.alg} /></div>
         <div className="text-xs font-medium mb-3" style={{ color: '#d9cdb4' }}>{mx(item.desc, lang)}</div>
@@ -4463,7 +4463,7 @@ function ShowcaseCarousel() {
       >
         {loop.map((src, i) => (
           <div key={i} className="showcase-card flex-shrink-0 rounded-3xl overflow-hidden" style={{ width: 230, height: 300, boxShadow: '0 14px 34px rgba(21,56,38,.18)' }} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-            <img src={src} alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={src} alt="" className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -4723,7 +4723,7 @@ function StoryShareButton({ variant = 'pill' }) {
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onFile} />
             {result ? (
               <>
-                <img src={result.url} alt="" className="w-full max-w-[260px] mx-auto rounded-2xl mb-3" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.25)' }} />
+                <img loading="lazy" decoding="async" src={result.url} alt="" className="w-full max-w-[260px] mx-auto rounded-2xl mb-3" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.25)' }} />
                 <div className="text-xs font-bold text-center mb-3" style={{ color: ORANGE }}>{T.tip}</div>
                 <button onClick={share} className="w-full py-3.5 rounded-2xl font-black text-sm text-white" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }}>📤 {T.share}</button>
                 <button onClick={() => fileRef.current && fileRef.current.click()} className="w-full mt-2 py-2.5 rounded-2xl font-bold text-xs" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}>↺ {T.again}</button>
@@ -5161,7 +5161,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-3.5 flex items-center justify-between">
           <div className="flex items-center flex-wrap gap-2 sm:gap-3">
             <div className="relative flex-shrink-0" onClick={handleLogoClick}>
-              <img src={LOGO_ICON} alt="Bodrum Kebap Vechta" className="w-10 h-10 rounded-full object-contain cursor-pointer" style={{ background: CREAM, padding: 3 }} />
+              <img loading="lazy" decoding="async" src={LOGO_ICON} alt="Bodrum Kebap Vechta" className="w-10 h-10 rounded-full object-contain cursor-pointer" style={{ background: CREAM, padding: 3 }} />
               <span
                 className="absolute flex items-center justify-center"
                 style={{
@@ -5214,7 +5214,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="fixed inset-0 z-50 md:hidden flex flex-col" style={{ background: `radial-gradient(circle at 85% 0%, rgba(255,199,56,.12), transparent 50%), rgba(10,24,15,.6)`, backdropFilter: 'blur(22px) saturate(1.5)', WebkitBackdropFilter: 'blur(22px) saturate(1.5)', animation: 'pageFade .3s ease-out' }}>
             <div className="flex items-center justify-between px-6 pt-6 pb-2">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.4)' }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.4)' }}><img loading="lazy" decoding="async" src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
                 <div>
                   <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
                   <div className="font-bold text-[10px] tracking-widest" style={{ color: GOLD }}>VECHTA</div>
@@ -5278,7 +5278,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
       {dailyBanner && (
         <div className="mx-4 mt-3 mb-1 rounded-2xl overflow-hidden" style={{ background: GREEN, boxShadow: '0 10px 28px rgba(21,56,38,.3)', border: `1.5px solid ${GOLD}` }}>
-          {dailyBanner.img && <img src={dailyBanner.img} alt="" onClick={() => setLightbox(dailyBanner.img)} className="w-full h-40 object-cover cursor-pointer" />}
+          {dailyBanner.img && <img loading="lazy" decoding="async" src={dailyBanner.img} alt="" onClick={() => setLightbox(dailyBanner.img)} className="w-full h-40 object-cover cursor-pointer" />}
           <div className="flex items-center gap-2.5 px-4 py-3.5">
             <span className="text-xl flex-shrink-0">📣</span>
             <span className="font-bold text-sm" style={{ color: GOLD, whiteSpace: 'pre-line' }}>{dailyBanner.text}</span>
@@ -5369,8 +5369,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             {!isTuesdayOpenNow(new Date()) && <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : lang === 'ku' ? 'Sêşem' : 'Dinsdag'}</span></div>}
             <div className="flex justify-between py-2.5 text-sm"><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroAddress')}</span><span className="font-bold text-right" style={{ color: GREEN }}>Oyther Straße 37,<br />49377 Vechta</span></div>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>🅿️</span><span className="font-bold text-right text-xs" style={{ color: GREEN }}>{lang === 'de' ? 'Kostenlose Parkplätze vor der Tür' : lang === 'en' ? 'Free parking outside' : lang === 'tr' ? 'Kapıda ücretsiz otopark' : lang === 'ro' ? 'Parcare gratuită afară' : lang === 'sq' ? 'Parkim falas jashtë' : lang === 'ku' ? 'Parkkirina belaş li derve' : 'Gratis parkeren buiten'}</span></div>
-            <img src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
-            <img src={PENNE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 78, height: 78, bottom: -18, left: -18, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(-8deg)' }} />
+            <img loading="lazy" decoding="async" src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
+            <img loading="lazy" decoding="async" src={PENNE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 78, height: 78, bottom: -18, left: -18, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(-8deg)' }} />
           </div>
         </div>
         <svg viewBox="0 0 1440 60" className="w-full block relative z-10" style={{ marginBottom: -1 }} preserveAspectRatio="none"><path d="M0,32 C240,64 480,0 720,20 C960,40 1200,60 1440,24 L1440,60 L0,60 Z" fill={CREAM} /></svg>
@@ -5440,7 +5440,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <section id="galerie" className="max-w-7xl mx-auto px-5 lg:px-10 py-10">
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>{t('galleryTerrace')}</div>
         <div className="relative rounded-2xl overflow-hidden mb-6" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
-          <img src={TERRACE_IMG} className="gallery-img w-full h-56 sm:h-72 lg:h-96 object-cover" />
+          <img loading="lazy" decoding="async" src={TERRACE_IMG} className="gallery-img w-full h-56 sm:h-72 lg:h-96 object-cover" />
           <div className="absolute inset-0 flex items-end" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75) 0%, rgba(21,56,38,0) 45%)' }}>
             <div className="p-5 sm:p-7">
               <div className="text-white font-black text-lg sm:text-2xl">{t('galleryTerraceTitle')}</div>
@@ -5452,10 +5452,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="text-xs font-bold tracking-widest mb-4" style={{ color: '#a4906c' }}>{t('galleryKitchen')}</div>
         <div className="columns-2 lg:columns-4 gap-3 [column-fill:_balance]">
           {SITE_PHOTOS.filter((p) => !hiddenPhotos.includes(p.src)).map((p, idx) => (
-            <img key={p.src} src={p.src} onClick={() => setLightbox(p.src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 + (idx % 5) * 22 }} />
+            <img loading="lazy" decoding="async" key={p.src} src={p.src} onClick={() => setLightbox(p.src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 160 + (idx % 5) * 22 }} />
           ))}
           {extraGalleryPhotos.map((src, idx) => (
-            <img key={idx} src={src} onClick={() => setLightbox(src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 + (idx % 3) * 25 }} />
+            <img loading="lazy" decoding="async" key={idx} src={src} onClick={() => setLightbox(src)} className="gallery-img rounded-xl object-cover w-full mb-3 cursor-pointer" style={{ breakInside: 'avoid', height: 190 + (idx % 3) * 25 }} />
           ))}
         </div>
       </section>
@@ -5470,7 +5470,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <div style={{ opacity: surpriseRolling ? 0.55 : 1, filter: surpriseRolling ? 'blur(1px)' : 'none', transition: 'opacity .15s, filter .15s' }}>
               {surpriseItem.img && (
                 <div className="w-full h-40 rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ background: surpriseItem.imgContain ? '#f7f0e2' : 'transparent' }}>
-                  <img src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
+                  <img loading="lazy" decoding="async" src={surpriseItem.img} alt={surpriseItem.name} className={surpriseItem.imgContain ? 'h-full object-contain py-2' : 'w-full h-full object-cover'} />
                 </div>
               )}
               {!surpriseRolling && isLunchOffer && (
@@ -5515,7 +5515,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}>
             <X size={20} color="#fff" />
           </button>
-          <img src={lightbox} className="rounded-2xl object-contain" style={{ maxWidth: '100%', maxHeight: '100%', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }} onClick={(e) => e.stopPropagation()} />
+          <img loading="lazy" decoding="async" src={lightbox} className="rounded-2xl object-contain" style={{ maxWidth: '100%', maxHeight: '100%', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }} onClick={(e) => e.stopPropagation()} />
         </div>
       )}
 
@@ -5579,7 +5579,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <footer style={{ background: GREEN }} className="mt-4">
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-10 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <img src={LOGO_ICON} alt="logo" className="w-8 h-8 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
+            <img loading="lazy" decoding="async" src={LOGO_ICON} alt="logo" className="w-8 h-8 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
             <span className="text-white font-black text-xs">BODRUM KEBAP VECHTA</span>
           </div>
           <span className="text-[11px] font-medium" style={{ color: '#6b5a3e' }}>© 2019 Bodrum Kebap Vechta</span>
@@ -5917,7 +5917,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
       {CATEGORY_IMAGES[tab] && (
         <div className="px-5 pt-2">
           <div className="rounded-2xl overflow-hidden relative h-40" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-            <img key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
+            <img loading="lazy" decoding="async" key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
             <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
               <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
             </div>
@@ -6276,7 +6276,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                             <div className="flex items-center gap-3">
                               {u.img ? (
                                 <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#fff' : 'transparent' }}>
-                                  <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                                  <img loading="lazy" decoding="async" src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
                                 </div>
                               ) : (
                                 <span className="text-2xl">{u.emoji}</span>
@@ -6337,7 +6337,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                         <div className="flex items-center gap-3">
                           {u.img ? (
                             <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#f7f0e2' : 'transparent' }}>
-                              <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                              <img loading="lazy" decoding="async" src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
                             </div>
                           ) : (
                             <span className="text-2xl">{u.emoji}</span>
@@ -6646,19 +6646,19 @@ function DonerBuilderView({ back, go }) {
           <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{t('chooseCreationSub')}</p>
           <div className="flex flex-col gap-3">
             <button onClick={() => setKind('doener')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-              <img src={DOENER_SPIESS_IMG} className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={DOENER_SPIESS_IMG} className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
                 <span className="text-white font-black text-lg">🥙 {t('buildDoener')}</span>
               </div>
             </button>
             <button onClick={() => go('whatsapp', { categoryMode: 'pizza' })} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-              <img src={PIZZA_KAESE_IMG} className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={PIZZA_KAESE_IMG} className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
                 <span className="text-white font-black text-lg">🍕 {t('buildPizza')}</span>
               </div>
             </button>
             <button onClick={() => setKind('pasta')} className="rounded-2xl overflow-hidden relative h-28 text-left" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-              <img src={PENNE_IMG} className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={PENNE_IMG} className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center px-5" style={{ background: 'linear-gradient(90deg, rgba(21,56,38,.82), rgba(21,56,38,.25))' }}>
                 <span className="text-white font-black text-lg">🍝 {t('buildPasta')}</span>
               </div>
@@ -7158,7 +7158,7 @@ function GroupOrderView({ back }) {
           {CATEGORY_IMAGES[tab] && (
             <div className="px-5 pt-2">
               <div className="rounded-2xl overflow-hidden relative h-40" style={{ boxShadow: '0 8px 20px rgba(21,56,38,.15)' }}>
-                <img key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
+                <img loading="lazy" decoding="async" key={catImgIdx} src={CATEGORY_IMAGES[tab][catImgIdx]} className="w-full h-full object-cover" style={{ animation: 'modalBgFade .6s ease' }} alt={catLabel(tab, lang)} />
                 <div className="absolute inset-0 flex items-end p-3" style={{ background: 'linear-gradient(0deg, rgba(21,56,38,.75), rgba(21,56,38,.05))' }}>
                   <span className="text-white font-black text-lg">{CATEGORY_ICONS[tab]} {catLabel(tab, lang)}</span>
                 </div>
@@ -7473,7 +7473,7 @@ function GroupOrderView({ back }) {
                       <div className="flex items-center gap-3">
                         {u.img ? (
                           <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#fff' : 'transparent' }}>
-                            <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                            <img loading="lazy" decoding="async" src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
                           </div>
                         ) : (
                           <span className="text-2xl">{u.emoji}</span>
@@ -7526,7 +7526,7 @@ function GroupOrderView({ back }) {
                   <div className="flex items-center gap-3">
                     {u.img ? (
                       <div className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ background: u.imgContain ? '#f7f0e2' : 'transparent' }}>
-                        <img src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
+                        <img loading="lazy" decoding="async" src={u.img} alt={u.name} className={u.imgContain ? 'h-full object-contain py-0.5' : 'w-full h-full object-cover'} />
                       </div>
                     ) : (
                       <span className="text-2xl">{u.emoji}</span>
@@ -9236,7 +9236,7 @@ function StaffPanelView({ back }) {
                     <div key={item.id} className="bg-white rounded-2xl p-3" style={{ boxShadow: '0 2px 8px rgba(21,56,38,.06)' }}>
                       <div className="flex items-center gap-2.5 mb-2.5">
                         {(tischPhotos[item.id] || item.img) ? (
-                          <img src={tischPhotos[item.id] || item.img} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                          <img loading="lazy" decoding="async" src={tischPhotos[item.id] || item.img} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
                         ) : (
                           <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl" style={{ background: '#f7f0e2' }}>🍽️</div>
                         )}
@@ -9292,7 +9292,7 @@ function StaffPanelView({ back }) {
                       <input value={tischItemPrice} onChange={(e) => setTischItemPrice(e.target.value)} placeholder="Preis (z.B. 8.50)" inputMode="decimal" className="w-full px-3.5 py-3 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                     );
                   })()}
-                  {tischItemImg && <img src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-xl" />}
+                  {tischItemImg && <img loading="lazy" decoding="async" src={tischItemImg} alt="" className="w-full h-32 object-cover rounded-xl" />}
                   <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: tischUploadBusy ? 0.6 : 1 }}>
                     <span className="text-base">📷</span> {tischUploadBusy ? '…' : 'Foto hochladen'}
                     <input type="file" accept="image/*" className="hidden" disabled={tischUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) tischHandleImageUpload(f); e.target.value = ''; }} />
@@ -9602,7 +9602,7 @@ function StaffPanelView({ back }) {
                           {previews.length === 0 && <p className="text-[10px] font-semibold px-1" style={{ color: '#c4b697' }}>Keine Fotos in dieser Kategorie — zuerst in „Speisekarte bearbeiten" Fotos hinzufügen.</p>}
                           {previews.length > 0 && (
                             <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
-                              {previews.map((url, i) => <img key={i} src={url} alt="" className="flex-shrink-0 rounded-lg object-cover" style={{ width: 40, height: 40, opacity: isOn ? 1 : 0.4 }} />)}
+                              {previews.map((url, i) => <img loading="lazy" decoding="async" key={i} src={url} alt="" className="flex-shrink-0 rounded-lg object-cover" style={{ width: 40, height: 40, opacity: isOn ? 1 : 0.4 }} />)}
                             </div>
                           )}
                           {row.gallery && extraGalleryPhotos.length > 0 && (
@@ -9611,7 +9611,7 @@ function StaffPanelView({ back }) {
                               <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
                                 {extraGalleryPhotos.map((url, i) => (
                                   <button key={i} onClick={() => setPizzaGalleryPhoto(url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 40, height: 40, border: mittagsPizzaGalleryUrl === url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
-                                    <img src={url} alt="" className="w-full h-full object-cover" />
+                                    <img loading="lazy" decoding="async" src={url} alt="" className="w-full h-full object-cover" />
                                   </button>
                                 ))}
                               </div>
@@ -9633,7 +9633,7 @@ function StaffPanelView({ back }) {
                       return (
                         <div key={row.key} className="mb-4">
                           <div className="text-xs font-black mb-1.5" style={{ color: GREEN }}>{row.label}</div>
-                          {weekendComboPhotos[row.key] && <img src={weekendComboPhotos[row.key]} alt="" className="w-full h-28 object-cover rounded-xl mb-2" />}
+                          {weekendComboPhotos[row.key] && <img loading="lazy" decoding="async" src={weekendComboPhotos[row.key]} alt="" className="w-full h-28 object-cover rounded-xl mb-2" />}
                           <label className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm text-white cursor-pointer mb-2" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: weekendPhotoUploadBusy === row.key ? 0.6 : 1 }}>
                             <span className="text-base">📷</span> {weekendPhotoUploadBusy === row.key ? '…' : 'Neues Foto hochladen'}
                             <input type="file" accept="image/*" className="hidden" disabled={!!weekendPhotoUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleWeekendPhotoUpload(row.key, f); e.target.value = ''; }} />
@@ -9644,12 +9644,12 @@ function StaffPanelView({ back }) {
                               <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
                                 {candidates.map((url, i) => (
                                   <button key={`c${i}`} onClick={() => selectExistingWeekendPhoto(row.key, url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 44, height: 44, border: weekendComboPhotos[row.key] === url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
-                                    <img src={url} alt="" className="w-full h-full object-cover" />
+                                    <img loading="lazy" decoding="async" src={url} alt="" className="w-full h-full object-cover" />
                                   </button>
                                 ))}
                                 {extraGalleryPhotos.map((url, i) => (
                                   <button key={`g${i}`} onClick={() => selectExistingWeekendPhoto(row.key, url)} className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 44, height: 44, border: weekendComboPhotos[row.key] === url ? `3px solid ${GOLD}` : '1px solid #e9dcc0' }}>
-                                    <img src={url} alt="" className="w-full h-full object-cover" />
+                                    <img loading="lazy" decoding="async" src={url} alt="" className="w-full h-full object-cover" />
                                   </button>
                                 ))}
                               </div>
@@ -9662,7 +9662,7 @@ function StaffPanelView({ back }) {
 
                   <SettingsRow id="dailyBanner" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <textarea value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} rows={3} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                    {dailyBannerImg && <img src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
+                    {dailyBannerImg && <img loading="lazy" decoding="async" src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
                     <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white mb-2.5 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: dailyBannerUploadBusy ? 0.6 : 1 }}>
                       <span className="text-base">📷</span> {dailyBannerUploadBusy ? '…' : 'Foto hinzufügen (optional)'}
                       <input type="file" accept="image/*" className="hidden" disabled={dailyBannerUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleDailyBannerUpload(f); e.target.value = ''; }} />
@@ -10549,7 +10549,7 @@ function StaffPanelView({ back }) {
               {editingPhotoItem && (
                 <div className="bg-white rounded-xl p-5">
                   <div className="font-black text-base mb-3" style={{ color: GREEN }}>{editingPhotoItem.name}</div>
-                  {editPhotoUrl && <img src={editPhotoUrl} alt="" className="w-full h-36 object-cover rounded-lg mb-3" onError={(e) => { e.target.style.display = 'none'; }} />}
+                  {editPhotoUrl && <img loading="lazy" decoding="async" src={editPhotoUrl} alt="" className="w-full h-36 object-cover rounded-lg mb-3" onError={(e) => { e.target.style.display = 'none'; }} />}
                   <label className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm text-white mb-3 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: photoUploadBusy ? 0.6 : 1 }}>
                     <span className="text-base">📷</span> {photoUploadBusy ? '…' : t('uploadPhotoBtn')}
                     <input type="file" accept="image/*" className="hidden" disabled={photoUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoFileUpload(f); e.target.value = ''; }} />
@@ -10574,7 +10574,7 @@ function StaffPanelView({ back }) {
                         className="flex-shrink-0 rounded-lg overflow-hidden"
                         style={{ width: 56, height: 56, border: editPhotoUrl === src ? `2.5px solid ${ORANGE}` : '2.5px solid transparent' }}
                       >
-                        <img src={src} alt="" className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={src} alt="" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -10600,7 +10600,7 @@ function StaffPanelView({ back }) {
                 </label>
                 {galleryPreview && (
                   <div className="bg-white rounded-xl p-3 mb-4">
-                    <img src={galleryPreview} alt="" className="w-full h-40 object-cover rounded-lg mb-3" />
+                    <img loading="lazy" decoding="async" src={galleryPreview} alt="" className="w-full h-40 object-cover rounded-lg mb-3" />
                     <div className="flex gap-2">
                       <button onClick={saveGalleryPhoto} className="flex-1 py-2.5 rounded-lg font-bold text-sm text-white" style={{ background: GREEN }}>{t('saveBtn')}</button>
                       <button onClick={() => setGalleryPreview('')} className="px-4 py-2.5 rounded-lg font-semibold text-sm" style={{ background: '#f0e5cf', color: GREEN }}>{t('cancelBtn')}</button>
@@ -10611,7 +10611,7 @@ function StaffPanelView({ back }) {
                 <div className="grid grid-cols-3 gap-2">
                   {extraGalleryPhotos.map((src, idx) => (
                     <div key={'custom-' + idx} className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '1' }}>
-                      <img src={src} className="w-full h-full object-cover" />
+                      <img loading="lazy" decoding="async" src={src} className="w-full h-full object-cover" />
                       <button onClick={() => removeGalleryPhoto(idx)} className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.75)' }}><X size={13} color="#fff" /></button>
                       <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-[9px] font-bold text-white truncate" style={{ background: 'rgba(0,0,0,.6)' }}>Eigenes Foto</div>
                     </div>
@@ -10620,7 +10620,7 @@ function StaffPanelView({ back }) {
                     const hidden = hiddenPhotos.includes(p.src);
                     return (
                       <button key={p.src} onClick={() => togglePhotoHidden(p.src)} className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '1', opacity: hidden ? 0.35 : 1 }}>
-                        <img src={p.src} className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={p.src} className="w-full h-full object-cover" />
                         <div className="absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: hidden ? 'rgba(0,0,0,.7)' : 'rgba(52,199,89,.9)' }}>
                           {hidden ? '🚫' : '👁️'}
                         </div>
@@ -10700,7 +10700,7 @@ function PizzaToppingCard({ item, color, resolvedImg, lang }) {
       </div>
 
       <div className="mx-auto mb-3 rounded-full overflow-hidden" style={{ width: '100%', maxWidth: 220, aspectRatio: '1/1', boxShadow: '0 12px 28px rgba(21,56,38,.28)', border: `4px solid ${GOLD}` }}>
-        {resolvedImg ? <img src={resolvedImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full" style={{ background: 'radial-gradient(circle, #f3c96b 0%, #e6a13a 55%, #c97f1f 100%)' }} />}
+        {resolvedImg ? <img loading="lazy" decoding="async" src={resolvedImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full" style={{ background: 'radial-gradient(circle, #f3c96b 0%, #e6a13a 55%, #c97f1f 100%)' }} />}
       </div>
 
       {item.desc && <p className="text-xs text-center mb-3" style={{ color: '#8a7c62' }}>{mx(tischText(item.desc, 'de'), lang)}</p>}
@@ -10813,6 +10813,28 @@ function itemCampaign(item, kind) {
   return c && c.regular - c.price >= 0.1 ? { ...c, kind } : null;
 }
 
+// Notfall-Speisekarte: wenn Supabase nicht erreichbar ist (z.B. Kontingent
+// aufgebraucht, Störung), wird die Karte aus den im Code hinterlegten MENU-
+// Daten aufgebaut — gleiche Umwandlung wie beim "Import von der Bestellseite".
+// So bleibt die Speisekarte IMMER sichtbar statt leer.
+function buildFallbackTischMenu() {
+  const emojiMap = { neu: '✨', kebap: '🥙', pizza: '🍕', familienpizza: '🍕', pizzabrot: '🥖', calzone: '🥐', baguette: '🥪', ueberbacken: '🧀', rollo: '🌯', nudeln: '🍝', schnitzel: '🍖', salat: '🥗', finger: '🍤', getraenke: '🥤' };
+  const categories = [];
+  const items = [];
+  MENU.forEach((cat) => {
+    const catKey = 'imp-' + cat.key;
+    const catItems = cat.items.filter((it) => !it.customPizza && !it.customPasta);
+    if (!catItems.length) return;
+    categories.push({ key: catKey, label: cat.label, emoji: emojiMap[cat.key] || '🍽️' });
+    catItems.forEach((it) => {
+      const base = { id: 'imp-' + it.id, category: catKey, name: it.name, desc: it.desc || '', number: menuNum(it.id), alg: it.alg || '', soldOut: false, ...(it.extras ? { extras: it.extras } : {}), ...(it.toppingChoices ? { toppingChoices: it.toppingChoices } : {}) };
+      if (it.priceLarge !== undefined) { base.price = it.priceSmall; base.priceLarge = it.priceLarge; } else base.price = it.price;
+      items.push(base);
+    });
+  });
+  return { categories, items, fallback: true };
+}
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -10829,8 +10851,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [tischPhotos, setTischPhotos] = useState({});
 
   useEffect(() => {
-    safeGet('siteconfig:tischMenu').then((r) => {
-      const data = r || { categories: [], items: [] };
+    const applyMenu = (r) => {
+      const data = r && Array.isArray(r.categories) && r.categories.length ? r : buildFallbackTischMenu();
       setTischMenu(data);
       const hint = initialAction?.initialCatHint;
       if (hint) {
@@ -10838,7 +10860,8 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         if (match) { setActiveCat(match.key); if (onConsumeAction) onConsumeAction(); return; }
       }
       // Kein Hint: keine Kategorie vorauswählen — der Bildschirm startet neutral, die Person wählt selbst.
-    });
+    };
+    safeGet('siteconfig:tischMenu').then(applyMenu).catch(() => applyMenu(null));
   }, []);
 
   const activeItems = useMemo(() => {
@@ -10889,7 +10912,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
               </button>
             )}
             <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.5)' }}>
-              <img src={LOGO_ICON} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={LOGO_ICON} alt="" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
@@ -11097,7 +11120,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
       {tmLightbox && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.85)' }} onClick={() => setTmLightbox(null)}>
-          <img src={tmLightbox} alt="" className="max-w-full max-h-full rounded-2xl" style={{ animation: 'modalCardUp .3s ease' }} />
+          <img loading="lazy" decoding="async" src={tmLightbox} alt="" className="max-w-full max-h-full rounded-2xl" style={{ animation: 'modalCardUp .3s ease' }} />
           <button onClick={() => setTmLightbox(null)} className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,.15)' }}><X size={20} color="#fff" /></button>
         </div>
       )}
