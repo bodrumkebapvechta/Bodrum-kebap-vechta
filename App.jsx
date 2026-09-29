@@ -341,6 +341,7 @@ const UI = {
   loyaltyConfirmCode: { de: 'Bestätigen', en: 'Confirm', tr: 'Onayla', ro: 'Confirmă', nl: 'Bevestigen', sq: 'Konfirmo', ku: 'Piştrast bike', pl: 'Potwierdź' },
   loyaltyCancel: { de: 'Abbrechen', en: 'Cancel', tr: 'Vazgeç', ro: 'Anulează', nl: 'Annuleren', sq: 'Anulo', ku: 'Betal bike', pl: 'Anuluj' },
   loyaltyInvalidCode: { de: 'Format: BK-1234', en: 'Format: BK-1234', tr: 'Format: BK-1234', ro: 'Format: BK-1234', nl: 'Formaat: BK-1234', sq: 'Formati: BK-1234', ku: 'Format: BK-1234', pl: 'Format: BK-1234' },
+  loyaltyOffline: { de: '⚠️ Die Stempelkarte ist gerade nicht erreichbar. Keine Sorge – deine Stempel sind sicher gespeichert. Bitte später noch einmal versuchen.', en: "⚠️ The stamp card can't be reached right now. Don't worry – your stamps are safely stored. Please try again later.", tr: '⚠️ Damga kartına şu an ulaşılamıyor. Merak etme, damgaların güvenle kayıtlı. Lütfen daha sonra tekrar dene.', ro: '⚠️ Cardul de ștampile nu este accesibil acum. Nu-ți face griji – ștampilele tale sunt salvate. Încearcă mai târziu.', nl: '⚠️ De stempelkaart is nu niet bereikbaar. Geen zorgen – je stempels zijn veilig opgeslagen. Probeer het later opnieuw.', sq: '⚠️ Karta e vulave nuk arrihet tani. Mos u shqetëso – vulat e tua janë ruajtur. Provo përsëri më vonë.', ku: '⚠️ Karta mohran niha nayê gihîştin. Xem nexwe – mohrên te bi ewle tomar in. Paşê dîsa biceribîne.', pl: '⚠️ Karta pieczątek jest teraz niedostępna. Spokojnie – twoje pieczątki są bezpiecznie zapisane. Spróbuj ponownie później.' },
   loyaltyCodeNotFound: { de: 'Code nicht gefunden', en: 'Code not found', tr: 'Kod bulunamadı', ro: 'Cod negăsit', nl: 'Code niet gevonden', sq: 'Kodi nuk u gjet', ku: 'Kod nehat dîtin', pl: 'Nie znaleziono kodu' },
   loyaltyCodeTaken: { de: 'Dieser Code ist bereits vergeben — wähle einen anderen.', en: 'This code is already taken — choose another one.', tr: 'Bu kod zaten alınmış — başka bir tane seç.', ro: 'Acest cod este deja folosit — alege altul.', nl: 'Deze code is al in gebruik — kies een andere.', sq: 'Ky kod është marrë — zgjidh një tjetër.', ku: 'Ev kod berê hatiye girtin — yekî din hilbijêre.', pl: 'Ten kod jest już zajęty — wybierz inny.' },
   loyaltyCreateOwnCode: { de: '✏️ Eigenen Code erstellen', en: '✏️ Create your own code', tr: '✏️ Kendi kodunu oluştur', ro: '✏️ Creează-ți propriul cod', nl: '✏️ Maak je eigen code', sq: '✏️ Krijo kodin tënd', ku: '✏️ Koda xwe ya taybet çêke', pl: '✏️ Utwórz własny kod' },
@@ -1447,11 +1448,21 @@ async function getLoyaltyCard(code) {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(`loyalty:${code}`)}&select=value`, {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
-    if (!res.ok) return null;
+    if (!res.ok) throw new Error('LOYALTY_OFFLINE');
     const rows = await res.json();
     return rows.length ? rows[0].value : null;
-  } catch { return null; }
+  } catch { throw new Error('LOYALTY_OFFLINE'); }
 }
+// Schreibt eine Karte und MELDET Fehler (statt sie zu verschlucken), damit
+// niemals ein Stempel als "gespeichert" angezeigt wird, der nicht gespeichert ist.
+async function saveLoyaltyCard(code, value) {
+  const ok = await safeSet(`loyalty:${code}`, value);
+  if (!ok) throw new Error('LOYALTY_OFFLINE');
+}
+// WICHTIG: getLoyaltyCard wirft bei Serverfehlern, statt null zu liefern.
+// null heißt nur noch "Karte existiert wirklich nicht". So kann bei einem
+// Ausfall nie eine bestehende Karte (z.B. 6 Stempel) durch eine neue, leere
+// überschrieben werden.
 async function ensureLoyaltyCard(code, referredBy) {
   const existing = await getLoyaltyCard(code);
   if (existing) return { card: existing, isNew: false };
@@ -1465,7 +1476,7 @@ async function ensureLoyaltyCard(code, referredBy) {
     const referrerExists = await getLoyaltyCard(referredBy);
     if (referrerExists) fresh.referredBy = referredBy;
   }
-  await safeSet(`loyalty:${code}`, fresh);
+  await saveLoyaltyCard(code, fresh);
   try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source: 'welcome' }); } catch {}
   return { card: fresh, isNew: true };
 }
@@ -1485,20 +1496,20 @@ async function addLoyaltyStamp(code) {
       }
     } catch {}
   }
-  await safeSet(`loyalty:${code}`, updated);
+  await saveLoyaltyCard(code, updated);
   try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now() }); } catch {}
   return updated;
 }
 async function redeemLoyaltyCard(code) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
   const updated = { ...card, stamps: 0, lastRedeemedAt: Date.now(), redeemedCount: (card.redeemedCount || 0) + 1, almostThereNotified: false };
-  await safeSet(`loyalty:${code}`, updated);
+  await saveLoyaltyCard(code, updated);
   return updated;
 }
 async function setLoyaltyBirthday(code, mmdd) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
   const updated = { ...card, birthday: mmdd };
-  await safeSet(`loyalty:${code}`, updated);
+  await saveLoyaltyCard(code, updated);
   return updated;
 }
 async function deleteLoyaltyCard(code) {
@@ -1545,6 +1556,12 @@ const WHEEL_PRIZES = [
   { label: 'Gratis Sigara Böreği', weight: 15, color: CHILI, text: '#fff' },
   { label: 'Gratis Nuggets', weight: 12, color: ORANGE, text: '#fff' },
 ];
+// Glücksräder (Dienstags-Rad, Warenkorb-Rad, Gruppenbestellung-Rad) sind
+// BEENDET: für Kunden nirgends mehr sichtbar. Bereits gewonnene Preise bleiben
+// aber gültig — Codes prüfen/einlösen (Personal-Bereich) und die Gewinn-
+// Statistik funktionieren weiter. Wieder einschalten: true setzen.
+// Wenn alle alten Gewinne eingelöst sind: Räder-Code + api/create-spincode.js löschen.
+const WHEELS_ENABLED = false;
 const WHEEL_N = WHEEL_PRIZES.length;
 const WHEEL_SLICE = 360 / WHEEL_N;
 // Eigene, großzügigere Preisliste für das Dienstags-Glücksrad im Laden —
@@ -2760,6 +2777,7 @@ const ASSISTANT_R = {
   chipAddress: { de: "Wo seid ihr?", en: "Where are you?", tr: "Adresiniz nerede?", ro: "Unde sunteți?", nl: "Waar zijn jullie?", sq: "Ku jeni?", ku: "Hûn li ku ne?", pl: "Gdzie jesteście?" },
   loyaltyInfo: { de: "🎟️ Ja! Wir haben eine Stempelkarte: 8 Stempel = 1 Gratis-Pizza. Öffne sie über den 🎟️-Button oder das Menü — dort bekommst du direkt einen Stempel geschenkt!", en: "🎟️ Yes! We have a stamp card: 8 stamps = 1 free pizza. Open it via the 🎟️ button or the menu — you get a free stamp right away!", tr: "🎟️ Evet! Stempelkarte'miz var: 8 damga = 1 bedava pizza. 🎟️ butonundan ya da menüden açabilirsin, hemen 1 hoş geldin damgası kazanıyorsun!" },
   referralInfo: { de: "🎁 Öffne deine Stempelkarte und tippe auf \"Freund einladen\" — wenn dein Freund über deinen Link seine erste Karte erstellt und zum ersten Mal bei uns bestellt, bekommt ihr BEIDE einen Bonus-Stempel!", en: "🎁 Open your stamp card and tap \"Invite a friend\" — when your friend creates their card via your link and visits for the first time, you BOTH get a bonus stamp!", tr: "🎁 Stempelkarte'ni aç, \"Freund einladen\" butonuna bas — arkadaşın senin linkinle kart oluşturup ilk kez sipariş verirse, ikinize de bonus damga düşer!" },
+  wheelEnded: { de: "🎡 Unser Glücksrad gibt es nicht mehr. Bereits gewonnene Preise bleiben aber gültig – zeig einfach deinen Code an der Kasse. Nach aktuellen Angeboten kannst du mich gern fragen!", en: "🎡 Our lucky wheel has ended. Prizes you already won stay valid though – just show your code at the counter. Feel free to ask me about our current offers!", tr: "🎡 Şans çarkımız sona erdi. Daha önce kazandığın ödüller geçerli kalıyor – kodunu kasada göstermen yeterli. Güncel kampanyaları bana sorabilirsin!", ro: "🎡 Roata noastră a norocului s-a încheiat. Premiile deja câștigate rămân valabile – arată-ți codul la casă. Întreabă-mă despre ofertele actuale!", nl: "🎡 Ons geluksrad is gestopt. Al gewonnen prijzen blijven wel geldig – laat gewoon je code zien aan de kassa. Vraag me gerust naar onze actuele aanbiedingen!", sq: "🎡 Rrota jonë e fatit ka përfunduar. Çmimet e fituara më parë mbeten të vlefshme – trego kodin në arkë. Më pyet për ofertat aktuale!", ku: "🎡 Çerxa me ya şansê qediya. Xelatên ku berê bi dest xistine derbasdar in – koda xwe li kasê nîşan bide. Ji min li ser pêşniyarên heyî bipirse!", pl: "🎡 Nasze koło szczęścia się zakończyło. Wygrane wcześniej nagrody pozostają ważne – pokaż kod przy kasie. Zapytaj mnie o aktualne oferty!" },
   wheelInfo: { de: "🎡 Dienstags gibt es bei uns im Laden ein Glücksrad mit Gewinnen wie Gratis-Getränk oder Rabatt — einfach dienstags vorbeikommen und auf der Startseite drehen!", en: "🎡 On Tuesdays we have a prize wheel in the shop with prizes like a free drink or discount — just come by on Tuesday and spin it on the homepage!", tr: "🎡 Salı günleri dükkanımızda bir Şans Çarkı var, gratis içecek ya da indirim gibi ödüller çıkabiliyor — Salı günü gel, ana sayfadan çevir!" },
   quickOrderInfo: { de: "🔢 Du kannst auch einfach die Nummer deines Wunschprodukts eingeben! Tippe oben auf \"Nummer bestellen\" und gib die Nummer von der Speisekarte ein.", en: "🔢 You can also just enter the number of the item you want! Tap \"Order by number\" at the top and enter the number from the menu.", tr: "🔢 İstediğin ürünün numarasını da girebilirsin! Üstteki \"Nummer bestellen\" butonuna bas, menüdeki numarayı yaz." },
   trackOrderInfo: { de: "📦 Tippe oben auf \"Sipariş Takip\" / \"Bestellung verfolgen\" und gib deinen Bestellcode ein — dann siehst du live, ob deine Bestellung noch vorbereitet wird oder schon fertig ist.", en: "📦 Tap \"Track order\" at the top and enter your order code — you'll see live whether your order is still being prepared or already ready.", tr: "📦 Üstteki \"Sipariş Takip\" butonuna bas, sipariş kodunu gir — siparişinin hazırlanıyor mu yoksa hazır mı olduğunu canlı görürsün." },
@@ -2882,7 +2900,7 @@ function getAssistantReply(qRaw, lang) {
     return { intent: 'referral', text: ar('referralInfo', lang) };
   }
   if (has('glücksrad', 'şans çark', 'salı çark', 'dienstags-rad', 'prize wheel', 'wheel', 'çevir')) {
-    return { intent: 'wheel', text: ar('wheelInfo', lang) };
+    return { intent: 'wheel', text: ar(WHEELS_ENABLED ? 'wheelInfo' : 'wheelEnded', lang) };
   }
   if (has('numara ile sipariş', 'nummer bestellen', 'order by number', 'nummerneingabe')) {
     return { intent: 'quickorder', text: ar('quickOrderInfo', lang) };
@@ -3802,7 +3820,13 @@ function LoyaltyModal({ lang, t, onClose }) {
   };
 
   const loadCode = async (c) => {
-    const { card: cc, isNew } = await ensureLoyaltyCard(c, getReferralCode());
+    let cc, isNew;
+    try {
+      ({ card: cc, isNew } = await ensureLoyaltyCard(c, getReferralCode()));
+    } catch {
+      setStep('offline');
+      return;
+    }
     setCode(c);
     setCard(cc);
     setJustCreated(isNew);
@@ -3855,7 +3879,8 @@ function LoyaltyModal({ lang, t, onClose }) {
   const handleEnterCode = async () => {
     const v = `BK-${normalizeSuffix(inputValue)}`;
     if (!LOYALTY_CODE_RE.test(v)) { setInputError(t('loyaltyInvalidCode')); return; }
-    const existing = await getLoyaltyCard(v);
+    let existing;
+    try { existing = await getLoyaltyCard(v); } catch { setInputError(t('loyaltyOffline')); return; }
     if (!existing) { setInputError(t('loyaltyCodeNotFound')); return; }
     try { localStorage.setItem('bk_loyalty_code', v); } catch {}
     setMode('view'); setInputError(''); setInputValue('');
@@ -3865,7 +3890,8 @@ function LoyaltyModal({ lang, t, onClose }) {
   const handleCreateCustom = async () => {
     const v = `BK-${normalizeSuffix(inputValue)}`;
     if (!LOYALTY_CODE_RE.test(v)) { setInputError(t('loyaltyInvalidCode')); return; }
-    const existing = await getLoyaltyCard(v);
+    let existing;
+    try { existing = await getLoyaltyCard(v); } catch { setInputError(t('loyaltyOffline')); return; }
     if (existing) { setInputError(t('loyaltyCodeTaken')); return; }
     try { localStorage.setItem('bk_loyalty_code', v); } catch {}
     setMode('view'); setInputError(''); setInputValue('');
@@ -3882,7 +3908,8 @@ function LoyaltyModal({ lang, t, onClose }) {
     const dd = String(bdayDay).padStart(2, '0');
     setBdayError('');
     if (!bdayMonth || !bdayDay || +mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) { setBdayError(t('loyaltyBirthdayInvalid')); return; }
-    const updated = await setLoyaltyBirthday(code, `${mm}-${dd}`);
+    let updated;
+    try { updated = await setLoyaltyBirthday(code, `${mm}-${dd}`); } catch { alert(t('loyaltyOffline')); return; }
     setCard(updated);
     setBdaySaved(true);
   };
@@ -3904,6 +3931,13 @@ function LoyaltyModal({ lang, t, onClose }) {
 
         {step === 'loading' && (
           <div className="text-center py-8"><p className="text-sm font-bold" style={{ color: '#a89878' }}>…</p></div>
+        )}
+        {step === 'offline' && (
+          <div className="text-center py-6">
+            <div className="text-4xl mb-3">🎟️</div>
+            <p className="text-sm font-bold leading-relaxed mb-4" style={{ color: '#a89878' }}>{t('loyaltyOffline')}</p>
+            <button onClick={() => { setStep('loading'); let sv = null; try { sv = localStorage.getItem('bk_loyalty_code'); } catch {} if (sv) loadCode(sv); else setStep('intro'); }} className="px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GOLD, color: GREEN }}>↻</button>
+          </div>
         )}
 
         {step === 'intro' && (
@@ -5264,7 +5298,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         )}
       </header>
-      {isTuesdayToday && (
+      {WHEELS_ENABLED && isTuesdayToday && (
         <button
           onClick={() => { logEvent('hero_tuesday_wheel'); setTuesdayWheelOpen(true); }}
           className="w-full py-4 flex items-center justify-center gap-3 font-black text-sm text-white"
@@ -5432,7 +5466,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <FeatureCard index={2} icon="👥" title={t('featGroupTitle')} sub={t('featGroupSub')} color="#2b5c41" onClick={() => go('group')} img={CALZONE_IMG} />
           <FeatureCard index={3} icon="🎲" title={t('surpriseMeBtn')} sub={t('featSurpriseSub')} color={GOLD} textColor={GREEN} onClick={rollSurprise} img={PENNE_IMG} />
         </div>
-        <p className="text-center text-xs font-medium mt-6" style={{ color: '#a4906c' }}>{t('extrasTip')}</p>
+        {WHEELS_ENABLED && <p className="text-center text-xs font-medium mt-6" style={{ color: '#a4906c' }}>{t('extrasTip')}</p>}
       </section>
       )}
 
@@ -5507,7 +5541,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         />
       )}
       {loyaltyModalOpen && <LoyaltyModal lang={lang} t={t} onClose={() => setLoyaltyModalOpen(false)} />}
-      {tuesdayWheelOpen && <TuesdayWheelModal t={t} onClose={() => setTuesdayWheelOpen(false)} />}
+      {WHEELS_ENABLED && tuesdayWheelOpen && <TuesdayWheelModal t={t} onClose={() => setTuesdayWheelOpen(false)} />}
       {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
@@ -6391,10 +6425,10 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                     ))}
                   </div>
 
-                  {lines.length > 0 && !wheelResult && totalPrice >= 30 && (
+                  {WHEELS_ENABLED && lines.length > 0 && !wheelResult && totalPrice >= 30 && (
                     <div className="mt-4"><WheelPromoBanner onClick={() => setDrawerView('wheel')} /></div>
                   )}
-                  {lines.length > 0 && !wheelResult && totalPrice < 30 && (
+                  {WHEELS_ENABLED && lines.length > 0 && !wheelResult && totalPrice < 30 && (
                     <div className="mt-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>
                       {t('wheelThresholdPrefix')} {fmt(30 - totalPrice)} {t('wheelThresholdSuffix')}
                     </div>
@@ -6703,10 +6737,10 @@ function DonerBuilderView({ back, go }) {
             </div>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none mb-3" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
 
-            {!wheelResult && total >= 30 && (
+            {WHEELS_ENABLED && !wheelResult && total >= 30 && (
               <div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>
             )}
-            {!wheelResult && total < 30 && (
+            {WHEELS_ENABLED && !wheelResult && total < 30 && (
               <div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>
                 {t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}
               </div>
@@ -6741,8 +6775,8 @@ function DonerBuilderView({ back, go }) {
               <div className="flex justify-between items-center pt-3 mt-2" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('rowPrice')}</span><span className="text-xl font-black" style={{ color: GREEN }}>{fmt(total)}</span></div>
             </div>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('yourName')} className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none mb-3" style={{ background: '#fff', border: '1px solid #e3d5bd', color: GREEN }} />
-            {!wheelResult && total >= 30 && (<div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>)}
-            {!wheelResult && total < 30 && (<div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>{t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}</div>)}
+            {WHEELS_ENABLED && !wheelResult && total >= 30 && (<div className="mb-4"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>)}
+            {WHEELS_ENABLED && !wheelResult && total < 30 && (<div className="mb-4 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>{t('wheelThresholdPrefix')} {fmt(30 - total)} {t('wheelThresholdSuffix')}</div>)}
             {wheelResult && wheelResult.code && (<div className="w-full mb-4 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: GREEN, animation: 'popIn .5s ease' }}><Gift size={16} color={GOLD} /><span className="text-xs font-bold" style={{ color: GOLD }}>{t('wonPrefix')} {mx(wheelResult.prize, lang)} {t('wonSuffix')}</span></div>)}
             <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleSend} className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mb-3" style={{ background: 'linear-gradient(135deg, #25D366, #1fb855)', color: '#fff', boxShadow: '0 8px 22px rgba(37,211,102,.4)' }}><MessageCircle size={18} /> {t('waSend')}</a>
             <p className="text-[11px] font-semibold text-center -mt-1 mb-3" style={{ color: '#c0392b' }}>{t('waSendHint')}</p>
@@ -7555,10 +7589,10 @@ function GroupOrderView({ back }) {
           {group && group.people.length > 0 && (
             <div className="bg-white rounded-xl p-4">
               <div className="flex justify-between items-center mb-3"><span className="text-sm font-semibold" style={{ color: '#7c6d55' }}>{t('grandTotalAll')}</span><span className="text-lg font-black" style={{ color: GREEN }}>{fmt(grandTotal)}</span></div>
-              {!wheelResult && !group.sentBy && grandTotal >= 30 && (
+              {WHEELS_ENABLED && !wheelResult && !group.sentBy && grandTotal >= 30 && (
                 <div className="mb-3"><WheelPromoBanner onClick={() => setShowWheel(true)} /></div>
               )}
-              {!wheelResult && grandTotal < 30 && (
+              {WHEELS_ENABLED && !wheelResult && grandTotal < 30 && (
                 <div className="mb-3 text-center text-xs font-semibold px-4 py-2.5 rounded-xl" style={{ background: '#f7f0e2', color: '#8a7c62' }}>
                   {t('wheelThresholdPrefix')} {fmt(30 - grandTotal)} {t('wheelThresholdSuffix')}
                 </div>
@@ -7903,8 +7937,13 @@ function LoyaltyAdminPanel() {
     if (!raw) return;
     const code = raw.startsWith('BK-') ? raw : `BK-${raw.replace(/[^A-Z0-9]/g, '')}`;
     setBusy(true); setMsg('');
-    const card = await getLoyaltyCard(code);
-    setResult(card ? { code, card } : 'notfound');
+    try {
+      const card = await getLoyaltyCard(code);
+      setResult(card ? { code, card } : 'notfound');
+    } catch {
+      setResult(null);
+      setMsg('⚠️ Server gerade nicht erreichbar – Karte kann nicht geladen werden. Stempel bitte auf Papier notieren.');
+    }
     setBusy(false);
   };
 
@@ -7958,9 +7997,13 @@ function LoyaltyAdminPanel() {
   const addStamp = async () => {
     if (!result || result === 'notfound') return;
     setBusy(true);
-    const updated = await addLoyaltyStamp(result.code);
-    setResult({ code: result.code, card: updated });
-    setMsg(updated.stamps >= LOYALTY_TARGET ? '🎉 Karte ist voll!' : 'Stempel hinzugefügt ✓');
+    try {
+      const updated = await addLoyaltyStamp(result.code);
+      setResult({ code: result.code, card: updated });
+      setMsg(updated.stamps >= LOYALTY_TARGET ? '🎉 Karte ist voll!' : 'Stempel hinzugefügt ✓');
+    } catch {
+      setMsg('⚠️ NICHT gespeichert – Server nicht erreichbar. Stempel bitte auf Papier notieren und später nachtragen.');
+    }
     setBusy(false);
   };
 
@@ -7968,9 +8011,13 @@ function LoyaltyAdminPanel() {
     if (!result || result === 'notfound') return;
     if (!confirm(`Gratis-Portion für ${result.code} einlösen? Zähler wird auf 0 zurückgesetzt.`)) return;
     setBusy(true);
-    const updated = await redeemLoyaltyCard(result.code);
-    setResult({ code: result.code, card: updated });
-    setMsg('Eingelöst ✓ — neue Runde gestartet');
+    try {
+      const updated = await redeemLoyaltyCard(result.code);
+      setResult({ code: result.code, card: updated });
+      setMsg('Eingelöst ✓ — neue Runde gestartet');
+    } catch {
+      setMsg('⚠️ NICHT eingelöst – Server nicht erreichbar. Bitte später erneut versuchen.');
+    }
     setBusy(false);
   };
 
@@ -8539,7 +8586,7 @@ function StaffPanelView({ back }) {
     if (ok && tab === 'analytics') {
       safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
       safeListPrefix('wish:', 100).then((rows) => setWishes(rows.sort((a, b) => b.value.ts - a.value.ts)));
-      safeListPrefix('weeklyreport:', 52).then((rows) => setWeeklyReports(rows.map((r) => r.value).sort((a, b) => b.ts - a.ts)));
+      safeListPrefix('weeklyreport:', 52).then((rows) => setWeeklyReports(rows.map((r) => ({ ...r.value, _key: r.key })).sort((a, b) => b.ts - a.ts)));
       // Glücksrad-Gewinne (Dienstags-Rad + Warenkorb-Rad + Gruppenbestellung-Rad
       // — alle landen unter demselben 'spincode:'-Präfix). Auf ts (Unix-ms)
       // normalisieren, damit openStatsModal (erwartet value.ts) wiederverwendet
@@ -10061,9 +10108,26 @@ function StaffPanelView({ back }) {
                 {weeklyReports.length > 0 && (
                   <SettingsRow id="statWeeklyReports" icon="📅" title={`Wochenrückblicke (${weeklyReports.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     {weeklyReports.map((r) => (
-                      <div key={r.ts} className="rounded-xl p-3 mb-2.5" style={{ background: '#f7f0e2' }}>
-                        <div className="text-[11px] font-black mb-2" style={{ color: '#8a5a1f' }}>
-                          Woche bis {new Date(r.ts).toLocaleDateString('de-DE')}
+                      <div key={r._key || r.ts} className="rounded-xl p-3 mb-2.5" style={{ background: '#f7f0e2' }}>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="text-[11px] font-black" style={{ color: '#8a5a1f' }}>
+                            Woche bis {new Date(r.ts).toLocaleDateString('de-DE')}
+                          </div>
+                          {r._key && (
+                            <button
+                              onClick={async () => {
+                                if (!confirm(`Wochenrückblick „Woche bis ${new Date(r.ts).toLocaleDateString('de-DE')}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`)) return;
+                                const ok = await safeDeleteKey(r._key);
+                                if (ok) setWeeklyReports((prev) => prev.filter((x) => x._key !== r._key));
+                                else alert('Konnte nicht gelöscht werden – bitte später erneut versuchen.');
+                              }}
+                              aria-label="Löschen"
+                              className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: '#f7ded9' }}
+                            >
+                              <X size={13} color={CHILI} />
+                            </button>
+                          )}
                         </div>
                         <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                           <div className="text-xs font-semibold" style={{ color: GREEN }}>👥 {r.visits} Besuche</div>
@@ -10385,7 +10449,7 @@ function StaffPanelView({ back }) {
                 </div>
                 <div className="min-w-0 relative">
                   <div className="font-black text-[15px] text-white">Gewinncode prüfen</div>
-                  <div className="text-[11px] font-semibold text-white/85">Glücksrad-Gewinne einlösen — inkl. Dienstags-Rad</div>
+                  <div className="text-[11px] font-semibold text-white/85">Bisherige Glücksrad-Gewinne einlösen (Rad ist beendet)</div>
                 </div>
                 <span className="ml-auto text-white text-xl relative">→</span>
               </button>
