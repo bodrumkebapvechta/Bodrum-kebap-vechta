@@ -3043,6 +3043,42 @@ function detectQueryLang(qRaw) {
   return best[0][1] >= 1 && best[0][1] > best[1][1] ? best[0][0] : null;
 }
 
+// Gezeichneter Roboter für den Assistenten-Button: blinzelt regelmäßig,
+// die Antenne leuchtet, und alle paar Sekunden winkt er kurz.
+function RobotFace() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style={{ overflow: 'visible' }}>
+      <style>{`
+        @keyframes robBlink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.08); } }
+        @keyframes robAnt { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+        @keyframes robWave { 0%, 76%, 100% { transform: rotate(0deg); } 80% { transform: rotate(-28deg); } 84% { transform: rotate(12deg); } 88% { transform: rotate(-24deg); } 92% { transform: rotate(8deg); } }
+        @keyframes robTilt { 0%, 76%, 100% { transform: rotate(0deg); } 82% { transform: rotate(-6deg); } 90% { transform: rotate(4deg); } }
+        @media (prefers-reduced-motion: reduce) { .rob * { animation: none !important; } }
+      `}</style>
+      <g className="rob">
+        <g style={{ transformOrigin: '20px 30px', animation: 'robTilt 7s ease-in-out 2s infinite' }}>
+          <line x1="20" y1="6" x2="20" y2="11" stroke="#e8edf1" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="20" cy="5" r="2.6" fill={GOLD} style={{ animation: 'robAnt 1.6s ease-in-out infinite' }} />
+          <rect x="7" y="11" width="26" height="21" rx="7" fill="#eef2f5" />
+          <rect x="4.5" y="18" width="3" height="7" rx="1.5" fill="#cfd8df" />
+          <rect x="32.5" y="18" width="3" height="7" rx="1.5" fill="#cfd8df" />
+          <g style={{ transformOrigin: '20px 20px', animation: 'robBlink 4.2s ease-in-out 1s infinite' }}>
+            <circle cx="14.5" cy="20" r="3.4" fill="#153826" />
+            <circle cx="25.5" cy="20" r="3.4" fill="#153826" />
+            <circle cx="15.5" cy="19" r="1.1" fill="#fff" />
+            <circle cx="26.5" cy="19" r="1.1" fill="#fff" />
+          </g>
+          <rect x="14" y="26" width="12" height="2.6" rx="1.3" fill={ORANGE} opacity=".85" />
+        </g>
+        <g style={{ transformOrigin: '34px 33px', animation: 'robWave 7s ease-in-out 2s infinite' }}>
+          <line x1="34" y1="33" x2="38" y2="25" stroke="#eef2f5" strokeWidth="2.6" strokeLinecap="round" />
+          <circle cx="38.5" cy="23.5" r="2.4" fill="#eef2f5" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
 function AIAssistant() {
   const { lang, t, go } = React.useContext(LangContext);
   const [open, setOpen] = useState(false);
@@ -3126,7 +3162,13 @@ function AIAssistant() {
     logEvent('assistant_' + intent, { q: q.slice(0, 200) });
     setInput('');
     if (intent !== 'fallback') {
-      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: reply, intent, catKey, lang: qLang }]);
+      // Kurzes "schreibt…", damit die Antwort natürlicher wirkt (max. ~1 s)
+      const typingId = Date.now() + Math.random();
+      setMessages((m) => [...m, { from: 'user', text: q }, { from: 'bot', text: '…', id: typingId }]);
+      const wait = 450 + Math.min(String(reply).length * 4, 550);
+      setTimeout(() => {
+        setMessages((m) => m.map((msg) => (msg.id === typingId ? { from: 'bot', text: reply, intent, catKey, lang: qLang } : msg)));
+      }, wait);
       return;
     }
     // Kein Keyword-Treffer: an die echte KI weiterreichen (kostet etwas,
@@ -3167,6 +3209,12 @@ function AIAssistant() {
 
   return (
     <>
+      <style>{`
+        @keyframes typeDot { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-5px); opacity: 1; } }
+        @keyframes msgBot { from { opacity: 0; transform: translateY(8px) scale(.96); transform-origin: left bottom; } to { opacity: 1; transform: none; } }
+        @keyframes msgUser { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { [style*="typeDot"], [style*="msgBot"], [style*="msgUser"] { animation: none !important; } }
+      `}</style>
       {bubble && !open && !bubbleClosed && (
         <div onClick={openFromBubble} role="button" className="fixed right-5 z-40 max-w-[230px] pl-3.5 pr-8 py-2.5 rounded-2xl text-xs font-black cursor-pointer" style={{ bottom: 92, background: CREAM, color: GREEN, boxShadow: '0 10px 26px rgba(21,56,38,.28)', border: `2px solid ${ORANGE}`, animation: 'modalCardUp .35s ease' }}>
           {bubble}
@@ -3179,7 +3227,7 @@ function AIAssistant() {
         className="fixed bottom-5 right-5 z-40 w-16 h-16 rounded-full flex items-center justify-center"
         style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 28px rgba(230,90,10,.5)', animation: open ? 'none' : 'goldGlow 2.4s ease-in-out infinite' }}
       >
-        <span className="text-2xl">{open ? '✕' : '🤖'}</span>
+        {open ? <span className="text-2xl">✕</span> : <RobotFace />}
       </button>
 
       {open && (
@@ -3195,12 +3243,16 @@ function AIAssistant() {
                 <div
                   className="px-3.5 py-2.5 rounded-2xl text-sm font-medium max-w-[85%] whitespace-pre-wrap flex items-end gap-1.5"
                   style={m.from === 'user'
-                    ? { background: GREEN, color: '#fff', borderBottomRightRadius: 4 }
-                    : { background: '#fff', color: GREEN, borderBottomLeftRadius: 4, boxShadow: '0 2px 8px rgba(21,56,38,.08)' }}
+                    ? { background: GREEN, color: '#fff', borderBottomRightRadius: 4, animation: 'msgUser .28s ease-out both' }
+                    : { background: '#fff', color: GREEN, borderBottomLeftRadius: 4, boxShadow: '0 2px 8px rgba(21,56,38,.08)', animation: 'msgBot .38s cubic-bezier(.2,.8,.2,1) both' }}
                 >
-                  <span>{String(m.text).split('**').map((part, pi) => (pi % 2 === 1 ? <strong key={pi}>{part}</strong> : <React.Fragment key={pi}>{part}</React.Fragment>))}</span>
-                  {m.from === 'bot' && (
-                    <button onClick={() => speakText(m.text, lang)} className="flex-shrink-0 opacity-60" title="Vorlesen">🔊</button>
+                  {m.from === 'bot' && m.text === '…' && m.id ? (
+                    <span className="inline-flex items-center gap-1 py-1" aria-label="…">
+                      {[0, 1, 2].map((d) => <span key={d} className="inline-block w-2 h-2 rounded-full" style={{ background: GREEN, opacity: 0.6, animation: `typeDot 1s ease-in-out ${d * 0.15}s infinite` }} />)}
+                    </span>
+                  ) : <span>{String(m.text).split('**').map((part, pi) => (pi % 2 === 1 ? <strong key={pi}>{part}</strong> : <React.Fragment key={pi}>{part}</React.Fragment>))}</span>}
+                  {m.from === 'bot' && m.text !== '…' && (
+                    <button onClick={() => speakText(m.text, m.lang || lang)} className="flex-shrink-0 opacity-60" title="Vorlesen">🔊</button>
                   )}
                 </div>
                 {m.from === 'bot' && m.intent === 'trackorder' && (
@@ -11345,14 +11397,15 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
     <div className="min-h-screen w-full relative overflow-x-hidden" style={{ background: '#eaf3ec', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
       <div className="relative" style={{ zIndex: 1 }}>
       <style>{`
-        @keyframes tmFadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+        @keyframes tmFadeUp { 0%{ opacity:0; transform:translateY(24px) scale(.95); } 60%{ opacity:1; transform:translateY(-3px) scale(1.005); } 100%{ opacity:1; transform:none; } }
+        @media (prefers-reduced-motion: reduce) { .tm-card { animation: none !important; } }
         @keyframes tmGlow { 0%,100%{ box-shadow:0 0 0 0 rgba(255,199,56,.5);} 50%{ box-shadow:0 0 0 12px rgba(255,199,56,0);} }
         @keyframes tmFlicker { 0%,100%{ transform:scale(1) rotate(-2deg);} 50%{ transform:scale(1.08) rotate(2deg);} }
         @keyframes tmShimmer { 0%{ background-position:-300px 0;} 100%{ background-position:300px 0;} }
         @keyframes tmBellRing { 0%,100%{ transform:rotate(0deg);} 20%{ transform:rotate(-12deg);} 40%{ transform:rotate(10deg);} 60%{ transform:rotate(-6deg);} 80%{ transform:rotate(4deg);} }
         @keyframes modalCardUp { from{ opacity:0; transform:translateY(40px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
-        .tm-card { animation: tmFadeUp .45s ease both; transition: transform .15s ease, box-shadow .15s ease; }
-        .tm-card:active { transform: scale(.98); }
+        .tm-card { animation: tmFadeUp .55s cubic-bezier(.2,.8,.2,1) both; transition: transform .15s ease, box-shadow .15s ease; }
+        .tm-card:active { transform: scale(.97); box-shadow: 0 1px 6px rgba(21,56,38,.1) !important; }
         .tm-tab { transition: all .2s ease; }
       `}</style>
 
@@ -11498,7 +11551,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                 <div
                   key={item.id}
                   className="tm-card bg-white rounded-2xl p-3.5 flex items-center gap-3.5"
-                  style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 8) * 0.05}s` }}
+                  style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 12) * 0.055}s` }}
                 >
                   {resolvedImg ? (
                     <img src={resolvedImg} alt="" loading="lazy" onClick={() => setTmLightbox(resolvedImg)} className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0 cursor-pointer" />
@@ -11728,68 +11781,68 @@ function applyOrderTestParam() {
   } catch {}
 }
 
-// Einmal pro Sitzung beim ersten Öffnen: drehender Dönerspieß mit Logo.
-// Verschwindet, sobald die Seite geladen ist (mind. 0,7 s, höchstens 1,8 s).
+// Einmal pro Sitzung beim ersten Öffnen: edles Logo-Intro.
+// Goldener Ring zeichnet sich, Logo wird aus der Unschärfe scharf, Schriftzug
+// setzt sich Buchstabe für Buchstabe, Goldlinie läuft aus – dann hebt sich
+// der Vorhang nach oben. Antippen überspringt. "Bewegung reduzieren" = aus.
 function OpeningLoader() {
-  const [show, setShow] = useState(() => { try { return !sessionStorage.getItem('bk_loader_seen'); } catch { return false; } });
+  const [show, setShow] = useState(() => {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+      return !sessionStorage.getItem('bk_intro_seen');
+    } catch { return false; }
+  });
   const [leaving, setLeaving] = useState(false);
+  const doneRef = useRef(false);
+  const leave = () => {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    setLeaving(true);
+    setTimeout(() => setShow(false), 750);
+  };
   useEffect(() => {
     if (!show) return;
-    try { sessionStorage.setItem('bk_loader_seen', '1'); } catch {}
-    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const minT = reduce ? 0 : 700;
+    try { sessionStorage.setItem('bk_intro_seen', '1'); } catch {}
     const t0 = Date.now();
-    let done = false;
+    const MIN = 1500, MAX = 2400;
     const timers = [];
-    const finish = () => {
-      if (done) return; done = true;
-      timers.push(setTimeout(() => { setLeaving(true); timers.push(setTimeout(() => setShow(false), 450)); }, Math.max(0, minT - (Date.now() - t0))));
-    };
-    if (document.readyState === 'complete') finish(); else window.addEventListener('load', finish, { once: true });
-    timers.push(setTimeout(finish, 1800));
-    return () => { timers.forEach(clearTimeout); window.removeEventListener('load', finish); };
+    const onLoad = () => timers.push(setTimeout(leave, Math.max(0, MIN - (Date.now() - t0))));
+    if (document.readyState === 'complete') onLoad(); else window.addEventListener('load', onLoad, { once: true });
+    timers.push(setTimeout(leave, MAX));
+    return () => { timers.forEach(clearTimeout); window.removeEventListener('load', onLoad); };
   }, [show]);
   if (!show) return null;
+  const name = 'BODRUM KEBAP';
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ zIndex: 9999, background: `radial-gradient(circle at 50% 40%, #1f5138, ${GREEN} 60%, #0c2116)`, opacity: leaving ? 0 : 1, transition: 'opacity .45s ease' }} aria-hidden="true">
+    <div onClick={leave} className="fixed inset-0 flex flex-col items-center justify-center cursor-pointer" style={{ zIndex: 9999, background: `radial-gradient(ellipse at 50% 42%, #22573c 0%, ${GREEN} 55%, #0b1f15 100%)`, transform: leaving ? 'translateY(-100%)' : 'none', transition: 'transform .75s cubic-bezier(.76,0,.24,1)' }} aria-hidden="true">
       <style>{`
-        @keyframes spitTurn { from { transform: translateX(0); } to { transform: translateX(-24px); } }
-        @keyframes flameFlick { 0%,100% { transform: scaleY(1) translateY(0); opacity: .85; } 50% { transform: scaleY(1.18) translateY(-3px); opacity: 1; } }
-        @keyframes loaderPop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) { .ldr * { animation: none !important; } }
+        @keyframes introRing { from { stroke-dashoffset: 440; } to { stroke-dashoffset: 0; } }
+        @keyframes introLogo { 0% { opacity: 0; transform: scale(.82); filter: blur(10px); } 100% { opacity: 1; transform: scale(1); filter: blur(0); } }
+        @keyframes introGlow { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: .6; transform: scale(1.06); } }
+        @keyframes introChar { 0% { opacity: 0; transform: translateY(14px); filter: blur(4px); } 100% { opacity: 1; transform: none; filter: blur(0); } }
+        @keyframes introTrack { 0% { opacity: 0; letter-spacing: .1em; } 100% { opacity: 1; letter-spacing: .55em; } }
+        @keyframes introLine { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes introShine { 0% { transform: translateX(-160%) skewX(-20deg); } 100% { transform: translateX(260%) skewX(-20deg); } }
       `}</style>
-      <svg className="ldr" width="120" height="150" viewBox="0 0 120 150">
-        <defs>
-          <clipPath id="spitClip"><path d="M26 22 L94 22 Q92 60 80 118 L40 118 Q28 60 26 22 Z" /></clipPath>
-          <pattern id="spitStripes" width="24" height="150" patternUnits="userSpaceOnUse">
-            <rect width="24" height="150" fill="#9a4a1f" />
-            <rect x="0" width="12" height="150" fill="#b55d27" />
-            <rect x="5" width="3" height="150" fill="#d98a45" opacity=".6" />
-          </pattern>
-          <linearGradient id="spitShade" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#000" stopOpacity=".45" />
-            <stop offset="35%" stopColor="#000" stopOpacity="0" />
-            <stop offset="70%" stopColor="#fff" stopOpacity=".12" />
-            <stop offset="100%" stopColor="#000" stopOpacity=".5" />
-          </linearGradient>
-        </defs>
-        <rect x="58" y="6" width="4" height="138" rx="2" fill="#c9cdd2" />
-        <g clipPath="url(#spitClip)">
-          <rect x="0" y="0" width="160" height="150" fill="url(#spitStripes)" style={{ animation: 'spitTurn .7s linear infinite' }} />
-          {[36, 54, 72, 90, 106].map((y) => <rect key={y} x="0" y={y} width="120" height="2" fill="#6e3212" opacity=".35" />)}
-          <rect x="0" y="0" width="120" height="150" fill="url(#spitShade)" />
-        </g>
-        <ellipse cx="60" cy="22" rx="34" ry="5" fill="#c46b2c" />
-        {[0, 1, 2].map((i) => (
-          <path key={i} d={`M${102 + i * 5} ${108 - i * 22} q 8 -10 0 -22 q -8 12 0 22 z`} fill={i % 2 ? '#ffc738' : '#ff6a1a'} style={{ transformOrigin: `${102 + i * 5}px ${108 - i * 22}px`, animation: `flameFlick ${0.5 + i * 0.13}s ease-in-out infinite` }} />
-        ))}
-      </svg>
-      <div className="mt-4 flex items-center gap-2.5" style={{ animation: 'loaderPop .5s ease-out .15s both' }}>
-        <img src={LOGO_ICON} alt="" className="w-9 h-9 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
-        <div>
-          <div className="font-black text-lg leading-none" style={{ color: CREAM }}>BODRUM KEBAP</div>
-          <div className="text-[10px] font-bold tracking-[.4em] mt-0.5" style={{ color: GOLD }}>VECHTA</div>
+      <div style={{ opacity: leaving ? 0 : 1, transform: leaving ? 'translateY(-24px)' : 'none', transition: 'opacity .35s ease, transform .5s ease' }} className="flex flex-col items-center">
+        <div className="relative" style={{ width: 150, height: 150 }}>
+          <div className="absolute rounded-full" style={{ inset: -30, background: 'radial-gradient(circle, rgba(255,199,56,.35), transparent 65%)', animation: 'introGlow 2.4s ease-in-out .6s infinite' }} />
+          <svg className="absolute inset-0" width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="70" fill="none" stroke="rgba(255,199,56,.18)" strokeWidth="2" />
+            <circle cx="75" cy="75" r="70" fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" strokeDasharray="440" style={{ transform: 'rotate(-90deg)', transformOrigin: '75px 75px', animation: 'introRing 1.1s cubic-bezier(.65,0,.35,1) .1s both' }} />
+          </svg>
+          <div className="absolute rounded-full overflow-hidden" style={{ inset: 12, background: CREAM, boxShadow: '0 12px 34px rgba(0,0,0,.35)', animation: 'introLogo .9s cubic-bezier(.2,.8,.2,1) .35s both' }}>
+            <img src={LOGO_ICON} alt="" className="w-full h-full object-contain" style={{ padding: 8 }} />
+            <span className="absolute inset-y-0 w-1/3" style={{ left: 0, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent)', animation: 'introShine 1s ease-in-out 1.15s both' }} />
+          </div>
         </div>
+        <div className="mt-7 font-black text-[26px] leading-none" style={{ color: CREAM, letterSpacing: '.06em' }}>
+          {name.split('').map((ch, i) => (
+            <span key={i} className="inline-block" style={{ whiteSpace: 'pre', animation: `introChar .55s cubic-bezier(.2,.8,.2,1) ${0.7 + i * 0.045}s both` }}>{ch}</span>
+          ))}
+        </div>
+        <div className="mt-3 h-px w-40" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`, transformOrigin: 'center', animation: 'introLine .7s cubic-bezier(.65,0,.35,1) 1.05s both' }} />
+        <div className="mt-3 text-[11px] font-bold" style={{ color: GOLD, paddingLeft: '.55em', animation: 'introTrack .9s cubic-bezier(.2,.8,.2,1) 1.1s both' }}>VECHTA</div>
       </div>
     </div>
   );
