@@ -2384,6 +2384,15 @@ function Testimonials() {
   );
 }
 
+function FlipDigit({ d }) {
+  return (
+    <span className="inline-block relative overflow-hidden rounded-md text-center font-black" style={{ width: '1.1em', height: '1.5em', lineHeight: '1.5em', background: 'rgba(0,0,0,.3)', perspective: 220 }}>
+      <span key={d} className="absolute inset-0" style={{ animation: 'flipIn .5s cubic-bezier(.3,1.3,.5,1) both', transformOrigin: '50% 0%' }}>{d}</span>
+      <span className="absolute left-0 right-0" style={{ top: '50%', height: 1, background: 'rgba(0,0,0,.35)' }} />
+    </span>
+  );
+}
+
 function LunchCountdown() {
   const [now, setNow] = useState(new Date());
   useEffect(() => {
@@ -2408,8 +2417,15 @@ function LunchCountdown() {
       <div className="max-w-7xl mx-auto px-5 flex flex-wrap items-center justify-center gap-3">
         <span className="text-white font-black text-lg">{active ? '🔥 ' : ''}MITTAGSANGEBOT · 9,50 €</span>
         {active ? (
-          <span className="text-white text-sm font-black px-3 py-1 rounded-full" style={{ background: 'rgba(255,255,255,.18)' }}>
-            Nur noch {mm}:{ss.toString().padStart(2, '0')} Minuten!
+          <span className="text-white text-sm font-black px-3 py-1 rounded-full inline-flex items-center gap-1" style={{ background: 'rgba(255,255,255,.18)' }}>
+            <style>{`@keyframes flipIn { 0% { transform: rotateX(-90deg); opacity: .2; } 100% { transform: rotateX(0); opacity: 1; } } @media (prefers-reduced-motion: reduce) { .flipbox * { animation: none !important; } }`}</style>
+            <span className="mr-1">Nur noch</span>
+            <span className="flipbox inline-flex items-center gap-0.5 text-base">
+              {String(mm).padStart(2, '0').split('').map((ch, i) => <FlipDigit key={`m${i}`} d={ch} />)}
+              <span className="px-0.5">:</span>
+              {ss.toString().padStart(2, '0').split('').map((ch, i) => <FlipDigit key={`s${i}`} d={ch} />)}
+            </span>
+            <span className="ml-1">Min.!</span>
           </span>
         ) : (
           <span className="text-white text-xs font-semibold opacity-90">Mo.–Fr. 11:30–14:00 · Schnitzel, Nudeln, Salat + Getränk</span>
@@ -3916,6 +3932,22 @@ function LoyaltyModal({ lang, t, onClose }) {
 
   const stamps = card?.stamps || 0;
   const isFull = stamps >= LOYALTY_TARGET;
+  // Neue Stempel seit dem letzten Öffnen werden "aufgestempelt"; volle Karte = Konfetti (einmal pro Runde)
+  const [stampFx, setStampFx] = useState({ from: 999, confetti: false });
+  useEffect(() => {
+    if (step !== 'card' || !code) return;
+    let seen = 0;
+    try { seen = parseInt(localStorage.getItem('bk_stamps_seen_' + code) || '0', 10) || 0; } catch {}
+    const from = stamps > seen ? seen : stamps;
+    let confetti = false;
+    if (isFull) {
+      const k = `bk_full_party_${code}_${card?.redeemedCount || 0}`;
+      try { if (!localStorage.getItem(k)) { confetti = true; localStorage.setItem(k, '1'); } } catch {}
+    }
+    setStampFx({ from, confetti });
+    try { localStorage.setItem('bk_stamps_seen_' + code, String(stamps)); } catch {}
+    if (confetti) { const tm = setTimeout(() => setStampFx((f) => ({ ...f, confetti: false })), 4200); return () => clearTimeout(tm); }
+  }, [step, code, stamps]);
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.75)', animation: 'modalBgFade .25s ease' }} onClick={onClose}>
@@ -4069,13 +4101,22 @@ function LoyaltyModal({ lang, t, onClose }) {
             {/* Stempelkarte */}
             <div className="rounded-2xl p-4 mb-4" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
               <div className="grid grid-cols-4 gap-2.5 mb-3">
+                <style>{`
+                  @keyframes stampPress { 0% { transform: scale(2.4) rotate(-25deg); opacity: 0; } 55% { transform: scale(.82) rotate(6deg); opacity: 1; } 75% { transform: scale(1.08) rotate(-2deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+                  @keyframes stampRing { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.9); opacity: 0; } }
+                  @keyframes lcFall { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(105vh) rotate(var(--spin)); opacity: 0; } }
+                  @media (prefers-reduced-motion: reduce) { .stampfx * { animation: none !important; } }
+                `}</style>
                 {Array.from({ length: LOYALTY_TARGET }).map((_, i) => {
                   const filled = i < stamps;
+                  const isNew = filled && i >= stampFx.from;
+                  const delay = 0.35 + (i - stampFx.from) * 0.38;
                   return (
-                    <div key={i} className="aspect-square rounded-full flex items-center justify-center text-base"
+                    <div key={i} className="stampfx relative aspect-square rounded-full flex items-center justify-center text-base"
                       style={filled
-                        ? { background: `radial-gradient(circle at 35% 30%, ${GOLD}, ${ORANGE})`, boxShadow: '0 3px 8px rgba(230,90,10,.35)' }
+                        ? { background: `radial-gradient(circle at 35% 30%, ${GOLD}, ${ORANGE})`, boxShadow: '0 3px 8px rgba(230,90,10,.35)', animation: isNew ? `stampPress .6s cubic-bezier(.3,1.5,.5,1) ${delay}s both` : undefined }
                         : { background: '#fff', border: '1.5px dashed #d9c9a3' }}>
+                      {isNew && <span className="absolute inset-0 rounded-full pointer-events-none" style={{ border: `2px solid ${ORANGE}`, animation: `stampRing .7s ease-out ${delay + 0.3}s both` }} />}
                       {filled ? '🍕' : <span style={{ color: '#c9b892', fontSize: 11, fontWeight: 900 }}>{i + 1}</span>}
                     </div>
                   );
@@ -4089,6 +4130,13 @@ function LoyaltyModal({ lang, t, onClose }) {
               </p>
             </div>
 
+            {stampFx.confetti && (
+              <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 400 }}>
+                {Array.from({ length: 46 }).map((_, i) => (
+                  <span key={i} className="absolute block" style={{ left: `${(i * 37) % 100}%`, top: -20, width: 8 + (i % 3) * 3, height: 12 + (i % 4) * 3, borderRadius: i % 2 ? 2 : 999, background: [GOLD, ORANGE, '#2d9b5f', CHILI, '#fff'][i % 5], '--spin': `${360 + (i % 5) * 180}deg`, animation: `lcFall ${2.2 + (i % 6) * 0.25}s cubic-bezier(.25,.6,.4,1) ${(i % 9) * 0.08}s both` }} />
+                ))}
+              </div>
+            )}
             <p className="text-xs text-center font-medium mb-3" style={{ color: '#a89878' }}>{t('showCodeForStamp')}</p>
 
             {!card?.birthday && (
@@ -4869,104 +4917,241 @@ function InstaCaptionTool() {
   );
 }
 
-// ---- Motion-Design-Karte für Kapsalon (Startseite) ----
-// Ablauf beim ersten Sichtbarwerden: Käse "schmilzt" von oben herunter,
-// Buchstaben fallen einzeln hinein, Preis ploppt als Sticker auf, Dampf
-// steigt auf. Danach nur noch dezente Endlos-Bewegung. Bei "Bewegung
-// reduzieren" (Systemeinstellung) wird direkt der Endzustand gezeigt.
+// ---- Animierte Produktkarte (Startseite) — im Personal-Bereich einstellbar ----
+// siteconfig:spotlight = { enabled, itemId, badge: 'neu'|'tipp'|'angebot', photo, tagline }
+// Ohne Eintrag: Kapsalon als Standard. Foto-Reihenfolge: eigenes Karten-Foto →
+// Foto aus der Speisekarte → ohne Foto (Layout passt sich an).
+const SPOT_DEFAULT = { enabled: true, itemId: 'na192', badge: 'neu', photo: '', tagline: '', style: 'cheese' };
+const SPOT2_DEFAULT = { enabled: true, itemId: 'na193', badge: 'neu', photo: '', tagline: '', style: 'sauce' };
 const SPOT_T = {
   neu: { de: 'NEU', en: 'NEW', tr: 'YENİ', ro: 'NOU', nl: 'NIEUW', sq: 'E RE', ku: 'NÛ', pl: 'NOWOŚĆ' },
-  sub: { de: 'Pommes · Dönerfleisch · Käse · Salat', en: 'Fries · Döner meat · Cheese · Salad', tr: 'Patates · Döner eti · Peynir · Salata', ro: 'Cartofi · Carne döner · Brânză · Salată', nl: 'Friet · Dönervlees · Kaas · Salade', sq: 'Patate · Mish döner · Djathë · Sallatë', ku: 'Kartol · Goştê döner · Penîr · Selete', pl: 'Frytki · Mięso döner · Ser · Sałatka' },
-  tag: { de: 'Holländische Spezialität', en: 'Dutch speciality', tr: 'Hollanda spesiyali', ro: 'Specialitate olandeză', nl: 'Hollandse specialiteit', sq: 'Specialitet holandez', ku: 'Taybetiya Holandayê', pl: 'Holenderski przysmak' },
+  tipp: { de: 'UNSER TIPP', en: 'OUR TIP', tr: 'ÖNERİMİZ', ro: 'RECOMANDARE', nl: 'ONZE TIP', sq: 'KËSHILLA', ku: 'PÊŞNIYAR', pl: 'POLECAMY' },
+  angebot: { de: 'ANGEBOT', en: 'OFFER', tr: 'KAMPANYA', ro: 'OFERTĂ', nl: 'AANBIEDING', sq: 'OFERTË', ku: 'PÊŞNIYAR', pl: 'OFERTA' },
+  kapsTag: { de: 'Holländische Spezialität', en: 'Dutch speciality', tr: 'Hollanda spesiyali', ro: 'Specialitate olandeză', nl: 'Hollandse specialiteit', sq: 'Specialitet holandez', ku: 'Taybetiya Holandayê', pl: 'Holenderski przysmak' },
+  kapsSub: { de: 'Pommes · Dönerfleisch · Käse · Salat', en: 'Fries · Döner meat · Cheese · Salad', tr: 'Patates · Döner eti · Peynir · Salata', ro: 'Cartofi · Carne döner · Brânză · Salată', nl: 'Friet · Dönervlees · Kaas · Salade', sq: 'Patate · Mish döner · Djathë · Sallatë', ku: 'Kartol · Goştê döner · Penîr · Selete', pl: 'Frytki · Mięso döner · Ser · Sałatka' },
   cta: { de: 'Jetzt ansehen', en: 'Take a look', tr: 'Hemen bak', ro: 'Vezi acum', nl: 'Nu bekijken', sq: 'Shiko tani', ku: 'Niha binêre', pl: 'Zobacz teraz' },
 };
-function KapsalonSpotlight({ go }) {
+// Geschmolzener Käse: warme Creme-/Goldtöne, gebräunte Stellen, Glanzlichter,
+// Tropfen mit runden Enden. Feste Proportionen (kein Verzerren).
+const CHEESE_DRIPS = [
+  { x: 34, w: 26, len: 34, d: 0.10 }, { x: 88, w: 20, len: 62, d: 0.32 }, { x: 142, w: 34, len: 26, d: 0.02 },
+  { x: 196, w: 18, len: 78, d: 0.44 }, { x: 250, w: 28, len: 46, d: 0.20 }, { x: 300, w: 22, len: 88, d: 0.52 },
+  { x: 348, w: 30, len: 58, d: 0.28 }, { x: 392, w: 18, len: 40, d: 0.38 },
+];
+const CHEESE_EDGE = 'M0 0 H420 V22 C410 27 402 20 392 24 C380 30 368 22 356 27 C342 33 330 24 318 26 C304 29 292 23 280 27 C266 32 254 24 240 26 C226 29 214 22 202 27 C188 32 176 25 162 27 C148 30 136 23 122 26 C108 30 96 24 82 27 C68 31 56 23 42 26 C28 29 16 24 0 26 Z';
+const MELT_PALETTE = {
+  cheese: { top: '#fff6d8', mid: '#fbe3a0', bot: '#efc15c', bulb: '#efc15c', brown: true },
+  sauce: { top: '#ffeec2', mid: '#f9c866', bot: '#ec9a35', bulb: '#ee9f3a', brown: false },
+};
+function MeltingCheese({ uid = 'a', variant = 'cheese' }) {
+  const P = MELT_PALETTE[variant] || MELT_PALETTE.cheese;
+  const id = (n) => `${n}-${uid}`;
+  return (
+    <svg className="absolute top-0 left-0 w-full pointer-events-none" style={{ zIndex: 3 }} height="130" viewBox="0 0 420 130" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+      <defs>
+        <linearGradient id={id('chG')} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={P.top} />
+          <stop offset="45%" stopColor={P.mid} />
+          <stop offset="100%" stopColor={P.bot} />
+        </linearGradient>
+        <radialGradient id={id('chBrown')} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#b8691c" stopOpacity=".75" />
+          <stop offset="60%" stopColor="#d08a2e" stopOpacity=".35" />
+          <stop offset="100%" stopColor="#e9a946" stopOpacity="0" />
+        </radialGradient>
+        <filter id={id('chShadow')} x="-10%" y="-10%" width="120%" height="140%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#5a3a08" floodOpacity=".35" />
+        </filter>
+        <filter id={id('chBlur')}><feGaussianBlur stdDeviation="1.2" /></filter>
+        <clipPath id={id('chClip')}><path d={CHEESE_EDGE} /></clipPath>
+      </defs>
+      <g filter={`url(#${id('chShadow')})`}>
+        {CHEESE_DRIPS.map((dr, i) => {
+          const top = 20; const r = dr.w * 0.5; const endY = top + dr.len;
+          const body = `M${dr.x - dr.w / 2} ${top} C ${dr.x - dr.w / 2} ${top + dr.len * 0.45}, ${dr.x - dr.w * 0.28} ${endY - r * 1.2}, ${dr.x - dr.w * 0.36} ${endY - r * 0.4} L ${dr.x + dr.w * 0.36} ${endY - r * 0.4} C ${dr.x + dr.w * 0.28} ${endY - r * 1.2}, ${dr.x + dr.w / 2} ${top + dr.len * 0.45}, ${dr.x + dr.w / 2} ${top} Z`;
+          return (
+            <g key={i} className="kp-anim" style={{ transformOrigin: `${dr.x}px ${top}px`, transformBox: 'view-box', animation: `kpDrip 1.3s cubic-bezier(.3,1.25,.5,1) ${dr.d}s both, kpWobble ${3 + (i % 3) * 0.6}s ease-in-out ${1.8 + i * 0.25}s infinite` }}>
+              <path d={body} fill={`url(#${id('chG')})`} />
+              <circle cx={dr.x} cy={endY - r * 0.55} r={r * 0.82} fill={P.bulb} />
+              <ellipse cx={dr.x - r * 0.3} cy={endY - r * 0.75} rx={r * 0.22} ry={r * 0.32} fill="#fff" opacity=".7" filter={`url(#${id('chBlur')})`} />
+              <rect x={dr.x - dr.w * 0.3} y={top + 2} width={dr.w * 0.14} height={dr.len * 0.5} rx={dr.w * 0.07} fill="#fff" opacity=".45" filter={`url(#${id('chBlur')})`} />
+            </g>
+          );
+        })}
+        <path d={CHEESE_EDGE} fill={`url(#${id('chG')})`} />
+      </g>
+      <g clipPath={`url(#${id('chClip')})`}>
+        {P.brown && [[30, 10, 20, 6], [96, 14, 26, 7], [168, 8, 18, 5], [230, 15, 30, 7], [306, 9, 22, 6], [372, 13, 24, 7], [132, 20, 14, 4], [268, 21, 16, 4]].map(([cx, cy, rx, ry], i) => (
+          <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={ry} fill={`url(#${id('chBrown')})`} />
+        ))}
+        {[[60, 7, 30], [190, 6, 22], [330, 6, 26]].map(([cx, cy, rx], i) => (
+          <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={2.2} fill="#fff" opacity=".55" filter={`url(#${id('chBlur')})`} />
+        ))}
+      </g>
+      {[[118, 0], [226, 1], [320, 2]].map(([x, i]) => (
+        <circle key={x} className="kp-anim" cx={x} cy={112} r={4.5} fill={P.bulb} style={{ animation: `kpBlob .8s ease-out ${1.2 + i * 0.3}s both` }} />
+      ))}
+    </svg>
+  );
+}
+function ProductSpotlight({ go, cfgKey = 'siteconfig:spotlight', defaults = SPOT_DEFAULT, uid = 'a' }) {
   const { lang } = React.useContext(LangContext);
-  const L = (k) => SPOT_T[k][lang] || SPOT_T[k].de;
-  const item = ALL_MENU_ITEMS.find((it) => it.id === 'na192');
+  const [cfg, setCfg] = useState(null);
+  const [menuPhotos, setMenuPhotos] = useState({});
   const ref = useRef(null);
   const [play, setPlay] = useState(false);
   useEffect(() => {
+    safeGet(cfgKey).then((r) => setCfg({ ...defaults, ...(r || {}) }));
+    safeListPrefix('tischphoto:', 500).then((rows) => {
+      const map = {};
+      rows.forEach((r) => { if (r.value?.url) map[r.key.replace(/^tischphoto:/, '')] = r.value.url; });
+      setMenuPhotos(map);
+    });
+  }, []);
+  useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !cfg) return;
     if (typeof IntersectionObserver === 'undefined') { setPlay(true); return; }
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setPlay(true); io.disconnect(); } }, { threshold: 0.35 });
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setPlay(true); io.disconnect(); } }, { threshold: 0.3 });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [cfg]);
+  if (!cfg || !cfg.enabled) return null;
+  const item = ALL_MENU_ITEMS.find((it) => it.id === cfg.itemId);
   if (!item) return null;
-  const p = item.price;
-  const priceLabel = Number.isInteger(p) ? `${p} €` : fmt(p);
-  const word = 'KAPSALON';
-  const drips = [
-    { x: 8, w: 22, h: 38, d: 0.15 }, { x: 24, w: 16, h: 58, d: 0.35 }, { x: 41, w: 26, h: 30, d: 0.05 },
-    { x: 57, w: 14, h: 66, d: 0.45 }, { x: 72, w: 20, h: 40, d: 0.25 }, { x: 88, w: 15, h: 52, d: 0.55 },
-  ];
-  const open = () => { logEvent('kapsalon_spotlight'); go('tischmenu', { initialCatHint: 'neu' }); };
+  const L = (k) => SPOT_T[k][lang] || SPOT_T[k].de;
+  const price = item.price ?? item.priceSmall;
+  const priceLabel = Number.isInteger(price) ? `${price} €` : fmt(price);
+  const photo = cfg.photo || menuPhotos[`imp-${item.id}`] || menuPhotos[item.id] || '';
+  const isKaps = item.id === 'na192';
+  const tagline = cfg.tagline || (isKaps ? L('kapsTag') : '');
+  const descFull = isKaps ? L('kapsSub') : mx(item.desc || '', lang);
+  const sub = descFull.length > 70 ? `${descFull.slice(0, 68).trim()}…` : descFull;
+  const word = item.name.replace(/^Portion\s+/i, '').toUpperCase();
+  const fs = word.length <= 9 ? 'clamp(30px, 9vw, 50px)' : word.length <= 14 ? 'clamp(24px, 7vw, 40px)' : 'clamp(20px, 5.6vw, 32px)';
+  const badgeKey = ['neu', 'tipp', 'angebot'].includes(cfg.badge) ? cfg.badge : 'neu';
+  const open = () => { logEvent(uid === 'a' ? 'kapsalon_spotlight' : 'spotlight2', { item: item.name }); go('tischmenu', { initialCatHint: item.catKey }); };
   return (
     <section className="px-5 lg:px-10 max-w-7xl mx-auto mt-6 mb-2">
       <style>{`
-        @keyframes kpDrip { 0% { transform: scaleY(0); } 70% { transform: scaleY(1.08); } 100% { transform: scaleY(1); } }
-        @keyframes kpWobble { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.06); } }
-        @keyframes kpBlob { 0% { transform: translateY(-40px) scale(.6); opacity: 0; } 60% { opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes kpDrip { 0% { transform: scaleY(0); } 70% { transform: scaleY(1.07); } 100% { transform: scaleY(1); } }
+        @keyframes kpWobble { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.05); } }
+        @keyframes kpBlob { 0% { transform: translateY(-26px) scale(.5); opacity: 0; } 60% { opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes kpLetter { 0% { transform: translateY(-70px) rotate(-12deg); opacity: 0; } 60% { transform: translateY(6px) rotate(3deg); opacity: 1; } 80% { transform: translateY(-3px) rotate(-1deg); } 100% { transform: translateY(0) rotate(0); opacity: 1; } }
         @keyframes kpFadeUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes kpPop { 0% { transform: scale(0) rotate(-40deg); opacity: 0; } 60% { transform: scale(1.18) rotate(-4deg); opacity: 1; } 80% { transform: scale(.95) rotate(-10deg); } 100% { transform: scale(1) rotate(-8deg); opacity: 1; } }
-        @keyframes kpGlow { 0%,100% { box-shadow: 0 10px 26px rgba(255,199,56,.35), 0 0 0 0 rgba(255,199,56,.55); } 50% { box-shadow: 0 10px 26px rgba(255,199,56,.45), 0 0 0 14px rgba(255,199,56,0); } }
-        @keyframes kpSteam { 0% { transform: translateY(0) scaleX(1); opacity: 0; } 25% { opacity: .55; } 100% { transform: translateY(-90px) scaleX(1.8); opacity: 0; } }
+        @keyframes kpPop { 0% { transform: scale(0) rotate(-40deg); opacity: 0; } 60% { transform: scale(1.18) rotate(-4deg); opacity: 1; } 80% { transform: scale(.95) rotate(-12deg); } 100% { transform: scale(1) rotate(-10deg); opacity: 1; } }
+        @keyframes kpGlow { 0%,100% { box-shadow: 0 8px 22px rgba(0,0,0,.3), 0 0 0 0 rgba(255,199,56,.6); } 50% { box-shadow: 0 8px 22px rgba(0,0,0,.3), 0 0 0 12px rgba(255,199,56,0); } }
+        @keyframes kpSteam { 0% { transform: translateY(0) scaleX(1); opacity: 0; } 25% { opacity: .5; } 100% { transform: translateY(-80px) scaleX(1.8); opacity: 0; } }
         @keyframes kpShine { 0% { transform: translateX(-120%) skewX(-18deg); } 100% { transform: translateX(260%) skewX(-18deg); } }
+        @keyframes kpPhotoIn { 0% { transform: scale(.7) rotate(6deg); opacity: 0; } 100% { transform: scale(1) rotate(3deg); opacity: 1; } }
+        @keyframes kpKen { 0%,100% { transform: scale(1.08); } 50% { transform: scale(1.18) translate(-3%, 2%); } }
         .kp-anim { animation-play-state: paused; }
         .kp-play .kp-anim { animation-play-state: running; }
-        @media (prefers-reduced-motion: reduce) { .kp-root * { animation: none !important; opacity: 1 !important; transform: none !important; } }
+        @media (prefers-reduced-motion: reduce) { .kp-root * { animation: none !important; opacity: 1 !important; } }
       `}</style>
-      <button ref={ref} onClick={open} className={`kp-root relative w-full text-left rounded-[26px] overflow-hidden ${play ? 'kp-play' : ''}`} style={{ background: `radial-gradient(ellipse at 80% 110%, rgba(255,106,26,.35), transparent 55%), linear-gradient(160deg, #1d4a32, ${GREEN} 55%, #0f2a1c)`, boxShadow: '0 16px 40px rgba(21,56,38,.35)', minHeight: 250 }} aria-label={`Kapsalon ${priceLabel}`}>
-        {/* schmelzender Käse */}
-        <svg className="absolute top-0 left-0 w-full" height="92" viewBox="0 0 100 92" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="kpCheese" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ffe28a" />
-              <stop offset="100%" stopColor="#ffc738" />
-            </linearGradient>
-          </defs>
-          <rect x="0" y="0" width="100" height="14" fill="url(#kpCheese)" />
-          {drips.map((dr, i) => (
-            <g key={i} className="kp-anim" style={{ transformOrigin: `${dr.x}px 12px`, transformBox: 'view-box', animation: `kpDrip 1.1s cubic-bezier(.3,1.3,.5,1) ${dr.d}s both, kpWobble 3.2s ease-in-out ${1.6 + i * 0.3}s infinite` }}>
-              <path d={`M${dr.x - dr.w / 2} 12 C ${dr.x - dr.w / 2} ${12 + dr.h * 0.6}, ${dr.x - dr.w / 5} ${12 + dr.h}, ${dr.x} ${12 + dr.h} C ${dr.x + dr.w / 5} ${12 + dr.h}, ${dr.x + dr.w / 2} ${12 + dr.h * 0.6}, ${dr.x + dr.w / 2} 12 Z`} fill="url(#kpCheese)" />
-            </g>
-          ))}
-        </svg>
-        {/* Käsetropfen, die fallen */}
-        {[18, 57, 86].map((x, i) => (
-          <span key={x} className="kp-anim absolute rounded-full" style={{ left: `${x}%`, top: 70 + i * 6, width: 9, height: 11, background: '#ffd35a', animation: `kpBlob .7s ease-out ${1.1 + i * 0.25}s both` }} />
-        ))}
-        {/* Dampf */}
+      <button ref={ref} onClick={open} className={`kp-root relative w-full text-left rounded-[26px] overflow-hidden ${play ? 'kp-play' : ''}`} style={{ background: `radial-gradient(ellipse at 85% 100%, rgba(255,106,26,.32), transparent 55%), linear-gradient(160deg, #1d4a32, ${GREEN} 55%, #0f2a1c)`, boxShadow: '0 16px 40px rgba(21,56,38,.35)', minHeight: 260 }} aria-label={`${item.name} ${priceLabel}`}>
+        <MeltingCheese uid={uid} variant={cfg.style === 'sauce' ? 'sauce' : 'cheese'} />
         {[0, 1, 2].map((i) => (
-          <span key={i} className="kp-anim absolute rounded-full pointer-events-none" style={{ right: `${16 + i * 9}%`, bottom: 70, width: 34, height: 60, background: 'rgba(255,255,255,.22)', filter: 'blur(10px)', animation: `kpSteam 3.4s ease-out ${1.8 + i * 1.1}s infinite` }} />
+          <span key={i} className="kp-anim absolute rounded-full pointer-events-none" style={{ right: `${10 + i * 8}%`, top: 150, width: 30, height: 56, background: 'rgba(255,255,255,.2)', filter: 'blur(10px)', zIndex: 2, animation: `kpSteam 3.4s ease-out ${2 + i * 1.1}s infinite` }} />
         ))}
-        <div className="relative px-6 pt-24 pb-6">
-          <span className="kp-anim inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-widest mb-2" style={{ background: ORANGE, color: '#fff', animation: 'kpFadeUp .5s ease-out .9s both' }}>✨ {L('neu')}</span>
-          <div className="flex items-end justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex font-black leading-none" style={{ fontSize: 'clamp(34px, 10vw, 54px)', color: CREAM, letterSpacing: '.02em' }} aria-hidden="true">
-                {word.split('').map((ch, i) => (
-                  <span key={i} className="kp-anim inline-block" style={{ animation: `kpLetter .7s cubic-bezier(.3,1.4,.5,1) ${1.0 + i * 0.07}s both` }}>{ch}</span>
-                ))}
-              </div>
-              <div className="kp-anim text-[11px] font-bold tracking-widest mt-1.5" style={{ color: GOLD, animation: 'kpFadeUp .6s ease-out 1.65s both' }}>{L('tag').toUpperCase()}</div>
-              <div className="kp-anim text-xs font-medium mt-1" style={{ color: '#cfe3d6', animation: 'kpFadeUp .6s ease-out 1.8s both' }}>{L('sub')}</div>
+        <div className="relative flex items-end gap-3 px-5 pb-5" style={{ paddingTop: photo ? 70 : 104 }}>
+          <div className="flex-1 min-w-0 pb-1" style={{ paddingTop: photo ? 40 : 0 }}>
+            <span className="kp-anim inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-widest mb-2" style={{ background: ORANGE, color: '#fff', animation: 'kpFadeUp .5s ease-out .9s both' }}>✨ {L(badgeKey)}</span>
+            <div className="flex flex-wrap font-black leading-none" style={{ fontSize: fs, color: CREAM, letterSpacing: '.02em' }} aria-hidden="true">
+              {word.split('').map((ch, i) => (
+                <span key={i} className="kp-anim inline-block" style={{ animation: `kpLetter .7s cubic-bezier(.3,1.4,.5,1) ${1.0 + i * 0.06}s both`, whiteSpace: 'pre' }}>{ch}</span>
+              ))}
             </div>
-            <div className="kp-anim flex-shrink-0 rounded-full flex items-center justify-center font-black" style={{ width: 86, height: 86, background: `radial-gradient(circle at 35% 30%, #ffe28a, ${GOLD} 60%, #e6a91f)`, color: GREEN, fontSize: 26, animation: 'kpPop .8s cubic-bezier(.3,1.5,.5,1) 1.7s both, kpGlow 2.4s ease-in-out 2.6s infinite' }}>
-              {priceLabel}
-            </div>
+            {tagline && <div className="kp-anim text-[11px] font-bold tracking-widest mt-1.5" style={{ color: GOLD, animation: 'kpFadeUp .6s ease-out 1.65s both' }}>{tagline.toUpperCase()}</div>}
+            {sub && <div className="kp-anim text-xs font-medium mt-1 leading-snug" style={{ color: '#cfe3d6', animation: 'kpFadeUp .6s ease-out 1.8s both' }}>{sub}</div>}
+            <span className="kp-anim relative inline-flex items-center gap-2 mt-3.5 px-4 py-2.5 rounded-full font-black text-sm overflow-hidden" style={{ background: CREAM, color: GREEN, animation: 'kpFadeUp .6s ease-out 2s both' }}>
+              {L('cta')}
+              <ArrowRight size={16} />
+              <span className="kp-anim absolute inset-y-0 left-0 w-1/3" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent)', animation: 'kpShine 2.8s ease-in-out 3s infinite' }} />
+            </span>
           </div>
-          <span className="kp-anim relative inline-flex items-center gap-2 mt-4 px-4 py-2.5 rounded-full font-black text-sm overflow-hidden" style={{ background: CREAM, color: GREEN, animation: 'kpFadeUp .6s ease-out 2s both' }}>
-            {L('cta')}
-            <ArrowRight size={16} />
-            <span className="kp-anim absolute inset-y-0 left-0 w-1/3" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent)', animation: 'kpShine 2.8s ease-in-out 3s infinite' }} />
-          </span>
+          {photo ? (
+            <div className="relative flex-shrink-0" style={{ width: 'clamp(118px, 34vw, 200px)', aspectRatio: '1' }}>
+              <div className="kp-anim absolute inset-0 rounded-[24px] overflow-hidden" style={{ border: `3px solid ${GOLD}`, boxShadow: '0 12px 28px rgba(0,0,0,.35)', animation: 'kpPhotoIn .8s cubic-bezier(.3,1.3,.5,1) .6s both' }}>
+                <img src={photo} alt="" loading="lazy" decoding="async" className="kp-anim w-full h-full object-cover" style={{ animation: 'kpKen 12s ease-in-out 1.5s infinite' }} />
+              </div>
+              <div className="kp-anim absolute rounded-full flex items-center justify-center font-black" style={{ width: 74, height: 74, left: -26, bottom: -14, background: `radial-gradient(circle at 35% 30%, #ffe28a, ${GOLD} 60%, #e6a91f)`, color: GREEN, fontSize: 22, zIndex: 4, animation: 'kpPop .8s cubic-bezier(.3,1.5,.5,1) 1.7s both, kpGlow 2.4s ease-in-out 2.6s infinite' }}>{priceLabel}</div>
+            </div>
+          ) : (
+            <div className="kp-anim flex-shrink-0 rounded-full flex items-center justify-center font-black mb-1" style={{ width: 86, height: 86, background: `radial-gradient(circle at 35% 30%, #ffe28a, ${GOLD} 60%, #e6a91f)`, color: GREEN, fontSize: 25, animation: 'kpPop .8s cubic-bezier(.3,1.5,.5,1) 1.7s both, kpGlow 2.4s ease-in-out 2.6s infinite' }}>{priceLabel}</div>
+          )}
         </div>
       </button>
     </section>
+  );
+}
+
+// Personal-Bereich: Einstellungen für die animierte Produktkarte
+function SpotlightAdmin({ compressImageFile, cfgKey = 'siteconfig:spotlight', defaults = SPOT_DEFAULT }) {
+  const [cfg, setCfg] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  useEffect(() => { safeGet(cfgKey).then((r) => setCfg({ ...defaults, ...(r || {}) })); }, [cfgKey]);
+  if (!cfg) return <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt…</p>;
+  const save = async (next) => {
+    setCfg(next); setBusy(true); setMsg('');
+    const ok = await safeSet(cfgKey, next);
+    setMsg(ok ? '✓ Gespeichert – auf der Startseite sichtbar' : '⚠️ Nicht gespeichert – bitte erneut versuchen');
+    setBusy(false);
+  };
+  const choices = ALL_MENU_ITEMS.filter((it) => it.catKey !== 'getraenke');
+  const onPhoto = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    setBusy(true); setMsg('Foto wird hochgeladen…');
+    try {
+      const dataUrl = await compressImageFile(f, 900, 0.8);
+      const url = await uploadImageToStorage(dataUrl, 'spotlight');
+      if (!url) throw new Error('upload');
+      await save({ ...cfg, photo: url });
+    } catch { setMsg('⚠️ Foto-Upload fehlgeschlagen'); setBusy(false); }
+  };
+  const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
+  return (
+    <div>
+      <p className="text-[11px] mb-3 leading-snug" style={{ color: PANEL_MUTED }}>Die große animierte Karte auf der Startseite (schmelzender Käse, fallende Buchstaben). Hier wählst du, welches Produkt sie zeigt.</p>
+      <button onClick={() => save({ ...cfg, enabled: !cfg.enabled })} disabled={busy} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-[10px] mb-3" style={inputSt}>
+        <span className="text-sm font-medium">Karte anzeigen</span>
+        <PanelSwitch on={cfg.enabled} onColor={GREEN} />
+      </button>
+      <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Produkt</label>
+      <select value={cfg.itemId} onChange={(e) => save({ ...cfg, itemId: e.target.value, photo: '', tagline: '' })} disabled={busy} className="w-full px-3 py-2.5 rounded-[10px] text-sm mb-3 outline-none" style={inputSt}>
+        {choices.map((it) => <option key={it.id} value={it.id}>{it.number ? `#${it.number} ` : ''}{it.name} – {formatItemPriceText(it)}</option>)}
+      </select>
+      <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Etikett</label>
+      <div className="flex gap-1.5 mb-3">
+        {[['neu', '✨ Neu'], ['tipp', '⭐ Tipp'], ['angebot', '🔥 Angebot']].map(([k, l]) => (
+          <button key={k} onClick={() => save({ ...cfg, badge: k })} disabled={busy} className="flex-1 py-2 rounded-[10px] text-xs font-semibold" style={cfg.badge === k ? { background: GREEN, color: '#fff' } : inputSt}>{l}</button>
+        ))}
+      </div>
+      <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Animation</label>
+      <div className="flex gap-1.5 mb-3">
+        {[['cheese', '🧀 Schmelzender Käse'], ['sauce', '🥫 Fließende Soße']].map(([k, l]) => (
+          <button key={k} onClick={() => save({ ...cfg, style: k })} disabled={busy} className="flex-1 py-2 rounded-[10px] text-xs font-semibold" style={cfg.style === k ? { background: GREEN, color: '#fff' } : inputSt}>{l}</button>
+        ))}
+      </div>
+      <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Kurzer Zusatz (optional, z.B. „Holländische Spezialität")</label>
+      <input defaultValue={cfg.tagline} onBlur={(e) => { if (e.target.value !== cfg.tagline) save({ ...cfg, tagline: e.target.value.slice(0, 40) }); }} placeholder="leer lassen = automatisch" className="w-full px-3 py-2.5 rounded-[10px] text-sm mb-3 outline-none" style={inputSt} />
+      <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Foto</label>
+      <div className="flex items-center gap-3 mb-2">
+        {cfg.photo ? <img src={cfg.photo} alt="" className="w-16 h-16 rounded-[12px] object-cover flex-shrink-0" style={{ border: `1px solid ${PANEL_LINE}` }} /> : <div className="w-16 h-16 rounded-[12px] flex items-center justify-center text-[10px] text-center flex-shrink-0" style={{ background: PANEL_BG, color: PANEL_MUTED }}>Foto aus Speisekarte</div>}
+        <div className="flex-1 flex flex-col gap-1.5">
+          <label className="w-full py-2 rounded-[10px] text-xs font-semibold text-center cursor-pointer" style={{ background: GREEN, color: '#fff', opacity: busy ? 0.5 : 1 }}>
+            📷 Foto hochladen
+            <input type="file" accept="image/*" className="hidden" onChange={onPhoto} disabled={busy} />
+          </label>
+          {cfg.photo && <button onClick={() => save({ ...cfg, photo: '' })} disabled={busy} className="w-full py-2 rounded-[10px] text-xs font-semibold" style={inputSt}>Eigenes Foto entfernen</button>}
+        </div>
+      </div>
+      <p className="text-[10.5px] leading-snug" style={{ color: PANEL_MUTED }}>Ohne eigenes Foto wird das Foto des Produkts aus der Speisekarte genommen. Hat es keins, erscheint die Karte ohne Foto. Preis und Beschreibung kommen automatisch aus der Speisekarte.</p>
+      {msg && <p className="text-xs font-semibold mt-2" style={{ color: msg.startsWith('⚠️') ? CHILI : GREEN }}>{msg}</p>}
+    </div>
   );
 }
 
@@ -5080,6 +5265,21 @@ const DAY_PHASE_THEME = {
 
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const dayPhase = useDayPhase();
+  // Abschnitte unterhalb des ersten Bildschirms gleiten beim Scrollen weich herein.
+  const homeRootRef = useRef(null);
+  useEffect(() => {
+    const root = homeRootRef.current;
+    if (!root || typeof IntersectionObserver === 'undefined') return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const vh = window.innerHeight;
+    const all = Array.from(root.querySelectorAll('section')).filter((el) => !el.closest('.fixed') && el.getBoundingClientRect().top > vh * 0.85);
+    const els = all.filter((el) => !all.some((o) => o !== el && o.contains(el)));
+    els.forEach((el) => el.classList.add('rv'));
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('rv-in'); io.unobserve(e.target); } }), { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    els.forEach((el) => io.observe(el));
+    const safety = setTimeout(() => els.forEach((el) => el.classList.add('rv-in')), 15000);
+    return () => { io.disconnect(); clearTimeout(safety); };
+  }, []);
   const dpTheme = DAY_PHASE_THEME[dayPhase];
   const { lang, setLang, t } = React.useContext(LangContext);
   const weather = useWeather();
@@ -5231,9 +5431,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   };
 
   return (
-    <div style={{ background: `${dpTheme.pageBg} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, transition: 'background 1.2s ease', fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)', zoom: textScale }}>
+    <div ref={homeRootRef} style={{ background: `${dpTheme.pageBg} repeating-linear-gradient(135deg, rgba(21,56,38,.025) 0 40px, rgba(21,56,38,0) 40px 80px)`, transition: 'background 1.2s ease', fontFamily: "'Segoe UI', Arial, sans-serif", minHeight: '100vh', animation: 'pageFade .7s cubic-bezier(.25,.46,.45,.94)', zoom: textScale }}>
       <style>{`
         @keyframes pageFade { from{ opacity:0;} to{ opacity:1;} }
+        .rv { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .75s cubic-bezier(.2,.8,.2,1); }
+        .rv.rv-in { opacity: 1; transform: none; }
         @keyframes confettiFall { 0%{ transform:translateY(-20px) rotate(0deg); opacity:1;} 80%{ opacity:1;} 100%{ transform:translateY(105vh) rotate(var(--spin, 480deg)); opacity:0;} }
         @keyframes popIn { 0%{ opacity:0; transform:scale(.6) rotate(-8deg);} 60%{ opacity:1; transform:scale(1.08) rotate(3deg);} 100%{ opacity:1; transform:scale(1) rotate(0deg);} }
         @keyframes cardIn { from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
@@ -5529,14 +5731,17 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         </div>
       </section>
 
-      {/* KAPSALON — Motion-Design-Karte */}
-      <KapsalonSpotlight go={go} />
+      {/* Animierte Produktkarte (im Personal-Bereich einstellbar) */}
+      <ProductSpotlight go={go} />
 
       {/* SHOWCASE GALLERY */}
       <ShowcaseCarousel />
 
       {/* DAILY SPECIAL */}
       <DailySpecial go={go} />
+
+      {/* Zweite animierte Karte (Standard: Joppiesauce) */}
+      <ProductSpotlight go={go} cfgKey="siteconfig:spotlight2" defaults={SPOT2_DEFAULT} uid="b" />
 
       {/* TESTIMONIALS */}
       <Testimonials />
@@ -9719,6 +9924,12 @@ function StaffPanelView({ back }) {
 
               {settingsGroup === 'fotos' && (
                 <>
+                  <SettingsRow id="spotlight" icon="🎬" title="Animierte Produktkarte 1 (oben)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <SpotlightAdmin compressImageFile={compressImageFile} />
+                  </SettingsRow>
+                  <SettingsRow id="spotlight2" icon="🎬" title="Animierte Produktkarte 2 (weiter unten)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <SpotlightAdmin compressImageFile={compressImageFile} cfgKey="siteconfig:spotlight2" defaults={SPOT2_DEFAULT} />
+                  </SettingsRow>
                   <SettingsRow id="instaCaption" icon="✍️" title="Instagram-Text erstellen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <InstaCaptionTool />
                   </SettingsRow>
@@ -10325,7 +10536,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🧀 Kapsalon-Karte angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
@@ -11003,6 +11214,58 @@ function buildFallbackTischMenu() {
   return { categories, items, fallback: true };
 }
 
+const PIZZA_PULL_T = { de: 'Heiß aus dem Ofen', en: 'Hot from the oven', tr: 'Fırından yeni çıktı', ro: 'Fierbinte din cuptor', nl: 'Heet uit de oven', sq: 'E nxehtë nga furra', ku: 'Germ ji firinê', pl: 'Gorąca prosto z pieca' };
+function pizzaArc(cx, cy, r, a0, a1) {
+  const rad = (a) => (a * Math.PI) / 180;
+  const x0 = cx + r * Math.cos(rad(a0)), y0 = cy + r * Math.sin(rad(a0));
+  const x1 = cx + r * Math.cos(rad(a1)), y1 = cy + r * Math.sin(rad(a1));
+  const large = (a1 - a0) % 360 > 180 ? 1 : 0;
+  return `M${cx} ${cy} L${x0} ${y0} A${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`;
+}
+function PizzaCheesePull() {
+  const { lang } = React.useContext(LangContext);
+  const cx = 70, cy = 66;
+  const layers = (a0, a1) => (
+    <>
+      <path d={pizzaArc(cx, cy, 50, a0, a1)} fill="#e4ad5c" />
+      <path d={pizzaArc(cx, cy, 44, a0, a1)} fill="#d4502a" />
+      <path d={pizzaArc(cx, cy, 42, a0, a1)} fill="#f6d983" />
+    </>
+  );
+  const peps = [[52, 50], [80, 44], [58, 84], [88, 82], [42, 70], [72, 64]];
+  return (
+    <div className="relative mx-4 mb-3 rounded-2xl overflow-hidden flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #fff4df, #fde6c3)', border: '1px solid #f3dcb3', height: 120 }}>
+      <style>{`
+        @keyframes pzLift { 0% { transform: translate(0,0) rotate(0); } 55% { transform: translate(34px,-26px) rotate(-10deg); } 100% { transform: translate(30px,-22px) rotate(-8deg); } }
+        @keyframes pzBob { 0%,100% { transform: translate(30px,-22px) rotate(-8deg); } 50% { transform: translate(30px,-26px) rotate(-9deg); } }
+        @keyframes pzString { 0% { transform: scaleX(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scaleX(1); opacity: 1; } }
+        @keyframes pzSteam { 0% { transform: translateY(0) scaleX(1); opacity: 0; } 30% { opacity: .5; } 100% { transform: translateY(-50px) scaleX(1.6); opacity: 0; } }
+        @keyframes pzText { from { transform: translateX(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .pz * { animation: none !important; } }
+      `}</style>
+      <svg className="pz flex-shrink-0" width="170" height="120" viewBox="0 0 170 120" aria-hidden="true">
+        {layers(30, 330)}
+        {peps.filter(([x, y]) => !(x > cx && Math.abs(y - cy) < (x - cx) * 0.58)).map(([x, y], i) => <circle key={i} cx={x} cy={y} r="5.5" fill="#b3312a" />)}
+        {[[0, 8, 0.9], [1, -2, 1.05], [2, -12, 1.2]].map(([i, dy, dl]) => (
+          <path key={i} d={`M${cx + 6} ${cy + dy} Q ${cx + 22} ${cy + dy + 10} ${cx + 38} ${cy + dy - 14}`} stroke="#f6d983" strokeWidth={3 - i * 0.6} fill="none" strokeLinecap="round" style={{ transformOrigin: `${cx + 6}px ${cy + dy}px`, animation: `pzString 1s ease-out ${dl}s both` }} />
+        ))}
+        <g style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'view-box', animation: 'pzLift 1.4s cubic-bezier(.3,1.2,.5,1) .5s both, pzBob 2.6s ease-in-out 2s infinite' }}>
+          {layers(-30, 30)}
+          <circle cx={cx + 30} cy={cy - 4} r="5.5" fill="#b3312a" />
+          <path d={`M${cx + 10} ${cy - 3} q 12 -5 26 1`} stroke="#fff" strokeOpacity=".55" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </g>
+        {[0, 1].map((i) => (
+          <ellipse key={i} cx={52 + i * 26} cy={24} rx="7" ry="12" fill="#fff" opacity=".0" style={{ filter: 'blur(4px)', animation: `pzSteam 2.8s ease-out ${1.4 + i * 1.2}s infinite` }} />
+        ))}
+      </svg>
+      <div className="pr-4 min-w-0" style={{ animation: 'pzText .6s ease-out 1.2s both' }}>
+        <div className="text-[11px] font-black tracking-widest" style={{ color: ORANGE }}>🔥 PIZZA</div>
+        <div className="font-black text-lg leading-tight" style={{ color: GREEN }}>{PIZZA_PULL_T[lang] || PIZZA_PULL_T.de}</div>
+      </div>
+    </div>
+  );
+}
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -11184,6 +11447,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
             <div className="absolute top-10 -left-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(230,90,10,.10), transparent 70%)', filter: 'blur(2px)' }} />
             <div className="absolute top-1/2 -right-14 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(21,56,38,.08), transparent 70%)', filter: 'blur(2px)' }} />
             <div className="absolute bottom-10 left-1/3 w-36 h-36 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.14), transparent 70%)', filter: 'blur(2px)' }} />
+            {!search.trim() && /pizza/.test(activeCat || '') && displayedItems.length > 0 && <PizzaCheesePull key={activeCat} />}
             {displayedItems.length === 0 && (
               <div className="text-center py-14">
                 {search.trim() ? (
@@ -11439,6 +11703,73 @@ function applyOrderTestParam() {
   } catch {}
 }
 
+// Einmal pro Sitzung beim ersten Öffnen: drehender Dönerspieß mit Logo.
+// Verschwindet, sobald die Seite geladen ist (mind. 0,7 s, höchstens 1,8 s).
+function OpeningLoader() {
+  const [show, setShow] = useState(() => { try { return !sessionStorage.getItem('bk_loader_seen'); } catch { return false; } });
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => {
+    if (!show) return;
+    try { sessionStorage.setItem('bk_loader_seen', '1'); } catch {}
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const minT = reduce ? 0 : 700;
+    const t0 = Date.now();
+    let done = false;
+    const timers = [];
+    const finish = () => {
+      if (done) return; done = true;
+      timers.push(setTimeout(() => { setLeaving(true); timers.push(setTimeout(() => setShow(false), 450)); }, Math.max(0, minT - (Date.now() - t0))));
+    };
+    if (document.readyState === 'complete') finish(); else window.addEventListener('load', finish, { once: true });
+    timers.push(setTimeout(finish, 1800));
+    return () => { timers.forEach(clearTimeout); window.removeEventListener('load', finish); };
+  }, [show]);
+  if (!show) return null;
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ zIndex: 9999, background: `radial-gradient(circle at 50% 40%, #1f5138, ${GREEN} 60%, #0c2116)`, opacity: leaving ? 0 : 1, transition: 'opacity .45s ease' }} aria-hidden="true">
+      <style>{`
+        @keyframes spitTurn { from { transform: translateX(0); } to { transform: translateX(-24px); } }
+        @keyframes flameFlick { 0%,100% { transform: scaleY(1) translateY(0); opacity: .85; } 50% { transform: scaleY(1.18) translateY(-3px); opacity: 1; } }
+        @keyframes loaderPop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .ldr * { animation: none !important; } }
+      `}</style>
+      <svg className="ldr" width="120" height="150" viewBox="0 0 120 150">
+        <defs>
+          <clipPath id="spitClip"><path d="M26 22 L94 22 Q92 60 80 118 L40 118 Q28 60 26 22 Z" /></clipPath>
+          <pattern id="spitStripes" width="24" height="150" patternUnits="userSpaceOnUse">
+            <rect width="24" height="150" fill="#9a4a1f" />
+            <rect x="0" width="12" height="150" fill="#b55d27" />
+            <rect x="5" width="3" height="150" fill="#d98a45" opacity=".6" />
+          </pattern>
+          <linearGradient id="spitShade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#000" stopOpacity=".45" />
+            <stop offset="35%" stopColor="#000" stopOpacity="0" />
+            <stop offset="70%" stopColor="#fff" stopOpacity=".12" />
+            <stop offset="100%" stopColor="#000" stopOpacity=".5" />
+          </linearGradient>
+        </defs>
+        <rect x="58" y="6" width="4" height="138" rx="2" fill="#c9cdd2" />
+        <g clipPath="url(#spitClip)">
+          <rect x="0" y="0" width="160" height="150" fill="url(#spitStripes)" style={{ animation: 'spitTurn .7s linear infinite' }} />
+          {[36, 54, 72, 90, 106].map((y) => <rect key={y} x="0" y={y} width="120" height="2" fill="#6e3212" opacity=".35" />)}
+          <rect x="0" y="0" width="120" height="150" fill="url(#spitShade)" />
+        </g>
+        <ellipse cx="60" cy="22" rx="34" ry="5" fill="#c46b2c" />
+        {[0, 1, 2].map((i) => (
+          <path key={i} d={`M${102 + i * 5} ${108 - i * 22} q 8 -10 0 -22 q -8 12 0 22 z`} fill={i % 2 ? '#ffc738' : '#ff6a1a'} style={{ transformOrigin: `${102 + i * 5}px ${108 - i * 22}px`, animation: `flameFlick ${0.5 + i * 0.13}s ease-in-out infinite` }} />
+        ))}
+      </svg>
+      <div className="mt-4 flex items-center gap-2.5" style={{ animation: 'loaderPop .5s ease-out .15s both' }}>
+        <img src={LOGO_ICON} alt="" className="w-9 h-9 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
+        <div>
+          <div className="font-black text-lg leading-none" style={{ color: CREAM }}>BODRUM KEBAP</div>
+          <div className="text-[10px] font-bold tracking-[.4em] mt-0.5" style={{ color: GOLD }}>VECHTA</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const isTischMenu = isTischMenuUrl();
   // Vorübergehend deaktiviert (kommt später zurück) — auf false setzen,
@@ -11607,11 +11938,11 @@ export default function App() {
 
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><WeatherEffect /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><OpeningLoader /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
   }
 
   if (view === 'tischmenu') {
-    return <LangContext.Provider value={ctxValue}><WeatherEffect /><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><OpeningLoader /><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
   }
 
   if (view === 'kartenrad') {
