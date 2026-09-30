@@ -5000,6 +5000,31 @@ function ProductSpotlight({ go, cfgKey = 'siteconfig:spotlight', defaults = SPOT
   const [menuPhotos, setMenuPhotos] = useState({});
   const ref = useRef(null);
   const [play, setPlay] = useState(false);
+  // Titel IMMER einzeilig: Schriftgröße wird an die verfügbare Breite angepasst.
+  const titleRef = useRef(null);
+  const [titleFs, setTitleFs] = useState(null);
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el || !el.parentElement) return;
+    const fit = () => {
+      const avail = el.parentElement.clientWidth;
+      if (!avail) return;
+      const n = Math.max(1, (el.textContent || '').length);
+      let fsz = Math.max(16, Math.min(50, avail / (n * 0.7)));
+      el.style.fontSize = `${fsz}px`;
+      for (let i = 0; i < 12 && el.scrollWidth > avail && fsz > 16; i++) {
+        fsz *= 0.93;
+        el.style.fontSize = `${fsz}px`;
+      }
+      setTitleFs(fsz);
+    };
+    fit();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(() => {});
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(fit);
+    ro.observe(el.parentElement);
+    return () => ro.disconnect();
+  }, [cfg, menuPhotos, lang]);
   useEffect(() => {
     safeGet(cfgKey).then((r) => setCfg({ ...defaults, ...(r || {}) }));
     safeListPrefix('tischphoto:', 500).then((rows) => {
@@ -5057,7 +5082,7 @@ function ProductSpotlight({ go, cfgKey = 'siteconfig:spotlight', defaults = SPOT
         <div className="relative flex items-end gap-3 px-5 pb-5" style={{ paddingTop: photo ? 70 : 104 }}>
           <div className="flex-1 min-w-0 pb-1" style={{ paddingTop: photo ? 40 : 0 }}>
             <span className="kp-anim inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-widest mb-2" style={{ background: ORANGE, color: '#fff', animation: 'kpFadeUp .5s ease-out .9s both' }}>✨ {L(badgeKey)}</span>
-            <div className="flex flex-wrap font-black leading-none" style={{ fontSize: fs, color: CREAM, letterSpacing: '.02em' }} aria-hidden="true">
+            <div ref={titleRef} className="flex font-black leading-none" style={{ fontSize: titleFs ? `${titleFs}px` : fs, color: CREAM, letterSpacing: '.02em', whiteSpace: 'nowrap' }} aria-hidden="true">
               {word.split('').map((ch, i) => (
                 <span key={i} className="kp-anim inline-block" style={{ animation: `kpLetter .7s cubic-bezier(.3,1.4,.5,1) ${1.0 + i * 0.06}s both`, whiteSpace: 'pre' }}>{ch}</span>
               ))}
