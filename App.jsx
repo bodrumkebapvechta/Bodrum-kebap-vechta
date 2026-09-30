@@ -11732,7 +11732,7 @@ function OpeningLoader() {
     if (!show) return;
     try { sessionStorage.setItem('bk_intro_seen', '1'); } catch {}
     const t0 = Date.now();
-    const MIN = 1500, MAX = 2400;
+    const MIN = 2500, MAX = 2500; // immer genau 2,5 s (Antippen überspringt)
     const timers = [];
     const onLoad = () => timers.push(setTimeout(leave, Math.max(0, MIN - (Date.now() - t0))));
     if (document.readyState === 'complete') onLoad(); else window.addEventListener('load', onLoad, { once: true });
@@ -11754,23 +11754,23 @@ function OpeningLoader() {
       `}</style>
       <div style={{ opacity: leaving ? 0 : 1, transform: leaving ? 'translateY(-24px)' : 'none', transition: 'opacity .35s ease, transform .5s ease' }} className="flex flex-col items-center">
         <div className="relative" style={{ width: 150, height: 150 }}>
-          <div className="absolute rounded-full" style={{ inset: -30, background: 'radial-gradient(circle, rgba(255,199,56,.35), transparent 65%)', animation: 'introGlow 2.4s ease-in-out .6s infinite' }} />
+          <div className="absolute rounded-full" style={{ inset: -30, background: 'radial-gradient(circle, rgba(255,199,56,.35), transparent 65%)', animation: 'introGlow 2.4s ease-in-out .9s infinite' }} />
           <svg className="absolute inset-0" width="150" height="150" viewBox="0 0 150 150">
             <circle cx="75" cy="75" r="70" fill="none" stroke="rgba(255,199,56,.18)" strokeWidth="2" />
-            <circle cx="75" cy="75" r="70" fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" strokeDasharray="440" style={{ transform: 'rotate(-90deg)', transformOrigin: '75px 75px', animation: 'introRing 1.1s cubic-bezier(.65,0,.35,1) .1s both' }} />
+            <circle cx="75" cy="75" r="70" fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" strokeDasharray="440" style={{ transform: 'rotate(-90deg)', transformOrigin: '75px 75px', animation: 'introRing 1.4s cubic-bezier(.65,0,.35,1) .15s both' }} />
           </svg>
-          <div className="absolute rounded-full overflow-hidden" style={{ inset: 12, background: CREAM, boxShadow: '0 12px 34px rgba(0,0,0,.35)', animation: 'introLogo .9s cubic-bezier(.2,.8,.2,1) .35s both' }}>
+          <div className="absolute rounded-full overflow-hidden" style={{ inset: 12, background: CREAM, boxShadow: '0 12px 34px rgba(0,0,0,.35)', animation: 'introLogo 1.1s cubic-bezier(.2,.8,.2,1) .45s both' }}>
             <img src={LOGO_ICON} alt="" className="w-full h-full object-contain" style={{ padding: 8 }} />
-            <span className="absolute inset-y-0 w-1/3" style={{ left: 0, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent)', animation: 'introShine 1s ease-in-out 1.15s both' }} />
+            <span className="absolute inset-y-0 w-1/3" style={{ left: 0, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent)', animation: 'introShine 1.1s ease-in-out 1.55s both' }} />
           </div>
         </div>
         <div className="mt-7 font-black text-[26px] leading-none" style={{ color: CREAM, letterSpacing: '.06em' }}>
           {name.split('').map((ch, i) => (
-            <span key={i} className="inline-block" style={{ whiteSpace: 'pre', animation: `introChar .55s cubic-bezier(.2,.8,.2,1) ${0.7 + i * 0.045}s both` }}>{ch}</span>
+            <span key={i} className="inline-block" style={{ whiteSpace: 'pre', animation: `introChar .6s cubic-bezier(.2,.8,.2,1) ${0.95 + i * 0.06}s both` }}>{ch}</span>
           ))}
         </div>
-        <div className="mt-3 h-px w-40" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`, transformOrigin: 'center', animation: 'introLine .7s cubic-bezier(.65,0,.35,1) 1.05s both' }} />
-        <div className="mt-3 text-[11px] font-bold" style={{ color: GOLD, paddingLeft: '.55em', animation: 'introTrack .9s cubic-bezier(.2,.8,.2,1) 1.1s both' }}>VECHTA</div>
+        <div className="mt-3 h-px w-40" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`, transformOrigin: 'center', animation: 'introLine .8s cubic-bezier(.65,0,.35,1) 1.55s both' }} />
+        <div className="mt-3 text-[11px] font-bold" style={{ color: GOLD, paddingLeft: '.55em', animation: 'introTrack 1s cubic-bezier(.2,.8,.2,1) 1.6s both' }}>VECHTA</div>
       </div>
     </div>
   );
