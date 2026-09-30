@@ -4869,6 +4869,107 @@ function InstaCaptionTool() {
   );
 }
 
+// ---- Motion-Design-Karte für Kapsalon (Startseite) ----
+// Ablauf beim ersten Sichtbarwerden: Käse "schmilzt" von oben herunter,
+// Buchstaben fallen einzeln hinein, Preis ploppt als Sticker auf, Dampf
+// steigt auf. Danach nur noch dezente Endlos-Bewegung. Bei "Bewegung
+// reduzieren" (Systemeinstellung) wird direkt der Endzustand gezeigt.
+const SPOT_T = {
+  neu: { de: 'NEU', en: 'NEW', tr: 'YENİ', ro: 'NOU', nl: 'NIEUW', sq: 'E RE', ku: 'NÛ', pl: 'NOWOŚĆ' },
+  sub: { de: 'Pommes · Dönerfleisch · Käse · Salat', en: 'Fries · Döner meat · Cheese · Salad', tr: 'Patates · Döner eti · Peynir · Salata', ro: 'Cartofi · Carne döner · Brânză · Salată', nl: 'Friet · Dönervlees · Kaas · Salade', sq: 'Patate · Mish döner · Djathë · Sallatë', ku: 'Kartol · Goştê döner · Penîr · Selete', pl: 'Frytki · Mięso döner · Ser · Sałatka' },
+  tag: { de: 'Holländische Spezialität', en: 'Dutch speciality', tr: 'Hollanda spesiyali', ro: 'Specialitate olandeză', nl: 'Hollandse specialiteit', sq: 'Specialitet holandez', ku: 'Taybetiya Holandayê', pl: 'Holenderski przysmak' },
+  cta: { de: 'Jetzt ansehen', en: 'Take a look', tr: 'Hemen bak', ro: 'Vezi acum', nl: 'Nu bekijken', sq: 'Shiko tani', ku: 'Niha binêre', pl: 'Zobacz teraz' },
+};
+function KapsalonSpotlight({ go }) {
+  const { lang } = React.useContext(LangContext);
+  const L = (k) => SPOT_T[k][lang] || SPOT_T[k].de;
+  const item = ALL_MENU_ITEMS.find((it) => it.id === 'na192');
+  const ref = useRef(null);
+  const [play, setPlay] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') { setPlay(true); return; }
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setPlay(true); io.disconnect(); } }, { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  if (!item) return null;
+  const p = item.price;
+  const priceLabel = Number.isInteger(p) ? `${p} €` : fmt(p);
+  const word = 'KAPSALON';
+  const drips = [
+    { x: 8, w: 22, h: 38, d: 0.15 }, { x: 24, w: 16, h: 58, d: 0.35 }, { x: 41, w: 26, h: 30, d: 0.05 },
+    { x: 57, w: 14, h: 66, d: 0.45 }, { x: 72, w: 20, h: 40, d: 0.25 }, { x: 88, w: 15, h: 52, d: 0.55 },
+  ];
+  const open = () => { logEvent('kapsalon_spotlight'); go('tischmenu', { initialCatHint: 'neu' }); };
+  return (
+    <section className="px-5 lg:px-10 max-w-7xl mx-auto mt-6 mb-2">
+      <style>{`
+        @keyframes kpDrip { 0% { transform: scaleY(0); } 70% { transform: scaleY(1.08); } 100% { transform: scaleY(1); } }
+        @keyframes kpWobble { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.06); } }
+        @keyframes kpBlob { 0% { transform: translateY(-40px) scale(.6); opacity: 0; } 60% { opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes kpLetter { 0% { transform: translateY(-70px) rotate(-12deg); opacity: 0; } 60% { transform: translateY(6px) rotate(3deg); opacity: 1; } 80% { transform: translateY(-3px) rotate(-1deg); } 100% { transform: translateY(0) rotate(0); opacity: 1; } }
+        @keyframes kpFadeUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes kpPop { 0% { transform: scale(0) rotate(-40deg); opacity: 0; } 60% { transform: scale(1.18) rotate(-4deg); opacity: 1; } 80% { transform: scale(.95) rotate(-10deg); } 100% { transform: scale(1) rotate(-8deg); opacity: 1; } }
+        @keyframes kpGlow { 0%,100% { box-shadow: 0 10px 26px rgba(255,199,56,.35), 0 0 0 0 rgba(255,199,56,.55); } 50% { box-shadow: 0 10px 26px rgba(255,199,56,.45), 0 0 0 14px rgba(255,199,56,0); } }
+        @keyframes kpSteam { 0% { transform: translateY(0) scaleX(1); opacity: 0; } 25% { opacity: .55; } 100% { transform: translateY(-90px) scaleX(1.8); opacity: 0; } }
+        @keyframes kpShine { 0% { transform: translateX(-120%) skewX(-18deg); } 100% { transform: translateX(260%) skewX(-18deg); } }
+        .kp-anim { animation-play-state: paused; }
+        .kp-play .kp-anim { animation-play-state: running; }
+        @media (prefers-reduced-motion: reduce) { .kp-root * { animation: none !important; opacity: 1 !important; transform: none !important; } }
+      `}</style>
+      <button ref={ref} onClick={open} className={`kp-root relative w-full text-left rounded-[26px] overflow-hidden ${play ? 'kp-play' : ''}`} style={{ background: `radial-gradient(ellipse at 80% 110%, rgba(255,106,26,.35), transparent 55%), linear-gradient(160deg, #1d4a32, ${GREEN} 55%, #0f2a1c)`, boxShadow: '0 16px 40px rgba(21,56,38,.35)', minHeight: 250 }} aria-label={`Kapsalon ${priceLabel}`}>
+        {/* schmelzender Käse */}
+        <svg className="absolute top-0 left-0 w-full" height="92" viewBox="0 0 100 92" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="kpCheese" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffe28a" />
+              <stop offset="100%" stopColor="#ffc738" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="100" height="14" fill="url(#kpCheese)" />
+          {drips.map((dr, i) => (
+            <g key={i} className="kp-anim" style={{ transformOrigin: `${dr.x}px 12px`, transformBox: 'view-box', animation: `kpDrip 1.1s cubic-bezier(.3,1.3,.5,1) ${dr.d}s both, kpWobble 3.2s ease-in-out ${1.6 + i * 0.3}s infinite` }}>
+              <path d={`M${dr.x - dr.w / 2} 12 C ${dr.x - dr.w / 2} ${12 + dr.h * 0.6}, ${dr.x - dr.w / 5} ${12 + dr.h}, ${dr.x} ${12 + dr.h} C ${dr.x + dr.w / 5} ${12 + dr.h}, ${dr.x + dr.w / 2} ${12 + dr.h * 0.6}, ${dr.x + dr.w / 2} 12 Z`} fill="url(#kpCheese)" />
+            </g>
+          ))}
+        </svg>
+        {/* Käsetropfen, die fallen */}
+        {[18, 57, 86].map((x, i) => (
+          <span key={x} className="kp-anim absolute rounded-full" style={{ left: `${x}%`, top: 70 + i * 6, width: 9, height: 11, background: '#ffd35a', animation: `kpBlob .7s ease-out ${1.1 + i * 0.25}s both` }} />
+        ))}
+        {/* Dampf */}
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="kp-anim absolute rounded-full pointer-events-none" style={{ right: `${16 + i * 9}%`, bottom: 70, width: 34, height: 60, background: 'rgba(255,255,255,.22)', filter: 'blur(10px)', animation: `kpSteam 3.4s ease-out ${1.8 + i * 1.1}s infinite` }} />
+        ))}
+        <div className="relative px-6 pt-24 pb-6">
+          <span className="kp-anim inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-widest mb-2" style={{ background: ORANGE, color: '#fff', animation: 'kpFadeUp .5s ease-out .9s both' }}>✨ {L('neu')}</span>
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex font-black leading-none" style={{ fontSize: 'clamp(34px, 10vw, 54px)', color: CREAM, letterSpacing: '.02em' }} aria-hidden="true">
+                {word.split('').map((ch, i) => (
+                  <span key={i} className="kp-anim inline-block" style={{ animation: `kpLetter .7s cubic-bezier(.3,1.4,.5,1) ${1.0 + i * 0.07}s both` }}>{ch}</span>
+                ))}
+              </div>
+              <div className="kp-anim text-[11px] font-bold tracking-widest mt-1.5" style={{ color: GOLD, animation: 'kpFadeUp .6s ease-out 1.65s both' }}>{L('tag').toUpperCase()}</div>
+              <div className="kp-anim text-xs font-medium mt-1" style={{ color: '#cfe3d6', animation: 'kpFadeUp .6s ease-out 1.8s both' }}>{L('sub')}</div>
+            </div>
+            <div className="kp-anim flex-shrink-0 rounded-full flex items-center justify-center font-black" style={{ width: 86, height: 86, background: `radial-gradient(circle at 35% 30%, #ffe28a, ${GOLD} 60%, #e6a91f)`, color: GREEN, fontSize: 26, animation: 'kpPop .8s cubic-bezier(.3,1.5,.5,1) 1.7s both, kpGlow 2.4s ease-in-out 2.6s infinite' }}>
+              {priceLabel}
+            </div>
+          </div>
+          <span className="kp-anim relative inline-flex items-center gap-2 mt-4 px-4 py-2.5 rounded-full font-black text-sm overflow-hidden" style={{ background: CREAM, color: GREEN, animation: 'kpFadeUp .6s ease-out 2s both' }}>
+            {L('cta')}
+            <ArrowRight size={16} />
+            <span className="kp-anim absolute inset-y-0 left-0 w-1/3" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent)', animation: 'kpShine 2.8s ease-in-out 3s infinite' }} />
+          </span>
+        </div>
+      </button>
+    </section>
+  );
+}
+
 function DailySpecial({ go }) {
   const { lang, t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -5427,6 +5528,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </button>
         </div>
       </section>
+
+      {/* KAPSALON — Motion-Design-Karte */}
+      <KapsalonSpotlight go={go} />
 
       {/* SHOWCASE GALLERY */}
       <ShowcaseCarousel />
@@ -10221,7 +10325,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🧀 Kapsalon-Karte angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
