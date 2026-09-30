@@ -2207,78 +2207,6 @@ function WeatherEffect() {
   return ReactDOM.createPortal(content, document.body);
 }
 
-function SplashScreen({ onDone }) {
-  const [stage, setStage] = useState(0);
-  useEffect(() => {
-    const t1 = setTimeout(() => setStage(1), 150);
-    const t2 = setTimeout(() => setStage(2), 750);
-    const t3 = setTimeout(() => setStage(3), 1350);
-    const t4 = setTimeout(() => onDone(), 2500);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
-  }, [onDone]);
-
-  const embers = React.useMemo(() => [
-    ...Array.from({ length: 14 }).map(() => ({
-      left: 8 + Math.random() * 84,
-      delay: Math.random() * 2.2,
-      duration: 2.2 + Math.random() * 1.6,
-      drift: (Math.random() - 0.5) * 60,
-      size: 3 + Math.random() * 4,
-    })),
-    ...Array.from({ length: 8 }).map(() => ({
-      left: 38 + Math.random() * 24,
-      delay: Math.random() * 1.6,
-      duration: 1.6 + Math.random() * 1.2,
-      drift: (Math.random() - 0.5) * 30,
-      size: 2.5 + Math.random() * 3,
-    })),
-  ], []);
-
-  return (
-    <div className="min-h-screen w-full flex justify-center items-center relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% 100%, rgba(230,90,10,.35), transparent 60%), linear-gradient(180deg, #0a1a10, ${GREEN})` }} onClick={onDone}>
-      <style>{`
-        @keyframes ignite { 0%{ transform:scale(.15); opacity:0; filter:brightness(3.5); box-shadow:0 0 0 0 rgba(255,140,0,0); } 45%{ transform:scale(1.18); opacity:1; filter:brightness(2); box-shadow:0 0 70px 24px rgba(255,140,0,.75); } 100%{ transform:scale(1); opacity:1; filter:brightness(1); box-shadow:0 0 34px 8px rgba(255,140,0,.45); } }
-        @keyframes flarePulse { 0%,100%{ box-shadow:0 0 34px 8px rgba(255,140,0,.45);} 50%{ box-shadow:0 0 44px 14px rgba(255,180,60,.55);} }
-        @keyframes riseFade { 0%{ transform:translateY(16px); opacity:0; } 100%{ transform:translateY(0); opacity:1; } }
-        @keyframes shimmerBar { 0%{ background-position:-200px 0;} 100%{ background-position:200px 0;} }
-        @keyframes emberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-360px) translateX(var(--drift)); opacity:0; } }
-      `}</style>
-
-      {embers.map((e, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute', bottom: 0, left: `${e.left}%`,
-            width: e.size, height: e.size, borderRadius: '50%',
-            background: i % 2 === 0 ? GOLD : ORANGE,
-            boxShadow: `0 0 6px 2px ${i % 2 === 0 ? 'rgba(255,199,56,.8)' : 'rgba(230,90,10,.8)'}`,
-            animation: `emberFloat ${e.duration}s ease-in ${e.delay}s infinite`,
-            '--drift': `${e.drift}px`,
-          }}
-        />
-      ))}
-
-      <div className="flex flex-col items-center px-8 text-center relative">
-        <div
-          className="rounded-full flex items-center justify-center mb-6"
-          style={{
-            width: 108, height: 108, background: `linear-gradient(135deg, ${CREAM}, #fff)`,
-            animation: stage >= 1 ? 'ignite .8s cubic-bezier(.22,1,.36,1) forwards, flarePulse 2s ease-in-out .8s infinite' : 'none',
-            opacity: stage >= 1 ? 1 : 0,
-          }}
-        >
-          <img loading="lazy" decoding="async" src={LOGO_ICON} alt="logo" style={{ width: 78, height: 78, objectFit: 'contain' }} />
-        </div>
-        <div style={{ opacity: stage >= 2 ? 1 : 0, animation: stage >= 2 ? 'riseFade .6s ease forwards' : 'none' }}>
-          <div className="text-white font-black text-2xl tracking-wide">BODRUM KEBAP</div>
-          <div className="font-bold text-sm tracking-[4px] mt-1" style={{ color: GOLD }}>VECHTA</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ============ HOME ============ */
 function Reveal({ children, className = '', delay = 0 }) {
   const ref = React.useRef(null);
   const [visible, setVisible] = useState(false);
@@ -11856,7 +11784,6 @@ export default function App() {
   const KARTENRAD_ENABLED = false;
   const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [booted, setBooted] = useState(isTischMenu || isKartenrad);
   const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
@@ -11991,7 +11918,6 @@ export default function App() {
     setShowInstallHelp(true);
   };
 
-  if (!booted) return <SplashScreen onDone={() => setBooted(true)} />;
 
   const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall, go };
   const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
