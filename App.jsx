@@ -2971,7 +2971,7 @@ function detectQueryLang(qRaw) {
   return best[0][1] >= 1 && best[0][1] > best[1][1] ? best[0][0] : null;
 }
 
-// ---- Lottie-Animationen (public/lottie/*.json) ----
+// ---- Lottie-Animationen (public/animations/*.json) ----
 // Der Player (lottie-web, schlanke Variante ohne Expressions) wird erst
 // geladen, wenn eine Animation wirklich angezeigt wird — eigener Code-Chunk,
 // die Startseite lädt dadurch nicht langsamer. Fehlt Datei oder Netz, wird
@@ -3212,7 +3212,7 @@ function AIAssistant() {
         className="fixed bottom-5 right-5 z-40 w-16 h-16 rounded-full flex items-center justify-center"
         style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 28px rgba(230,90,10,.5)', animation: open ? 'none' : 'goldGlow 2.4s ease-in-out infinite' }}
       >
-        {open ? <span className="text-2xl">✕</span> : <LottiePlayer src="/lottie/robot.json" size={58} loop placeholder={<RobotFace />} />}
+        {open ? <span className="text-2xl">✕</span> : <LottiePlayer src="/animations/robot.json" size={58} loop placeholder={<RobotFace />} />}
       </button>
 
       {open && (
@@ -3468,7 +3468,7 @@ function ContactMessageForm({ lang, t }) {
       <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('contactMsgSub')}</p>
       {status === 'sent' ? (
         <div className="text-center">
-          <LottiePlayer src="/lottie/success.json" size={104} placeholder={<span className="text-3xl">✅</span>} />
+          <LottiePlayer src="/animations/success.json" size={104} placeholder={<span className="text-3xl">✅</span>} />
           <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('contactMsgSent')}</p>
         </div>
       ) : (
@@ -3755,7 +3755,7 @@ function WishModal({ lang, t, onClose }) {
         <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('wishBoxSub')}</p>
         {status === 'sent' ? (
           <div className="text-center py-2">
-            <LottiePlayer src="/lottie/success.json" size={120} placeholder={<span className="text-4xl">✅</span>} />
+            <LottiePlayer src="/animations/success.json" size={120} placeholder={<span className="text-4xl">✅</span>} />
             <p className="text-sm font-bold mb-4" style={{ color: '#7ed99b' }}>{t('wishBoxSent')}</p>
             <button onClick={onClose} className="px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: GOLD, color: GREEN }}>OK</button>
           </div>
@@ -9766,7 +9766,7 @@ function StaffPanelView({ back }) {
                   : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
               >
                 {unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : (
-                  <LottiePlayer src="/lottie/padlock.json" size={104} holdFrame={10} playSegment={unlockStage === 'unlocked' ? [10, 24] : undefined} placeholder={<AnimatedLock open={unlockStage === 'unlocked'} />} style={{ margin: -20 }} />
+                  <LottiePlayer src="/animations/padlock.json" size={104} holdFrame={10} playSegment={unlockStage === 'unlocked' ? [10, 24] : undefined} placeholder={<AnimatedLock open={unlockStage === 'unlocked'} />} style={{ margin: -20 }} />
                 )}
               </div>
               <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : unlockStage === 'wrong' ? '#ff8080' : '#fff' }}>
@@ -11839,7 +11839,63 @@ function OpeningLoader() {
   );
 }
 
-export default function App() {
+// ---- Diagnose-Seite: bodrumkebapvechta.de/?lottietest=1 ----
+// Zeigt Schritt für Schritt, ob die Animationen geladen werden können.
+const LOTTIE_BUILD = 'animations-v2 · 2026-10-01';
+function LottieDiag() {
+  const [rows, setRows] = useState([]);
+  const boxRef = useRef(null);
+  useEffect(() => {
+    let alive = true;
+    const P = (text, ok = true) => { if (alive) setRows((r) => [...r, { text, ok }]); };
+    (async () => {
+      P(`Code-Version: ${LOTTIE_BUILD}`);
+      P('Pfad im Code: /animations/…json');
+      P(`„Bewegung reduzieren“: ${lottieReduced() ? 'AN – Animationen stehen still' : 'aus'}`, !lottieReduced());
+      try {
+        const regs = navigator.serviceWorker ? await navigator.serviceWorker.getRegistrations() : [];
+        const ck = window.caches ? await caches.keys() : [];
+        P(`Service Worker: ${regs.length} · Caches: ${ck.length}`);
+      } catch { P('Service-Worker-Prüfung nicht möglich'); }
+      let lib = null;
+      try { lib = await loadLottieLib(); P('Player (lottie-web) geladen'); } catch (e) { P(`Player konnte NICHT geladen werden: ${e && e.message}`, false); }
+      let robotData = null;
+      for (const n of ['robot', 'padlock', 'success']) {
+        try {
+          const r = await fetch(`/animations/${n}.json?x=${Date.now()}`, { cache: 'no-store' });
+          const txt = await r.text();
+          const isJson = txt.trim().startsWith('{');
+          P(`${n}.json: HTTP ${r.status} · ${(r.headers.get('content-type') || '?').split(';')[0]} · ${txt.length} Zeichen${isJson ? '' : ' – KEIN JSON (Webseite statt Datei)'}`, r.ok && isJson);
+          if (n === 'robot' && r.ok && isJson) robotData = JSON.parse(txt);
+        } catch (e) { P(`${n}.json: Fehler – ${e && e.message}`, false); }
+      }
+      if (lib && robotData && boxRef.current) {
+        try {
+          const a = lib.loadAnimation({ container: boxRef.current, renderer: 'svg', loop: true, autoplay: true, animationData: robotData });
+          a.addEventListener('DOMLoaded', () => P('Roboter-Animation gestartet'));
+          a.addEventListener('data_failed', () => P('Roboter-Animation: Datenfehler', false));
+        } catch (e) { P(`Start-Fehler: ${e && e.message}`, false); }
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+  const reset = async () => {
+    try { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map((r) => r.unregister())); } catch {}
+    try { const ks = await caches.keys(); await Promise.all(ks.map((k) => caches.delete(k))); } catch {}
+    window.location.replace('/');
+  };
+  return (
+    <div style={{ minHeight: '100vh', background: '#0f1a14', color: '#e8efe9', padding: 20, fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 13, lineHeight: 1.5 }}>
+      <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 12 }}>🔧 Animations-Diagnose</div>
+      <div ref={boxRef} style={{ width: 150, height: 150, background: '#fff6ea', borderRadius: 16, marginBottom: 14 }} />
+      {rows.map((r, i) => <div key={i} style={{ marginBottom: 6, color: r.ok ? '#bfe8c9' : '#ff9a9a' }}>{r.ok ? '✅' : '❌'} {r.text}</div>)}
+      <button onClick={reset} style={{ marginTop: 16, padding: '10px 14px', borderRadius: 10, background: '#ffc738', color: '#153826', fontWeight: 700, border: 'none' }}>Cache & Service Worker zurücksetzen</button>
+      <div style={{ marginTop: 14 }}><a href="/" style={{ color: '#ffc738' }}>← Zur Website</a></div>
+    </div>
+  );
+}
+
+function AppMain() {
   const isTischMenu = isTischMenuUrl();
   // Vorübergehend deaktiviert (kommt später zurück) — auf false setzen,
   // um alle Effekte an einer Stelle auszuschalten, ohne den bereits
@@ -12086,4 +12142,9 @@ export default function App() {
     <CookieBanner />
     </LangContext.Provider>
   );
+}
+
+export default function App() {
+  const diag = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('lottietest');
+  return diag ? <LottieDiag /> : <AppMain />;
 }
