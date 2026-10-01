@@ -4787,96 +4787,6 @@ async function drawStoryImage(photo) {
   return c;
 }
 
-function StoryShareButton({ variant = 'pill' }) {
-  const { lang } = React.useContext(LangContext);
-  const T = STORY_T[lang] || STORY_T.de;
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [result, setResult] = useState(null); // { url, blob }
-  const fileRef = useRef(null);
-  const reset = () => { if (result?.url) URL.revokeObjectURL(result.url); setResult(null); setErr(''); };
-  const close = () => { reset(); setOpen(false); };
-  const onFile = async (e) => {
-    const f = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!f) return;
-    reset(); setBusy(true);
-    try {
-      const url = URL.createObjectURL(f);
-      const photo = await loadImg(url);
-      URL.revokeObjectURL(url);
-      const canvas = await drawStoryImage(photo);
-      const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.92));
-      if (!blob) throw new Error('blob');
-      setResult({ url: URL.createObjectURL(blob), blob });
-      logEvent('story_created');
-    } catch { setErr(T.err); }
-    setBusy(false);
-  };
-  const share = async () => {
-    if (!result) return;
-    const file = new File([result.blob], 'bodrum-kebap-story.jpg', { type: 'image/jpeg' });
-    try {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], text: '@BodrumKebapVechta 🥙' });
-        logEvent('story_shared');
-        return;
-      }
-    } catch { return; }
-    const a = document.createElement('a'); a.href = result.url; a.download = 'bodrum-kebap-story.jpg'; a.click();
-    logEvent('story_saved');
-  };
-  const trigger = variant === 'link' ? (
-    <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 text-xs font-bold mt-1" style={{ color: GOLD }}>📸 {T.btn}</button>
-  ) : (
-    <button onClick={() => setOpen(true)} className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-sm w-fit" style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(0,0,0,.18)' }}>📸 {T.btn}</button>
-  );
-  return (
-    <>
-      {trigger}
-      {open && (
-        <div className="fixed inset-0 z-[160] flex items-end sm:items-center justify-center" style={{ background: 'rgba(10,25,17,.6)', animation: 'modalBgFade .25s ease both' }} onClick={close}>
-          <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto" style={{ background: CREAM, animation: 'modalCardUp .3s ease', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="font-black text-lg" style={{ color: GREEN }}>{T.title}</div>
-              <button onClick={close} aria-label="Close" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(21,56,38,.08)' }}><X size={18} color={GREEN} /></button>
-            </div>
-            <div className="text-xs font-semibold mb-4" style={{ color: '#8a7c62' }}>{T.sub}</div>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onFile} />
-            {result ? (
-              <>
-                <img loading="lazy" decoding="async" src={result.url} alt="" className="w-full max-w-[260px] mx-auto rounded-2xl mb-3" style={{ boxShadow: '0 10px 30px rgba(21,56,38,.25)' }} />
-                <div className="text-xs font-bold text-center mb-3" style={{ color: ORANGE }}>{T.tip}</div>
-                <button onClick={share} className="w-full py-3.5 rounded-2xl font-black text-sm text-white" style={{ background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' }}>📤 {T.share}</button>
-                <button onClick={() => fileRef.current && fileRef.current.click()} className="w-full mt-2 py-2.5 rounded-2xl font-bold text-xs" style={{ background: '#fff', color: GREEN, border: '1.5px solid #e3d5bd' }}>↺ {T.again}</button>
-              </>
-            ) : (
-              <button onClick={() => fileRef.current && fileRef.current.click()} disabled={busy} className="w-full py-10 rounded-2xl font-black text-sm flex flex-col items-center gap-2" style={{ background: '#fff', color: GREEN, border: '2px dashed #d9c8a6', opacity: busy ? 0.6 : 1 }}>
-                <span className="text-4xl">📷</span>{busy ? T.making : T.pick}
-              </button>
-            )}
-            {err && <div className="text-xs font-bold mt-3 text-center" style={{ color: CHILI }}>{err}</div>}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-// ---- Instagram-Text-Generator (Personal-Bereich) ----
-// Versucht zuerst die vorhandene KI (/api/ask-ai). Klappt das nicht (Fehler,
-// Zeitüberschreitung, zu kurze Antwort), wird eine Vorlage verwendet — das
-// Personal bekommt also IMMER einen brauchbaren Text. Im Ergebnis steht, ob
-// der Text von der KI oder aus der Vorlage kommt.
-const INSTA_OCCASIONS = [['neu', '✨ Neu'], ['angebot', '🔥 Angebot'], ['heute', '📅 Heute'], ['allgemein', '😋 Allgemein']];
-const INSTA_HOOKS = {
-  neu: ['NEU bei uns! ✨', 'Frisch auf der Karte:', 'Ihr habt gefragt – hier ist es:'],
-  angebot: ['🔥 ANGEBOT!', 'Nur für kurze Zeit:', 'Deal-Alarm 🚨'],
-  heute: ['Heute bei uns:', 'Heute Lust auf was Leckeres?', 'Euer Tipp für heute:'],
-  allgemein: ['Hunger? 😋', 'Frisch vom Spieß 🔥', 'Das gibt’s bei uns:'],
-};
-const INSTA_BODY = ['Täglich frisch zubereitet und 100% halal.', 'Kommt vorbei und probiert selbst!', 'Wir freuen uns auf euch! 🙌', 'Frisch, lecker und mit Liebe gemacht. ❤️'];
 function instaEmoji(topic) {
   const t = topic.toLowerCase();
   if (/pizza/.test(t)) return '🍕';
@@ -5163,6 +5073,7 @@ function SpotlightAdmin({ compressImageFile, cfgKey = 'siteconfig:spotlight', de
     setCfg(next); setBusy(true); setMsg('');
     const ok = await safeSet(cfgKey, next);
     setMsg(ok ? '✓ Gespeichert – auf der Startseite sichtbar' : '⚠️ Nicht gespeichert – bitte erneut versuchen');
+    if (ok) panelToast('Gespeichert');
     setBusy(false);
   };
   const choices = ALL_MENU_ITEMS.filter((it) => it.catKey !== 'getraenke');
@@ -5968,7 +5879,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               >
                 <Instagram size={16} /> @BodrumKebapVechta
               </a>
-              <StoryShareButton />
             </div>
             <ContactMessageForm lang={lang} t={t} />
           </div>
@@ -8277,17 +8187,59 @@ function OrderTrackView({ back, initialAction, onConsumeAction }) {
     </div>
   );
 }
-function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
+// Zahl zählt beim Erscheinen von 0 hoch (Statistik).
+function PanelCount({ value, duration = 900 }) {
+  const [n, setN] = useState(typeof value === 'number' ? 0 : value);
+  useEffect(() => {
+    if (typeof value !== 'number' || lottieReduced()) { setN(value); return; }
+    let raf;
+    const t0 = performance.now();
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / duration);
+      setN(Math.round(value * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <>{n}</>;
+}
+
+// Kleine Bestätigung unten im Personal-Bereich, mit grünem Haken (Lottie).
+function panelToast(text) {
+  try { window.dispatchEvent(new CustomEvent('bk-panel-toast', { detail: text })); } catch {}
+}
+function PanelToast() {
+  const [item, setItem] = useState(null);
+  useEffect(() => {
+    let tm;
+    const on = (e) => { setItem({ text: e.detail, id: Date.now() }); clearTimeout(tm); tm = setTimeout(() => setItem(null), 2400); };
+    window.addEventListener('bk-panel-toast', on);
+    return () => { window.removeEventListener('bk-panel-toast', on); clearTimeout(tm); };
+  }, []);
+  if (!item) return null;
+  return (
+    <div key={item.id} className="fixed left-1/2 flex items-center gap-2 pl-1.5 pr-4 py-1.5 rounded-full" style={{ bottom: 92, zIndex: 120, transform: 'translateX(-50%)', background: GREEN, color: '#fff', boxShadow: '0 10px 30px rgba(21,56,38,.35)', animation: 'spToast 2.4s cubic-bezier(.2,.8,.2,1) both' }} role="status">
+      <LottiePlayer src="/animations/success.json" size={34} placeholder={<span className="text-base">✅</span>} />
+      <span className="text-[13px] font-semibold whitespace-nowrap">{item.text}</span>
+    </div>
+  );
+}
+
+function SettingsRow({ id, icon, title, sub, openId, setOpenId, children }) {
   const isOpen = openId === id;
   return (
     <div className="rounded-[14px] mb-2 overflow-hidden bg-white" style={{ border: `1px solid ${isOpen ? '#cfdcd3' : '#e4dfd4'}`, transition: 'border-color .2s' }}>
       <button onClick={() => setOpenId(isOpen ? null : id)} className="w-full flex items-center gap-3 px-3.5 py-3 text-left">
         <span className="w-8 h-8 rounded-[10px] flex items-center justify-center flex-shrink-0 text-[15px]" style={{ background: isOpen ? '#e3eee7' : '#f4f2ed', transition: 'background .2s' }}>{icon}</span>
-        <span className="flex-1 font-semibold text-[14px]" style={{ color: '#1c2b22' }}>{title}</span>
+        <span className="flex-1 min-w-0">
+          <span className="block font-semibold text-[14px]" style={{ color: '#1c2b22' }}>{title}</span>
+          {sub && <span className="block text-[11.5px] truncate" style={{ color: '#8a8478' }}>{sub}</span>}
+        </span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a8478" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s', flexShrink: 0 }}><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {isOpen && (
-        <div className="px-3.5 pb-3.5" style={{ borderTop: '1px solid #efebe3' }}>
+        <div className="px-3.5 pb-3.5" style={{ borderTop: '1px solid #efebe3', animation: 'spRowIn .32s cubic-bezier(.2,.8,.2,1) both' }}>
           <div className="pt-3">{children}</div>
         </div>
       )}
@@ -8297,6 +8249,7 @@ function SettingsRow({ id, icon, title, openId, setOpenId, children }) {
 
 function LoyaltyAdminPanel() {
   const [search, setSearch] = useState('');
+  const [newStampIdx, setNewStampIdx] = useState(-1);
   const [result, setResult] = useState(null); // { code, card } | 'notfound' | null
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
@@ -8376,6 +8329,8 @@ function LoyaltyAdminPanel() {
       const updated = await addLoyaltyStamp(result.code);
       setResult({ code: result.code, card: updated });
       setMsg(updated.stamps >= LOYALTY_TARGET ? '🎉 Karte ist voll!' : 'Stempel hinzugefügt ✓');
+      setNewStampIdx(updated.stamps - 1);
+      panelToast(updated.stamps >= LOYALTY_TARGET ? 'Karte ist voll!' : 'Stempel hinzugefügt');
     } catch {
       setMsg('⚠️ NICHT gespeichert – Server nicht erreichbar. Stempel bitte auf Papier notieren und später nachtragen.');
     }
@@ -8390,6 +8345,7 @@ function LoyaltyAdminPanel() {
       const updated = await redeemLoyaltyCard(result.code);
       setResult({ code: result.code, card: updated });
       setMsg('Eingelöst ✓ — neue Runde gestartet');
+      panelToast('Eingelöst – neue Runde');
     } catch {
       setMsg('⚠️ NICHT eingelöst – Server nicht erreichbar. Bitte später erneut versuchen.');
     }
@@ -8443,7 +8399,7 @@ function LoyaltyAdminPanel() {
           <div className="text-center font-black text-lg tracking-widest mb-2" style={{ color: GREEN }}>{result.code}</div>
           <div className="flex justify-center gap-1 mb-3">
             {Array.from({ length: LOYALTY_TARGET }).map((_, i) => (
-              <div key={i} className="w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: i < result.card.stamps ? GOLD : '#fff', border: '1px solid #e3d5bd' }}>
+              <div key={i === newStampIdx ? `n${i}-${result.card.stamps}` : i} className="w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ background: i < result.card.stamps ? GOLD : '#fff', border: '1px solid #e3d5bd', animation: i === newStampIdx ? 'spStamp .55s cubic-bezier(.3,1.5,.5,1) both' : 'none' }}>
                 {i < result.card.stamps ? '🥙' : ''}
               </div>
             ))}
@@ -8638,6 +8594,7 @@ function StaffPanelView({ back }) {
     setOwnerPassword(newOwnerPw.trim());
     setOldOwnerPw(''); setNewOwnerPw(''); setNewOwnerPw2('');
     setOwnerPwMsg('✓ Passwort geändert');
+    panelToast('Passwort geändert');
     setTimeout(() => setOwnerPwMsg(''), 2500);
   };
   useEffect(() => {
@@ -8656,12 +8613,35 @@ function StaffPanelView({ back }) {
           localStorage.setItem('bk_staff_remember_v1', JSON.stringify({ until: Date.now() + durationMs, epoch: epoch || 0 }));
         }).catch(() => {});
       }
-      setTimeout(() => setOk(true), 900);
+      setTimeout(() => setOk(true), 1100);
     } else if (pin.length >= staffPin.length) {
       setUnlockStage('wrong');
+      try { if (navigator.vibrate) navigator.vibrate([70, 50, 70]); } catch {}
       setTimeout(() => { setPin(''); setUnlockStage('idle'); }, 700);
     }
   }, [pin, staffPin, ok, unlocking]);
+  // Eigene Zifferntastatur (statt Handy-Tastatur) + Tastatur am Computer
+  const pinLen = Math.max(4, Math.min(8, (staffPin || '').length || 6));
+  const pressPinKey = (k) => {
+    if (unlocking || unlockStage !== 'idle') return;
+    if (k === 'del') { setPin((p) => p.slice(0, -1)); return; }
+    if (pin.length >= pinLen) return;
+    setKeystroke((x) => x + 1);
+    setPin(pin + k);
+    try { if (navigator.vibrate) navigator.vibrate(8); } catch {}
+  };
+  const pressPinKeyRef = useRef(pressPinKey);
+  pressPinKeyRef.current = pressPinKey;
+  useEffect(() => {
+    if (ok) return;
+    const onKey = (e) => {
+      if (/^[0-9]$/.test(e.key)) pressPinKeyRef.current(e.key);
+      else if (e.key === 'Backspace') pressPinKeyRef.current('del');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [ok]);
+  const rememberHint = !rememberChoice ? 'PIN wird jedes Mal abgefragt' : rememberChoice === '10m' ? 'Für 10 Minuten ohne PIN' : rememberChoice === '1h' ? 'Für 1 Stunde ohne PIN' : 'Bis heute 23:59 ohne PIN';
   const savePin = async () => {
     if (newPin.trim().length < 4) { setPinMsg('PIN muss mind. 4 Ziffern haben'); setTimeout(() => setPinMsg(''), 2500); return; }
     if (newPin !== newPin2) { setPinMsg('PINs stimmen nicht überein'); setTimeout(() => setPinMsg(''), 2500); return; }
@@ -8669,6 +8649,7 @@ function StaffPanelView({ back }) {
     setStaffPin(newPin.trim());
     setNewPin(''); setNewPin2('');
     setPinMsg(t('savedMsg'));
+    panelToast('PIN geändert');
     setTimeout(() => setPinMsg(''), 2500);
   };
   const [logoutAllMsg, setLogoutAllMsg] = useState('');
@@ -8677,6 +8658,7 @@ function StaffPanelView({ back }) {
     await safeSet('siteconfig:staffSessionEpoch', newEpoch);
     localStorage.removeItem('bk_staff_remember_v1');
     setLogoutAllMsg('✅ Alle gemerkten Geräte wurden abgemeldet');
+    panelToast('Alle Geräte abgemeldet');
     setTimeout(() => setLogoutAllMsg(''), 3000);
   };
   const [ratingScore, setRatingScore] = useState('4.6');
@@ -8694,7 +8676,7 @@ function StaffPanelView({ back }) {
   const [mittagsPizzaGalleryUrl, setMittagsPizzaGalleryUrl] = useState('');
   const [weekendComboPhotos, setWeekendComboPhotos] = useState({ pizza: '', doener: '' });
   const [weekendPhotoUploadBusy, setWeekendPhotoUploadBusy] = useState('');
-  const [settingsGroup, setSettingsGroup] = useState('sicherheit');
+  const [settingsGroup, setSettingsGroup] = useState('website');
   const [pushTestMsg, setPushTestMsg] = useState('');
   const [ownerDeviceMsg, setOwnerDeviceMsg] = useState('');
   const [pushTriggers, setPushTriggers] = useState({ ankuendigung: true, samstag: true, neuesProdukt: true, angebot: true, montagErinnerung: true });
@@ -9741,113 +9723,111 @@ function StaffPanelView({ back }) {
       } : undefined} /></div>
 
       {!ok ? (
-        <div className="min-h-[calc(100vh-70px)] flex justify-center px-6 pt-4 relative overflow-hidden" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(255,199,56,.1), transparent 60%), linear-gradient(165deg, #081209, #123420 50%, #0a1a10)` }}>
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 300, height: 300, top: -90, left: -70, background: 'radial-gradient(circle, rgba(255,59,59,.14), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 9s ease-in-out infinite' }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: 260, height: 260, bottom: -70, right: -60, background: 'radial-gradient(circle, rgba(255,199,56,.13), transparent 70%)', filter: 'blur(14px)', animation: 'softFloat 11s ease-in-out infinite reverse' }} />
-          <style>{`@keyframes pinEmberFloat { 0%{ transform:translateY(0) translateX(0); opacity:0; } 12%{ opacity:1; } 100%{ transform:translateY(-680px) translateX(var(--drift)); opacity:0; } }`}</style>
-          {pinEmbers.map((e, i) => (
-            <div key={i} className="pointer-events-none" style={{
-              position: 'absolute', bottom: 0, left: `${e.left}%`,
-              width: e.size, height: e.size, borderRadius: '50%',
-              background: i % 2 === 0 ? GOLD : ORANGE,
-              boxShadow: `0 0 6px 2px ${i % 2 === 0 ? 'rgba(255,199,56,.7)' : 'rgba(230,90,10,.7)'}`,
-              animation: `pinEmberFloat ${e.duration}s ease-in ${e.delay}s infinite`,
-              '--drift': `${e.drift}px`,
-            }} />
-          ))}
-          <div className="w-full max-w-xs relative">
-            <div className="flex flex-col items-center mb-4 mt-8">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5"
-                style={unlockStage === 'unlocked'
-                  ? { background: `linear-gradient(135deg, #34c759, #28a745)`, boxShadow: '0 10px 30px rgba(52,199,89,.5), 0 0 0 5px rgba(52,199,89,.2)', transform: 'scale(1.1)', transition: 'all .8s cubic-bezier(.34,1.4,.64,1)' }
-                  : unlockStage === 'wrong'
-                  ? { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.6), 0 0 0 6px rgba(255,59,59,.3)', animation: 'shakeX .4s ease' }
-                  : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
-              >
-                {unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : (
-                  <LottiePlayer src="/animations/padlock.json" size={104} holdFrame={10} playSegment={unlockStage === 'unlocked' ? [10, 24] : undefined} placeholder={<AnimatedLock open={unlockStage === 'unlocked'} />} style={{ margin: -20 }} />
-                )}
+        <div className="staff-login relative overflow-hidden flex justify-center px-6" style={{ minHeight: 'calc(100vh - 70px)', background: 'radial-gradient(ellipse at 50% 0%, #1f5238 0%, #153826 45%, #0b1d13 100%)' }}>
+          <style>{`
+            @keyframes slIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+            .sl-in { animation: slIn .6s cubic-bezier(.2,.8,.2,1) both; }
+            .sl-aurora { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .32; pointer-events: none; }
+            .sl-a1 { width: 260px; height: 260px; background: #ffc738; top: -80px; left: -80px; animation: slDrift1 14s ease-in-out infinite; }
+            .sl-a2 { width: 280px; height: 280px; background: #2d8a5c; bottom: -90px; right: -80px; animation: slDrift2 16s ease-in-out infinite; }
+            @keyframes slDrift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(70px,50px); } }
+            @keyframes slDrift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-60px,-40px); } }
+            @keyframes slSpin { to { transform: rotate(360deg); } }
+            @keyframes slBreathe { 0%,100% { opacity: .7; } 50% { opacity: 1; } }
+            .sl-spin { animation: slSpin 9s linear infinite, slBreathe 3.2s ease-in-out infinite; }
+            @keyframes slPop { 0% { transform: scale(.4); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
+            @keyframes slShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+            @keyframes slOut { to { opacity: 0; transform: scale(.96); } }
+            .sl-key { transition: transform .1s ease, background .15s ease; -webkit-tap-highlight-color: transparent; }
+            .sl-key:active { transform: scale(.92); background: rgba(255,199,56,.25) !important; }
+            @media (prefers-reduced-motion: reduce) { .staff-login *, .staff-login { animation: none !important; } }
+          `}</style>
+          <div className="sl-aurora sl-a1" />
+          <div className="sl-aurora sl-a2" />
+          <div className="relative w-full flex flex-col items-center pt-8 pb-10" style={{ maxWidth: 330, animation: unlockStage === 'unlocked' ? 'slOut .35s ease .75s both' : 'none' }}>
+            <div className="sl-in relative" style={{ width: 112, height: 112, animationDelay: '.05s' }}>
+              <svg className="absolute inset-0" width="112" height="112" viewBox="0 0 112 112" aria-hidden="true">
+                <circle cx="56" cy="56" r="52" fill="none" stroke="rgba(255,199,56,.15)" strokeWidth="3" />
+                <circle className={unlockStage === 'idle' ? 'sl-spin' : ''} cx="56" cy="56" r="52" fill="none" stroke={unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : GOLD} strokeWidth="3" strokeLinecap="round" strokeDasharray="327" strokeDashoffset={unlockStage === 'unlocked' ? 0 : 105} style={{ transformOrigin: '56px 56px', transformBox: 'view-box', transition: 'stroke-dashoffset .7s cubic-bezier(.65,0,.35,1), stroke .3s' }} />
+              </svg>
+              <div className="absolute rounded-full flex items-center justify-center overflow-hidden" style={{ inset: 14, background: 'rgba(255,255,255,.06)' }}>
+                <LottiePlayer src="/animations/padlock.json" size={136} holdFrame={10} playSegment={unlockStage === 'unlocked' ? [10, 24] : undefined} placeholder={<AnimatedLock open={unlockStage === 'unlocked'} />} />
               </div>
-              <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : unlockStage === 'wrong' ? '#ff8080' : '#fff' }}>
-                {unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'wrong' ? '❌ Falscher PIN' : t('titleStaff')}
-              </div>
-              <div className="text-[10px] font-bold tracking-widest mt-0.5" style={{ color: GOLD, opacity: 0.85 }}>NUR FÜR PERSONAL</div>
             </div>
-            <div className="rounded-3xl p-5 mt-6" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,199,56,.25)', backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.15), 0 20px 50px rgba(0,0,0,.35)' }} onClick={() => pinInputRef.current?.focus()}>
-              <div className="relative">
-                <input
-                  ref={pinInputRef}
-                  value={pin}
-                  onChange={(e) => {
-                    const v = e.target.value.replace(/\D/g, '').slice(0, 6);
-                    if (v.length > pin.length) setKeystroke((k) => k + 1);
-                    setPin(v);
-                  }}
-                  type="tel" inputMode="numeric" maxLength={6}
-                  disabled={unlocking}
-                  className="absolute inset-0 w-full h-full opacity-0"
-                  style={{ zIndex: 2 }}
-                  autoFocus
-                />
-                <div className="flex items-center justify-center gap-2 pointer-events-none" style={{ animation: unlockStage === 'wrong' ? 'shakeX .4s ease' : 'none' }}>
-                  {Array.from({ length: 6 }).map((_, i) => {
-                    const filled = i < pin.length;
-                    const isActive = i === pin.length - 1;
-                    const boxColor = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : filled ? GOLD : 'rgba(255,255,255,.22)';
-                    return (
-                      <div
-                        key={isActive ? `box-${i}-${keystroke}` : `box-${i}`}
-                        className="w-10 h-12 rounded-xl flex items-center justify-center"
-                        style={{
-                          background: filled ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.04)',
-                          backdropFilter: 'blur(8px)',
-                          border: `1.5px solid ${boxColor}`,
-                          boxShadow: filled ? `inset 0 1px 0 rgba(255,255,255,.25), 0 0 14px ${unlockStage === 'unlocked' ? 'rgba(52,199,89,.4)' : unlockStage === 'wrong' ? 'rgba(255,77,77,.4)' : 'rgba(255,199,56,.3)'}` : 'inset 0 1px 0 rgba(255,255,255,.08)',
-                          transition: 'border-color .3s, background .3s',
-                          animation: isActive && unlockStage === 'idle' ? 'pinBoxPop .4s cubic-bezier(.34,1.56,.64,1)' : 'none',
-                        }}
-                      >
-                        {unlockStage === 'unlocked' ? (
-                          <Check size={22} color="#34c759" strokeWidth={4} />
-                        ) : filled ? (
-                          <span className="w-2 h-2 rounded-full" style={{ background: unlockStage === 'wrong' ? '#ff4d4d' : GOLD }} />
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
+            <div className="sl-in mt-4 text-[19px] font-black text-center" style={{ animationDelay: '.12s', color: unlockStage === 'unlocked' ? '#7ed99b' : '#fff6ea', transition: 'color .3s' }}>
+              {unlockStage === 'unlocked' ? 'Willkommen!' : 'Personal-Bereich'}
+            </div>
+            <div className="sl-in mt-1 text-[13px] text-center" style={{ animationDelay: '.18s', color: unlockStage === 'wrong' ? '#ff8a8a' : 'rgba(255,246,234,.6)', minHeight: 18 }}>
+              {unlockStage === 'wrong' ? 'Falscher PIN' : unlockStage === 'unlocked' ? 'Panel wird geöffnet…' : 'Bitte PIN eingeben'}
+            </div>
+            <div className="sl-in my-6" style={{ animationDelay: '.24s' }}>
+              <div className="flex gap-3" style={{ animation: unlockStage === 'wrong' ? 'slShake .42s ease' : 'none' }} aria-label={`${pin.length} von ${pinLen} Ziffern`}>
+                {Array.from({ length: pinLen }).map((_, i) => {
+                  const filled = i < pin.length;
+                  const col = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : GOLD;
+                  const d = unlockStage === 'unlocked' ? i * 0.07 : 0;
+                  return (
+                    <span
+                      key={i === pin.length - 1 ? `d${i}-${keystroke}` : `d${i}`}
+                      className="block rounded-full"
+                      style={{ width: 13, height: 13, border: `1.5px solid ${filled || unlockStage === 'unlocked' ? col : 'rgba(255,199,56,.5)'}`, background: filled || unlockStage === 'unlocked' ? col : 'transparent', transition: `background .25s ${d}s, border-color .25s ${d}s`, animation: i === pin.length - 1 && unlockStage === 'idle' ? 'slPop .28s cubic-bezier(.3,1.6,.5,1)' : 'none' }}
+                    />
+                  );
+                })}
               </div>
-
-              <div className="mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,.1)' }}>
-                <button onClick={() => setRememberChoice(rememberChoice ? null : '1h')} className="w-full flex items-center gap-2.5 mb-2.5" disabled={unlocking}>
-                  <div className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: rememberChoice ? GOLD : 'rgba(255,255,255,.08)', border: rememberChoice ? 'none' : '1.5px solid rgba(255,255,255,.25)' }}>
-                    {rememberChoice && <Check size={13} color={GREEN} strokeWidth={3.5} />}
-                  </div>
-                  <span className="text-xs font-bold" style={{ color: 'rgba(255,255,255,.85)' }}>Auf diesem Gerät merken</span>
+            </div>
+            <div className="sl-in grid" style={{ gridTemplateColumns: 'repeat(3, 68px)', gap: '14px 24px', animationDelay: '.3s' }}>
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => (k === '' ? <span key={i} /> : (
+                <button key={i} onClick={() => pressPinKey(k)} disabled={unlocking} aria-label={k === 'del' ? 'Löschen' : k} className="sl-key rounded-full flex items-center justify-center" style={{ width: 68, height: 68, background: k === 'del' ? 'transparent' : 'rgba(255,255,255,.07)', color: '#fff6ea', fontSize: 26, fontWeight: 400 }}>
+                  {k === 'del' ? (
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff6ea" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" /><path d="m12.5 9.5 5 5m0-5-5 5" /></svg>
+                  ) : k}
                 </button>
-                {rememberChoice && (
-                  <div className="flex gap-1.5">
-                    {[{ id: '10m', label: '10 Min' }, { id: '1h', label: '1 Stunde' }, { id: 'today', label: 'Heute' }].map((opt) => (
-                      <button key={opt.id} onClick={() => setRememberChoice(opt.id)} className="flex-1 py-2 rounded-lg text-[11px] font-bold" style={rememberChoice === opt.id ? { background: GOLD, color: GREEN } : { background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.6)' }}>
-                        {opt.label}
-                      </button>
+              )))}
+            </div>
+            <div className="sl-in w-full mt-7 rounded-2xl p-3.5" style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,199,56,.2)', animationDelay: '.38s' }}>
+              <button onClick={() => setRememberChoice(rememberChoice ? null : '1h')} disabled={unlocking} className="w-full flex items-center justify-between gap-3 text-left">
+                <span className="min-w-0">
+                  <span className="block text-[13px] font-semibold" style={{ color: '#fff6ea' }}>Auf diesem Gerät merken</span>
+                  <span className="block text-[11px]" style={{ color: 'rgba(255,246,234,.55)' }}>{rememberHint}</span>
+                </span>
+                <PanelSwitch on={!!rememberChoice} onColor={GOLD} />
+              </button>
+              <div style={{ display: 'grid', gridTemplateRows: rememberChoice ? '1fr' : '0fr', marginTop: rememberChoice ? 10 : 0, transition: 'grid-template-rows .3s ease, margin-top .3s ease' }}>
+                <div style={{ overflow: 'hidden' }}>
+                  <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'rgba(0,0,0,.22)' }}>
+                    {[{ id: '10m', label: '10 Min' }, { id: '1h', label: '1 Stunde' }, { id: 'today', label: 'Heute' }].map((o) => (
+                      <button key={o.id} onClick={() => setRememberChoice(o.id)} disabled={unlocking} className="flex-1 py-2 rounded-[9px] text-xs font-semibold transition-colors" style={rememberChoice === o.id ? { background: GOLD, color: GREEN } : { color: 'rgba(255,246,234,.7)' }}>{o.label}</button>
                     ))}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="relative overflow-hidden" style={{ background: PANEL_BG, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
+        <div className="staff-panel relative overflow-hidden" style={{ background: PANEL_BG, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
+          <style>{`
+            @keyframes spEnter { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+            .staff-panel { animation: spEnter .5s cubic-bezier(.2,.8,.2,1) both; }
+            @keyframes spItem { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+            .sp-tab > * { animation: spItem .45s cubic-bezier(.2,.8,.2,1) both; }
+            ${Array.from({ length: 14 }).map((_, i) => `.sp-tab > *:nth-child(${i + 1}) { animation-delay: ${(i * 0.045).toFixed(3)}s; }`).join(' ')}
+            @keyframes spRowIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+            @keyframes spToast { 0% { opacity: 0; transform: translate(-50%, 16px) scale(.9); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 10px); } }
+            @keyframes spStamp { 0% { transform: scale(2.2) rotate(-25deg); opacity: 0; } 55% { transform: scale(.85) rotate(6deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
+            @keyframes spCount { from { opacity: .3; } to { opacity: 1; } }
+            @keyframes spBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+            @media (prefers-reduced-motion: reduce) { .staff-panel, .staff-panel * { animation: none !important; } }
+          `}</style>
+          <PanelToast />
           {lastLoginAt && (
             <div className="px-5 pb-3 text-center">
               <span className="text-[11px] font-semibold" style={{ color: PANEL_MUTED }}>🕐 Letzter Zugang: {new Date(lastLoginAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} Uhr</span>
             </div>
           )}
           {tab === 'wheel' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>🎡 GEWINNCODE PRÜFEN</div>
               <div className="flex gap-2 mb-4">
                 <input value={wheelCode} onChange={(e) => setWheelCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && wheelSearch()} placeholder={t('prizeCodePh')} className="flex-1 px-4 py-3 rounded-xl text-base font-bold tracking-[0.1em] outline-none" style={{ background: '#fff', color: GREEN, border: '1.5px solid #f0e5cf' }} />
@@ -9869,9 +9849,6 @@ function StaffPanelView({ back }) {
                     <button onClick={() => setWheelStatsHidden((v) => !v)} className="flex items-center gap-1.5">
                       <span className="text-[10px] font-black tracking-widest" style={{ color: '#a4906c' }}>📊 STATISTIK</span>
                       <span style={{ color: '#a4906c', fontSize: 10, transform: wheelStatsHidden ? 'rotate(-90deg)' : 'none', transition: 'transform .2s' }}>▾</span>
-                    </button>
-                    <button onClick={deleteAllSpincodes} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg" style={{ background: '#f7ded9' }}>
-                      <span className="text-[10px] font-bold" style={{ color: CHILI }}>🗑️ Alle löschen</span>
                     </button>
                   </div>
                   {!wheelStatsHidden && (
@@ -9904,7 +9881,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
           {tab === 'orders' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>📦 {t('staffOrdersTab').toUpperCase()}</div>
               {deleteErrorMsg && <p className="text-xs font-bold text-center mb-3 px-3 py-2 rounded-lg" style={{ background: '#fdecd4', color: CHILI }}>{deleteErrorMsg}</p>}
               {sortedOrders.length === 0 && (
@@ -9957,14 +9934,13 @@ function StaffPanelView({ back }) {
             </div>
           )}
           {tab === 'settings' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>⚙️ BEREICH WÄHLEN</div>
               <div className="flex gap-1 overflow-x-auto p-1 mb-5 rounded-[14px]" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}`, WebkitOverflowScrolling: 'touch' }}>
                 {[
-                  { key: 'sicherheit', label: '🔒 Sicherheit' },
-                  { key: 'fotos', label: '📸 Fotos & Werbung' },
-                  { key: 'kommunikation', label: '💬 Kommunikation' },
-                  { key: 'erweitert', label: '🧪 Erweitert' },
+                  { key: 'website', label: '🌐 Website' },
+                  { key: 'mitteilungen', label: '🔔 Mitteilungen' },
+                  { key: 'system', label: '🔒 System' },
                 ].map((g) => (
                   <button key={g.key} onClick={() => setSettingsGroup(g.key)} className="flex-shrink-0 px-3.5 py-2 rounded-[10px] font-semibold text-xs whitespace-nowrap transition-colors" style={settingsGroup === g.key ? { background: GREEN, color: '#fff' } : { background: 'transparent', color: PANEL_MUTED }}>
                     {g.label}
@@ -9972,42 +9948,55 @@ function StaffPanelView({ back }) {
                 ))}
               </div>
 
-              {settingsGroup === 'sicherheit' && (
+              {settingsGroup === 'website' && (
                 <>
-                  <SettingsRow id="pin" icon="🔒" title="PIN ändern" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Aktueller PIN gilt bis du ihn hier änderst.</p>
-                    <input value={newPin} onChange={(e) => setNewPin(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
-                    <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
-                    <button onClick={savePin} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
-                    {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
-                  </SettingsRow>
-
-                  <SettingsRow id="logoutAll" icon="📴" title="Alle Geräte abmelden" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Meldet sofort jedes Gerät ab, das mit „Auf diesem Gerät merken" gemerkt wurde — auch dieses hier. Nützlich, wenn ein Handy verloren geht oder du dich versehentlich auf einem fremden Gerät gemerkt hast.</p>
-                    <button onClick={logoutAllDevices} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: CHILI, boxShadow: '0 6px 16px rgba(214,40,40,.25)' }}>Jetzt alle abmelden</button>
-                    {logoutAllMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{logoutAllMsg}</p>}
-                  </SettingsRow>
-                </>
-              )}
-
-              {settingsGroup === 'fotos' && (
-                <>
-                  <SettingsRow id="spotlight" icon="🎬" title="Animierte Produktkarte 1 (oben)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="spotlight" sub="Große animierte Karte oben auf der Startseite" icon="🎬" title="Animierte Produktkarte 1 (oben)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} />
                   </SettingsRow>
-                  <SettingsRow id="spotlight2" icon="🎬" title="Animierte Produktkarte 2 (weiter unten)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="spotlight2" sub="Zweite animierte Karte weiter unten" icon="🎬" title="Animierte Produktkarte 2 (weiter unten)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} cfgKey="siteconfig:spotlight2" defaults={SPOT2_DEFAULT} />
                   </SettingsRow>
-                  <SettingsRow id="instaCaption" icon="✍️" title="Instagram-Text erstellen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <InstaCaptionTool />
+                  <SettingsRow id="dailyBanner" sub="Kurze Info oben auf der Startseite" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <textarea value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} rows={3} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                    {dailyBannerImg && <img loading="lazy" decoding="async" src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
+                    <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white mb-2.5 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: dailyBannerUploadBusy ? 0.6 : 1 }}>
+                      <span className="text-base">📷</span> {dailyBannerUploadBusy ? '…' : 'Foto hinzufügen (optional)'}
+                      <input type="file" accept="image/*" className="hidden" disabled={dailyBannerUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleDailyBannerUpload(f); e.target.value = ''; }} />
+                    </label>
+                    <div className="text-[10px] font-black mb-1.5" style={{ color: '#a4906c' }}>WIE LANGE AUF DER STARTSEITE ZEIGEN?</div>
+                    <div className="flex gap-2 mb-2.5">
+                      <div className="flex-1">
+                        <input type="number" min="0" value={dailyBannerDays} onChange={(e) => setDailyBannerDays(e.target.value)} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
+                        <div className="text-[10px] font-bold text-center mt-1" style={{ color: '#a4906c' }}>Tage</div>
+                      </div>
+                      <div className="flex-1">
+                        <input type="number" min="0" max="23" value={dailyBannerHours} onChange={(e) => setDailyBannerHours(e.target.value)} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
+                        <div className="text-[10px] font-bold text-center mt-1" style={{ color: '#a4906c' }}>Stunden</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={saveDailyBanner} className="flex-1 py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
+                      <button onClick={clearDailyBanner} className="px-5 py-3 rounded-xl font-bold text-sm" style={{ background: '#fff', color: CHILI, border: '1.5px solid #f2c9c9' }}>{t('resetBtn')}</button>
+                    </div>
+                    {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
                   </SettingsRow>
-                  <SettingsRow id="migratePhotos" icon="🚀" title="Alte Fotos beschleunigen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Verschiebt alle bisher hochgeladenen Fotos in den schnellen Speicher (Storage). Einmal antippen genügt — kann ein paar Minuten dauern, du kannst währenddessen weiterarbeiten.</p>
-                    <button onClick={migrateOldPhotosToStorage} disabled={migrateBusy} className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{migrateBusy ? '…' : 'Jetzt migrieren'}</button>
-                    {migrateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{migrateMsg}</p>}
+                  <SettingsRow id="campaign" sub="Banner für Aktionen & Angebote" icon="🎉" title="Aktionsbanner" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Für Zeiträume wie Stoppelmarkt, Feiertage etc.</p>
+                    <label className="flex items-center gap-2 text-xs font-semibold mb-2.5" style={{ color: GREEN }}>
+                      <input type="checkbox" checked={campaign.active} onChange={(e) => setCampaign({ ...campaign, active: e.target.checked })} />
+                      Banner aktiv
+                    </label>
+                    <input value={campaign.title} onChange={(e) => setCampaign({ ...campaign, title: e.target.value })} placeholder="Titel (z.B. 🎪 Stoppelmarkt-Woche!)" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <input value={campaign.subtitle} onChange={(e) => setCampaign({ ...campaign, subtitle: e.target.value })} placeholder="Untertitel (optional)" className="w-full px-3 py-2.5 rounded-xl text-sm font-medium outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <div className="flex gap-2 mb-2">
+                      <input type="date" value={campaign.startDate} onChange={(e) => setCampaign({ ...campaign, startDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-xl text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                      <input type="date" value={campaign.endDate} onChange={(e) => setCampaign({ ...campaign, endDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-xl text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
+                    </div>
+                    <p className="text-[10px] mb-2.5" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
+                    <button onClick={saveCampaign} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
+                    {campaignMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{campaignMsg}</p>}
                   </SettingsRow>
-
-                  <SettingsRow id="mittagsPhotos" icon="🖼️" title="Mittagsangebot – Seitenfotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="mittagsPhotos" sub="Fotos für das Mittagsangebot" icon="🖼️" title="Mittagsangebot – Seitenfotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Kategorie aktivieren = alle Fotos dieser Kategorie wechseln links/rechts neben dem Mittagsangebot-Banner.</p>
                     {[
                       { key: 'pizza', label: '🍕 Pizza', catKey: 'pizza', gallery: true },
@@ -10051,8 +10040,7 @@ function StaffPanelView({ back }) {
                       );
                     })}
                   </SettingsRow>
-
-                  <SettingsRow id="weekendPhotos" icon="🎉" title="Samstag-Angebot – Fotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="weekendPhotos" sub="Fotos für das Samstag-Angebot" icon="🎉" title="Samstag-Angebot – Fotos" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Aktuelle Fotos für die Pizza- und Dönerteller-Karten am Samstag — hochladen oder aus vorhandenen Speisekarte-Fotos wählen.</p>
                     {[
                       { key: 'pizza', label: '🍕 Pizza-Kombi', catKey: 'pizza' },
@@ -10089,54 +10077,15 @@ function StaffPanelView({ back }) {
                       );
                     })}
                   </SettingsRow>
-
-                  <SettingsRow id="dailyBanner" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <textarea value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} rows={3} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                    {dailyBannerImg && <img loading="lazy" decoding="async" src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
-                    <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white mb-2.5 cursor-pointer" style={{ background: 'linear-gradient(135deg, ' + ORANGE + ', #ff8a3d)', opacity: dailyBannerUploadBusy ? 0.6 : 1 }}>
-                      <span className="text-base">📷</span> {dailyBannerUploadBusy ? '…' : 'Foto hinzufügen (optional)'}
-                      <input type="file" accept="image/*" className="hidden" disabled={dailyBannerUploadBusy} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleDailyBannerUpload(f); e.target.value = ''; }} />
-                    </label>
-                    <div className="text-[10px] font-black mb-1.5" style={{ color: '#a4906c' }}>WIE LANGE AUF DER STARTSEITE ZEIGEN?</div>
-                    <div className="flex gap-2 mb-2.5">
-                      <div className="flex-1">
-                        <input type="number" min="0" value={dailyBannerDays} onChange={(e) => setDailyBannerDays(e.target.value)} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
-                        <div className="text-[10px] font-bold text-center mt-1" style={{ color: '#a4906c' }}>Tage</div>
-                      </div>
-                      <div className="flex-1">
-                        <input type="number" min="0" max="23" value={dailyBannerHours} onChange={(e) => setDailyBannerHours(e.target.value)} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none text-center" style={{ background: '#f7f0e2', color: GREEN }} />
-                        <div className="text-[10px] font-bold text-center mt-1" style={{ color: '#a4906c' }}>Stunden</div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={saveDailyBanner} className="flex-1 py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
-                      <button onClick={clearDailyBanner} className="px-5 py-3 rounded-xl font-bold text-sm" style={{ background: '#fff', color: CHILI, border: '1.5px solid #f2c9c9' }}>{t('resetBtn')}</button>
-                    </div>
-                    {dailyBannerMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{dailyBannerMsg}</p>}
-                  </SettingsRow>
-
-                  <SettingsRow id="campaign" icon="🎉" title="Aktionsbanner" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Für Zeiträume wie Stoppelmarkt, Feiertage etc.</p>
-                    <label className="flex items-center gap-2 text-xs font-semibold mb-2.5" style={{ color: GREEN }}>
-                      <input type="checkbox" checked={campaign.active} onChange={(e) => setCampaign({ ...campaign, active: e.target.checked })} />
-                      Banner aktiv
-                    </label>
-                    <input value={campaign.title} onChange={(e) => setCampaign({ ...campaign, title: e.target.value })} placeholder="Titel (z.B. 🎪 Stoppelmarkt-Woche!)" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-                    <input value={campaign.subtitle} onChange={(e) => setCampaign({ ...campaign, subtitle: e.target.value })} placeholder="Untertitel (optional)" className="w-full px-3 py-2.5 rounded-xl text-sm font-medium outline-none mb-2" style={{ background: '#f7f0e2', color: GREEN }} />
-                    <div className="flex gap-2 mb-2">
-                      <input type="date" value={campaign.startDate} onChange={(e) => setCampaign({ ...campaign, startDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-xl text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                      <input type="date" value={campaign.endDate} onChange={(e) => setCampaign({ ...campaign, endDate: e.target.value })} className="flex-1 px-3 py-2.5 rounded-xl text-xs font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
-                    </div>
-                    <p className="text-[10px] mb-2.5" style={{ color: '#a4906c' }}>Leer lassen = Banner läuft solange "aktiv" angehakt ist, egal welches Datum.</p>
-                    <button onClick={saveCampaign} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
-                    {campaignMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{campaignMsg}</p>}
+                  <SettingsRow id="instaCaption" sub="Post-Text mit KI erstellen" icon="✍️" title="Instagram-Text erstellen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <InstaCaptionTool />
                   </SettingsRow>
                 </>
               )}
 
-              {settingsGroup === 'kommunikation' && (
+              {settingsGroup === 'mitteilungen' && (
                 <>
-                  <SettingsRow id="pushTriggers" icon="🔔" title="Push-Benachrichtigungen — Auto-Versand" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="pushTriggers" sub="Automatische Nachrichten an Abonnenten" icon="🔔" title="Push-Benachrichtigungen — Auto-Versand" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Wenn aktiviert, wird bei diesem Ereignis automatisch eine Push-Benachrichtigung an alle angemeldeten Besucher gesendet.</p>
                     {[
                       { key: 'ankuendigung', label: '📣 Neue Ankündigung gespeichert' },
@@ -10156,8 +10105,9 @@ function StaffPanelView({ back }) {
                       );
                     })}
                   </SettingsRow>
-
-                  <SettingsRow id="pushRawTest" icon="🧪" title="Push testen (direkter Versand)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="pushTests" icon="🧪" title="Push testen" sub="Versand & Berechtigung prüfen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <div className="text-[11px] font-bold tracking-[.1em] mb-2" style={{ color: PANEL_MUTED }}>DIREKTER VERSAND</div>
+                    <div>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Sendet sofort eine echte Test-Benachrichtigung über den Server und zeigt die genaue Antwort — zeigt sofort, ob der geheime Schlüssel richtig eingerichtet ist.</p>
                     <button
                       onClick={async () => {
@@ -10180,20 +10130,77 @@ function StaffPanelView({ back }) {
                       🧪 Test-Push jetzt senden
                     </button>
                     {pushRawTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushRawTestMsg}</p>}
+                    </div>
+                    <div className="text-[11px] font-bold tracking-[.1em] mt-5 mb-2" style={{ color: PANEL_MUTED }}>BERECHTIGUNG AUF DIESEM GERÄT</div>
+                    <div>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Fragt sofort beim Antippen nach Benachrichtigungs-Erlaubnis — ohne Wartezeit, ohne automatische Anzeige-Logik. Zeigt dir genau, ob OneSignal grundsätzlich funktioniert.</p>
+                    <button
+                      onClick={() => {
+                        setPushTestMsg('Aktueller Status: ' + (typeof Notification !== 'undefined' ? Notification.permission : 'nicht unterstützt') + ' — frage jetzt (nativ)…');
+                        if (typeof Notification === 'undefined') { setPushTestMsg('⚠️ Dieser Browser unterstützt keine Web-Notifications.'); return; }
+                        Notification.requestPermission().then(async (result) => {
+                          setPushTestMsg('Native Antwort: ' + result);
+                          if (result !== 'granted') return;
+                          try {
+                            setPushTestMsg((m) => m + '\n→ warte auf Service Worker…');
+                            const reg = await Promise.race([
+                              navigator.serviceWorker.ready,
+                              new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: Service Worker wurde nach 8s nicht aktiv')), 8000)),
+                            ]);
+                            setPushTestMsg((m) => m + `\n✓ Service Worker aktiv: ${reg.active?.scriptURL || '?'}`);
+                          } catch (e) {
+                            setPushTestMsg((m) => m + '\n⚠️ ' + (e?.message || String(e)));
+                            return;
+                          }
+                          if (!window.OneSignalDeferred) { setPushTestMsg((m) => m + '\n⚠️ OneSignal-Skript nicht gefunden'); return; }
+                          window.OneSignalDeferred.push(async (OneSignal) => {
+                            try {
+                              setPushTestMsg((m) => m + '\n→ melde bei OneSignal an…');
+                              await Promise.race([
+                                OneSignal.User.PushSubscription.optIn(),
+                                new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: OneSignal-Anmeldung hängt nach 8s')), 8000)),
+                              ]);
+                              const optedIn = OneSignal.User.PushSubscription.optedIn;
+                              const token = OneSignal.User.PushSubscription.token;
+                              setPushTestMsg((m) => m + `\n✓ optIn() fertig — optedIn: ${optedIn}, token: ${token ? 'vorhanden' : 'fehlt noch'}`);
+                              setPushTestMsg((m) => m + '\n→ warte auf ID von OneSignal-Server (bis zu 20s)…');
+                              let id = OneSignal.User.PushSubscription.id;
+                              for (let i = 0; i < 20 && !id; i++) {
+                                await new Promise((r) => setTimeout(r, 1000));
+                                id = OneSignal.User.PushSubscription.id;
+                              }
+                              if (id) {
+                                setPushTestMsg((m) => m + `\n✅ ID erhalten: ${id}`);
+                              } else {
+                                setPushTestMsg((m) => m + `\n⚠️ Nach 20s immer noch keine ID. optedIn: ${OneSignal.User.PushSubscription.optedIn}, token: ${OneSignal.User.PushSubscription.token ? 'vorhanden' : 'fehlt'}`);
+                              }
+                            } catch (e) {
+                              setPushTestMsg((m) => m + '\n⚠️ OneSignal-Anmeldung: ' + (e?.message || String(e)));
+                            }
+                          });
+                        }).catch((e) => {
+                          setPushTestMsg('⚠️ Fehler bei nativer Anfrage: ' + (e?.message || String(e)));
+                        });
+                      }}
+                      className="w-full py-3 rounded-xl font-bold text-sm text-white"
+                      style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
+                    >
+                      🔔 Jetzt direkt nach Erlaubnis fragen
+                    </button>
+                    {pushTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushTestMsg}</p>}
+                    </div>
+                    <div className="text-[11px] font-bold tracking-[.1em] mt-5 mb-2" style={{ color: PANEL_MUTED }}>BENACHRICHTIGUNG AUF DIESEM GERÄT</div>
+                    <div>
+                    <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
+                    </div>
                   </SettingsRow>
-
-                  <SettingsRow id="waTemplate" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="waTemplate" sub="Vorlage für WhatsApp-Bestellungen" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
                     <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
                     <button onClick={saveWaTemplate} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
                     {waTemplateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{waTemplateMsg}</p>}
                   </SettingsRow>
-
-                  <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
-                  </SettingsRow>
-
-                  <SettingsRow id="rating" icon="⭐" title={t('googleRatingLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <SettingsRow id="rating" sub="Google-Sterne & Anzahl auf der Website" icon="⭐" title={t('googleRatingLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <div className="flex gap-2 mb-2.5">
                       <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
                       <input value={ratingCount} onChange={(e) => setRatingCount(e.target.value)} placeholder="293" className="flex-1 px-3 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
@@ -10237,8 +10244,21 @@ function StaffPanelView({ back }) {
                 </>
               )}
 
-              {settingsGroup === 'erweitert' && (
+              {settingsGroup === 'system' && (
                 <>
+                  <SettingsRow id="pin" sub="Zugangs-PIN für das Personal" icon="🔒" title="PIN ändern" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Aktueller PIN gilt bis du ihn hier änderst.</p>
+                    <input value={newPin} onChange={(e) => setNewPin(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <input value={newPin2} onChange={(e) => setNewPin2(e.target.value)} type="password" inputMode="numeric" placeholder="Neuer PIN wiederholen" className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 tracking-[0.2em]" style={{ background: '#f7f0e2', color: GREEN }} />
+                    <button onClick={savePin} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
+                    {pinMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{pinMsg}</p>}
+                  </SettingsRow>
+                  <SettingsRow id="logoutAll" sub="Alle gemerkten Geräte sofort abmelden" icon="📴" title="Alle Geräte abmelden" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Meldet sofort jedes Gerät ab, das mit „Auf diesem Gerät merken" gemerkt wurde — auch dieses hier. Nützlich, wenn ein Handy verloren geht oder du dich versehentlich auf einem fremden Gerät gemerkt hast.</p>
+                    <button onClick={logoutAllDevices} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: CHILI, boxShadow: '0 6px 16px rgba(214,40,40,.25)' }}>Jetzt alle abmelden</button>
+                    {logoutAllMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{logoutAllMsg}</p>}
+                  </SettingsRow>
+                  <SettingsRow id="ordering" icon="🛒" title="Online-Bestellungen" sub={orderingEnabled() ? 'Eingeschaltet' : 'Ausgeschaltet'} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                   <div className="rounded-2xl p-4 mb-3" style={{ background: orderingEnabled() ? `linear-gradient(135deg, ${GREEN}, #1f4a34)` : '#fff', border: orderingEnabled() ? 'none' : '1.5px solid #f0e5cf', boxShadow: orderingEnabled() ? '0 8px 22px rgba(21,56,38,.25)' : '0 2px 8px rgba(21,56,38,.04)' }}>
                     <div className="flex items-center gap-3 mb-2.5">
                       <span className="text-2xl">🛒</span>
@@ -10261,8 +10281,9 @@ function StaffPanelView({ back }) {
                     </button>
                     <p className="text-[10px] font-semibold mt-2.5 text-center" style={{ color: orderingEnabled() ? '#d9c9a3' : '#c4b697' }}>Seite lädt nach der Umstellung automatisch neu.</p>
                   </div>
-
-                  <SettingsRow id="testOrder" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  </SettingsRow>
+                  {orderingEnabled() && (
+                  <SettingsRow id="testOrder" sub="Probebestellung auslösen" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
                     <button onClick={createTestOrder} className="w-full py-3 rounded-xl font-bold text-sm text-white mb-2" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🧪 {t('testOrderBtn')}</button>
                     <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
@@ -10271,8 +10292,48 @@ function StaffPanelView({ back }) {
                     </label>
                     {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
                   </SettingsRow>
-
-                  <SettingsRow id="ownerDevice" icon="📱" title="Ana Cihaz (Owner-Gerät)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  )}
+                  {orderingEnabled() && (
+                  <SettingsRow id="notifySoundPicker" sub="Ton für neue Bestellungen" icon="🎵" title="Klingelton für neue Bestellungen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Dieser Ton spielt, wenn im Bestellungen-Tab eine neue Bestellung eingeht.</p>
+                    <div className="flex flex-col gap-2">
+                      {SOUND_OPTIONS.map((s) => (
+                        <div key={s.key} className="flex items-center gap-2">
+                          <button
+                            onClick={() => setNotifySound(s.key)}
+                            className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl text-left"
+                            style={notifySound === s.key ? { background: GREEN, boxShadow: '0 4px 12px rgba(21,56,38,.25)' } : { background: '#f7f0e2' }}
+                          >
+                            <span className="font-bold text-sm" style={{ color: notifySound === s.key ? '#fff' : GREEN }}>{s.label}</span>
+                            {notifySound === s.key && <span className="text-xs font-black" style={{ color: GOLD }}>✓ Aktiv</span>}
+                          </button>
+                          <button
+                            onClick={() => {
+                              try { if (navigator.vibrate) navigator.vibrate(60); } catch {}
+                              try {
+                                const ctx = getAudioCtx();
+                                if (ctx) {
+                                  // Sowohl SOFORT (synchron, im selben Klick — wichtig für iOS,
+                                  // das Audio sonst nach einem "await" blockieren kann) ABPIELEN
+                                  // als auch parallel resume() aufrufen, für maximale Kompatibilität.
+                                  ctx.resume();
+                                  s.play(ctx);
+                                }
+                              } catch {}
+                              setPlayingPreview(s.key);
+                              setTimeout(() => setPlayingPreview(null), 600);
+                            }}
+                            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={playingPreview === s.key ? { background: GOLD, border: '1.5px solid #e3d5bd' } : { background: '#fff', border: '1.5px solid #e3d5bd' }}
+                          >
+                            {playingPreview === s.key ? '🔊' : '▶️'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </SettingsRow>
+                  )}
+                  <SettingsRow id="ownerDevice" sub="Inhaber-Gerät einrichten" icon="📱" title="Ana Cihaz (Owner-Gerät)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     {/* Aktivierungs-Karte */}
                     <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
                       <div className="flex items-center gap-2 mb-2">
@@ -10343,107 +10404,6 @@ function StaffPanelView({ back }) {
                       )}
                     </div>
                   </SettingsRow>
-
-                  <SettingsRow id="pushTest" icon="🔔" title="Push-Berechtigung testen (direkt)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Fragt sofort beim Antippen nach Benachrichtigungs-Erlaubnis — ohne Wartezeit, ohne automatische Anzeige-Logik. Zeigt dir genau, ob OneSignal grundsätzlich funktioniert.</p>
-                    <button
-                      onClick={() => {
-                        setPushTestMsg('Aktueller Status: ' + (typeof Notification !== 'undefined' ? Notification.permission : 'nicht unterstützt') + ' — frage jetzt (nativ)…');
-                        if (typeof Notification === 'undefined') { setPushTestMsg('⚠️ Dieser Browser unterstützt keine Web-Notifications.'); return; }
-                        Notification.requestPermission().then(async (result) => {
-                          setPushTestMsg('Native Antwort: ' + result);
-                          if (result !== 'granted') return;
-                          try {
-                            setPushTestMsg((m) => m + '\n→ warte auf Service Worker…');
-                            const reg = await Promise.race([
-                              navigator.serviceWorker.ready,
-                              new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: Service Worker wurde nach 8s nicht aktiv')), 8000)),
-                            ]);
-                            setPushTestMsg((m) => m + `\n✓ Service Worker aktiv: ${reg.active?.scriptURL || '?'}`);
-                          } catch (e) {
-                            setPushTestMsg((m) => m + '\n⚠️ ' + (e?.message || String(e)));
-                            return;
-                          }
-                          if (!window.OneSignalDeferred) { setPushTestMsg((m) => m + '\n⚠️ OneSignal-Skript nicht gefunden'); return; }
-                          window.OneSignalDeferred.push(async (OneSignal) => {
-                            try {
-                              setPushTestMsg((m) => m + '\n→ melde bei OneSignal an…');
-                              await Promise.race([
-                                OneSignal.User.PushSubscription.optIn(),
-                                new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: OneSignal-Anmeldung hängt nach 8s')), 8000)),
-                              ]);
-                              const optedIn = OneSignal.User.PushSubscription.optedIn;
-                              const token = OneSignal.User.PushSubscription.token;
-                              setPushTestMsg((m) => m + `\n✓ optIn() fertig — optedIn: ${optedIn}, token: ${token ? 'vorhanden' : 'fehlt noch'}`);
-                              setPushTestMsg((m) => m + '\n→ warte auf ID von OneSignal-Server (bis zu 20s)…');
-                              let id = OneSignal.User.PushSubscription.id;
-                              for (let i = 0; i < 20 && !id; i++) {
-                                await new Promise((r) => setTimeout(r, 1000));
-                                id = OneSignal.User.PushSubscription.id;
-                              }
-                              if (id) {
-                                setPushTestMsg((m) => m + `\n✅ ID erhalten: ${id}`);
-                              } else {
-                                setPushTestMsg((m) => m + `\n⚠️ Nach 20s immer noch keine ID. optedIn: ${OneSignal.User.PushSubscription.optedIn}, token: ${OneSignal.User.PushSubscription.token ? 'vorhanden' : 'fehlt'}`);
-                              }
-                            } catch (e) {
-                              setPushTestMsg((m) => m + '\n⚠️ OneSignal-Anmeldung: ' + (e?.message || String(e)));
-                            }
-                          });
-                        }).catch((e) => {
-                          setPushTestMsg('⚠️ Fehler bei nativer Anfrage: ' + (e?.message || String(e)));
-                        });
-                      }}
-                      className="w-full py-3 rounded-xl font-bold text-sm text-white"
-                      style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
-                    >
-                      🔔 Jetzt direkt nach Erlaubnis fragen
-                    </button>
-                    {pushTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushTestMsg}</p>}
-                  </SettingsRow>
-
-                  <SettingsRow id="notifTest" icon="🔔" title={t('notifTestLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
-                  </SettingsRow>
-
-                  <SettingsRow id="notifySoundPicker" icon="🎵" title="Klingelton für neue Bestellungen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Dieser Ton spielt, wenn im Bestellungen-Tab eine neue Bestellung eingeht.</p>
-                    <div className="flex flex-col gap-2">
-                      {SOUND_OPTIONS.map((s) => (
-                        <div key={s.key} className="flex items-center gap-2">
-                          <button
-                            onClick={() => setNotifySound(s.key)}
-                            className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl text-left"
-                            style={notifySound === s.key ? { background: GREEN, boxShadow: '0 4px 12px rgba(21,56,38,.25)' } : { background: '#f7f0e2' }}
-                          >
-                            <span className="font-bold text-sm" style={{ color: notifySound === s.key ? '#fff' : GREEN }}>{s.label}</span>
-                            {notifySound === s.key && <span className="text-xs font-black" style={{ color: GOLD }}>✓ Aktiv</span>}
-                          </button>
-                          <button
-                            onClick={() => {
-                              try { if (navigator.vibrate) navigator.vibrate(60); } catch {}
-                              try {
-                                const ctx = getAudioCtx();
-                                if (ctx) {
-                                  // Sowohl SOFORT (synchron, im selben Klick — wichtig für iOS,
-                                  // das Audio sonst nach einem "await" blockieren kann) ABPIELEN
-                                  // als auch parallel resume() aufrufen, für maximale Kompatibilität.
-                                  ctx.resume();
-                                  s.play(ctx);
-                                }
-                              } catch {}
-                              setPlayingPreview(s.key);
-                              setTimeout(() => setPlayingPreview(null), 600);
-                            }}
-                            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={playingPreview === s.key ? { background: GOLD, border: '1.5px solid #e3d5bd' } : { background: '#fff', border: '1.5px solid #e3d5bd' }}
-                          >
-                            {playingPreview === s.key ? '🔊' : '▶️'}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </SettingsRow>
                 </>
               )}
             </div>
@@ -10464,27 +10424,30 @@ function StaffPanelView({ back }) {
             });
             const langOrder = Object.entries(byLang).sort((a, b) => b[1] - a[1]);
             return (
-              <div className="px-5">
-                <div className="rounded-2xl p-5 text-center mb-4" style={{ background: `linear-gradient(135deg, ${GREEN}, #1f4a34)`, boxShadow: '0 10px 26px rgba(21,56,38,.28)' }}>
-                  <div className="font-black text-4xl text-white mb-0.5">🔔 {subscriberCount === null ? '…' : subscriberCount}</div>
-                  <div className="text-[11px] font-bold" style={{ color: '#d9c9a3' }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
+              <div className="px-5 sp-tab">
+                <div className="bg-white rounded-[14px] p-4 mb-4 flex items-center gap-3.5" style={{ border: `1px solid ${PANEL_LINE}` }}>
+                  <span className="w-11 h-11 rounded-[12px] flex items-center justify-center text-xl flex-shrink-0" style={{ background: '#e3eee7' }}>🔔</span>
+                  <div className="min-w-0">
+                    <div className="font-black text-[26px] leading-none" style={{ color: GREEN }}>{subscriberCount === null ? '…' : <PanelCount value={subscriberCount} />}</div>
+                    <div className="text-[11.5px] mt-1" style={{ color: PANEL_MUTED }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
+                  </div>
                 </div>
                 <div className="text-[10px] font-bold tracking-[.14em] mb-2.5" style={{ color: PANEL_MUTED }}>📊 ÜBERBLICK</div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
-                    <div className="font-black text-2xl" style={{ color: GREEN }}>{today}</div>
+                    <div className="font-black text-2xl" style={{ color: GREEN }}><PanelCount value={today} /></div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsToday')}</div>
                   </button>
                   <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
-                    <div className="font-black text-2xl" style={{ color: GREEN }}>{total}</div>
+                    <div className="font-black text-2xl" style={{ color: GREEN }}><PanelCount value={total} /></div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
                   </button>
                   <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
-                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 {callClicks}</div>
+                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 <PanelCount value={callClicks} /></div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('callClicksLabel')}</div>
                   </button>
                   <button onClick={() => openStatsModal('📍 Routenanfragen', visits.filter((v) => v.value.event === 'route'))} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
-                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 {routeClicks}</div>
+                    <div className="font-black text-2xl" style={{ color: ORANGE }}>📍 <PanelCount value={routeClicks} /></div>
                     <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('routeClicksLabel')}</div>
                   </button>
                 </div>
@@ -10657,7 +10620,7 @@ function StaffPanelView({ back }) {
                             <span className="truncate pr-2">{label}</span><span className="flex-shrink-0">{rs.length}</span>
                           </div>
                           <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: '#f0e5cf' }}>
-                            <div className="h-full rounded-full" style={{ width: `${Math.max(4, (rs.length / maxCount) * 100)}%`, background: `linear-gradient(90deg, ${ORANGE}, ${GOLD})` }} />
+                            <div className="h-full rounded-full" style={{ width: `${Math.max(4, (rs.length / maxCount) * 100)}%`, background: `linear-gradient(90deg, ${ORANGE}, ${GOLD})`, transformOrigin: 'left', animation: 'spBar .8s cubic-bezier(.2,.8,.2,1) both' }} />
                           </div>
                         </button>
                       ))}
@@ -10712,7 +10675,7 @@ function StaffPanelView({ back }) {
           })()}
           <StatsDetailModal data={statsModal} onClose={() => setStatsModal(null)} />
           {tab === 'menu' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <div className="bg-white rounded-[14px] mb-5 overflow-hidden" style={{ border: `1px solid ${PANEL_LINE}` }}>
                 {[
                   { onClick: () => setTischAdminOpen(true), icon: '🍽️', tile: '#fdecd4', title: 'Speisekarte bearbeiten', sub: 'Preise, Namen, Fotos, neue Produkte, löschen' },
@@ -10820,7 +10783,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
           {tab === 'messages' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <button
                 onClick={() => setTab('wheel')}
                 className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
@@ -10861,7 +10824,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
           {tab === 'loyalty' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>🎟️ STEMPELKARTEN</div>
 
               {loyaltyStats && (
@@ -10984,7 +10947,7 @@ function StaffPanelView({ back }) {
             </div>
           )}
           {tab === 'photos' && (
-            <div className="px-5">
+            <div className="px-5 sp-tab">
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>📷 {t('staffPhotosTab').toUpperCase()}</div>
               <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>{t('photoUrlHint')}</p>
               <input value={photoSearch} onChange={(e) => { setPhotoSearch(e.target.value); setEditingPhotoItem(null); }} placeholder={t('menuSearchPh')} className="w-full px-4 py-3 rounded-xl text-sm font-bold outline-none mb-3" style={{ background: '#f7f0e2', color: GREEN }} />
@@ -11615,7 +11578,6 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         <div className="relative flex flex-col items-center gap-1.5">
           <div className="flex items-center gap-1.5 text-white font-bold text-sm"><MapPin size={14} color={GOLD} /> Oyther Straße 37, 49377 Vechta</div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> 04441 / 95 16 104</div>
-          <StoryShareButton variant="link" />
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
