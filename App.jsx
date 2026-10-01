@@ -2971,6 +2971,63 @@ function detectQueryLang(qRaw) {
   return best[0][1] >= 1 && best[0][1] > best[1][1] ? best[0][0] : null;
 }
 
+// ---- Lottie-Animationen (public/lottie/*.json) ----
+// Der Player (lottie-web, schlanke Variante ohne Expressions) wird erst
+// geladen, wenn eine Animation wirklich angezeigt wird — eigener Code-Chunk,
+// die Startseite lädt dadurch nicht langsamer. Fehlt Datei oder Netz, wird
+// der Platzhalter (z.B. gezeichnete Grafik) angezeigt.
+let _lottieLib = null;
+function loadLottieLib() {
+  if (!_lottieLib) _lottieLib = import('lottie-web/build/player/lottie_light').then((m) => m.default || m);
+  return _lottieLib;
+}
+const _lottieJson = {};
+function loadLottieJson(src) {
+  if (!_lottieJson[src]) _lottieJson[src] = fetch(src).then((r) => { if (!r.ok) throw new Error('lottie ' + r.status); return r.json(); });
+  return _lottieJson[src];
+}
+const lottieReduced = () => typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// holdFrame / playSegment sind relativ zum ersten Frame der Datei.
+function LottiePlayer({ src, size = 100, loop = false, autoplay = true, holdFrame, playSegment, placeholder = null, style }) {
+  const box = useRef(null);
+  const animRef = useRef(null);
+  const baseRef = useRef(0);
+  const [state, setState] = useState('loading');
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([loadLottieLib(), loadLottieJson(src)]).then(([lottie, data]) => {
+      if (cancelled || !box.current) return;
+      const reduce = lottieReduced();
+      const anim = lottie.loadAnimation({ container: box.current, renderer: 'svg', loop: loop && !reduce, autoplay: false, animationData: JSON.parse(JSON.stringify(data)), rendererSettings: { preserveAspectRatio: 'xMidYMid meet' } });
+      animRef.current = anim;
+      anim.addEventListener('DOMLoaded', () => {
+        if (cancelled) return;
+        baseRef.current = anim.firstFrame || 0;
+        if (holdFrame != null) anim.goToAndStop(holdFrame, true);
+        else if (reduce) anim.goToAndStop(Math.max(0, anim.totalFrames - 1), true);
+        else if (autoplay) anim.play();
+        setState('ready');
+      });
+    }).catch(() => { if (!cancelled) setState('failed'); });
+    return () => { cancelled = true; if (animRef.current) { animRef.current.destroy(); animRef.current = null; } };
+  }, [src]);
+  const segKey = playSegment ? playSegment.join('-') : '';
+  useEffect(() => {
+    const a = animRef.current;
+    if (!a || state !== 'ready' || !playSegment) return;
+    const b = baseRef.current;
+    if (lottieReduced()) { a.goToAndStop(playSegment[1], true); return; }
+    a.loop = false;
+    a.playSegments([b + playSegment[0], b + playSegment[1]], true);
+  }, [segKey, state]);
+  return (
+    <span className="relative inline-flex items-center justify-center" style={{ width: size, height: size, ...style }} aria-hidden="true">
+      {state !== 'ready' && placeholder && <span className="absolute inset-0 flex items-center justify-center">{placeholder}</span>}
+      {state !== 'failed' && <span ref={box} className="absolute inset-0" style={{ opacity: state === 'ready' ? 1 : 0, transition: 'opacity .3s ease' }} />}
+    </span>
+  );
+}
+
 // Gezeichneter Roboter für den Assistenten-Button: blinzelt regelmäßig,
 // die Antenne leuchtet, und alle paar Sekunden winkt er kurz.
 function RobotFace() {
@@ -3155,7 +3212,7 @@ function AIAssistant() {
         className="fixed bottom-5 right-5 z-40 w-16 h-16 rounded-full flex items-center justify-center"
         style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 28px rgba(230,90,10,.5)', animation: open ? 'none' : 'goldGlow 2.4s ease-in-out infinite' }}
       >
-        {open ? <span className="text-2xl">✕</span> : <RobotFace />}
+        {open ? <span className="text-2xl">✕</span> : <LottiePlayer src="/lottie/robot.json" size={58} loop placeholder={<RobotFace />} />}
       </button>
 
       {open && (
@@ -3410,7 +3467,10 @@ function ContactMessageForm({ lang, t }) {
       <div className="text-white font-black text-sm mb-1">{t('contactMsgTitle')}</div>
       <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('contactMsgSub')}</p>
       {status === 'sent' ? (
-        <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('contactMsgSent')}</p>
+        <div className="text-center">
+          <LottiePlayer src="/lottie/success.json" size={104} placeholder={<span className="text-3xl">✅</span>} />
+          <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('contactMsgSent')}</p>
+        </div>
       ) : (
         <div className="flex flex-col gap-2.5">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('contactMsgName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
@@ -3694,7 +3754,8 @@ function WishModal({ lang, t, onClose }) {
         </div>
         <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('wishBoxSub')}</p>
         {status === 'sent' ? (
-          <div className="text-center py-4">
+          <div className="text-center py-2">
+            <LottiePlayer src="/lottie/success.json" size={120} placeholder={<span className="text-4xl">✅</span>} />
             <p className="text-sm font-bold mb-4" style={{ color: '#7ed99b' }}>{t('wishBoxSent')}</p>
             <button onClick={onClose} className="px-6 py-2.5 rounded-full font-bold text-sm" style={{ background: GOLD, color: GREEN }}>OK</button>
           </div>
@@ -9704,7 +9765,9 @@ function StaffPanelView({ back }) {
                   ? { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.6), 0 0 0 6px rgba(255,59,59,.3)', animation: 'shakeX .4s ease' }
                   : { background: `linear-gradient(135deg, #ff3b3b, #ff1a1a)`, boxShadow: '0 10px 30px rgba(255,30,30,.5), 0 0 0 6px rgba(255,59,59,.22)', animation: 'urgentPulse 2s ease-out infinite' }}
               >
-                {unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : <AnimatedLock open={unlockStage === 'unlocked'} />}
+                {unlockStage === 'wrong' ? <span className="text-2xl">✕</span> : (
+                  <LottiePlayer src="/lottie/padlock.json" size={104} holdFrame={10} playSegment={unlockStage === 'unlocked' ? [10, 24] : undefined} placeholder={<AnimatedLock open={unlockStage === 'unlocked'} />} style={{ margin: -20 }} />
+                )}
               </div>
               <div className="font-black text-base text-center" style={{ color: unlockStage === 'unlocked' ? '#7ed99b' : unlockStage === 'wrong' ? '#ff8080' : '#fff' }}>
                 {unlockStage === 'unlocked' ? '✅ Willkommen!' : unlockStage === 'wrong' ? '❌ Falscher PIN' : t('titleStaff')}
