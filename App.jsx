@@ -354,6 +354,8 @@ const UI = {
   loyaltyRule3: { de: 'Kein Telefon, keine E-Mail — nur dein persönlicher Code.', en: 'No phone, no email — just your personal code.', tr: 'Telefon yok, e-posta yok — sadece kişisel kodun.', ro: 'Fără telefon, fără email — doar codul tău personal.', nl: 'Geen telefoon, geen e-mail — alleen jouw persoonlijke code.', sq: 'Pa telefon, pa email — vetëm kodi yt personal.', ku: 'Ne têlefon, ne e-name — tenê koda te ya şexsî.', pl: 'Bez telefonu, bez e-maila — tylko Twój osobisty kod.' },
   loyaltyRule4: { de: 'Merk dir deinen Code gut — er ist der einzige Zugang zu deiner Karte.', en: 'Remember your code well — it\'s the only way to access your card.', tr: 'Kodunu iyi hatırla — kartına ulaşmanın tek yolu bu.', ro: 'Ține minte bine codul — este singura cale de acces la cardul tău.', nl: 'Onthoud je code goed — het is de enige toegang tot je kaart.', sq: 'Mbaje mend kodin mirë — është mënyra e vetme për të hyrë në kartën tënde.', ku: 'Koda xwe baş bi bîr bîne — ew yekane rêya gihîştina kartê ye.', pl: 'Zapamiętaj dobrze swój kod — to jedyny dostęp do Twojej karty.' },
   loyaltyRule5: { de: 'Nach dem Einlösen startet automatisch eine neue Runde (0/8).', en: 'After redeeming, a new round starts automatically (0/8).', tr: 'Ödül kullanıldıktan sonra otomatik olarak yeni bir tur başlar (0/8).', ro: 'După utilizare, o rundă nouă începe automat (0/8).', nl: 'Na het inwisselen begint automatisch een nieuwe ronde (0/8).', sq: 'Pas përdorimit, fillon automatikisht një raund i ri (0/8).', ku: 'Piştî bikaranînê, gerek nû bixweber dest pê dike (0/8).', pl: 'Po odebraniu automatycznie zaczyna się nowa runda (0/8).' },
+  loyaltyBdayTodayTitle: { de: '🎂 Alles Gute zum Geburtstag!', en: '🎂 Happy Birthday!', tr: '🎂 Doğum günün kutlu olsun!', ro: '🎂 La mulți ani!', nl: '🎂 Gefeliciteerd met je verjaardag!', sq: '🎂 Gëzuar ditëlindjen!', ku: '🎂 Rojbûna te pîroz be!', pl: '🎂 Wszystkiego najlepszego!' },
+  loyaltyBdayTodaySub: { de: 'Zeig diese Karte heute an der Kasse – wir haben eine kleine Überraschung für dich!', en: 'Show this card at the counter today – we have a little surprise for you!', tr: 'Bugün bu kartı kasada göster – sana küçük bir sürprizimiz var!', ro: 'Arată cardul astăzi la casă – avem o mică surpriză pentru tine!', nl: 'Laat deze kaart vandaag aan de kassa zien – we hebben een kleine verrassing voor je!', sq: 'Trego këtë kartë sot në arkë – kemi një surprizë të vogël për ty!', ku: 'Îro vê kartê li kasê nîşan bide – surprîzeke me ya biçûk ji te re heye!', pl: 'Pokaż dziś tę kartę przy kasie – mamy dla ciebie małą niespodziankę!' },
   loyaltyBirthdayTitle: { de: '🎂 Geburtstag hinzufügen (optional)', en: '🎂 Add birthday (optional)', tr: '🎂 Doğum günü ekle (isteğe bağlı)', ro: '🎂 Adaugă ziua de naștere (opțional)', nl: '🎂 Verjaardag toevoegen (optioneel)', sq: '🎂 Shto ditëlindjen (opsionale)', ku: '🎂 Rojbûnê lê zêde bike (vebijark)', pl: '🎂 Dodaj urodziny (opcjonalnie)' },
   loyaltyBirthdaySub: { de: 'Nur Tag und Monat — kein Jahr, keine sonstigen Daten. An deinem Geburtstag bekommst du bei deinem Besuch eine kleine Überraschung von uns! 🎉', en: 'Just day and month — no year, no other data. On your birthday, visit us and get a little surprise! 🎉', tr: 'Sadece gün ve ay — yıl yok, başka veri yok. Doğum gününde dükkana gel, sana küçük bir sürprizimiz olsun! 🎉', ro: 'Doar ziua și luna — fără an, fără alte date. De ziua ta, treci pe la noi pentru o mică surpriză! 🎉', nl: 'Alleen dag en maand — geen jaar, geen andere gegevens. Kom op je verjaardag langs voor een kleine verrassing! 🎉', sq: 'Vetëm dita dhe muaji — pa vit, pa të dhëna të tjera. Në ditëlindjen tënde, na vizito për një surprizë të vogël! 🎉', ku: 'Tenê roj û meh — ne sal, ne agahiyên din. Di rojbûna te de werin, sürprîzeke piçûk ji te re heye! 🎉', pl: 'Tylko dzień i miesiąc — bez roku, bez innych danych. W dniu urodzin odwiedź nas po małą niespodziankę! 🎉' },
   loyaltyBirthdaySaved: { de: 'Gespeichert 🎉', en: 'Saved 🎉', tr: 'Kaydedildi 🎉', ro: 'Salvat 🎉', nl: 'Opgeslagen 🎉', sq: 'U ruajt 🎉', ku: 'Hate tomarkirin 🎉', pl: 'Zapisano 🎉' },
@@ -1506,6 +1508,17 @@ async function redeemLoyaltyCard(code) {
   await saveLoyaltyCard(code, updated);
   return updated;
 }
+// Geburtstag (gespeichert als "MM-TT") heute? 29.02. wird in Nicht-Schaltjahren am 28.02. gefeiert.
+function isBirthdayToday(mmdd) {
+  if (!mmdd) return false;
+  const d = new Date();
+  const today = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  if (mmdd === today) return true;
+  const y = d.getFullYear();
+  const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+  return mmdd === '02-29' && !leap && today === '02-28';
+}
+
 async function setLoyaltyBirthday(code, mmdd) {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
   const updated = { ...card, birthday: mmdd };
@@ -3975,6 +3988,16 @@ function LoyaltyModal({ lang, t, onClose }) {
   const isFull = stamps >= LOYALTY_TARGET;
   // Neue Stempel seit dem letzten Öffnen werden "aufgestempelt"; volle Karte = Konfetti (einmal pro Runde)
   const [stampFx, setStampFx] = useState({ from: 999, confetti: false });
+  const bdayToday = isBirthdayToday(card?.birthday);
+  const [bdayParty, setBdayParty] = useState(false);
+  useEffect(() => {
+    if (step !== 'card' || !code || !bdayToday) return;
+    const k = `bk_bday_party_${code}_${new Date().toDateString()}`;
+    try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch {}
+    setBdayParty(true);
+    const tm = setTimeout(() => setBdayParty(false), 4500);
+    return () => clearTimeout(tm);
+  }, [step, code, bdayToday]);
   useEffect(() => {
     if (step !== 'card' || !code) return;
     let seen = 0;
@@ -4075,6 +4098,21 @@ function LoyaltyModal({ lang, t, onClose }) {
 
         {step === 'card' && (
           <>
+            {bdayToday && (
+              <div className="relative rounded-2xl p-4 mb-4 text-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, boxShadow: '0 10px 26px rgba(230,90,10,.35)', animation: 'bdayIn .6s cubic-bezier(.3,1.4,.5,1) both' }}>
+                <style>{`@keyframes bdayIn { from { opacity: 0; transform: scale(.9) translateY(10px); } to { opacity: 1; transform: none; } } @keyframes bdayCake { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg) scale(1.08); } } @media (prefers-reduced-motion: reduce) { .bday-cake { animation: none !important; } }`}</style>
+                <div className="bday-cake text-4xl mb-1" style={{ display: 'inline-block', animation: 'bdayCake 1.6s ease-in-out infinite' }}>🎂</div>
+                <p className="font-black text-base text-white">{t('loyaltyBdayTodayTitle').replace('🎂 ', '')}</p>
+                <p className="text-xs font-semibold mt-1" style={{ color: '#fff6ea' }}>{t('loyaltyBdayTodaySub')}</p>
+              </div>
+            )}
+            {bdayParty && (
+              <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 400 }}>
+                {Array.from({ length: 46 }).map((_, i) => (
+                  <span key={i} className="absolute block" style={{ left: `${(i * 37) % 100}%`, top: -20, width: 8 + (i % 3) * 3, height: 12 + (i % 4) * 3, borderRadius: i % 2 ? 2 : 999, background: [GOLD, ORANGE, '#2d9b5f', CHILI, '#fff'][i % 5], '--spin': `${360 + (i % 5) * 180}deg`, animation: `lcFall ${2.2 + (i % 6) * 0.25}s cubic-bezier(.25,.6,.4,1) ${(i % 9) * 0.08}s both` }} />
+                ))}
+              </div>
+            )}
             {showSurvey && !surveySubmitted && (
               <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
                 <p className="font-black text-sm mb-3" style={{ color: GREEN }}>🍕 Wie hat's dir geschmeckt?</p>
@@ -8239,7 +8277,7 @@ function SettingsRow({ id, icon, title, sub, openId, setOpenId, children }) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a8478" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s', flexShrink: 0 }}><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {isOpen && (
-        <div className="px-3.5 pb-3.5" style={{ borderTop: '1px solid #efebe3', animation: 'spRowIn .32s cubic-bezier(.2,.8,.2,1) both' }}>
+        <div className="px-3.5 pb-3.5" style={{ borderTop: '1px solid #efebe3', animation: 'spRowIn .32s cubic-bezier(.2,.8,.2,1) backwards' }}>
           <div className="pt-3">{children}</div>
         </div>
       )}
@@ -8405,6 +8443,15 @@ function LoyaltyAdminPanel() {
             ))}
           </div>
           <div className="text-center text-xs font-bold mb-3" style={{ color: '#8a7c62' }}>{result.card.stamps} / {LOYALTY_TARGET} Stempel</div>
+          {isBirthdayToday(result.card.birthday) && (
+            <div className="rounded-xl p-3 mb-3 flex items-center gap-3" style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, animation: 'spStamp .55s cubic-bezier(.3,1.5,.5,1) both' }}>
+              <span className="text-3xl">🎂</span>
+              <div className="min-w-0">
+                <div className="font-black text-sm text-white">Heute Geburtstag!</div>
+                <div className="text-[11px] font-semibold" style={{ color: '#fff6ea' }}>Kleine Überraschung nicht vergessen 🎁</div>
+              </div>
+            </div>
+          )}
           {result.card.stamps >= LOYALTY_TARGET ? (
             <button onClick={redeem} disabled={busy} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE }}>🎉 Einlösen</button>
           ) : (
@@ -9808,10 +9855,10 @@ function StaffPanelView({ back }) {
       ) : (
         <div className="staff-panel relative overflow-hidden" style={{ background: PANEL_BG, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
           <style>{`
-            @keyframes spEnter { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+            @keyframes spEnter { from { opacity: 0; } to { opacity: 1; } }
             .staff-panel { animation: spEnter .5s cubic-bezier(.2,.8,.2,1) both; }
             @keyframes spItem { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-            .sp-tab > * { animation: spItem .45s cubic-bezier(.2,.8,.2,1) both; }
+            .sp-tab > * { animation: spItem .45s cubic-bezier(.2,.8,.2,1) backwards; }
             ${Array.from({ length: 14 }).map((_, i) => `.sp-tab > *:nth-child(${i + 1}) { animation-delay: ${(i * 0.045).toFixed(3)}s; }`).join(' ')}
             @keyframes spRowIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
             @keyframes spToast { 0% { opacity: 0; transform: translate(-50%, 16px) scale(.9); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 10px); } }
@@ -9821,11 +9868,6 @@ function StaffPanelView({ back }) {
             @media (prefers-reduced-motion: reduce) { .staff-panel, .staff-panel * { animation: none !important; } }
           `}</style>
           <PanelToast />
-          {lastLoginAt && (
-            <div className="px-5 pb-3 text-center">
-              <span className="text-[11px] font-semibold" style={{ color: PANEL_MUTED }}>🕐 Letzter Zugang: {new Date(lastLoginAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} Uhr</span>
-            </div>
-          )}
           {tab === 'wheel' && (
             <div className="px-5 sp-tab">
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>🎡 GEWINNCODE PRÜFEN</div>
