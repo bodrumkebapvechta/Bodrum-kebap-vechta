@@ -3231,7 +3231,7 @@ function AIAssistant() {
       {open && (
         <div className="fixed bottom-24 right-5 z-40 w-[92vw] max-w-sm rounded-3xl overflow-hidden flex flex-col" style={{ height: '65vh', maxHeight: 520, background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.35)' }}>
           <div className="px-4 py-3 flex items-center gap-2.5 flex-shrink-0" style={{ background: `linear-gradient(135deg, ${GREEN}, #0e2a1c)` }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}><span className="text-lg">🤖</span></div>
+            <div className="flex-shrink-0" style={{ width: 44, height: 44, margin: '-6px 0' }}><LottiePlayer src="/animations/welcome.json" size={44} placeholder={<span className="text-lg">🤖</span>} /></div>
             <div className="text-white font-black text-sm">{t('assistantTitle')}</div>
           </div>
 
@@ -4146,6 +4146,9 @@ function LoyaltyModal({ lang, t, onClose }) {
 
             {justCreated && (
               <div className="rounded-xl p-3 mb-3 text-center" style={{ background: 'rgba(126,217,155,.15)', border: '1px solid rgba(126,217,155,.4)' }}>
+                <div className="mx-auto mb-1.5 rounded-full flex items-center justify-center overflow-hidden" style={{ width: 84, height: 84, background: GREEN }}>
+                  <LottiePlayer src="/animations/welcome.json" size={80} placeholder={<span className="text-3xl">👋</span>} />
+                </div>
                 <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>🎉 {t('loyaltyWelcomeStampMsg')}</p>
               </div>
             )}
@@ -6800,8 +6803,8 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
             {drawerView === 'sent' && (
               <div className="flex-1 overflow-y-auto px-5 py-10 flex flex-col items-center justify-center text-center relative" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(37,211,102,.08), transparent 60%)' }}>
                 {burst && <EmojiConfetti emojis={['🎉', '🥙', '✅', '⭐', '🎊']} />}
-                <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 88, height: 88, background: '#e8f9ee', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
-                  <span className="text-5xl">✅</span>
+                <div className="rounded-full flex items-center justify-center mb-5" style={{ width: 120, height: 120, background: 'transparent', animation: 'popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 1.8s ease-out .5s infinite' }}>
+                  <LottiePlayer src="/animations/order.json" size={120} placeholder={<span className="text-5xl">✅</span>} />
                 </div>
                 <div className="font-black text-2xl mb-2" style={{ color: GREEN, animation: 'slideUpFade .5s ease .15s both' }}>{t('orderSentTitle')}</div>
                 <p className="text-sm mb-6" style={{ color: '#7c6d55', animation: 'slideUpFade .5s ease .3s both' }}>{t('orderSentSub')}</p>
@@ -10625,6 +10628,8 @@ function StaffPanelView({ back }) {
                     if (ev === 'category') {
                       const catKey = v.value.cat;
                       label = `📂 Kategorie: ${CATEGORY_LABELS[catKey] || catKey}`;
+                    } else if (ev === 'item_detail') {
+                      label = `🔎 Angesehen: ${v.value.item || '?'}`;
                     } else if (EVENT_LABELS[ev]) {
                       label = EVENT_LABELS[ev];
                     } else if (ev.startsWith('assistant_')) {
@@ -11339,6 +11344,246 @@ function PizzaCheesePull() {
   );
 }
 
+// ---- Produkt-Detail (Speisekarte): Foto "fliegt" von der Karte in die Detailansicht ----
+// Das Foto wird in der Detailansicht IMMER vollständig gezeigt (eigenes Seitenverhältnis,
+// nie beschnitten). Zurück-Geste des Handys schließt die Ansicht, ohne die Seite zu verlassen.
+const DETAIL_T = {
+  alg: { de: 'Allergene & Zusatzstoffe', en: 'Allergens & additives', tr: 'Alerjenler ve katkı maddeleri', ro: 'Alergeni și aditivi', nl: 'Allergenen & toevoegingen', sq: 'Alergjenë & aditivë', ku: 'Alerjen û lêzêde', pl: 'Alergeny i dodatki' },
+  extras: { de: 'Extras', en: 'Extras', tr: 'Ekstralar', ro: 'Extra', nl: "Extra's", sq: 'Shtesa', ku: 'Zêdeyî', pl: 'Dodatki' },
+  noAlg: { de: 'Keine Angaben', en: 'Not specified', tr: 'Belirtilmemiş', ro: 'Nespecificat', nl: 'Niet vermeld', sq: 'Pa të dhëna', ku: 'Nehatiye diyarkirin', pl: 'Brak danych' },
+};
+function parseAlg(alg, lang) {
+  if (!alg) return [];
+  return String(alg).split(',').map((c) => c.trim()).filter(Boolean).map((c) => {
+    const L = /^\d+$/.test(c) ? ZUSATZ_LEGEND[c] : ALLERGEN_LEGEND[c.toLowerCase()];
+    return { code: c, label: L ? (L[lang] || L.de) : c };
+  });
+}
+function detailFly(src, r, radius) {
+  const d = document.createElement('div');
+  Object.assign(d.style, { position: 'fixed', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, borderRadius: `${radius}px`, overflow: 'hidden', zIndex: '260', pointerEvents: 'none', boxShadow: '0 14px 34px rgba(0,0,0,.25)' });
+  const im = document.createElement('img');
+  im.src = src;
+  Object.assign(im.style, { width: '100%', height: '100%', objectFit: 'cover', display: 'block' });
+  d.appendChild(im);
+  document.body.appendChild(d);
+  return d;
+}
+const detailKF = (r, rad) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, borderRadius: `${rad}px` });
+const DETAIL_EASE = 'cubic-bezier(.2,.8,.2,1)';
+
+function ItemDetailSheet({ data, campKind, onClosed }) {
+  const { lang, t } = React.useContext(LangContext);
+  const { item, img, color, fromEl } = data;
+  const sheetRef = useRef(null);
+  const backRef = useRef(null);
+  const imgRef = useRef(null);
+  const closingRef = useRef(false);
+  const pushedRef = useRef(false);
+  const dragRef = useRef(null);
+  const [zoom, setZoom] = useState(false);
+  const reduce = lottieReduced();
+  const name = mx(tischText(item.name, 'de'), lang);
+  const L = (k) => DETAIL_T[k][lang] || DETAIL_T[k].de;
+
+  // Foto-Box: volle Breite im eigenen Seitenverhältnis, höchstens 52 % der Bildschirmhöhe → nie beschnitten
+  const box = React.useMemo(() => {
+    if (!img) return null;
+    const vw = Math.min(window.innerWidth, 520);
+    const availW = vw - 32;
+    const nw = (fromEl && fromEl.naturalWidth) || 4;
+    const nh = (fromEl && fromEl.naturalHeight) || 3;
+    const ratio = nh / nw;
+    let w = availW;
+    let h = availW * ratio;
+    const maxH = window.innerHeight * 0.52;
+    if (h > maxH) { h = maxH; w = h / ratio; }
+    return { w: Math.round(w), h: Math.round(h) };
+  }, [img]);
+
+  const animateClose = () => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    const sheet = sheetRef.current;
+    const back = backRef.current;
+    const target = imgRef.current;
+    const done = () => { if (fromEl) fromEl.style.opacity = ''; onClosed(); };
+    if (reduce || !sheet || !back) { done(); return; }
+    back.animate([{ opacity: getComputedStyle(back).opacity }, { opacity: 0 }], { duration: 320, easing: 'ease', fill: 'forwards' });
+    const canFly = !!(img && fromEl && fromEl.isConnected && target && !zoom);
+    let finished = 0;
+    const fin = () => { finished += 1; if (finished >= (canFly ? 2 : 1)) done(); };
+    if (canFly) {
+      const from = target.getBoundingClientRect();
+      const to = fromEl.getBoundingClientRect();
+      const fly = detailFly(img, from, 18);
+      target.style.visibility = 'hidden';
+      fly.animate([detailKF(from, 18), detailKF(to, 12)], { duration: 460, easing: DETAIL_EASE, fill: 'forwards' }).onfinish = () => { fromEl.style.opacity = ''; fly.remove(); fin(); };
+    }
+    const cur = getComputedStyle(sheet).transform;
+    sheet.animate([{ transform: cur === 'none' ? 'translateY(0)' : cur }, { transform: 'translateY(105%)' }], { duration: 420, easing: DETAIL_EASE, fill: 'forwards' }).onfinish = fin;
+  };
+  const closeRef = useRef(animateClose);
+  closeRef.current = animateClose;
+  const requestClose = () => {
+    if (pushedRef.current && window.history.state && window.history.state.bkDetail) window.history.back();
+    else closeRef.current();
+  };
+
+  React.useLayoutEffect(() => {
+    const sheet = sheetRef.current;
+    const back = backRef.current;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    try { window.history.pushState({ bkDetail: 1 }, ''); pushedRef.current = true; } catch {}
+    const onPop = () => closeRef.current();
+    window.addEventListener('popstate', onPop);
+    let fly = null;
+    if (reduce) {
+      back.style.opacity = '1';
+      sheet.style.transform = 'none';
+    } else {
+      back.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, easing: 'ease', fill: 'forwards' });
+      const target = imgRef.current;
+      if (img && fromEl && fromEl.isConnected && target) {
+        sheet.style.transform = 'none';
+        const to = target.getBoundingClientRect();
+        sheet.style.transform = 'translateY(105%)';
+        const from = fromEl.getBoundingClientRect();
+        fly = detailFly(img, from, 12);
+        fromEl.style.opacity = '0';
+        target.style.visibility = 'hidden';
+        fly.animate([detailKF(from, 12), detailKF(to, 18)], { duration: 520, easing: DETAIL_EASE, fill: 'forwards' }).onfinish = () => { target.style.visibility = 'visible'; if (fly) fly.remove(); fly = null; };
+      }
+      sheet.animate([{ transform: 'translateY(105%)' }, { transform: 'translateY(0)' }], { duration: 480, easing: DETAIL_EASE, fill: 'forwards' }).onfinish = () => {
+        sheet.style.transform = 'none';
+        sheet.getAnimations().forEach((a) => a.cancel());
+      };
+    }
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      document.body.style.overflow = prevOverflow;
+      if (fly) fly.remove();
+      if (fromEl) fromEl.style.opacity = '';
+    };
+  }, []);
+
+  // Nach unten ziehen zum Schließen (Griff-Leiste und Foto)
+  const onDown = (e) => {
+    if (closingRef.current) return;
+    dragRef.current = { y: e.clientY, dy: 0, moved: false };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    const sheet = sheetRef.current;
+    sheet.getAnimations().forEach((a) => a.cancel());
+    sheet.style.transform = 'none';
+  };
+  const onMove = (e) => {
+    const d = dragRef.current;
+    if (!d) return;
+    d.dy = Math.max(0, e.clientY - d.y);
+    if (d.dy > 6) d.moved = true;
+    sheetRef.current.style.transform = `translateY(${d.dy}px)`;
+  };
+  const onUp = (isImg) => () => {
+    const d = dragRef.current;
+    dragRef.current = null;
+    if (!d) return;
+    if (d.dy > 110) { requestClose(); return; }
+    const sheet = sheetRef.current;
+    sheet.animate([{ transform: `translateY(${d.dy}px)` }, { transform: 'translateY(0)' }], { duration: 240, easing: DETAIL_EASE });
+    sheet.style.transform = 'none';
+    if (isImg && !d.moved) setZoom(true);
+  };
+
+  const camp = itemCampaign(item, campKind);
+  const CL = (k) => CAMP_T[k][lang] || CAMP_T[k].de;
+  const algs = parseAlg(item.alg, lang);
+  const pill = { background: GOLD, color: GREEN, boxShadow: '0 2px 6px rgba(255,199,56,.4)' };
+  return ReactDOM.createPortal(
+    <>
+      <div ref={backRef} onClick={requestClose} className="fixed inset-0" style={{ zIndex: 240, background: 'rgba(10,20,14,.55)', opacity: 0 }} />
+      <div ref={sheetRef} role="dialog" aria-modal="true" aria-label={name} className="fixed bottom-0 left-0 right-0 mx-auto flex flex-col" style={{ zIndex: 250, width: '100%', maxWidth: 520, maxHeight: '92vh', background: CREAM, borderRadius: '24px 24px 0 0', boxShadow: '0 -10px 34px rgba(0,0,0,.22)', transform: 'translateY(105%)' }}>
+        <div onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp(false)} onPointerCancel={onUp(false)} className="flex-shrink-0 pt-2.5 pb-2 cursor-grab" style={{ touchAction: 'none' }}>
+          <div className="mx-auto rounded-full" style={{ width: 42, height: 5, background: '#d9cdb5' }} />
+        </div>
+        <button onClick={requestClose} aria-label="Schließen" className="absolute rounded-full flex items-center justify-center" style={{ top: 12, right: 12, width: 34, height: 34, zIndex: 2, background: 'rgba(21,56,38,.08)', color: GREEN }}>
+          <X size={17} />
+        </button>
+        <div className="overflow-y-auto overscroll-contain" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 22px)' }}>
+          {img && box && (
+            <div className="flex justify-center px-4">
+              <img
+                ref={imgRef}
+                src={img}
+                alt={name}
+                onPointerDown={onDown}
+                onPointerMove={onMove}
+                onPointerUp={onUp(true)}
+                onPointerCancel={onUp(false)}
+                className="block rounded-[18px] cursor-zoom-in"
+                style={{ width: box.w, height: box.h, objectFit: 'contain', background: '#efe6d3', touchAction: 'none' }}
+              />
+            </div>
+          )}
+          <div className="px-5 pt-4">
+            <div className="flex items-center gap-2 flex-wrap pr-10">
+              {item.number && <span className="inline-flex items-center justify-center min-w-[24px] px-1.5 py-0.5 rounded-md text-xs font-black" style={{ background: `${color}18`, color }}>{item.number}</span>}
+              <h2 className="font-black text-[22px] leading-tight" style={{ color: GREEN }}>{name}</h2>
+              {item.soldOut && <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: '#8a7c62', color: '#fff' }}>{t('soldOutBadge')}</span>}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap mt-2.5">
+              {item.priceLarge !== undefined ? (
+                <>
+                  <span className="text-sm font-black px-3 py-1 rounded-full" style={pill}><span className="opacity-70 font-bold mr-1">22 cm</span>{fmt(item.price)}</span>
+                  <span className="text-sm font-black px-3 py-1 rounded-full" style={pill}><span className="opacity-70 font-bold mr-1">28 cm</span>{fmt(item.priceLarge)}</span>
+                </>
+              ) : (
+                <span className="text-base font-black px-3.5 py-1 rounded-full" style={pill}>{fmt(item.price)}</span>
+              )}
+              {camp && (
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full" style={{ background: '#fdecd4', border: `1.5px solid ${ORANGE}` }}>
+                  <span className="text-[11px] font-black" style={{ color: ORANGE }}>{CL(camp.kind)}</span>
+                  <span className="text-[11px] font-bold line-through" style={{ color: '#a4906c' }}>{fmt(camp.regular)}</span>
+                  <span className="text-sm font-black" style={{ color: CHILI }}>{fmt(camp.price)}</span>
+                </span>
+              )}
+            </div>
+            {camp && <div className="text-[11px] font-bold mt-1.5" style={{ color: '#8a5a1f' }}>{CL(camp.note)}</div>}
+            {item.desc && <p className="text-[14px] leading-relaxed mt-3.5" style={{ color: '#5b5240' }}>{mx(tischText(item.desc, 'de'), lang)}</p>}
+            {item.extras && item.extras.length > 0 && (
+              <>
+                <div className="text-[10.5px] font-bold tracking-[.12em] mt-5 mb-2" style={{ color: '#a4906c' }}>{L('extras').toUpperCase()}</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {item.extras.map((ex) => <span key={ex.label} className="text-[12px] font-bold px-2.5 py-1 rounded-full" style={{ background: `${color}14`, color }}>+ {ex.label} {fmt(ex.price)}</span>)}
+                </div>
+              </>
+            )}
+            <div className="text-[10.5px] font-bold tracking-[.12em] mt-5 mb-2" style={{ color: '#a4906c' }}>{L('alg').toUpperCase()}</div>
+            {algs.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {algs.map((a) => (
+                  <span key={a.code} className="text-[12px] px-2.5 py-1 rounded-full" style={{ background: '#fff', border: '1px solid #efe2c8', color: GREEN }}>
+                    <b className="mr-1" style={{ color: ORANGE }}>{a.code}</b>{a.label}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="text-[12px]" style={{ color: '#a4906c' }}>{L('noAlg')}</div>
+            )}
+          </div>
+        </div>
+      </div>
+      {zoom && img && (
+        <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 270, background: 'rgba(0,0,0,.9)' }} onClick={() => setZoom(false)}>
+          <img src={img} alt={name} className="max-w-full max-h-full rounded-2xl" style={{ objectFit: 'contain', animation: 'modalCardUp .3s ease' }} />
+          <button onClick={() => setZoom(false)} aria-label="Schließen" className="absolute rounded-full flex items-center justify-center" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 16px)', right: 16, width: 40, height: 40, background: 'rgba(255,255,255,.15)', color: '#fff' }}><X size={20} /></button>
+        </div>
+      )}
+    </>,
+    document.body,
+  );
+}
+
 function TischMenuView({ back, initialAction, onConsumeAction }) {
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
@@ -11347,6 +11592,12 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
   const [legendOpen, setLegendOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [tmLightbox, setTmLightbox] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const openDetail = (item, img, color, thumbEl) => {
+    if (detail) return;
+    setDetail({ item, img, color, fromEl: thumbEl || null });
+    try { logEvent('item_detail', { item: tischText(item.name, 'de') }); } catch {}
+  };
   const [campTick, setCampTick] = useState(() => Date.now());
   useEffect(() => { const tm = setInterval(() => setCampTick(Date.now()), 60000); return () => clearInterval(tm); }, []);
   const campKind = menuCampaignKind(new Date(campTick));
@@ -11546,11 +11797,15 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
               return (
                 <div
                   key={item.id}
-                  className="tm-card bg-white rounded-2xl p-3.5 flex items-center gap-3.5"
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => { if (e.target.closest('button')) return; openDetail(item, resolvedImg, color, e.currentTarget.querySelector('[data-thumb]')); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') openDetail(item, resolvedImg, color, e.currentTarget.querySelector('[data-thumb]')); }}
+                  className="tm-card bg-white rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer"
                   style={{ opacity: item.soldOut ? 0.55 : 1, boxShadow: '0 4px 16px rgba(21,56,38,.08)', animationDelay: `${Math.min(idx, 12) * 0.055}s` }}
                 >
                   {resolvedImg ? (
-                    <img src={resolvedImg} alt="" loading="lazy" onClick={() => setTmLightbox(resolvedImg)} className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0 cursor-pointer" />
+                    <img data-thumb="1" src={resolvedImg} alt="" loading="lazy" className="w-[68px] h-[68px] rounded-xl object-cover flex-shrink-0" />
                   ) : (
                     <div className="w-[68px] h-[68px] rounded-xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }}>
                       🍽️
@@ -11623,6 +11878,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
+      {detail && <ItemDetailSheet data={detail} campKind={campKind} onClosed={() => setDetail(null)} />}
       {tmLightbox && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.85)' }} onClick={() => setTmLightbox(null)}>
           <img loading="lazy" decoding="async" src={tmLightbox} alt="" className="max-w-full max-h-full rounded-2xl" style={{ animation: 'modalCardUp .3s ease' }} />
