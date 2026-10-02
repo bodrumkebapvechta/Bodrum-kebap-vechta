@@ -12102,6 +12102,35 @@ function OpeningLoader() {
 // ---- Diagnose-Seite: bodrumkebapvechta.de/?lottietest=1 ----
 // Zeigt Schritt für Schritt, ob die Animationen geladen werden können.
 const LOTTIE_BUILD = 'animations-v2 · 2026-10-01';
+// Vorschau aller Animationen (nur über ?lottietest=1 erreichbar, ändert nichts an der Website)
+function AnimPreview() {
+  const [k, setK] = useState({ order: 0, robot: 0, padlock: 0, success: 0, welcome: 0 });
+  const [unlock, setUnlock] = useState(false);
+  const again = (n) => setK((x) => ({ ...x, [n]: x[n] + 1 }));
+  const box = { background: '#fff6ea', borderRadius: 16, padding: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 };
+  const btn = { padding: '7px 12px', borderRadius: 999, border: 'none', background: '#153826', color: '#fff', fontWeight: 700, fontSize: 12 };
+  return (
+    <div style={{ marginTop: 26 }}>
+      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>🎬 Vorschau: Bestellung gesendet</div>
+      <div style={{ borderRadius: 20, padding: '30px 20px', textAlign: 'center', background: 'radial-gradient(circle at 50% 0%, rgba(37,211,102,.14), #fff6ea 70%)', fontFamily: 'system-ui, sans-serif' }}>
+        <div style={{ width: 120, height: 120, margin: '0 auto 16px' }}>
+          <LottiePlayer key={`o${k.order}`} src="/animations/order.json" size={120} placeholder={<span style={{ fontSize: 48 }}>✅</span>} />
+        </div>
+        <div style={{ fontWeight: 900, fontSize: 22, color: '#153826', marginBottom: 6 }}>✓ Bestellung gesendet!</div>
+        <div style={{ fontSize: 14, color: '#7c6d55' }}>Vielen Dank! Wir bereiten deine Bestellung vor.</div>
+        <button onClick={() => again('order')} style={{ ...btn, marginTop: 16 }}>↻ Nochmal abspielen</button>
+      </div>
+      <div style={{ fontWeight: 700, fontSize: 16, margin: '22px 0 10px' }}>Alle Animationen</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+        <div style={box}><div style={{ width: 90, height: 90, borderRadius: '50%', background: 'linear-gradient(135deg,#ff6a1a,#ff8a3d)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LottiePlayer key={`r${k.robot}`} src="/animations/robot.json" size={80} loop placeholder={<span>🤖</span>} /></div><span style={{ color: '#153826', fontSize: 12, fontWeight: 700 }}>Assistent-Button</span><button style={btn} onClick={() => again('robot')}>↻</button></div>
+        <div style={box}><div style={{ width: 90, height: 90, borderRadius: '50%', background: '#153826', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LottiePlayer key={`w${k.welcome}`} src="/animations/welcome.json" size={84} placeholder={<span>👋</span>} /></div><span style={{ color: '#153826', fontSize: 12, fontWeight: 700 }}>Willkommen</span><button style={btn} onClick={() => again('welcome')}>↻</button></div>
+        <div style={box}><div style={{ width: 90, height: 90, borderRadius: '50%', background: '#153826', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}><LottiePlayer key={`p${k.padlock}`} src="/animations/padlock.json" size={130} holdFrame={10} playSegment={unlock ? [10, 24] : undefined} placeholder={<span>🔒</span>} /></div><span style={{ color: '#153826', fontSize: 12, fontWeight: 700 }}>PIN-Schloss</span><button style={btn} onClick={() => { if (unlock) { setUnlock(false); again('padlock'); } else setUnlock(true); }}>{unlock ? '↻ Zurück' : 'Öffnen'}</button></div>
+        <div style={box}><div style={{ width: 90, height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LottiePlayer key={`s${k.success}`} src="/animations/success.json" size={90} placeholder={<span>✅</span>} /></div><span style={{ color: '#153826', fontSize: 12, fontWeight: 700 }}>Erfolg / Gespeichert</span><button style={btn} onClick={() => again('success')}>↻</button></div>
+      </div>
+    </div>
+  );
+}
+
 function LottieDiag() {
   const [rows, setRows] = useState([]);
   const boxRef = useRef(null);
@@ -12150,6 +12179,7 @@ function LottieDiag() {
       <div ref={boxRef} style={{ width: 150, height: 150, background: '#fff6ea', borderRadius: 16, marginBottom: 14 }} />
       {rows.map((r, i) => <div key={i} style={{ marginBottom: 6, color: r.ok ? '#bfe8c9' : '#ff9a9a' }}>{r.ok ? '✅' : '❌'} {r.text}</div>)}
       <button onClick={reset} style={{ marginTop: 16, padding: '10px 14px', borderRadius: 10, background: '#ffc738', color: '#153826', fontWeight: 700, border: 'none' }}>Cache & Service Worker zurücksetzen</button>
+      <AnimPreview />
       <div style={{ marginTop: 14 }}><a href="/" style={{ color: '#ffc738' }}>← Zur Website</a></div>
     </div>
   );
