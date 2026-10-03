@@ -8092,6 +8092,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '2. Hosting', p: 'Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Website werden automatisch technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite) durch den Hosting-Anbieter verarbeitet. Dies dient der technischen Bereitstellung und Sicherheit der Website.' },
       { h: '3. Lokale Speicherung im Browser', p: 'Diese Website verwendet keine Marketing- oder Tracking-Cookies und keine Analysewerkzeuge wie Google Analytics. Zur technischen Funktion speichert die Website jedoch einige Informationen lokal in Ihrem Browser (localStorage), z. B.: Ihre Cookie-Hinweis-Bestätigung, Ihre Spracheinstellung, Favoriten, ob Sie die Website heute bereits besucht haben (zur Vermeidung von Doppelzählungen in der anonymen Statistik) sowie ggf. ein Highscore eines kleinen Spiels. Diese Daten verlassen Ihr Gerät nicht und werden nicht an uns oder Dritte übertragen.' },
       { h: '4. Kontaktformular ("Schreib uns")', p: 'Wenn Sie unser Kontaktformular nutzen, werden Ihr Name, optional Ihre E-Mail-Adresse und Ihre Nachricht verarbeitet. Die Nachricht wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich einsehen können. Gespeicherte Nachrichten werden von uns spätestens am nächsten Tag automatisch gelöscht. Verfassen Sie Ihre Nachricht nicht auf Deutsch, wird der Text vor dem Versand automatisch über den Dienst MyMemory (Drittanbieter) maschinell ins Deutsche übersetzt, damit unser Personal ihn verstehen kann; der Originaltext bleibt zusätzlich einsehbar.' },
+      { h: '4a. Catering-Anfragen (Firmen)', p: 'Wenn Sie über unsere Catering-Seite eine Anfrage senden, verarbeiten wir die von Ihnen eingegebenen Daten: Firma (optional), Ansprechpartner, Telefonnummer, optional E-Mail-Adresse, Wunschtermin, Personenzahl, Rechnungswunsch und Ihre Nachricht. Zweck ist ausschließlich die Bearbeitung Ihrer Anfrage und die Rückmeldung an Sie (Art. 6 Abs. 1 lit. b DSGVO). Die Anfrage wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich bearbeiten können. Über den Push-Dienst OneSignal erhalten wir lediglich einen Hinweis ohne Ihre persönlichen Angaben. Gespeicherte Anfragen werden von uns spätestens 30 Tage nach dem Wunschtermin gelöscht. E-Mails, die wir in diesem Zusammenhang erhalten, bewahren wir nur so lange auf, wie es für die Bearbeitung und gegebenenfalls gesetzliche Aufbewahrungspflichten erforderlich ist.' },
       { h: '5. Push-Benachrichtigungen', p: 'Sie können freiwillig Benachrichtigungen (z. B. über Aktionen) abonnieren. Hierfür wird der Dienst OneSignal eingesetzt. Bei Ihrer Zustimmung wird eine anonyme Geräte-/Abonnentenkennung bei OneSignal gespeichert, über die wir Ihnen Nachrichten senden können. Sie können das Abonnement jederzeit über Ihre Browser- bzw. Geräteeinstellungen widerrufen.' },
       { h: '6. Standortabfrage (Entfernungsrechner)', p: 'Wenn Sie die Funktion "Meine Entfernung berechnen" nutzen, fragt Ihr Browser mit Ihrer ausdrücklichen Erlaubnis Ihren ungefähren Standort ab. Die Berechnung erfolgt in Ihrem Browser; zur Ermittlung unserer Restaurant-Koordinaten wird der kostenlose Geokodierungsdienst Photon (Komoot) angefragt. Ihr Standort wird nicht gespeichert oder an uns übermittelt.' },
       { h: '7. Anonyme Besucherstatistik', p: 'Wir erfassen anonymisierte Nutzungsdaten (z. B. Sprache, Gerätetyp, Klicks auf Anruf-/Routen-Buttons, an unseren Chat-Assistenten gestellte Fragen) in unserer Datenbank bei Supabase Inc. (EU). Es werden keine Namen, IP-Adressen oder sonstigen direkt personenbezogenen Daten in dieser Statistik gespeichert.' },
@@ -8754,6 +8755,7 @@ function StaffPanelView({ back }) {
   const [allLoyaltyCards, setAllLoyaltyCards] = useState([]);
   const [recentStamps, setRecentStamps] = useState([]);
   const [contactMessagesArchive, setContactMessagesArchive] = useState([]);
+  const [cateringNew, setCateringNew] = useState(0);
   const [subscriberCount, setSubscriberCount] = useState(null);
   const [contactMessages, setContactMessages] = useState([]);
   const [menuSearch, setMenuSearch] = useState('');
@@ -9080,6 +9082,10 @@ function StaffPanelView({ back }) {
         setContactMessages(fresh.sort((a, b) => b.value.ts - a.value.ts));
       });
     }
+  }, [ok, tab]);
+  useEffect(() => {
+    if (!ok) return;
+    safeListPrefix('cateringreq:', 100).then((rows) => setCateringNew(rows.filter((r) => r.value && (r.value.status || 'neu') === 'neu' && !cateringExpired(r.value, Date.now())).length));
   }, [ok, tab]);
   useEffect(() => {
     if (ok && tab === 'menu') {
@@ -10612,7 +10618,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', catering_view: '🍽️ Catering-Seite geöffnet', catering_request: '🍽️ Catering-Anfrage gesendet', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
@@ -10831,6 +10837,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'messages' && (
             <div className="px-5 sp-tab">
+              <CateringInbox onNewCount={setCateringNew} />
               <button
                 onClick={() => setTab('wheel')}
                 className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
@@ -11094,7 +11101,7 @@ function StaffPanelView({ back }) {
             {(() => {
               const staffTabs = [
                 ...(orderingEnabled() ? [{ key: 'orders', icon: '🧾', label: 'Bestellungen' }] : []),
-                { key: 'messages', icon: '💬', label: 'Nachrichten' },
+                { key: 'messages', icon: '💬', label: 'Nachrichten', badge: cateringNew },
                 { key: 'loyalty', icon: '🎟️', label: 'Stempel' },
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                 { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
@@ -11107,8 +11114,9 @@ function StaffPanelView({ back }) {
                   {staffTabs.map((item, i) => {
                     const active = i === activeIdx;
                     return (
-                      <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-end gap-1 flex-1 pb-2">
+                      <button key={item.key} onClick={() => { setTab(item.key); setLookupOpen(false); }} className="flex flex-col items-center justify-end gap-1 flex-1 pb-2 relative">
                         <span className="text-[18px] transition-opacity" style={{ filter: 'grayscale(1)', opacity: active ? 0 : 0.55 }}>{item.icon}</span>
+                        {item.badge > 0 && !active && <span className="absolute font-black text-white flex items-center justify-center" style={{ top: 6, left: 'calc(50% + 6px)', minWidth: 17, height: 17, padding: '0 4px', borderRadius: 999, background: CHILI, fontSize: 10, border: '2px solid #fff' }}>{item.badge}</span>}
                         <span className="text-center leading-none" style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? ORANGE : PANEL_MUTED }}>{item.label}</span>
                       </button>
                     );
@@ -12004,6 +12012,12 @@ function CookieBanner() {
   );
 }
 
+function isCateringUrl() {
+  try { return new URLSearchParams(window.location.search).get('catering') === '1'; } catch { return false; }
+}
+function cateringSrc() {
+  try { return (new URLSearchParams(window.location.search).get('src') || 'direct').replace(/[^a-z0-9_-]/gi, '').slice(0, 20) || 'direct'; } catch { return 'direct'; }
+}
 function isTischMenuUrl() {
   try { return new URLSearchParams(window.location.search).get('menu') === '1'; } catch { return false; }
 }
@@ -12099,6 +12113,253 @@ function OpeningLoader() {
   );
 }
 
+// ======================= CATERING (Firmenanfragen) =======================
+// Eigene Seite: bodrumkebapvechta.de/?catering=1  (optional &src=mail | flyer | test …)
+// Anfragen liegen unter "cateringreq:" in der Datenbank (NICHT unter "contactmsg:",
+// das jeden Tag gelöscht wird) und erscheinen im Personal-Bereich unter "Nachrichten".
+function cateringValidate(f, today) {
+  const digits = (f.tel.match(/\d/g) || []).length;
+  if (f.name.trim().length < 2) return 'Bitte geben Sie einen Ansprechpartner an.';
+  if (digits < 6) return 'Bitte geben Sie eine Telefonnummer an, unter der wir Sie erreichen.';
+  if (f.email.trim() && !/^\S+@\S+\.\S+$/.test(f.email.trim())) return 'Die E-Mail-Adresse scheint nicht zu stimmen.';
+  if (!f.date) return 'Bitte wählen Sie ein Datum.';
+  if (f.date < today) return 'Das gewählte Datum liegt in der Vergangenheit.';
+  if (!(f.people >= 1)) return 'Bitte geben Sie die Personenzahl an.';
+  return '';
+}
+// Löschfrist laut Datenschutzerklärung: 30 Tage nach dem Wunschtermin (ohne gültigen Termin: 60 Tage nach Eingang)
+function cateringExpired(v, now) {
+  const evt = v.date ? new Date(v.date + 'T23:59:59').getTime() : NaN;
+  if (!isNaN(evt)) return evt + 30 * 86400000 < now;
+  return (v.ts || now) + 60 * 86400000 < now;
+}
+const CATERING_RANK = { neu: 0, rueckruf: 1, bestaetigt: 1, abgesagt: 2 };
+function cateringSort(a, b) {
+  const ra = CATERING_RANK[a.value.status || 'neu'] ?? 1;
+  const rb = CATERING_RANK[b.value.status || 'neu'] ?? 1;
+  if (ra !== rb) return ra - rb;
+  if (ra === 0) return (b.value.ts || 0) - (a.value.ts || 0);
+  return String(a.value.date || '9999').localeCompare(String(b.value.date || '9999'));
+}
+const CATERING_STATUS = [
+  { id: 'neu', label: 'Neu', color: '#ff6a1a', bg: '#fdecd4', fg: '#c2540a' },
+  { id: 'rueckruf', label: 'Zurückgerufen', color: '#d9a300', bg: '#fff3c4', fg: '#8a6a00' },
+  { id: 'bestaetigt', label: 'Bestätigt', color: '#2d9b5f', bg: '#dcf3e4', fg: '#1c6b40' },
+  { id: 'abgesagt', label: 'Abgesagt', color: '#8a8478', bg: '#ece9e2', fg: '#6f6a5e' },
+];
+const CATERING_SRC = { direct: 'Direkt', mail: 'E-Mail', flyer: 'Broschüre (QR)', test: 'Test', menu: 'Menü' };
+const CATERING_URL = 'https://www.bodrumkebapvechta.de/?catering=1';
+const dateDeLong = (iso) => { try { return new Date(iso + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }); } catch { return iso; } };
+
+// Modul-Ebene (NICHT innerhalb von CateringView): sonst verliert das Eingabefeld bei jedem Tastendruck den Fokus
+function CateringField({ label, children }) {
+  return (<div className="mb-2.5"><label className="block text-[11.5px] mb-1" style={{ color: '#8a7c62' }}>{label}</label>{children}</div>);
+}
+function CateringCard({ emoji, label, cat, onMenu }) {
+  return (
+    <button onClick={() => onMenu(cat)} className="text-left rounded-2xl p-3.5 active:scale-[.97] transition-transform" style={{ background: '#fff', border: '1px solid #efe2c8' }}>
+      <div className="text-2xl">{emoji}</div>
+      <div className="font-bold text-[13px] leading-tight mt-1" style={{ color: GREEN }}>{label}</div>
+    </button>
+  );
+}
+
+function CateringView({ back, onMenu, onPrivacy }) {
+  const src = React.useMemo(() => cateringSrc(), []);
+  const today = React.useMemo(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }, []);
+  const [f, setF] = useState({ firma: '', name: '', tel: '', email: '', date: '', time: '', people: 10, invoice: false, msg: '', hp: '' });
+  const [status, setStatus] = useState('idle');
+  const [err, setErr] = useState('');
+  const set = (k, max) => (e) => setF((x) => ({ ...x, [k]: e.target.value.slice(0, max || 100) }));
+  useEffect(() => { logEvent('catering_view', { src }); }, []);
+
+  const submit = async () => {
+    setErr('');
+    if (f.hp) { setStatus('sent'); return; } // Spam-Falle: Bots füllen das versteckte Feld aus
+    const v = cateringValidate(f, today);
+    if (v) { setErr(v); return; }
+    try {
+      const last = parseInt(localStorage.getItem('bk_catering_last') || '0', 10);
+      if (last && Date.now() - last < 60000) { setErr('Bitte warten Sie einen Moment, bevor Sie eine weitere Anfrage senden.'); return; }
+    } catch {}
+    setStatus('sending');
+    const rec = { firma: f.firma.trim(), name: f.name.trim(), tel: f.tel.trim(), email: f.email.trim(), date: f.date, time: f.time, people: Number(f.people), invoice: !!f.invoice, msg: f.msg.trim(), src, ts: Date.now(), status: 'neu' };
+    const key = `cateringreq:${Date.now()}-${makeShortCode(4)}`;
+    const text = [
+      `Firma: ${rec.firma || '–'}`, `Ansprechpartner: ${rec.name}`, `Telefon: ${rec.tel}`, `E-Mail: ${rec.email || '–'}`,
+      `Wunschtermin: ${dateDeLong(rec.date)}${rec.time ? ' um ' + rec.time + ' Uhr' : ''}`, `Personen: ${rec.people}`, `Rechnung gewünscht: ${rec.invoice ? 'ja' : 'nein'}`,
+      `Nachricht: ${rec.msg || '–'}`, `Quelle: ${src}`,
+    ].join('\n');
+    const mail = fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: `Neue Catering-Anfrage — ${rec.firma || rec.name} (${rec.people} Pers.)`, from_name: 'Bodrum Kebap Website', name: rec.name, ...(rec.email ? { email: rec.email } : {}), message: text }),
+    }).then((r) => r.ok).catch(() => false);
+    const [saved, mailed] = await Promise.all([safeSet(key, rec), mail]);
+    if (!saved && !mailed) { setStatus('idle'); setErr('Die Anfrage konnte leider nicht gesendet werden. Bitte rufen Sie uns kurz an: 04441 / 95 16 104.'); return; }
+    try { localStorage.setItem('bk_catering_last', String(Date.now())); } catch {}
+    logEvent('catering_request', { src });
+    // Push ohne personenbezogene Daten (nur Personenzahl und Datum)
+    sendOwnerPushNotification('🍽️ Neue Catering-Anfrage', `${rec.people} Personen · ${dateDeLong(rec.date)}`);
+    setStatus('sent');
+  };
+
+  const inp = { background: '#fffaf2', border: '1px solid #e4dfd4', color: GREEN, fontFamily: 'inherit' };
+  return (
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <style>{`@keyframes cgIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } } .cg-in > * { animation: cgIn .5s cubic-bezier(.2,.8,.2,1) backwards; } .cg-in > *:nth-child(2) { animation-delay: .08s; } .cg-in > *:nth-child(3) { animation-delay: .16s; } .cg-in > *:nth-child(4) { animation-delay: .24s; } @media (prefers-reduced-motion: reduce) { .cg-in > * { animation: none; } }`}</style>
+      <div className="px-5 pt-6 pb-3" style={{ background: GREEN }}>
+        <div className="max-w-xl mx-auto flex items-center gap-3">
+          <button onClick={back} aria-label="Zur Startseite" className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,0.12)' }}><ArrowLeft size={17} color="#fff" /></button>
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ background: CREAM }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
+          <div>
+            <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
+            <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>FÜR FIRMEN &amp; TEAMS</div>
+          </div>
+        </div>
+      </div>
+      <div className="px-5 pt-7 pb-8" style={{ background: `linear-gradient(160deg, #1f5238, ${GREEN} 60%, #0f2a1c)` }}>
+        <div className="max-w-xl mx-auto cg-in">
+          <h1 className="font-black text-[28px] leading-tight" style={{ color: CREAM }}>Catering für <span style={{ color: ORANGE }}>Ihr Team</span></h1>
+          <p className="text-[14px] leading-relaxed mt-2" style={{ color: 'rgba(255,246,234,.85)' }}>Besprechung, Schulung oder Feier – wir bereiten das Essen frisch für Sie vor.</p>
+          <div className="flex flex-wrap gap-2 mt-4">
+            {['☪ 100 % halal', '🔥 Frisch zubereitet', '🛍 Zur Abholung'].map((x) => <span key={x} className="text-[12px] px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,.1)', color: CREAM }}>{x}</span>)}
+          </div>
+        </div>
+      </div>
+      <div className="max-w-xl mx-auto px-5">
+        <div className="text-[11px] font-bold tracking-[.14em] mt-6 mb-2.5" style={{ color: '#a4906c' }}>BELIEBT BEI GRUPPEN</div>
+        <div className="grid grid-cols-2 gap-2.5">
+          <CateringCard onMenu={onMenu} emoji="🍕" label="Familienpizza" cat="familienpizza" />
+          <CateringCard onMenu={onMenu} emoji="🥙" label="Kebap & Teller" cat="kebap" />
+          <CateringCard onMenu={onMenu} emoji="🥖" label="Pizzabrot & Brötchen" cat="pizzabrot" />
+          <CateringCard onMenu={onMenu} emoji="🥗" label="Salate" cat="salat" />
+        </div>
+        <div className="mt-3"><button onClick={() => onMenu(undefined)} className="text-[13px] font-bold" style={{ color: ORANGE }}>Zur Speisekarte →</button></div>
+
+        <div className="rounded-3xl p-4 mt-6 mb-8" style={{ background: '#fff', border: '1px solid #efe2c8', boxShadow: '0 8px 24px rgba(21,56,38,.06)' }}>
+          {status === 'sent' ? (
+            <div className="text-center py-5">
+              <LottiePlayer src="/animations/success.json" size={120} placeholder={<span className="text-5xl">✅</span>} />
+              <h2 className="font-black text-xl mt-1" style={{ color: GREEN }}>Danke für Ihre Anfrage!</h2>
+              <p className="text-[14px] mt-1.5 mb-5" style={{ color: '#7c6d55' }}>Wir melden uns bei Ihnen.</p>
+              <div className="flex flex-col gap-2 items-center">
+                <button onClick={() => onMenu(undefined)} className="px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GREEN, color: '#fff' }}>Zur Speisekarte</button>
+                <button onClick={back} className="text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Zur Startseite</button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2 className="font-black text-[19px]" style={{ color: GREEN }}>Unverbindlich anfragen</h2>
+              <p className="text-[12.5px] mt-0.5 mb-3.5" style={{ color: '#8a7c62' }}>Wir melden uns bei Ihnen, um alles Weitere zu besprechen.</p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <CateringField label="Firma (optional)"><input value={f.firma} onChange={set('firma', 80)} autoComplete="organization" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+                <CateringField label="Ansprechpartner *"><input value={f.name} onChange={set('name', 80)} autoComplete="name" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+              </div>
+              <CateringField label="Telefon *"><input type="tel" inputMode="tel" value={f.tel} onChange={set('tel', 30)} autoComplete="tel" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+              <CateringField label="E-Mail (optional)"><input type="email" inputMode="email" value={f.email} onChange={set('email', 100)} autoComplete="email" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+              <div className="grid grid-cols-2 gap-2.5">
+                <CateringField label="Wunschdatum *"><input type="date" min={today} value={f.date} onChange={set('date', 10)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+                <CateringField label="Uhrzeit (optional)"><input type="time" value={f.time} onChange={set('time', 5)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+              </div>
+              <CateringField label="Personen *">
+                <div className="flex items-center justify-between rounded-xl p-1" style={inp}>
+                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.max(1, Number(x.people) - 1) }))} aria-label="weniger" className="w-10 h-9 rounded-lg text-lg font-bold" style={{ background: GREEN, color: '#fff' }}>−</button>
+                  <span className="font-black text-base" style={{ color: GREEN }}>{f.people}</span>
+                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.min(500, Number(x.people) + 1) }))} aria-label="mehr" className="w-10 h-9 rounded-lg text-lg font-bold" style={{ background: GREEN, color: '#fff' }}>+</button>
+                </div>
+              </CateringField>
+              <button type="button" onClick={() => setF((x) => ({ ...x, invoice: !x.invoice }))} className="w-full flex items-center justify-between py-2 mb-1">
+                <span className="text-sm" style={{ color: GREEN }}>Rechnung gewünscht</span>
+                <PanelSwitch on={f.invoice} onColor={ORANGE} />
+              </button>
+              <CateringField label="Wünsche & Allergien (optional)"><textarea value={f.msg} onChange={set('msg', 500)} rows={3} placeholder="z. B. 3× vegetarisch, ohne Gluten …" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none" style={inp} /></CateringField>
+              <input value={f.hp} onChange={set('hp', 50)} name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+              {err && <p className="text-[13px] font-semibold mb-2.5" style={{ color: CHILI }} role="alert">{err}</p>}
+              <p className="text-[11px] leading-snug mb-3" style={{ color: '#a4906c' }}>Wir verwenden Ihre Angaben nur zur Bearbeitung dieser Anfrage. Mehr dazu in der <button type="button" onClick={onPrivacy} className="underline">Datenschutzerklärung</button>.</p>
+              <button onClick={submit} disabled={status === 'sending'} className="w-full py-3.5 rounded-full font-black text-[15px]" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.3)', opacity: status === 'sending' ? 0.6 : 1 }}>
+                {status === 'sending' ? 'Wird gesendet …' : 'Anfrage senden'}
+              </button>
+              <p className="text-center text-[12.5px] mt-3" style={{ color: '#8a7c62' }}>Lieber telefonisch? <a href="tel:044419516104" className="font-bold" style={{ color: GREEN }}>04441 / 95 16 104</a></p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Personal-Bereich: Catering-Anfragen (oben im Reiter "Nachrichten")
+function CateringInbox({ onNewCount }) {
+  const [rows, setRows] = useState(null);
+  const load = async () => {
+    const list = await safeListPrefix('cateringreq:', 100);
+    const now = Date.now();
+    const keep = [];
+    list.forEach((r) => { if (r.value && cateringExpired(r.value, now)) safeDeleteKey(r.key); else if (r.value) keep.push(r); });
+    keep.sort(cateringSort);
+    setRows(keep);
+  };
+  useEffect(() => { load(); }, []);
+  useEffect(() => { if (rows && onNewCount) onNewCount(rows.filter((r) => (r.value.status || 'neu') === 'neu').length); }, [rows]);
+  const setStatus = async (row, st) => {
+    const next = { ...row.value, status: st };
+    setRows((rs) => rs.map((x) => (x.key === row.key ? { ...x, value: next } : x)).sort(cateringSort));
+    const ok = await safeSet(row.key, next);
+    if (ok) panelToast('Status gespeichert'); else { alert('Konnte nicht gespeichert werden – bitte erneut versuchen.'); load(); }
+  };
+  const remove = async (row) => {
+    if (!confirm('Diese Catering-Anfrage wirklich löschen? Das kann nicht rückgängig gemacht werden.')) return;
+    const ok = await safeDeleteKey(row.key);
+    if (ok) { setRows((rs) => rs.filter((x) => x.key !== row.key)); panelToast('Anfrage gelöscht'); } else alert('Konnte nicht gelöscht werden – bitte erneut versuchen.');
+  };
+  const copyLink = async () => { try { await navigator.clipboard.writeText(CATERING_URL); panelToast('Link kopiert'); } catch { prompt('Link zum Kopieren:', CATERING_URL); } };
+  return (
+    <div className="mb-5">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[10px] font-bold tracking-[.14em]" style={{ color: PANEL_MUTED }}>🍽️ CATERING-ANFRAGEN{rows ? ` (${rows.length})` : ''}</div>
+        <button onClick={copyLink} className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT }}>🔗 Link kopieren</button>
+      </div>
+      {rows === null && <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt …</p>}
+      {rows && rows.length === 0 && (
+        <div className="bg-white rounded-[14px] px-3.5 py-3 text-[12.5px]" style={{ border: `1px solid ${PANEL_LINE}`, color: PANEL_MUTED }}>Noch keine Anfragen. Die Seite für Firmen: <span style={{ color: PANEL_TEXT }}>bodrumkebapvechta.de/?catering=1</span></div>
+      )}
+      {rows && rows.map((r) => {
+        const v = r.value; const st = CATERING_STATUS.find((x) => x.id === (v.status || 'neu')) || CATERING_STATUS[0];
+        const rcv = new Date(v.ts || Date.now());
+        return (
+          <div key={r.key} className="bg-white rounded-[14px] p-3.5 mb-2.5" style={{ border: `1px solid ${PANEL_LINE}` }}>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="font-semibold text-[15px] truncate" style={{ color: PANEL_TEXT }}>{v.firma || v.name}</div>
+                {v.firma && <div className="text-[12px]" style={{ color: PANEL_MUTED }}>{v.name}</div>}
+              </div>
+              <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: st.bg, color: st.fg }}>{st.label}</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5 my-2.5">
+              {[`👥 ${v.people} Personen`, `📅 ${dateDeLong(v.date)}${v.time ? ' · ' + v.time : ''}`, v.invoice ? '🧾 Rechnung' : null, `↪ ${CATERING_SRC[v.src] || v.src || '–'}`].filter(Boolean).map((c) => (
+                <span key={c} className="text-[11.5px] px-2 py-1 rounded-lg" style={{ background: PANEL_BG, color: '#5b5240' }}>{c}</span>
+              ))}
+            </div>
+            {v.msg && <div className="text-[12.5px] rounded-lg px-2.5 py-2 mb-2.5 whitespace-pre-wrap" style={{ background: PANEL_BG, color: PANEL_TEXT }}>{v.msg}</div>}
+            <a href={`tel:${String(v.tel).replace(/[^0-9+]/g, '')}`} className="block w-full text-center py-2.5 rounded-[10px] text-[13px] font-semibold mb-2" style={{ background: GREEN, color: '#fff' }}>📞 Anrufen · {v.tel}</a>
+            {v.email && <a href={`mailto:${v.email}`} className="block text-center text-[12px] font-semibold mb-2" style={{ color: GREEN }}>✉️ {v.email}</a>}
+            <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#f0ede6' }}>
+              {CATERING_STATUS.map((o) => (
+                <button key={o.id} onClick={() => (o.id !== (v.status || 'neu') ? setStatus(r, o.id) : null)} className="flex-1 py-2 rounded-[9px] text-[10.5px] font-semibold transition-colors" style={(v.status || 'neu') === o.id ? { background: o.color, color: '#fff' } : { color: PANEL_MUTED }}>{o.label}</button>
+              ))}
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-[10.5px]" style={{ color: PANEL_MUTED }}>Eingang {rcv.toLocaleDateString('de-DE')} · {rcv.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</span>
+              <button onClick={() => remove(r)} className="text-[11px] font-semibold" style={{ color: CHILI }}>Löschen</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ---- Diagnose-Seite: bodrumkebapvechta.de/?lottietest=1 ----
 // Zeigt Schritt für Schritt, ob die Animationen geladen werden können.
 const LOTTIE_BUILD = 'animations-v2 · 2026-10-01';
@@ -12187,13 +12448,14 @@ function LottieDiag() {
 
 function AppMain() {
   const isTischMenu = isTischMenuUrl();
+  const isCatering = isCateringUrl();
   // Vorübergehend deaktiviert (kommt später zurück) — auf false setzen,
   // um alle Effekte an einer Stelle auszuschalten, ohne den bereits
   // gebauten Code (KartenWheelView, KARTEN_WHEEL_PRIZES, Routing) zu löschen.
   const KARTENRAD_ENABLED = false;
   const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : 'home');
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const [, forceRerender] = useState(0);
@@ -12352,6 +12614,10 @@ function AppMain() {
 
   if (view === 'home') {
     return <LangContext.Provider value={ctxValue}><WeatherEffect /><OpeningLoader /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
+  }
+
+  if (view === 'catering') {
+    return <LangContext.Provider value={ctxValue}><CateringView back={() => go('home')} onMenu={(cat) => go('tischmenu', cat ? { initialCatHint: cat } : undefined)} onPrivacy={() => go('datenschutz')} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
   }
 
   if (view === 'tischmenu') {
