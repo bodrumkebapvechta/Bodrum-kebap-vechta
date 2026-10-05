@@ -3473,6 +3473,7 @@ function ContactMessageForm({ lang, t }) {
   const submit = async () => {
     if (!name.trim() || !message.trim()) return;
     setStatus('sending');
+    const t0 = Date.now();
     try {
       const messageDe = await translateToGerman(message.trim(), lang);
       const key = `contactmsg:${Date.now()}-${makeShortCode(4)}`;
@@ -3494,6 +3495,9 @@ function ContactMessageForm({ lang, t }) {
         }),
       });
       if (!res.ok) throw new Error('failed');
+      // Papierflieger soll mindestens einmal komplett wegfliegen, bevor das Häkchen erscheint
+      const rest = 1100 - (Date.now() - t0);
+      if (rest > 0) await new Promise((r) => setTimeout(r, rest));
       setStatus('sent');
       setName(''); setEmail(''); setMessage('');
     } catch {
@@ -3505,13 +3509,35 @@ function ContactMessageForm({ lang, t }) {
     <div id="nachricht" className="mt-8 rounded-2xl p-5" style={{ background: 'rgba(255,246,234,.05)', border: '1px solid rgba(255,246,234,.12)' }}>
       <div className="text-white font-black text-sm mb-1">{t('contactMsgTitle')}</div>
       <p className="text-xs font-medium mb-4" style={{ color: '#a89878' }}>{t('contactMsgSub')}</p>
+      <style>{`
+        @keyframes cfPlane { 0% { transform: translate(-70px, 40px) rotate(-8deg) scale(.7); opacity: 0; } 18% { opacity: 1; } 100% { transform: translate(110px, -90px) rotate(-8deg) scale(1.15); opacity: 0; } }
+        @keyframes cfTrail { 0% { opacity: 0; transform: translateX(-30px) scaleX(.3); } 40% { opacity: .8; } 100% { opacity: 0; transform: translateX(40px) scaleX(1); } }
+        @keyframes cfCircle { to { stroke-dashoffset: 0; } }
+        @keyframes cfPop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes cfFadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .cf-anim, .cf-anim * { animation-duration: .01s !important; animation-delay: 0s !important; } }
+      `}</style>
       {status === 'sent' ? (
-        <div className="text-center">
-          <LottiePlayer src="/animations/success.json" size={104} placeholder={<span className="text-3xl">✅</span>} />
-          <p className="text-sm font-bold" style={{ color: '#7ed99b' }}>{t('contactMsgSent')}</p>
+        <div className="text-center cf-anim py-3">
+          <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true" style={{ animation: 'cfPop .5s ease-out both' }}>
+            <circle cx="44" cy="44" r="38" fill="none" stroke="#7ed99b" strokeWidth="5" strokeLinecap="round" strokeDasharray="239" strokeDashoffset="239" style={{ animation: 'cfCircle .6s ease-out .1s forwards' }} />
+            <path d="M27 45 L39 57 L61 32" fill="none" stroke="#7ed99b" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="60" strokeDashoffset="60" style={{ animation: 'cfCircle .4s ease-out .6s forwards' }} />
+          </svg>
+          <p className="text-sm font-bold mt-2" style={{ color: '#7ed99b', animation: 'cfFadeUp .5s ease-out .8s both' }} role="status">{t('contactMsgSent')}</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="relative">
+          {status === 'sending' && (
+            <div className="cf-anim absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style={{ zIndex: 2 }} aria-hidden="true">
+              <div style={{ position: 'absolute', width: 60, height: 3, borderRadius: 3, background: 'linear-gradient(90deg, transparent, #ffc738)', transform: 'translate(-10px, 14px) rotate(-8deg)', animation: 'cfTrail 1.1s ease-out infinite' }} />
+              <svg width="64" height="64" viewBox="0 0 64 64" style={{ animation: 'cfPlane 1.1s ease-in infinite' }}>
+                <path d="M6 30 L58 6 L40 58 L30 38 Z" fill="#ff8a3d" stroke="#fff6ea" strokeWidth="3" strokeLinejoin="round" />
+                <path d="M30 38 L58 6" fill="none" stroke="#fff6ea" strokeWidth="3" strokeLinecap="round" />
+                <path d="M30 38 L28 50 L38 44 Z" fill="#c8421f" />
+              </svg>
+            </div>
+          )}
+        <div className="flex flex-col gap-2.5" style={{ opacity: status === 'sending' ? 0.12 : 1, transition: 'opacity .3s', pointerEvents: status === 'sending' ? 'none' : 'auto' }}>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('contactMsgName')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('contactMsgPhone')} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contactMsgMessage')} rows={3} className="w-full px-3.5 py-3 rounded-lg text-sm font-semibold outline-none resize-none" style={{ background: CREAM, color: GREEN, border: 'none' }} />
@@ -3519,6 +3545,7 @@ function ContactMessageForm({ lang, t }) {
             {status === 'sending' ? '⏳ ...' : t('contactMsgSend')}
           </button>
           {status === 'error' && <p className="text-xs font-bold" style={{ color: '#e08a8a' }}>{t('contactMsgError')}</p>}
+        </div>
         </div>
       )}
     </div>
