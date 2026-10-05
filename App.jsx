@@ -1455,6 +1455,28 @@ async function getLoyaltyCard(code) {
     return rows.length ? rows[0].value : null;
   } catch { throw new Error('LOYALTY_OFFLINE'); }
 }
+// Deutsche Ortszeit unabhängig von der Uhr/Zeitzone des Handys
+function berlinNow() {
+  try { return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' })); } catch { return new Date(); }
+}
+function berlinDayKey() {
+  const d = berlinNow();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+// Selbst-Stempel nur während der Öffnungszeiten (+ 30 Minuten danach)
+function selfStampOpen(now) {
+  return getOpenStatus(now).open || getOpenStatus(new Date(now.getTime() - 30 * 60000)).open;
+}
+const STAMP_CFG_KEY = 'siteconfig:stampConfig';
+function newStampToken() {
+  const abc = 'abcdefghjkmnpqrstuvwxyz23456789';
+  const a = new Uint8Array(10);
+  try { crypto.getRandomValues(a); } catch { for (let i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+  return Array.from(a).map((b) => abc[b % abc.length]).join('');
+}
+function stampTokenFromUrl() {
+  try { return new URLSearchParams(window.location.search).get('stamp') || ''; } catch { return ''; }
+}
 // Schreibt eine Karte und MELDET Fehler (statt sie zu verschlucken), damit
 // niemals ein Stempel als "gespeichert" angezeigt wird, der nicht gespeichert ist.
 async function saveLoyaltyCard(code, value) {
@@ -1482,13 +1504,17 @@ async function ensureLoyaltyCard(code, referredBy) {
   try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source: 'welcome' }); } catch {}
   return { card: fresh, isNew: true };
 }
-async function addLoyaltyStamp(code) {
+// source: 'staff' (Personal-Bereich, Standard) oder 'self' (Selbst-Stempel per NFC-Mühür).
+// Der Freundschaftsbonus wird NUR bei Personal-Stempeln ausgelöst — ein Selbst-Stempel
+// kann über einen weitergegebenen Link missbraucht werden und soll keinen Bonus erzeugen.
+async function addLoyaltyStamp(code, source = 'staff') {
   const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
   const updated = { ...card, stamps: Math.min(LOYALTY_TARGET, card.stamps + 1), lastStampAt: Date.now() };
+  if (source === 'self') updated.lastSelfStampDay = berlinDayKey();
   // Freundschaftsbonus: erst JETZT (beim ersten echten, von Personal
   // bestätigten Stempel dieses Kunden) auslösen — nie beim bloßen Anlegen
   // der Karte. So braucht jeder Bonus mindestens einen echten Besuch.
-  if (card.referredBy && !card.referralProcessed) {
+  if (source !== 'self' && card.referredBy && !card.referralProcessed) {
     updated.stamps = Math.min(LOYALTY_TARGET, updated.stamps + 1);
     updated.referralProcessed = true;
     try {
@@ -1499,7 +1525,7 @@ async function addLoyaltyStamp(code) {
     } catch {}
   }
   await saveLoyaltyCard(code, updated);
-  try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now() }); } catch {}
+  try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source }); } catch {}
   return updated;
 }
 async function redeemLoyaltyCard(code) {
@@ -8085,6 +8111,11 @@ function ImpressumView({ back }) {
   );
 }
 
+// ===== CATERING IST PAUSIERT =====
+// false = Seite, Personal-Posteingang (außer Altbestand), Zähler und Datenschutz-Abschnitt sind aus.
+// Nichts wurde gelöscht. Zum Wieder-Einschalten auf true setzen.
+const CATERING_ENABLED = false;
+// (steht bewusst VOR DATENSCHUTZ_TEXT: diese Konstante wird beim Laden der Seite sofort ausgewertet)
 const DATENSCHUTZ_TEXT = {
   de: { title: 'Datenschutzerklärung',
     s: [
@@ -8092,7 +8123,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '2. Hosting', p: 'Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Website werden automatisch technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite) durch den Hosting-Anbieter verarbeitet. Dies dient der technischen Bereitstellung und Sicherheit der Website.' },
       { h: '3. Lokale Speicherung im Browser', p: 'Diese Website verwendet keine Marketing- oder Tracking-Cookies und keine Analysewerkzeuge wie Google Analytics. Zur technischen Funktion speichert die Website jedoch einige Informationen lokal in Ihrem Browser (localStorage), z. B.: Ihre Cookie-Hinweis-Bestätigung, Ihre Spracheinstellung, Favoriten, ob Sie die Website heute bereits besucht haben (zur Vermeidung von Doppelzählungen in der anonymen Statistik) sowie ggf. ein Highscore eines kleinen Spiels. Diese Daten verlassen Ihr Gerät nicht und werden nicht an uns oder Dritte übertragen.' },
       { h: '4. Kontaktformular ("Schreib uns")', p: 'Wenn Sie unser Kontaktformular nutzen, werden Ihr Name, optional Ihre E-Mail-Adresse und Ihre Nachricht verarbeitet. Die Nachricht wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich einsehen können. Gespeicherte Nachrichten werden von uns spätestens am nächsten Tag automatisch gelöscht. Verfassen Sie Ihre Nachricht nicht auf Deutsch, wird der Text vor dem Versand automatisch über den Dienst MyMemory (Drittanbieter) maschinell ins Deutsche übersetzt, damit unser Personal ihn verstehen kann; der Originaltext bleibt zusätzlich einsehbar.' },
-      { h: '4a. Catering-Anfragen (Firmen)', p: 'Wenn Sie über unsere Catering-Seite eine Anfrage senden, verarbeiten wir die von Ihnen eingegebenen Daten: Firma (optional), Ansprechpartner, Telefonnummer, optional E-Mail-Adresse, Wunschtermin, Personenzahl, Rechnungswunsch und Ihre Nachricht. Zweck ist ausschließlich die Bearbeitung Ihrer Anfrage und die Rückmeldung an Sie (Art. 6 Abs. 1 lit. b DSGVO). Die Anfrage wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich bearbeiten können. Über den Push-Dienst OneSignal erhalten wir lediglich einen Hinweis ohne Ihre persönlichen Angaben. Gespeicherte Anfragen werden von uns spätestens 30 Tage nach dem Wunschtermin gelöscht. E-Mails, die wir in diesem Zusammenhang erhalten, bewahren wir nur so lange auf, wie es für die Bearbeitung und gegebenenfalls gesetzliche Aufbewahrungspflichten erforderlich ist.' },
+      ...(CATERING_ENABLED ? [{ h: '4a. Catering-Anfragen (Firmen)', p: 'Wenn Sie über unsere Catering-Seite eine Anfrage senden, verarbeiten wir die von Ihnen eingegebenen Daten: Firma (optional), Ansprechpartner, Telefonnummer, optional E-Mail-Adresse, Wunschtermin, Personenzahl, Rechnungswunsch und Ihre Nachricht. Zweck ist ausschließlich die Bearbeitung Ihrer Anfrage und die Rückmeldung an Sie (Art. 6 Abs. 1 lit. b DSGVO). Die Anfrage wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich bearbeiten können. Über den Push-Dienst OneSignal erhalten wir lediglich einen Hinweis ohne Ihre persönlichen Angaben. Gespeicherte Anfragen werden von uns spätestens 30 Tage nach dem Wunschtermin gelöscht. E-Mails, die wir in diesem Zusammenhang erhalten, bewahren wir nur so lange auf, wie es für die Bearbeitung und gegebenenfalls gesetzliche Aufbewahrungspflichten erforderlich ist.' }] : []),
       { h: '5. Push-Benachrichtigungen', p: 'Sie können freiwillig Benachrichtigungen (z. B. über Aktionen) abonnieren. Hierfür wird der Dienst OneSignal eingesetzt. Bei Ihrer Zustimmung wird eine anonyme Geräte-/Abonnentenkennung bei OneSignal gespeichert, über die wir Ihnen Nachrichten senden können. Sie können das Abonnement jederzeit über Ihre Browser- bzw. Geräteeinstellungen widerrufen.' },
       { h: '6. Standortabfrage (Entfernungsrechner)', p: 'Wenn Sie die Funktion "Meine Entfernung berechnen" nutzen, fragt Ihr Browser mit Ihrer ausdrücklichen Erlaubnis Ihren ungefähren Standort ab. Die Berechnung erfolgt in Ihrem Browser; zur Ermittlung unserer Restaurant-Koordinaten wird der kostenlose Geokodierungsdienst Photon (Komoot) angefragt. Ihr Standort wird nicht gespeichert oder an uns übermittelt.' },
       { h: '7. Anonyme Besucherstatistik', p: 'Wir erfassen anonymisierte Nutzungsdaten (z. B. Sprache, Gerätetyp, Klicks auf Anruf-/Routen-Buttons, an unseren Chat-Assistenten gestellte Fragen) in unserer Datenbank bei Supabase Inc. (EU). Es werden keine Namen, IP-Adressen oder sonstigen direkt personenbezogenen Daten in dieser Statistik gespeichert.' },
@@ -9085,6 +9116,7 @@ function StaffPanelView({ back }) {
   }, [ok, tab]);
   useEffect(() => {
     if (!ok) return;
+    if (!CATERING_ENABLED) return;
     safeListPrefix('cateringreq:', 100).then((rows) => setCateringNew(rows.filter((r) => r.value && (r.value.status || 'neu') === 'neu' && !cateringExpired(r.value, Date.now())).length));
   }, [ok, tab]);
   useEffect(() => {
@@ -10384,6 +10416,9 @@ function StaffPanelView({ back }) {
                     </div>
                   </SettingsRow>
                   )}
+                  <SettingsRow id="stampMuehle" sub="NFC-Link, Schalter & Protokoll" icon="🪵" title="Stempel-Mühür (NFC)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <StampMuehleAdmin />
+                  </SettingsRow>
                   <SettingsRow id="ownerDevice" sub="Inhaber-Gerät einrichten" icon="📱" title="Ana Cihaz (Owner-Gerät)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     {/* Aktivierungs-Karte */}
                     <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, #fdf6e8, #f0e2c2)' }}>
@@ -10618,7 +10653,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', catering_view: '🍽️ Catering-Seite geöffnet', catering_request: '🍽️ Catering-Anfrage gesendet', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', catering_view: '🍽️ Catering-Seite geöffnet', stamp_self_open: '🪵 Stempel-Mühür geöffnet', stamp_self_done: '🪵 Selbst-Stempel geholt', catering_request: '🍽️ Catering-Anfrage gesendet', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
@@ -10837,7 +10872,7 @@ function StaffPanelView({ back }) {
           )}
           {tab === 'messages' && (
             <div className="px-5 sp-tab">
-              <CateringInbox onNewCount={setCateringNew} />
+              <CateringInbox paused={!CATERING_ENABLED} onNewCount={setCateringNew} />
               <button
                 onClick={() => setTab('wheel')}
                 className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
@@ -10949,7 +10984,7 @@ function StaffPanelView({ back }) {
                       </button>
                       {openSettingsId === 'recentStamps' && recentStamps.map((s) => (
                         <div key={s.key} className="flex justify-between text-xs font-semibold py-0.5" style={{ color: GREEN }}>
-                          <span>{s.value.code}</span>
+                          <span>{s.value.code}{s.value.source === 'self' ? ' · 🪵 Selbst' : ''}</span>
                           <span style={{ color: '#a4906c' }}>{new Date(s.value.ts).toLocaleString('de-DE')}</span>
                         </div>
                       ))}
@@ -11101,7 +11136,7 @@ function StaffPanelView({ back }) {
             {(() => {
               const staffTabs = [
                 ...(orderingEnabled() ? [{ key: 'orders', icon: '🧾', label: 'Bestellungen' }] : []),
-                { key: 'messages', icon: '💬', label: 'Nachrichten', badge: cateringNew },
+                { key: 'messages', icon: '💬', label: 'Nachrichten', badge: CATERING_ENABLED ? cateringNew : 0 },
                 { key: 'loyalty', icon: '🎟️', label: 'Stempel' },
                 { key: 'menu', icon: '📋', label: t('staffMenuTab') },
                 { key: 'settings', icon: '⚙️', label: t('staffSettingsTab') },
@@ -12013,6 +12048,7 @@ function CookieBanner() {
 }
 
 function isCateringUrl() {
+  if (!CATERING_ENABLED) return false;
   try { return new URLSearchParams(window.location.search).get('catering') === '1'; } catch { return false; }
 }
 function cateringSrc() {
@@ -12109,6 +12145,214 @@ function OpeningLoader() {
         <div className="mt-3 h-px w-40" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`, transformOrigin: 'center', animation: 'introLine .8s cubic-bezier(.65,0,.35,1) 1.55s both' }} />
         <div className="mt-3 text-[11px] font-bold" style={{ color: GOLD, paddingLeft: '.55em', animation: 'introTrack 1s cubic-bezier(.2,.8,.2,1) 1.6s both' }}>VECHTA</div>
       </div>
+    </div>
+  );
+}
+
+// ======================= STEMPEL-MÜHÜR (NFC) =======================
+// Personal hält den NFC-Mühür ans Handy des Kunden → diese Seite öffnet sich →
+// Kunde gibt seinen Karten-Code ein → Stempel wird gutgeschrieben.
+// Schutz: geheimer Link-Schlüssel, 1 Selbst-Stempel pro Karte und Tag, nur während
+// der Öffnungszeiten, Protokoll im Personal-Bereich, Link jederzeit erneuerbar.
+const ST_T = {
+  title: { de: 'Stempel abholen', en: 'Collect your stamp', tr: 'Damgayı al', ro: 'Ia ștampila', nl: 'Stempel ophalen', sq: 'Merr vulën', ku: 'Mohrê bistîne', pl: 'Odbierz pieczątkę' },
+  codeLabel: { de: 'Dein Karten-Code', en: 'Your card code', tr: 'Kart kodun', ro: 'Codul cardului tău', nl: 'Jouw kaartcode', sq: 'Kodi i kartës tënde', ku: 'Koda karta te', pl: 'Kod twojej karty' },
+  hint: { de: 'Du findest den Code auf deiner Stempelkarte (BK-…).', en: 'You can find the code on your stamp card (BK-…).', tr: 'Kodu damga kartında bulabilirsin (BK-…).', ro: 'Găsești codul pe cardul tău (BK-…).', nl: 'Je vindt de code op je stempelkaart (BK-…).', sq: 'Kodin e gjen në kartën tënde (BK-…).', ku: 'Kodê li ser karta te ya mohran (BK-…) bibîne.', pl: 'Kod znajdziesz na swojej karcie (BK-…).' },
+  ok: { de: 'Stempel hinzugefügt!', en: 'Stamp added!', tr: 'Damga eklendi!', ro: 'Ștampila a fost adăugată!', nl: 'Stempel toegevoegd!', sq: 'Vula u shtua!', ku: 'Mohr hat zêdekirin!', pl: 'Pieczątka dodana!' },
+  full: { de: 'Deine Karte ist voll! Zeig sie an der Kasse.', en: 'Your card is full! Show it at the counter.', tr: 'Kartın doldu! Kasada göster.', ro: 'Cardul tău este plin! Arată-l la casă.', nl: 'Je kaart is vol! Laat hem aan de kassa zien.', sq: 'Karta jote është plot! Trego në arkë.', ku: 'Karta te tije! Li kasê nîşan bide.', pl: 'Twoja karta jest pełna! Pokaż ją przy kasie.' },
+  already: { de: 'Heute hast du schon einen Stempel geholt. Morgen wieder!', en: 'You already got a stamp today. See you tomorrow!', tr: 'Bugün zaten damga aldın. Yarın tekrar!', ro: 'Ai luat deja o ștampilă azi. Până mâine!', nl: 'Je hebt vandaag al een stempel gehaald. Tot morgen!', sq: 'Sot e more tashmë një vulë. Nesër përsëri!', ku: 'Îro te berê mohrek girtiye. Sibe dîsa!', pl: 'Dziś już odebrałeś pieczątkę. Do jutra!' },
+  closed: { de: 'Stempel gibt es nur während der Öffnungszeiten.', en: 'Stamps are only available during opening hours.', tr: 'Damga sadece açık saatlerde alınır.', ro: 'Ștampilele se acordă doar în programul de funcționare.', nl: 'Stempels zijn alleen tijdens openingstijden beschikbaar.', sq: 'Vulat jepen vetëm gjatë orarit të hapjes.', ku: 'Mohr tenê di demên vekirî de têne dayîn.', pl: 'Pieczątki tylko w godzinach otwarcia.' },
+  invalid: { de: 'Dieser Link ist nicht (mehr) gültig. Bitte frag das Team.', en: 'This link is not (or no longer) valid. Please ask the team.', tr: 'Bu bağlantı geçerli değil. Lütfen ekibe sor.', ro: 'Acest link nu mai este valabil. Întreabă echipa.', nl: 'Deze link is niet (meer) geldig. Vraag het team.', sq: 'Kjo lidhje nuk është më e vlefshme. Pyet ekipin.', ku: 'Ev lînk êdî derbasdar nîne. Ji tîmê bipirse.', pl: 'Ten link jest nieważny. Zapytaj zespół.' },
+  off: { de: 'Selbst-Stempel sind gerade nicht verfügbar. Bitte frag das Team.', en: 'Self-service stamps are currently unavailable. Please ask the team.', tr: 'Kendi damgan şu an kullanılamıyor. Lütfen ekibe sor.', ro: 'Ștampilele self-service nu sunt disponibile acum. Întreabă echipa.', nl: 'Zelf stempelen is nu niet beschikbaar. Vraag het team.', sq: 'Vula vetëshërbyese nuk është e disponueshme tani. Pyet ekipin.', ku: 'Mohra bi xwe niha nayê bikaranîn. Ji tîmê bipirse.', pl: 'Samodzielne pieczątki są teraz niedostępne. Zapytaj zespół.' },
+  noCard: { de: 'Noch keine Karte? Erstelle sie auf der Startseite unter „Stempelkarte".', en: 'No card yet? Create one on the home page under “Stempelkarte”.', tr: 'Henüz kartın yok mu? Ana sayfada “Stempelkarte” bölümünden oluştur.', ro: 'Nu ai încă un card? Creează-l pe pagina principală la „Stempelkarte”.', nl: 'Nog geen kaart? Maak er een op de startpagina onder „Stempelkarte”.', sq: 'Nuk ke kartë? Krijoje në faqen kryesore te „Stempelkarte”.', ku: 'Hê karta te tune? Li rûpela serî di „Stempelkarte” de çêke.', pl: 'Nie masz jeszcze karty? Utwórz ją na stronie głównej w „Stempelkarte”.' },
+  home: { de: 'Zur Startseite', en: 'Go to home page', tr: 'Ana sayfaya git', ro: 'La pagina principală', nl: 'Naar de startpagina', sq: 'Te faqja kryesore', ku: 'Biçe rûpela serî', pl: 'Do strony głównej' },
+};
+function StampSelfView({ token, onHome }) {
+  const { lang, t } = React.useContext(LangContext);
+  const L = (k) => (ST_T[k] && (ST_T[k][lang] || ST_T[k].de)) || k;
+  const [phase, setPhase] = useState('checking'); // checking | invalid | disabled | form | sending | done
+  const [cfg, setCfg] = useState(null);
+  const [suffix, setSuffix] = useState('');
+  const [msg, setMsg] = useState(null); // { kind: 'err' | 'info', text }
+  const [result, setResult] = useState(null);
+  const busyRef = useRef(false);
+  useEffect(() => {
+    let alive = true;
+    try { const sv = localStorage.getItem('bk_loyalty_code'); if (sv && /^BK-[A-Z0-9]{4}$/.test(sv)) setSuffix(sv.slice(3)); } catch {}
+    safeGet(STAMP_CFG_KEY).then((c) => {
+      if (!alive) return;
+      setCfg(c);
+      if (!c || !c.token || c.token !== token) setPhase('invalid');
+      else if (c.enabled === false) setPhase('disabled');
+      else { setPhase('form'); logEvent('stamp_self_open'); }
+    });
+    return () => { alive = false; };
+  }, []);
+  const onType = (v) => {
+    let x = String(v).toUpperCase();
+    if (x.startsWith('BK-')) x = x.slice(3);
+    setSuffix(x.replace(/[^A-Z0-9]/g, '').slice(0, 4));
+    setMsg(null);
+  };
+  const submit = async () => {
+    if (busyRef.current || phase !== 'form') return;
+    setMsg(null);
+    if (suffix.length !== 4) { setMsg({ kind: 'err', text: t('loyaltyCodeNotFound') }); return; }
+    busyRef.current = true;
+    setPhase('sending');
+    const back = (m) => { setMsg(m); setPhase('form'); busyRef.current = false; };
+    try {
+      const code = `BK-${suffix}`;
+      if (cfg && cfg.openOnly !== false && !selfStampOpen(berlinNow())) { back({ kind: 'err', text: L('closed') }); return; }
+      const card = await getLoyaltyCard(code);
+      if (!card) { back({ kind: 'err', text: t('loyaltyCodeNotFound') }); return; }
+      if (card.lastSelfStampDay === berlinDayKey()) { back({ kind: 'info', text: L('already') }); return; }
+      if ((card.stamps || 0) >= LOYALTY_TARGET) { back({ kind: 'info', text: L('full') }); return; }
+      const updated = await addLoyaltyStamp(code, 'self');
+      try { if (!localStorage.getItem('bk_loyalty_code')) localStorage.setItem('bk_loyalty_code', code); } catch {}
+      logEvent('stamp_self_done');
+      setResult({ code, stamps: updated.stamps, full: updated.stamps >= LOYALTY_TARGET });
+      setPhase('done');
+      busyRef.current = false;
+    } catch {
+      back({ kind: 'err', text: t('loyaltyOffline') });
+    }
+  };
+  const box = { background: '#fff', border: '1px solid #efe2c8', boxShadow: '0 8px 24px rgba(21,56,38,.06)' };
+  return (
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      <style>{`
+        @keyframes stPress { 0% { transform: scale(2.4) rotate(-25deg); opacity: 0; } 55% { transform: scale(.85) rotate(6deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
+        @keyframes stIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        @keyframes lcFall { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(105vh) rotate(var(--spin)); opacity: 0; } }
+        .st-in { animation: stIn .5s cubic-bezier(.2,.8,.2,1) backwards; }
+        @media (prefers-reduced-motion: reduce) { .st-in, .st-dot { animation: none !important; } }
+      `}</style>
+      <div className="px-5 pt-6 pb-4" style={{ background: GREEN }}>
+        <div className="max-w-md mx-auto flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ background: CREAM }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
+          <div>
+            <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
+            <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>STEMPELKARTE</div>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-md mx-auto px-5 pt-7 pb-10">
+        <div className="rounded-3xl p-5 st-in" style={box}>
+          {phase === 'checking' && <p className="text-center text-sm py-8" style={{ color: '#a89878' }}>…</p>}
+          {(phase === 'invalid' || phase === 'disabled') && (
+            <div className="text-center py-5">
+              <div className="text-4xl mb-3">🔒</div>
+              <p className="text-[15px] font-semibold leading-relaxed" style={{ color: GREEN }}>{phase === 'invalid' ? L('invalid') : L('off')}</p>
+              <button onClick={onHome} className="mt-5 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GREEN, color: '#fff' }}>{L('home')}</button>
+            </div>
+          )}
+          {(phase === 'form' || phase === 'sending') && (
+            <>
+              <h1 className="font-black text-[22px]" style={{ color: GREEN }}>🪵 {L('title')}</h1>
+              <label className="block text-[12px] mt-4 mb-1.5" style={{ color: '#8a7c62' }}>{L('codeLabel')}</label>
+              <div className="flex items-center gap-2 rounded-2xl px-4 py-1" style={{ background: '#fffaf2', border: '1.5px solid #e4dfd4' }}>
+                <span className="font-black text-xl" style={{ color: '#a4906c' }}>BK-</span>
+                <input value={suffix} onChange={(e) => onType(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} inputMode="text" autoCapitalize="characters" autoCorrect="off" autoComplete="off" spellCheck={false} maxLength={8} aria-label={L('codeLabel')} placeholder="A7K2" className="flex-1 min-w-0 bg-transparent outline-none font-black text-2xl tracking-[.25em] py-2" style={{ color: GREEN }} />
+              </div>
+              <p className="text-[11.5px] mt-2" style={{ color: '#a4906c' }}>{L('hint')}</p>
+              {msg && <p className="text-[14px] font-semibold mt-3" role="alert" style={{ color: msg.kind === 'err' ? CHILI : GREEN }}>{msg.text}</p>}
+              <button onClick={submit} disabled={phase === 'sending'} className="w-full mt-4 py-3.5 rounded-full font-black text-[16px]" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.3)', opacity: phase === 'sending' ? 0.6 : 1 }}>
+                {phase === 'sending' ? '…' : L('title')}
+              </button>
+              <p className="text-[12px] mt-4 text-center" style={{ color: '#8a7c62' }}>{L('noCard')}</p>
+            </>
+          )}
+          {phase === 'done' && result && (
+            <div className="text-center py-3">
+              {result.full && (
+                <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 400 }}>
+                  {Array.from({ length: 46 }).map((_, i) => (
+                    <span key={i} className="absolute block" style={{ left: `${(i * 37) % 100}%`, top: -20, width: 8 + (i % 3) * 3, height: 12 + (i % 4) * 3, borderRadius: i % 2 ? 2 : 999, background: [GOLD, ORANGE, '#2d9b5f', CHILI, '#fff'][i % 5], '--spin': `${360 + (i % 5) * 180}deg`, animation: `lcFall ${2.2 + (i % 6) * 0.25}s cubic-bezier(.25,.6,.4,1) ${(i % 9) * 0.08}s both` }} />
+                  ))}
+                </div>
+              )}
+              <div className="grid gap-2 mx-auto mb-4" style={{ gridTemplateColumns: `repeat(${Math.min(4, LOYALTY_TARGET)}, 1fr)`, maxWidth: 220 }} aria-hidden="true">
+                {Array.from({ length: LOYALTY_TARGET }).map((_, i) => {
+                  const filled = i < result.stamps; const isNew = i === result.stamps - 1;
+                  return <div key={i} className="st-dot aspect-square rounded-full flex items-center justify-center" style={filled ? { background: `radial-gradient(circle at 35% 30%, ${GOLD}, ${ORANGE})`, boxShadow: '0 3px 8px rgba(230,90,10,.35)', animation: isNew ? 'stPress .6s cubic-bezier(.3,1.5,.5,1) .15s both' : 'none' } : { background: '#fff', border: '1.5px dashed #d9c9a3' }}>{filled ? '🥙' : ''}</div>;
+                })}
+              </div>
+              <h2 className="font-black text-xl" style={{ color: GREEN }}>{L('ok')}</h2>
+              <p className="font-black text-3xl mt-1" style={{ color: ORANGE }}>{result.stamps} / {LOYALTY_TARGET}</p>
+              <p className="text-[12px] mt-1" style={{ color: '#a4906c' }}>{result.code}</p>
+              {result.full && <p className="text-[15px] font-bold mt-3" style={{ color: GREEN }}>{L('full')}</p>}
+              <button onClick={onHome} className="mt-5 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GREEN, color: '#fff' }}>{L('home')}</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Personal-Bereich (Einstellungen → System): Link für den NFC-Chip, Schalter, Protokoll
+function StampMuehleAdmin() {
+  const [cfg, setCfg] = useState(undefined); // undefined = lädt, null = nicht eingerichtet
+  const [log, setLog] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const load = async () => {
+    const c = await safeGet(STAMP_CFG_KEY);
+    setCfg(c && c.token ? c : null);
+    const rows = await safeListPrefix('loyaltystamp:', 500);
+    setLog(rows.filter((r) => r.value && r.value.source === 'self').sort((a, b) => (b.value.ts || 0) - (a.value.ts || 0)));
+  };
+  useEffect(() => { load(); }, []);
+  const save = async (next, toast) => {
+    setBusy(true);
+    const ok = await safeSet(STAMP_CFG_KEY, next);
+    setBusy(false);
+    if (ok) { setCfg(next); panelToast(toast || 'Gespeichert'); } else alert('Konnte nicht gespeichert werden – bitte erneut versuchen.');
+  };
+  const link = cfg ? `https://www.bodrumkebapvechta.de/?stamp=${cfg.token}` : '';
+  const copy = async () => { try { await navigator.clipboard.writeText(link); panelToast('Link kopiert'); } catch { prompt('Link zum Kopieren:', link); } };
+  const regen = () => {
+    if (!confirm('Neuen Link erzeugen? Der alte Link funktioniert danach nicht mehr – der NFC-Chip muss neu beschrieben werden.')) return;
+    save({ ...cfg, token: newStampToken() }, 'Neuer Link erzeugt');
+  };
+  const today = berlinDayKey();
+  const dayKey = (ts) => { try { const d = new Date(new Date(ts).toLocaleString('en-US', { timeZone: 'Europe/Berlin' })); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; } catch { return ''; } };
+  const todayCount = log.filter((r) => dayKey(r.value.ts) === today).length;
+  const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
+  if (cfg === undefined) return <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt …</p>;
+  return (
+    <div>
+      <p className="text-[11.5px] mb-3 leading-snug" style={{ color: PANEL_MUTED }}>Das Personal hält den Mühür ans Handy des Kunden, der Kunde gibt seinen Karten-Code ein und bekommt den Stempel. Pro Karte 1 Selbst-Stempel pro Tag.</p>
+      {!cfg ? (
+        <button onClick={() => save({ enabled: true, openOnly: true, token: newStampToken() }, 'Mühür eingerichtet')} disabled={busy} className="w-full py-2.5 rounded-[10px] text-sm font-semibold" style={{ background: GREEN, color: '#fff' }}>Link für den NFC-Chip erzeugen</button>
+      ) : (
+        <>
+          <button onClick={() => save({ ...cfg, enabled: !cfg.enabled }, cfg.enabled ? 'Mühür ausgeschaltet' : 'Mühür eingeschaltet')} disabled={busy} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-[10px] mb-2" style={inputSt}>
+            <span className="text-sm font-medium">Mühür aktiv</span><PanelSwitch on={cfg.enabled !== false} onColor={GREEN} />
+          </button>
+          <button onClick={() => save({ ...cfg, openOnly: cfg.openOnly === false }, 'Gespeichert')} disabled={busy} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-[10px] mb-3" style={inputSt}>
+            <span className="min-w-0 text-left"><span className="block text-sm font-medium">Nur während der Öffnungszeiten</span><span className="block text-[11px]" style={{ color: PANEL_MUTED }}>11:30–22:00 Uhr (+ 30 Min.)</span></span>
+            <PanelSwitch on={cfg.openOnly !== false} onColor={GREEN} />
+          </button>
+          <div className="text-[11px] font-bold tracking-[.1em] mb-1.5" style={{ color: PANEL_MUTED }}>LINK FÜR DEN NFC-CHIP</div>
+          <div className="rounded-[10px] px-3 py-2.5 text-[12px] break-all mb-2" style={{ ...inputSt, fontFamily: 'ui-monospace, Menlo, monospace' }}>{link}</div>
+          <div className="flex gap-2 mb-3">
+            <button onClick={copy} className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold" style={{ background: GREEN, color: '#fff' }}>🔗 Link kopieren</button>
+            <button onClick={regen} disabled={busy} className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold" style={{ background: '#fdf1ef', color: CHILI }}>Neuen Link erzeugen</button>
+          </div>
+          <div className="rounded-[10px] px-3 py-2.5 mb-3 text-[11.5px] leading-relaxed" style={{ background: PANEL_BG, color: '#5b5240' }}>
+            <b>Chip beschreiben:</b> App „NFC Tools" → Schreiben → Datensatz hinzufügen → URL → Link einfügen → Schreiben, Handy an den Chip halten. Danach in „Weitere Aktionen" den Chip <b>sperren</b>, sonst kann ihn jemand überschreiben. Chip nicht auf Metall kleben.
+          </div>
+          <div className="text-[11px] font-bold tracking-[.1em] mb-1.5" style={{ color: PANEL_MUTED }}>SELBST-STEMPEL · HEUTE: {todayCount}</div>
+          {log.length === 0 && <div className="text-[12px]" style={{ color: PANEL_MUTED }}>Noch keine Selbst-Stempel.</div>}
+          {log.slice(0, 8).map((r) => (
+            <div key={r.key} className="flex justify-between text-[12px] font-semibold py-0.5" style={{ color: PANEL_TEXT }}>
+              <span>{r.value.code}</span>
+              <span style={{ color: PANEL_MUTED }}>{new Date(r.value.ts).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }
@@ -12290,7 +12534,7 @@ function CateringView({ back, onMenu, onPrivacy }) {
 }
 
 // Personal-Bereich: Catering-Anfragen (oben im Reiter "Nachrichten")
-function CateringInbox({ onNewCount }) {
+function CateringInbox({ onNewCount, paused = false }) {
   const [rows, setRows] = useState(null);
   const load = async () => {
     const list = await safeListPrefix('cateringreq:', 100);
@@ -12314,11 +12558,13 @@ function CateringInbox({ onNewCount }) {
     if (ok) { setRows((rs) => rs.filter((x) => x.key !== row.key)); panelToast('Anfrage gelöscht'); } else alert('Konnte nicht gelöscht werden – bitte erneut versuchen.');
   };
   const copyLink = async () => { try { await navigator.clipboard.writeText(CATERING_URL); panelToast('Link kopiert'); } catch { prompt('Link zum Kopieren:', CATERING_URL); } };
+  // Pausiert: nichts anzeigen — außer es liegen noch alte Anfragen in der Datenbank (so bleibt nichts unbemerkt gespeichert)
+  if (paused && (rows === null || rows.length === 0)) return null;
   return (
     <div className="mb-5">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-[10px] font-bold tracking-[.14em]" style={{ color: PANEL_MUTED }}>🍽️ CATERING-ANFRAGEN{rows ? ` (${rows.length})` : ''}</div>
-        <button onClick={copyLink} className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT }}>🔗 Link kopieren</button>
+        <div className="text-[10px] font-bold tracking-[.14em]" style={{ color: PANEL_MUTED }}>🍽️ CATERING{paused ? ' (PAUSIERT) · ALTBESTAND' : '-ANFRAGEN'}{rows ? ` (${rows.length})` : ''}</div>
+        {!paused && <button onClick={copyLink} className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT }}>🔗 Link kopieren</button>}
       </div>
       {rows === null && <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt …</p>}
       {rows && rows.length === 0 && (
@@ -12449,13 +12695,14 @@ function LottieDiag() {
 function AppMain() {
   const isTischMenu = isTischMenuUrl();
   const isCatering = isCateringUrl();
+  const stampToken = stampTokenFromUrl();
   // Vorübergehend deaktiviert (kommt später zurück) — auf false setzen,
   // um alle Effekte an einer Stelle auszuschalten, ohne den bereits
   // gebauten Code (KartenWheelView, KARTEN_WHEEL_PRIZES, Routing) zu löschen.
   const KARTENRAD_ENABLED = false;
   const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : 'home');
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const [, forceRerender] = useState(0);
@@ -12614,6 +12861,10 @@ function AppMain() {
 
   if (view === 'home') {
     return <LangContext.Provider value={ctxValue}><WeatherEffect /><OpeningLoader /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
+  }
+
+  if (view === 'stamp') {
+    return <LangContext.Provider value={ctxValue}><StampSelfView token={stampToken} onHome={() => { try { window.history.replaceState({}, '', '/'); } catch {} go('home'); }} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
   }
 
   if (view === 'catering') {
