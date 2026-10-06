@@ -5379,6 +5379,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [quickOrderModalOpen, setQuickOrderModalOpen] = useState(false);
   const [trackModalOpen, setTrackModalOpen] = useState(false);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
+  useEffect(() => { try { if (window.__bkOpenLoyalty) { window.__bkOpenLoyalty = false; setLoyaltyModalOpen(true); } } catch {} }, []);
   const [tuesdayWheelOpen, setTuesdayWheelOpen] = useState(false);
   const isTuesdayToday = useMemo(() => new Date().getDay() === 2, []);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
@@ -12193,8 +12194,9 @@ const ST_T = {
   off: { de: 'Selbst-Stempel sind gerade nicht verfügbar. Bitte frag das Team.', en: 'Self-service stamps are currently unavailable. Please ask the team.', tr: 'Kendi damgan şu an kullanılamıyor. Lütfen ekibe sor.', ro: 'Ștampilele self-service nu sunt disponibile acum. Întreabă echipa.', nl: 'Zelf stempelen is nu niet beschikbaar. Vraag het team.', sq: 'Vula vetëshërbyese nuk është e disponueshme tani. Pyet ekipin.', ku: 'Mohra bi xwe niha nayê bikaranîn. Ji tîmê bipirse.', pl: 'Samodzielne pieczątki są teraz niedostępne. Zapytaj zespół.' },
   noCard: { de: 'Noch keine Karte? Erstelle sie auf der Startseite unter „Stempelkarte".', en: 'No card yet? Create one on the home page under “Stempelkarte”.', tr: 'Henüz kartın yok mu? Ana sayfada “Stempelkarte” bölümünden oluştur.', ro: 'Nu ai încă un card? Creează-l pe pagina principală la „Stempelkarte”.', nl: 'Nog geen kaart? Maak er een op de startpagina onder „Stempelkarte”.', sq: 'Nuk ke kartë? Krijoje në faqen kryesore te „Stempelkarte”.', ku: 'Hê karta te tune? Li rûpela serî di „Stempelkarte” de çêke.', pl: 'Nie masz jeszcze karty? Utwórz ją na stronie głównej w „Stempelkarte”.' },
   home: { de: 'Zur Startseite', en: 'Go to home page', tr: 'Ana sayfaya git', ro: 'La pagina principală', nl: 'Naar de startpagina', sq: 'Te faqja kryesore', ku: 'Biçe rûpela serî', pl: 'Do strony głównej' },
+  card: { de: 'Meine Karte ansehen', en: 'View my card', tr: 'Kartımı gör', ro: 'Vezi cardul meu', nl: 'Bekijk mijn kaart', sq: 'Shiko kartën time', ku: 'Karta min bibîne', pl: 'Zobacz moją kartę' },
 };
-function StampSelfView({ token, onHome }) {
+function StampSelfView({ token, onHome, onCard }) {
   const { lang, t } = React.useContext(LangContext);
   const L = (k) => (ST_T[k] && (ST_T[k][lang] || ST_T[k].de)) || k;
   const [phase, setPhase] = useState('checking'); // checking | invalid | disabled | form | sending | done
@@ -12252,8 +12254,12 @@ function StampSelfView({ token, onHome }) {
         @keyframes stPress { 0% { transform: scale(2.4) rotate(-25deg); opacity: 0; } 55% { transform: scale(.85) rotate(6deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
         @keyframes stIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
         @keyframes lcFall { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(105vh) rotate(var(--spin)); opacity: 0; } }
+        @keyframes stHit { 0%, 100% { transform: translateY(-9px) rotate(-4deg); } 38% { transform: translateY(5px) rotate(0); } 48% { transform: translateY(5px) rotate(0); } }
+        @keyframes stRing { 0%, 36% { transform: scale(.4); opacity: 0; } 42% { opacity: .85; } 100% { transform: scale(1.7); opacity: 0; } }
+        @keyframes stInk { 0%, 36% { opacity: 0; transform: scale(.3); } 48%, 85% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1); } }
+        @keyframes stGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,199,56,0); } 50% { box-shadow: 0 0 22px 2px rgba(255,199,56,.45); } }
         .st-in { animation: stIn .5s cubic-bezier(.2,.8,.2,1) backwards; }
-        @media (prefers-reduced-motion: reduce) { .st-in, .st-dot { animation: none !important; } }
+        @media (prefers-reduced-motion: reduce) { .st-in, .st-dot, .st-anim, .st-anim * { animation: none !important; } .st-ink { opacity: 1 !important; } }
       `}</style>
       <div className="px-5 pt-6 pb-4" style={{ background: GREEN }}>
         <div className="max-w-md mx-auto flex items-center gap-3">
@@ -12276,7 +12282,21 @@ function StampSelfView({ token, onHome }) {
           )}
           {(phase === 'form' || phase === 'sending') && (
             <>
-              <h1 className="font-black text-[22px]" style={{ color: GREEN }}>🪵 {L('title')}</h1>
+              <div className="flex items-center gap-3">
+                <div className="st-anim relative flex-shrink-0" style={{ width: 62, height: 62 }} aria-hidden="true">
+                  <div className="absolute inset-0 rounded-full" style={{ border: `3px solid ${ORANGE}`, animation: 'stRing 2.4s ease-out infinite' }} />
+                  <svg width="62" height="62" viewBox="0 0 62 62" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+                    <circle className="st-ink" cx="31" cy="51" r="7" fill={ORANGE} style={{ transformOrigin: '31px 51px', animation: 'stInk 2.4s ease-in-out infinite' }} />
+                    <g style={{ transformOrigin: '31px 30px', animation: 'stHit 2.4s cubic-bezier(.5,0,.5,1) infinite' }}>
+                      <rect x="25" y="2" width="12" height="16" rx="6" fill={GREEN} />
+                      <rect x="29" y="16" width="4" height="12" fill={GREEN} />
+                      <rect x="16" y="27" width="30" height="9" rx="4" fill={GOLD} stroke={GREEN} strokeWidth="2.5" />
+                      <rect x="20" y="36" width="22" height="6" rx="2" fill={ORANGE} />
+                    </g>
+                  </svg>
+                </div>
+                <h1 className="font-black text-[22px] leading-tight" style={{ color: GREEN }}>{L('title')}</h1>
+              </div>
               <label className="block text-[12px] mt-4 mb-1.5" style={{ color: '#8a7c62' }}>{L('codeLabel')}</label>
               <div className="flex items-center gap-2 rounded-2xl px-4 py-1" style={{ background: '#fffaf2', border: '1.5px solid #e4dfd4' }}>
                 <span className="font-black text-xl" style={{ color: '#a4906c' }}>BK-</span>
@@ -12309,7 +12329,10 @@ function StampSelfView({ token, onHome }) {
               <p className="font-black text-3xl mt-1" style={{ color: ORANGE }}>{result.stamps} / {LOYALTY_TARGET}</p>
               <p className="text-[12px] mt-1" style={{ color: '#a4906c' }}>{result.code}</p>
               {result.full && <p className="text-[15px] font-bold mt-3" style={{ color: GREEN }}>{L('full')}</p>}
-              <button onClick={onHome} className="mt-5 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GREEN, color: '#fff' }}>{L('home')}</button>
+              <div className="flex flex-col items-center gap-2 mt-5">
+                <button onClick={onCard} className="px-6 py-3 rounded-full font-black text-[15px]" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.3)', animation: 'stGlow 2.2s ease-in-out infinite' }}>🎟️ {L('card')}</button>
+                <button onClick={onHome} className="px-5 py-2 rounded-full font-bold text-sm" style={{ background: 'transparent', color: GREEN }}>{L('home')}</button>
+              </div>
             </div>
           )}
         </div>
@@ -12891,7 +12914,7 @@ function AppMain() {
   }
 
   if (view === 'stamp') {
-    return <LangContext.Provider value={ctxValue}><StampSelfView token={stampToken} onHome={() => { try { window.history.replaceState({}, '', '/'); } catch {} go('home'); }} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><StampSelfView token={stampToken} onHome={() => { try { window.history.replaceState({}, '', '/'); } catch {} go('home'); }} onCard={() => { try { window.history.replaceState({}, '', '/'); } catch {} try { window.__bkOpenLoyalty = true; } catch {} go('home'); }} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
   }
 
   if (view === 'catering') {
