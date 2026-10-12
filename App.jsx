@@ -296,7 +296,6 @@ const UI = {
   spinning: { de: 'Dreht sich…', en: 'Spinning…', tr: 'Dönüyor…', ro: 'Se învârte…', nl: 'Draait…' , sq: 'Po rrotullohet…', ku: 'Dizivire…', pl: 'Kręci się…'},
   spinNow: { de: 'Jetzt drehen!', en: 'Spin now!', tr: 'Şimdi çevir!', ro: 'Învârte acum!', nl: 'Draai nu!' , sq: 'Rrotullo tani!', ku: 'Niha bizivirîne!', pl: 'Zakręć teraz!'},
   closedTodayTitle: { de: 'Heute Ruhetag', en: 'Closed today', tr: 'Bugün kapalı', ro: 'Astăzi închis', nl: 'Vandaag gesloten' , sq: 'Sot mbyllur', ku: 'Îro girtî', pl: 'Dziś zamknięte'},
-  closedTodaySub: { de: 'Wir haben dienstags geschlossen — ab morgen wieder ab 11:30 Uhr für dich da!', en: "We're closed on Tuesdays — back for you tomorrow from 11:30 AM!", tr: 'Salı günleri kapalıyız — yarından itibaren 11:30\'dan itibaren yine buradayız!', ro: 'Suntem închiși marțea — revenim mâine de la ora 11:30!', nl: 'Wij zijn dinsdag gesloten — morgen weer open vanaf 11:30 uur!' , sq: 'Ne jemi mbyllur të martave — nesër jemi përsëri për ty nga ora 11:30!', ku: 'Em Sêşeman girtî ne — sibê ji saet 11:30 ve dîsa ji bo te vekirî ne!', pl: 'We wtorki mamy zamknięte — od jutra znów czekamy na Ciebie od 11:30!'},
   upsellTitle: { de: 'Möchtest du noch etwas dazu?', en: 'Would you like anything else?', tr: 'Yanında bir şey ister misin?', ro: 'Mai dorești ceva pe lângă?', nl: 'Wil je er nog iets bij?' , sq: 'Do të doje diçka tjetër?', ku: 'Tu tiştekî din jî dixwazî?', pl: 'Chcesz coś jeszcze do tego?'},
   upsellSub: { de: 'Diese Klassiker passen perfekt zu deiner Bestellung!', en: 'These classics go perfectly with your order!', tr: 'Bu klasikler siparişine mükemmel uyar!', ro: 'Aceste clasice se potrivesc perfect cu comanda ta!', nl: 'Deze klassiekers passen perfect bij je bestelling!' , sq: 'Këto klasikë shkojnë përsosur me porosinë tënde!', ku: 'Van klasîkan bi sifarişa te re baş têkildar in!', pl: 'Te klasyki idealnie pasują do Twojego zamówienia!'},
   drinksSub: { de: 'Kalt und erfrischend zu deiner Bestellung!', en: 'Cold and refreshing with your order!', tr: 'Siparişine soğuk ve ferahlatıcı bir ek!', ro: 'Rece și răcoritor alături de comanda ta!', nl: 'Lekker fris en koud bij je bestelling!' , sq: 'E ftohtë dhe freskuese me porosinë tënde!', ku: 'Sar û vejîner bi sifarişa te re!', pl: 'Zimne i orzeźwiające do Twojego zamówienia!'},
@@ -528,6 +527,9 @@ const DAY_NAMES = {
   tr: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
   ro: ['Duminică', 'Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă'],
   nl: ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'],
+  sq: ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'],
+  ku: ['Yekşem', 'Duşem', 'Sêşem', 'Çarşem', 'Pêncşem', 'În', 'Şemî'],
+  pl: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
 };
 
 const LangContext = React.createContext({ lang: 'de', t: (k) => UI[k]?.de ?? k, setLang: () => {}, installPrompt: null, onInstall: () => {} });
@@ -1020,9 +1022,7 @@ function FavoriteHeart({ id, favorites, setFavorites, size = 16 }) {
 }
 function isLunchWindowNow() {
   const now = new Date();
-  const day = now.getDay();
-  const lunchDays = isTuesdayOpenNow(now) ? [1, 2, 3, 4, 5] : [1, 3, 4, 5];
-  if (!lunchDays.includes(day)) return false;
+  if (!isLunchDayDate(now)) return false;
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   return now >= start && now <= end;
@@ -1600,7 +1600,16 @@ const WHEEL_PRIZES = [
 // aber gültig — Codes prüfen/einlösen (Personal-Bereich) und die Gewinn-
 // Statistik funktionieren weiter. Wieder einschalten: true setzen.
 // Wenn alle alten Gewinne eingelöst sind: Räder-Code + api/create-spincode.js löschen.
-const WHEELS_ENABLED = false;
+// Ausnahme: Auf dem Testgerät (?ordertest=1) sind die Räder sichtbar, damit der
+// komplette Bestellablauf inkl. Glücksrad getestet werden kann. Kunden sehen sie weiterhin nicht.
+const WHEELS_ENABLED = (() => {
+  try {
+    const p = new URLSearchParams(window.location.search).get('ordertest');
+    if (p === '1') return true;
+    if (p === '0') return false;
+    return localStorage.getItem('bk_order_test_device') === '1';
+  } catch { return false; }
+})();
 const WHEEL_N = WHEEL_PRIZES.length;
 const WHEEL_SLICE = 360 / WHEEL_N;
 // Eigene, großzügigere Preisliste für das Dienstags-Glücksrad im Laden —
@@ -2366,8 +2375,7 @@ function LunchCountdown() {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
-  const day = now.getDay();
-  const isWeekday = day >= 1 && day <= 5;
+  const isWeekday = isLunchDayDate(now);
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const active = isWeekday && now >= start && now <= end;
@@ -2411,30 +2419,232 @@ function useLiveClock() {
   return now;
 }
 
-// Ab dem 8. September 2026 (inklusive) haben wir auch dienstags geöffnet —
-// diese eine Funktion steuert das überall im Code. Kein manueller Eingriff
-// mehr nötig, sobald das Datum erreicht ist, schaltet alles automatisch um.
-function isTuesdayOpenNow(now) {
-  const cutoff = new Date(2026, 8, 2); // Monat ist 0-indiziert: 8 = September
-  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return d >= cutoff;
+// ─────────────────────────────────────────────────────────────────────────────
+// ÖFFNUNGSZEITEN — eine zentrale Stelle für die ganze Seite.
+// Gespeichert in siteconfig:hours (im Personal-Bereich unter Einstellungen →
+// "Öffnungszeiten & Ruhetage" änderbar). Aufbau:
+//   schedules:  Wochenpläne mit "gültig ab"-Datum. Es gilt der Plan mit dem
+//               jüngsten Datum, das heute oder früher liegt.
+//   exceptions: Sondertage (Urlaub, Feiertag, verkürzte Zeiten) — haben
+//               Vorrang vor dem Wochenplan.
+// Fällt die Datenbank aus, gilt DEFAULT_HOURS: ab 01.11.2026 dienstags zu.
+// ─────────────────────────────────────────────────────────────────────────────
+function makeWeek(overrides) {
+  const w = {};
+  for (let d = 0; d < 7; d++) w[d] = { open: true, from: '11:30', to: '22:00' };
+  Object.keys(overrides || {}).forEach((d) => { w[d] = { ...w[d], ...overrides[d] }; });
+  return w;
+}
+const DEFAULT_HOURS = {
+  v: 1,
+  schedules: [
+    { from: '2000-01-01', days: makeWeek() },
+    { from: '2026-11-01', days: makeWeek({ 2: { open: false } }) },
+  ],
+  exceptions: [],
+};
+let dbHours = null;
+const HM_RE = /^([01]?\d|2[0-3]):([0-5]\d)$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+function normalizeHours(cfg) {
+  try {
+    if (!cfg || !Array.isArray(cfg.schedules) || cfg.schedules.length === 0) return null;
+    const schedules = cfg.schedules.map((s) => {
+      if (!s || !DATE_RE.test(s.from || '') || !s.days) return null;
+      const days = {};
+      for (let d = 0; d < 7; d++) {
+        const x = s.days[d] || s.days[String(d)];
+        if (!x) return null;
+        const open = x.open !== false;
+        const from = HM_RE.test(x.from || '') ? x.from : '11:30';
+        const to = HM_RE.test(x.to || '') ? x.to : '22:00';
+        days[d] = { open, from, to };
+      }
+      return { from: s.from, days };
+    });
+    if (schedules.some((s) => !s)) return null;
+    schedules.sort((a, b) => (a.from < b.from ? -1 : a.from > b.from ? 1 : 0));
+    const exceptions = (Array.isArray(cfg.exceptions) ? cfg.exceptions : [])
+      .filter((e) => e && DATE_RE.test(e.from || '') && DATE_RE.test(e.to || '') && e.from <= e.to)
+      .map((e) => ({
+        from: e.from, to: e.to, closed: e.closed !== false,
+        openFrom: HM_RE.test(e.openFrom || '') ? e.openFrom : '11:30',
+        openTo: HM_RE.test(e.openTo || '') ? e.openTo : '22:00',
+        note: typeof e.note === 'string' ? e.note.slice(0, 80) : '',
+      }));
+    return { v: 1, schedules, exceptions };
+  } catch { return null; }
+}
+function getHoursConfig() { return dbHours || DEFAULT_HOURS; }
+function setHoursConfig(cfg) {
+  dbHours = normalizeHours(cfg);
+  try { window.dispatchEvent(new Event('bk-hours-changed')); } catch {}
+}
+async function loadHoursConfig() {
+  const v = await safeGet('siteconfig:hours');
+  const n = normalizeHours(v);
+  if (n) { dbHours = n; }
+  return getHoursConfig();
+}
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function hmToNum(s) { const m = HM_RE.exec(s || ''); return m ? (+m[1]) + (+m[2]) / 60 : NaN; }
+function setHM(d, hm) { const m = HM_RE.exec(hm); d.setHours(+m[1], +m[2], 0, 0); return d; }
+function activeSchedule(key, cfg) {
+  const c = cfg || getHoursConfig();
+  let act = c.schedules[0];
+  for (const s of c.schedules) if (s.from <= key) act = s;
+  return act;
+}
+function exceptionFor(key, cfg) {
+  const c = cfg || getHoursConfig();
+  let hit = null;
+  for (const e of c.exceptions) if (e.from <= key && key <= e.to) hit = e;
+  return hit;
+}
+// Was gilt an diesem Kalendertag? { open, from, to, fromH, toH, note, kind }
+function dayInfo(date, cfg0) {
+  const cfg = cfg0 || getHoursConfig();
+  const key = dateKey(date);
+  const ex = exceptionFor(key, cfg);
+  if (ex) {
+    if (ex.closed) return { open: false, kind: 'exception', note: ex.note };
+    return { open: true, kind: 'exception', note: ex.note, from: ex.openFrom, to: ex.openTo, fromH: hmToNum(ex.openFrom), toH: hmToNum(ex.openTo) };
+  }
+  const x = activeSchedule(key, cfg).days[date.getDay()];
+  if (!x.open) return { open: false, kind: 'weekly', note: '' };
+  return { open: true, kind: 'weekly', note: '', from: x.from, to: x.to, fromH: hmToNum(x.from), toH: hmToNum(x.to) };
+}
+// Mittagsangebot läuft Mo–Fr, aber nur an Tagen, an denen wir überhaupt offen sind.
+function isLunchDayDate(d) { const w = d.getDay(); return w >= 1 && w <= 5 && dayInfo(d).open; }
+// Nächster Öffnungsbeginn ab "now" (Tage vorwärts, max. 2 Monate).
+function nextOpeningFrom(now, startOffset) {
+  for (let add = startOffset; add <= 62; add++) {
+    const d = new Date(now); d.setDate(d.getDate() + add);
+    const i = dayInfo(d);
+    if (!i.open) continue;
+    setHM(d, i.from);
+    if (d.getTime() > now.getTime()) return d;
+  }
+  return null;
+}
+function getOpenStatus(now) {
+  const info = dayInfo(now);
+  const h = now.getHours() + now.getMinutes() / 60;
+  if (!info.open) return { open: false, labelKey: 'statusClosedRestDay', nextOpen: nextOpeningFrom(now, 1), note: info.note };
+  if (h >= info.fromH && h < info.toH) {
+    if (h >= info.toH - 0.5) return { open: true, soon: true, labelKey: 'statusClosingSoon', closeAt: info.to };
+    return { open: true, labelKey: 'statusOpenNow', closeAt: info.to };
+  }
+  if (h < info.fromH) {
+    const n = nextOpeningFrom(now, 0);
+    if (h >= info.fromH - 0.5) return { open: false, soon: true, labelKey: 'statusOpeningSoon', nextOpen: n };
+    return { open: false, labelKey: 'statusNotYetOpen', nextOpen: n };
+  }
+  return { open: false, labelKey: 'statusClosed', nextOpen: nextOpeningFrom(now, 1) };
 }
 
-function getOpenStatus(now) {
-  const day = now.getDay(); // 0 Sun ... 2 Tue
-  const nextOpenAt = (daysAhead) => { const d = new Date(now); d.setDate(d.getDate() + daysAhead); d.setHours(11, 30, 0, 0); return d; };
-  if (day === 2 && !isTuesdayOpenNow(now)) return { open: false, labelKey: 'statusClosedRestDay', nextOpen: nextOpenAt(1) };
-  const h = now.getHours() + now.getMinutes() / 60;
-  if (h >= 11.5 && h < 22) {
-    if (h >= 21.5) return { open: true, soon: true, labelKey: 'statusClosingSoon' };
-    return { open: true, labelKey: 'statusOpenNow' };
+// ── Anzeige-Texte (8 Sprachen) ──────────────────────────────────────────────
+const HRS_T = {
+  daily: { de: 'Täglich', en: 'Daily', tr: 'Her gün', ro: 'Zilnic', nl: 'Dagelijks', sq: 'Çdo ditë', ku: 'Her roj', pl: 'Codziennie' },
+  closedLine: { de: 'Ruhetag: {d}', en: 'Closed: {d}', tr: 'Kapalı: {d}', ro: 'Închis: {d}', nl: 'Gesloten: {d}', sq: 'Mbyllur: {d}', ku: 'Girtî: {d}', pl: 'Zamknięte: {d}' },
+  reopenTomorrow: { de: 'Wieder geöffnet: morgen ab {t} Uhr', en: 'Open again: tomorrow from {t}', tr: 'Tekrar açılış: yarın {t}', ro: 'Redeschidem: mâine de la {t}', nl: 'Weer open: morgen vanaf {t} uur', sq: 'Hapemi përsëri: nesër nga ora {t}', ku: 'Dîsa vekirî: sibê ji saet {t}', pl: 'Znów otwarte: jutro od {t}' },
+  reopenDay: { de: 'Wieder geöffnet: {d} ab {t} Uhr', en: 'Open again: {d} from {t}', tr: 'Tekrar açılış: {d} {t}', ro: 'Redeschidem: {d} de la {t}', nl: 'Weer open: {d} vanaf {t} uur', sq: 'Hapemi përsëri: {d} nga ora {t}', ku: 'Dîsa vekirî: {d} ji saet {t}', pl: 'Znów otwarte: {d} od {t}' },
+  fromClosed: { de: 'Ab {date}: {d} geschlossen', en: 'From {date}: closed on {d}', tr: '{date} tarihinden itibaren: {d} kapalı', ro: 'Din {date}: închis {d}', nl: 'Vanaf {date}: {d} gesloten', sq: 'Nga {date}: mbyllur {d}', ku: 'Ji {date} ve: {d} girtî', pl: 'Od {date}: zamknięte {d}' },
+  fromChanged: { de: 'Ab {date}: geänderte Öffnungszeiten', en: 'From {date}: changed opening hours', tr: '{date} tarihinden itibaren: çalışma saatleri değişiyor', ro: 'Din {date}: program modificat', nl: 'Vanaf {date}: gewijzigde openingstijden', sq: 'Nga {date}: orar i ndryshuar', ku: 'Ji {date} ve: demên vekirî diguherin', pl: 'Od {date}: zmienione godziny otwarcia' },
+  exClosed: { de: '{range}: geschlossen', en: '{range}: closed', tr: '{range}: kapalı', ro: '{range}: închis', nl: '{range}: gesloten', sq: '{range}: mbyllur', ku: '{range}: girtî', pl: '{range}: zamknięte' },
+  openNowToday: { de: '🟢 Ja, wir haben gerade geöffnet! Heute bis {t} Uhr.', en: "🟢 Yes, we're open right now! Today until {t}.", tr: '🟢 Evet, şu an açığız! Bugün kapanış: {t}.', ro: '🟢 Da, suntem deschiși acum! Astăzi până la ora {t}.', nl: '🟢 Ja, we zijn nu open! Vandaag tot {t} uur.', sq: '🟢 Po, jemi hapur tani! Sot deri në orën {t}.', ku: '🟢 Erê, em niha vekirî ne! Îro heta saet {t}.', pl: '🟢 Tak, jesteśmy teraz otwarci! Dziś do {t}.' },
+};
+function hT(key, lang) { const o = HRS_T[key] || {}; return o[lang] || o.de || ''; }
+function fmtDateKey(key) { return `${key.slice(8, 10)}.${key.slice(5, 7)}.${key.slice(0, 4)}`; }
+function addDaysKey(now, n) { const d = new Date(now); d.setDate(d.getDate() + n); return dateKey(d); }
+// Hinweise auf bald kommende Änderungen: neuer Wochenplan oder Sondertage.
+function upcomingHoursNotes(lang, now) {
+  const cfg = getHoursConfig();
+  const key = dateKey(now);
+  const names = DAY_NAMES[lang] || DAY_NAMES.de;
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  const out = [];
+  let prev = activeSchedule(key, cfg);
+  const horizon = addDaysKey(now, 60);
+  for (const s of cfg.schedules) {
+    if (s.from <= key || s.from > horizon) continue;
+    const newlyClosed = order.filter((d) => prev.days[d].open && !s.days[d].open);
+    const changed = order.some((d) => {
+      const a = prev.days[d], b = s.days[d];
+      if (a.open !== b.open) return !a.open && b.open; // neu geöffnet
+      return a.open && (a.from !== b.from || a.to !== b.to);
+    });
+    if (newlyClosed.length) out.push(hT('fromClosed', lang).replace('{date}', fmtDateKey(s.from)).replace('{d}', newlyClosed.map((d) => names[d]).join(', ')));
+    if (changed) out.push(hT('fromChanged', lang).replace('{date}', fmtDateKey(s.from)));
+    prev = s;
   }
-  if (h < 11.5) {
-    if (h >= 11.0) return { open: false, soon: true, labelKey: 'statusOpeningSoon', nextOpen: nextOpenAt(0) };
-    return { open: false, labelKey: 'statusNotYetOpen', nextOpen: nextOpenAt(0) };
-  }
-  return { open: false, labelKey: 'statusClosed', nextOpen: nextOpenAt(day === 1 && !isTuesdayOpenNow(now) ? 2 : 1) };
+  const exHorizon = addDaysKey(now, 21);
+  [...cfg.exceptions].sort((a, b) => (a.from < b.from ? -1 : 1)).forEach((e) => {
+    if (e.to < key || e.from > exHorizon) return;
+    const range = e.from === e.to ? fmtDateKey(e.from) : `${fmtDateKey(e.from)}–${fmtDateKey(e.to)}`;
+    let txt = e.closed ? hT('exClosed', lang).replace('{range}', range) : `${range}: ${e.openFrom}–${e.openTo}`;
+    if (e.note) txt += ` (${e.note})`;
+    out.push(txt);
+  });
+  return out.slice(0, 4);
 }
+// Alles, was die Seite über die Öffnungszeiten anzeigt, aus EINER Quelle.
+function hoursTexts(lang, now) {
+  now = now || new Date();
+  const sch = activeSchedule(dateKey(now));
+  const names = DAY_NAMES[lang] || DAY_NAMES.de;
+  const groups = [];
+  const closed = [];
+  [1, 2, 3, 4, 5, 6, 0].forEach((d) => {
+    const x = sch.days[d];
+    if (!x.open) { closed.push(d); return; }
+    const k = `${x.from}–${x.to}`;
+    let g = groups.find((q) => q.k === k);
+    if (!g) { g = { k, days: [] }; groups.push(g); }
+    g.days.push(d);
+  });
+  const lines = groups.map((g) => (g.days.length === 7 ? `${hT('daily', lang)} ${g.k}` : groups.length === 1 ? g.k : `${g.days.map((d) => names[d]).join(', ')}: ${g.k}`));
+  const closedDays = closed.map((d) => names[d]).join(', ');
+  return { lines, closedDays, closedLine: closed.length ? hT('closedLine', lang).replace('{d}', closedDays) : '', notes: upcomingHoursNotes(lang, now) };
+}
+function reopenText(lang, now, n) {
+  if (!n) return '';
+  const t = `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`;
+  if (dateKey(n) === addDaysKey(now, 1)) return hT('reopenTomorrow', lang).replace('{t}', t);
+  const diff = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+  const names = DAY_NAMES[lang] || DAY_NAMES.de;
+  const d = diff <= 6 ? names[n.getDay()] : fmtDateKey(dateKey(n)).slice(0, 5);
+  return hT('reopenDay', lang).replace('{d}', d).replace('{t}', t);
+}
+// Strukturierte Daten für Google (inkl. kommender Plan-Wechsel und Sondertage).
+function schemaHoursSpec(now) {
+  now = now || new Date();
+  const cfg = getHoursConfig();
+  const key = dateKey(now);
+  const EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const specs = [];
+  cfg.schedules.forEach((s, i) => {
+    const next = cfg.schedules[i + 1];
+    const until = next ? (() => { const d = new Date(next.from + 'T12:00:00'); d.setDate(d.getDate() - 1); return dateKey(d); })() : null;
+    if (until && until < key) return;
+    const groups = {};
+    [1, 2, 3, 4, 5, 6, 0].forEach((d) => { const x = s.days[d]; if (x.open) (groups[`${x.from}|${x.to}`] = groups[`${x.from}|${x.to}`] || []).push(EN[d]); });
+    Object.entries(groups).forEach(([k, days]) => {
+      const [o, c] = k.split('|');
+      const spec = { "@type": "OpeningHoursSpecification", "dayOfWeek": days, "opens": o, "closes": c };
+      if (s.from > '2000-01-01' && s.from > key) spec.validFrom = s.from;
+      if (until) spec.validThrough = until;
+      specs.push(spec);
+    });
+  });
+  cfg.exceptions.filter((e) => e.to >= key).forEach((e) => {
+    specs.push({ "@type": "OpeningHoursSpecification", "opens": e.closed ? '00:00' : e.openFrom, "closes": e.closed ? '00:00' : e.openTo, "validFrom": e.from, "validThrough": e.to });
+  });
+  return specs;
+}
+
 function formatCountdown(ms) {
   if (ms <= 0) return '0s';
   const h = Math.floor(ms / 3600000);
@@ -2709,12 +2919,8 @@ function categoryPriceRange(catKey) {
 }
 
 const ASSISTANT_R = {
-  openYes: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Dienstags haben wir Ruhetag.", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're closed on Tuesdays.", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı günleri kapalıyız.", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Marțea suntem închiși.", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. Op dinsdag zijn we gesloten.", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Të martave jemi mbyllur.", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Roja Sêşemê em girtî ne.", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. We wtorki mamy zamknięte." },
-  openYesEveryDay: { de: "🟢 Ja, wir haben gerade geöffnet! Heute bis 22:00 Uhr. Wir haben jeden Tag geöffnet, auch dienstags!", en: "🟢 Yes, we're open right now! Today until 10:00 PM. We're open every day, including Tuesdays!", tr: "🟢 Evet, şu an açığız! Bugün 22:00'a kadar hizmet veriyoruz. Salı dahil her gün açığız!", ro: "🟢 Da, suntem deschiși acum! Astăzi până la ora 22:00. Suntem deschiși în fiecare zi, inclusiv marțea!", nl: "🟢 Ja, we zijn nu open! Vandaag tot 22:00 uur. We zijn elke dag geopend, ook op dinsdag!", sq: "🟢 Po, jemi hapur tani! Sot deri në orën 22:00. Jemi hapur çdo ditë, edhe të martave!", ku: "🟢 Erê, em niha vekirî ne! Îro heta saet 22:00. Em her roj vekirî ne, Sêşem jî tê de!", pl: "🟢 Tak, jesteśmy teraz otwarci! Dziś do 22:00. Jesteśmy otwarci codziennie, także we wtorki!" },
   openNoPrefix: { de: "🔴 Wir haben gerade geschlossen.", en: "🔴 We're currently closed.", tr: "🔴 Şu an kapalıyız.", ro: "🔴 Suntem închiși momentan.", nl: "🔴 We zijn nu gesloten.", sq: "🔴 Jemi mbyllur tani.", ku: "🔴 Em niha girtî ne.", pl: "🔴 Jesteśmy teraz zamknięci." },
   opensIn: { de: "Öffnet in", en: "Opens in", tr: "Açılışa", ro: "Se deschide în", nl: "Opent over", sq: "Hapet pas", ku: "Vedibe piştî", pl: "Otwieramy za" },
-  openNoSuffix: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, außer dienstags.", en: "We're open daily 11:30 AM–10:00 PM, except Tuesdays.", tr: "Her gün 11:30–22:00 arası açığız, Salı hariç.", ro: "Suntem deschiși zilnic 11:30–22:00, cu excepția marțea.", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, behalve dinsdag.", sq: "Jemi hapur çdo ditë 11:30–22:00, përveç të martave.", ku: "Em her roj saet 11:30–22:00 vekirî ne, ji xeynî Sêşemê.", pl: "Jesteśmy otwarci codziennie 11:30–22:00, oprócz wtorków." },
-  openNoSuffixEveryDay: { de: "Wir haben täglich von 11:30–22:00 Uhr geöffnet, auch dienstags — keine Ruhetage mehr!", en: "We're open daily 11:30 AM–10:00 PM, including Tuesdays — no closed days anymore!", tr: "Her gün 11:30–22:00 arası açığız, Salı dahil — artık kapalı günümüz yok!", ro: "Suntem deschiși zilnic 11:30–22:00, inclusiv marțea — fără zile de închidere!", nl: "We zijn dagelijks geopend van 11:30–22:00 uur, ook op dinsdag — geen sluitingsdagen meer!", sq: "Jemi hapur çdo ditë 11:30–22:00, edhe të martave — nuk ka më ditë pushimi!", ku: "Em her roj saet 11:30–22:00 vekirî ne, Sêşem jî tê de — êdî roja girtî tune!", pl: "Jesteśmy otwarci codziennie 11:30–22:00, także we wtorki — nie ma już dni zamknięcia!" },
   address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
   phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
   budgetList: { de: "💶 Für bis zu {max} bekommst du z.B.:", en: "💶 For up to {max} you can get e.g.:", tr: "💶 {max}'ya kadar örneğin şunları alabilirsin:", ro: "💶 Pentru până la {max} poți lua de ex.:", nl: "💶 Voor maximaal {max} krijg je bijv.:", sq: "💶 Deri në {max} mund të marrësh p.sh.:", ku: "💶 Heta {max} tu dikarî wek van bistînî:", pl: "💶 Do {max} dostaniesz np.:" },
@@ -2901,9 +3107,10 @@ function getAssistantReply(qRaw, lang) {
     return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}.${descPart} ${ar('enjoy', lang)}\n\n${nextCampaignHint(lang)}` };
   }
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
-    const tueOpen = isTuesdayOpenNow(now);
-    if (status.open) return { intent: 'hours', text: ar(tueOpen ? 'openYesEveryDay' : 'openYes', lang) };
-    return { intent: 'hours', text: `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${ar(tueOpen ? 'openNoSuffixEveryDay' : 'openNoSuffix', lang)}` };
+    const H = hoursTexts(lang, now);
+    const hoursSummary = [H.lines.join(' · '), H.closedLine, ...H.notes].filter(Boolean).join('. ');
+    if (status.open) return { intent: 'hours', text: `${hT('openNowToday', lang).replace('{t}', status.closeAt || '22:00')} ${hoursSummary}` };
+    return { intent: 'hours', text: `${ar('openNoPrefix', lang)} ${status.nextOpen ? `${ar('opensIn', lang)}: ${formatCountdown(status.nextOpen - now)}` : ''} ${hoursSummary}` };
   }
   if (has('adres', 'nerede', 'wo ', 'address', 'yol', 'route', 'konum', 'standort', 'adresse')) {
     return { intent: 'address', text: ar('address', lang) };
@@ -4545,8 +4752,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
   }, [sidePhotos]);
   const day = now.getDay();
   if (day === 6) return null; // Samstag hat seine eigene Kampagne (Tagesempfehlung)
-  const lunchDays = isTuesdayOpenNow(now) ? [1, 2, 3, 4, 5] : [1, 3, 4, 5];
-  const isLunchDay = lunchDays.includes(day);
+  const isLunchDay = isLunchDayDate(now);
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const active = isLunchDay && now >= start && now <= end;
@@ -4558,7 +4764,7 @@ function MittagsBanner({ menu, onPhotoClick }) {
       const d = new Date(now);
       d.setDate(d.getDate() + add);
       d.setHours(11, 30, 0, 0);
-      if (lunchDays.includes(d.getDay()) && d.getTime() > now.getTime()) return d;
+      if (isLunchDayDate(d) && d.getTime() > now.getTime()) return d;
     }
     return null;
   };
@@ -4898,12 +5104,15 @@ function instaHashtags(topic) {
   const extra = topic.split(/[\s,+&/]+/).map((w) => w.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')).filter((w) => w.length > 2 && !/^\d+$/.test(w)).map((w) => `#${w}`);
   return [...new Set([...extra, ...base])].slice(0, 12).join(' ');
 }
-const INSTA_FOOTER = '📍 Oyther Straße 37, 49377 Vechta\n🕚 Täglich 11:30–22:00 Uhr';
+function instaFooter() {
+  const H = hoursTexts('de');
+  return `📍 Oyther Straße 37, 49377 Vechta\n🕚 ${H.lines.join(' · ')} Uhr${H.closedLine ? ' · ' + H.closedLine : ''}`;
+}
 function instaTemplate(topic, price, occ) {
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
   const hook = pick(INSTA_HOOKS[occ] || INSTA_HOOKS.allgemein);
   const pricePart = price ? ` für nur ${price.includes('€') ? price : `${price} €`}` : '';
-  return `${hook} ${topic}${pricePart} ${instaEmoji(topic)}\n\n${pick(INSTA_BODY)}\n\n${INSTA_FOOTER}\n\n${instaHashtags(topic)}`;
+  return `${hook} ${topic}${pricePart} ${instaEmoji(topic)}\n\n${pick(INSTA_BODY)}\n\n${instaFooter()}\n\n${instaHashtags(topic)}`;
 }
 function InstaCaptionTool() {
   const [topic, setTopic] = useState('');
@@ -4929,7 +5138,7 @@ function InstaCaptionTool() {
       text = String(d?.answer || '').trim().replace(/^["„“']+|["“”']+$/g, '').split('\n').filter((l) => !l.trim().startsWith('#')).join('\n').trim();
     } catch { text = ''; }
     if (text.length >= 25) {
-      setOut(`${text}\n\n${INSTA_FOOTER}\n\n${instaHashtags(tpc)}`);
+      setOut(`${text}\n\n${instaFooter()}\n\n${instaHashtags(tpc)}`);
       setSource('KI');
     } else {
       setOut(instaTemplate(tpc, price.trim(), occ));
@@ -5252,7 +5461,7 @@ function DailySpecial({ go }) {
   const imgMap = { g1: FOOD_G1, g2: FOOD_G2, g3: FOOD_G3, g4: FOOD_G4, g5: FOOD_G5, schnitzel: SCHNITZEL_IMG, spaghetti: SPAGHETTI_IMG };
   const days = DAY_NAMES[lang] || DAY_NAMES.de;
 
-  const isLunchDay = isTuesdayOpenNow(now) ? [1, 2, 3, 4, 5].includes(day) : [1, 3, 4, 5].includes(day);
+  const isLunchDay = isLunchDayDate(now);
   const start = new Date(now); start.setHours(11, 30, 0, 0);
   const end = new Date(now); end.setHours(14, 0, 0, 0);
   const isLunchWindow = isLunchDay && now >= start && now <= end;
@@ -5263,17 +5472,17 @@ function DailySpecial({ go }) {
     ss = Math.floor((diff % 60000) / 1000);
   }
 
-  if (day === 6) {
+  if (day === 6 && dayInfo(now).open) {
     return null; // Samstag-Kampagne wird bereits ganz oben auf der Seite gezeigt
   }
 
-  if (day === 2 && !isTuesdayOpenNow(now)) {
+  if (!dayInfo(now).open) {
     return (
       <section id="tagesempfehlung" className="max-w-7xl mx-auto px-5 lg:px-10 py-4">
         <div className="rounded-2xl p-6 text-center" style={{ background: GREEN, boxShadow: '0 10px 30px rgba(21,56,38,.16)' }}>
           <div className="text-2xl mb-1.5">😴</div>
           <div className="text-white font-black text-lg mb-1">{t('closedTodayTitle')}</div>
-          <div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>{t('closedTodaySub')}</div>
+          <div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>{[dayInfo(now).note, reopenText(lang, now, getOpenStatus(now).nextOpen)].filter(Boolean).join(' · ')}</div>
           <WeekendTeaser go={go} />
         </div>
       </section>
@@ -5774,8 +5983,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
-            <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold" style={{ color: GREEN }}>{lang === 'de' ? 'Täglich 11:30–22:00' : '11:30–22:00'}</span></div>
-            {!isTuesdayOpenNow(new Date()) && <div className="flex justify-between py-2.5 text-sm" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold" style={{ color: CHILI }}>{lang === 'de' ? 'Dienstag' : lang === 'en' ? 'Tuesday' : lang === 'tr' ? 'Salı' : lang === 'ro' ? 'Marți' : lang === 'sq' ? 'E martë' : lang === 'ku' ? 'Sêşem' : 'Dinsdag'}</span></div>}
+            {(() => { const H = hoursTexts(lang); return (<>
+              <div className="flex justify-between py-2.5 text-sm gap-3" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroOpeningHours')}</span><span className="font-bold text-right" style={{ color: GREEN }}>{H.lines.length ? H.lines.map((l, i) => <React.Fragment key={i}>{i > 0 && <br />}{l}</React.Fragment>) : '—'}</span></div>
+              {H.closedDays && <div className="flex justify-between py-2.5 text-sm gap-3" style={{ borderBottom: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroClosedDay')}</span><span className="font-bold text-right" style={{ color: CHILI }}>{H.closedDays}</span></div>}
+              {H.notes.map((n, i) => <div key={i} className="py-2 text-xs font-semibold" style={{ borderBottom: '1px dashed #e3d5bd', color: ORANGE }}>ℹ️ {n}</div>)}
+            </>); })()}
             <div className="flex justify-between py-2.5 text-sm"><span className="font-semibold" style={{ color: '#7a6a52' }}>{t('heroAddress')}</span><span className="font-bold text-right" style={{ color: GREEN }}>Oyther Straße 37,<br />49377 Vechta</span></div>
             <div className="flex justify-between py-2.5 text-sm" style={{ borderTop: '1px dashed #e3d5bd' }}><span className="font-semibold" style={{ color: '#7a6a52' }}>🅿️</span><span className="font-bold text-right text-xs" style={{ color: GREEN }}>{lang === 'de' ? 'Kostenlose Parkplätze vor der Tür' : lang === 'en' ? 'Free parking outside' : lang === 'tr' ? 'Kapıda ücretsiz otopark' : lang === 'ro' ? 'Parcare gratuită afară' : lang === 'sq' ? 'Parkim falas jashtë' : lang === 'ku' ? 'Parkkirina belaş li derve' : 'Gratis parkeren buiten'}</span></div>
             <img loading="lazy" decoding="async" src={CALZONE_IMG} className="hidden xl:block absolute rounded-2xl object-cover" style={{ width: 92, height: 92, top: -22, right: -22, border: `4px solid ${CREAM}`, boxShadow: '0 10px 24px rgba(21,56,38,.3)', transform: 'rotate(9deg)' }} />
@@ -5944,7 +6156,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="rounded-2xl p-6 flex flex-col justify-center" style={{ background: GREEN }}>
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
             <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" onClick={() => logEvent('call')} className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
-            <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">{lang === 'de' ? 'Täglich 11:30–22:00 Uhr' : lang === 'en' ? 'Daily 11:30 AM–10:00 PM' : lang === 'tr' ? 'Her gün 11:30–22:00' : lang === 'ro' ? 'Zilnic 11:30–22:00' : lang === 'sq' ? 'Çdo ditë 11:30–22:00' : lang === 'ku' ? 'Her roj 11:30–22:00' : 'Dagelijks 11:30–22:00'}</div>{!isTuesdayOpenNow(new Date()) && <div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Dienstag Ruhetag' : lang === 'en' ? 'Closed on Tuesdays' : lang === 'tr' ? 'Salı günü kapalı' : lang === 'ro' ? 'Marți închis' : lang === 'sq' ? 'Mbyllur të martave' : lang === 'ku' ? 'Sêşeman girtî' : 'Dinsdag gesloten'}</div>}</div></div>
+            <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" />{(() => { const H = hoursTexts(lang); return (<div>{H.lines.map((l, i) => <div key={i} className="text-white font-bold text-sm">{l}</div>)}{H.closedLine && <div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{H.closedLine}</div>}{H.notes.map((n, i) => <div key={i} className="text-xs font-semibold mt-1" style={{ color: GOLD }}>ℹ️ {n}</div>)}</div>); })()}</div>
             <div className="flex items-start gap-3 mb-6"><span style={{ color: GOLD, fontSize: 16, lineHeight: '16px', marginTop: 2 }}>🅿️</span><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Kostenlose Parkplätze direkt vor der Tür' : lang === 'en' ? 'Free parking right in front of the door' : lang === 'tr' ? 'Kapının hemen önünde ücretsiz otopark' : lang === 'ro' ? 'Parcare gratuită chiar în fața ușii' : lang === 'sq' ? 'Parkim falas direkt para derës' : lang === 'ku' ? 'Cîhê parkkirinê yê belaş rasterast li ber derî' : 'Gratis parkeren direct voor de deur'}</div></div>
             <div className="flex flex-wrap gap-3">
               <a
@@ -8348,6 +8560,171 @@ function SettingsRow({ id, icon, title, sub, openId, setOpenId, children }) {
   );
 }
 
+
+// ── Personal-Bereich: Öffnungszeiten & Ruhetage bearbeiten ──────────────────
+const HE_DAYS = [1, 2, 3, 4, 5, 6, 0]; // Mo … So
+function HoursEditor() {
+  const [cfg, setCfg] = useState(() => JSON.parse(JSON.stringify(getHoursConfig())));
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
+  const todayKey = dateKey(new Date());
+  const names = DAY_NAMES.de;
+  const upd = (fn) => { setCfg((prev) => { const n = JSON.parse(JSON.stringify(prev)); fn(n); return n; }); setDirty(true); setErr(''); };
+  const activeFrom = activeSchedule(todayKey, cfg).from;
+  const inp = { background: '#f7f4ec', border: `1px solid ${PANEL_LINE}`, borderRadius: 10, padding: '7px 8px', fontSize: 13, fontWeight: 600, color: PANEL_TEXT, minWidth: 0 };
+  const chip = (bg, fg, txt) => <span style={{ background: bg, color: fg, fontSize: 9.5, fontWeight: 800, letterSpacing: '.06em', padding: '2px 7px', borderRadius: 99 }}>{txt}</span>;
+
+  const addSchedule = () => upd((n) => {
+    const base = JSON.parse(JSON.stringify(activeSchedule(todayKey, n)));
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    let from = dateKey(t);
+    while (n.schedules.some((s) => s.from === from)) { t.setDate(t.getDate() + 1); from = dateKey(t); }
+    n.schedules.push({ from, days: base.days });
+    n.schedules.sort((a, b) => (a.from < b.from ? -1 : 1));
+  });
+  const addException = () => upd((n) => {
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    n.exceptions.push({ from: dateKey(t), to: dateKey(t), closed: true, openFrom: '12:00', openTo: '18:00', note: '' });
+  });
+
+  const save = async () => {
+    const problems = [];
+    const seen = new Set();
+    cfg.schedules.forEach((s, i) => {
+      if (!DATE_RE.test(s.from || '')) problems.push(`Plan ${i + 1}: Datum fehlt`);
+      if (seen.has(s.from)) problems.push(`Zwei Pläne gelten ab demselben Datum (${fmtDateKey(s.from)})`);
+      seen.add(s.from);
+      HE_DAYS.forEach((d) => { const x = s.days[d]; if (x.open && !(hmToNum(x.to) > hmToNum(x.from))) problems.push(`Plan ab ${fmtDateKey(s.from)}: ${names[d]} — Ende muss nach dem Beginn liegen`); });
+    });
+    cfg.exceptions.forEach((e, i) => {
+      if (!DATE_RE.test(e.from || '') || !DATE_RE.test(e.to || '')) problems.push(`Sondertag ${i + 1}: Datum fehlt`);
+      else if (e.to < e.from) problems.push(`Sondertag ${i + 1}: "bis" liegt vor "von"`);
+      if (!e.closed && !(hmToNum(e.openTo) > hmToNum(e.openFrom))) problems.push(`Sondertag ${i + 1}: Ende muss nach dem Beginn liegen`);
+    });
+    if (problems.length) { setErr(problems[0]); return; }
+    const n = normalizeHours(cfg);
+    if (!n) { setErr('Ungültige Eingabe'); return; }
+    setSaving(true);
+    const ok = await safeSet('siteconfig:hours', n);
+    setSaving(false);
+    if (!ok) { setErr('Speichern fehlgeschlagen — Verbindung prüfen und nochmal versuchen.'); return; }
+    setHoursConfig(n);
+    setCfg(JSON.parse(JSON.stringify(n)));
+    setDirty(false);
+    panelToast('Öffnungszeiten gespeichert');
+  };
+
+  const draft = normalizeHours(cfg) || cfg;
+  const preview = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i);
+    const info = dayInfo(d, draft);
+    preview.push({ d, info });
+  }
+
+  return (
+    <div>
+      <p className="text-[11.5px] mb-3" style={{ color: PANEL_MUTED }}>
+        Die Website (Status, Kontakt, Mittagsangebot, Chatbot, Google-Daten) liest alles von hier. Der Plan mit dem jüngsten „gilt ab"-Datum, das heute oder früher liegt, ist aktiv. Sondertage haben Vorrang. Zeiten gelten für Deutschland, Ende muss am selben Tag liegen.
+      </p>
+
+      <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>WOCHENPLÄNE</div>
+      {cfg.schedules.map((s, si) => {
+        const isActive = s.from === activeFrom;
+        const isFuture = s.from > todayKey;
+        return (
+          <div key={si} className="rounded-[12px] p-3 mb-2.5" style={{ background: '#fff', border: `1px solid ${isActive ? '#9ec3ad' : PANEL_LINE}` }}>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="text-[12px] font-bold" style={{ color: PANEL_TEXT }}>Gilt ab</span>
+              <input type="date" value={s.from} onChange={(e) => upd((n) => { n.schedules[si].from = e.target.value; })} style={inp} />
+              {isActive ? chip('#e3eee7', '#1f5a3a', 'AKTUELL') : isFuture ? chip('#fdf1d8', '#8a5a00', 'GEPLANT') : chip('#eee9df', '#8a8478', 'ÜBERHOLT')}
+              <span className="flex-1" />
+              {cfg.schedules.length > 1 && (
+                <button onClick={() => upd((n) => { n.schedules.splice(si, 1); })} className="text-[11px] font-bold px-2 py-1 rounded-lg" style={{ color: '#b3261e', background: '#fbeceb' }}>Plan löschen</button>
+              )}
+            </div>
+            {HE_DAYS.map((d) => {
+              const x = s.days[d];
+              return (
+                <div key={d} className="py-1.5" style={{ borderTop: `1px dashed ${PANEL_LINE}` }}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[12.5px] font-semibold" style={{ color: x.open ? PANEL_TEXT : '#b3261e' }}>{names[d]}</span>
+                    <button
+                      onClick={() => upd((n) => { n.schedules[si].days[d].open = !n.schedules[si].days[d].open; })}
+                      className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0"
+                      style={x.open ? { background: '#e3eee7', color: '#1f5a3a' } : { background: '#fbeceb', color: '#b3261e' }}
+                    >{x.open ? '✓ Geöffnet' : '✕ Geschlossen'}</button>
+                  </div>
+                  {x.open && (
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <input type="time" value={x.from} onChange={(e) => upd((n) => { n.schedules[si].days[d].from = e.target.value; })} style={{ ...inp, flex: 1 }} />
+                      <span style={{ color: PANEL_MUTED }}>–</span>
+                      <input type="time" value={x.to} onChange={(e) => upd((n) => { n.schedules[si].days[d].to = e.target.value; })} style={{ ...inp, flex: 1 }} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+      <button onClick={addSchedule} className="w-full py-2.5 rounded-xl font-bold text-[12.5px] mb-5" style={{ background: '#fff', color: GREEN, border: `1.5px dashed ${GREEN}` }}>＋ Neuer Wochenplan ab Datum (z. B. Ruhetag ab 1. des Monats)</button>
+
+      <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>SONDERTAGE · URLAUB · FEIERTAGE</div>
+      {cfg.exceptions.length === 0 && <p className="text-[12px] mb-2" style={{ color: PANEL_MUTED }}>Keine Sondertage eingetragen.</p>}
+      {cfg.exceptions.map((e, ei) => {
+        const past = e.to && e.to < todayKey;
+        return (
+          <div key={ei} className="rounded-[12px] p-3 mb-2.5" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}`, opacity: past ? 0.55 : 1 }}>
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <span className="text-[12px] font-bold" style={{ color: PANEL_TEXT }}>Von</span>
+              <input type="date" value={e.from} onChange={(ev) => upd((n) => { n.exceptions[ei].from = ev.target.value; if (n.exceptions[ei].to < ev.target.value) n.exceptions[ei].to = ev.target.value; })} style={inp} />
+              <span className="text-[12px] font-bold" style={{ color: PANEL_TEXT }}>bis</span>
+              <input type="date" value={e.to} onChange={(ev) => upd((n) => { n.exceptions[ei].to = ev.target.value; })} style={inp} />
+              {past && chip('#eee9df', '#8a8478', 'VORBEI')}
+              <span className="flex-1" />
+              <button onClick={() => upd((n) => { n.exceptions.splice(ei, 1); })} className="text-[11px] font-bold px-2 py-1 rounded-lg" style={{ color: '#b3261e', background: '#fbeceb' }}>Löschen</button>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <button onClick={() => upd((n) => { n.exceptions[ei].closed = true; })} className="text-[11.5px] font-bold px-3 py-1.5 rounded-lg" style={e.closed ? { background: '#fbeceb', color: '#b3261e' } : { background: '#f4f2ed', color: PANEL_MUTED }}>✕ Ganztägig geschlossen</button>
+              <button onClick={() => upd((n) => { n.exceptions[ei].closed = false; })} className="text-[11.5px] font-bold px-3 py-1.5 rounded-lg" style={!e.closed ? { background: '#e3eee7', color: '#1f5a3a' } : { background: '#f4f2ed', color: PANEL_MUTED }}>🕐 Andere Zeiten</button>
+            </div>
+            {!e.closed && (
+              <div className="flex items-center gap-2 mb-2">
+                <input type="time" value={e.openFrom} onChange={(ev) => upd((n) => { n.exceptions[ei].openFrom = ev.target.value; })} style={{ ...inp, flex: 1 }} />
+                <span style={{ color: PANEL_MUTED }}>–</span>
+                <input type="time" value={e.openTo} onChange={(ev) => upd((n) => { n.exceptions[ei].openTo = ev.target.value; })} style={{ ...inp, flex: 1 }} />
+              </div>
+            )}
+            <input type="text" maxLength={80} placeholder="Hinweis für Kunden (optional), z. B. Betriebsurlaub" value={e.note} onChange={(ev) => upd((n) => { n.exceptions[ei].note = ev.target.value; })} style={{ ...inp, width: '100%' }} />
+          </div>
+        );
+      })}
+      <button onClick={addException} className="w-full py-2.5 rounded-xl font-bold text-[12.5px] mb-5" style={{ background: '#fff', color: GREEN, border: `1.5px dashed ${GREEN}` }}>＋ Sondertag / Urlaub hinzufügen</button>
+
+      <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>VORSCHAU · NÄCHSTE 14 TAGE (mit deinen Änderungen)</div>
+      <div className="rounded-[12px] mb-4 overflow-hidden" style={{ background: '#fff', border: `1px solid ${PANEL_LINE}` }}>
+        {preview.map(({ d, info }, i) => (
+          <div key={i} className="flex items-center gap-2 px-3 py-1.5 text-[12px]" style={{ borderTop: i ? `1px solid #f0ece3` : 'none' }}>
+            <span className="font-semibold" style={{ width: 92, color: PANEL_TEXT }}>{names[d.getDay()].slice(0, 2)}, {fmtDateKey(dateKey(d)).slice(0, 5)}</span>
+            {info.open
+              ? <span className="font-semibold" style={{ color: '#1f5a3a' }}>{info.from}–{info.to}{info.kind === 'exception' ? ' · Sondertag' : ''}</span>
+              : <span className="font-semibold" style={{ color: '#b3261e' }}>geschlossen</span>}
+            {info.note && <span className="truncate" style={{ color: PANEL_MUTED }}>{info.note}</span>}
+          </div>
+        ))}
+      </div>
+
+      {err && <div className="text-[12px] font-bold mb-2.5 px-3 py-2 rounded-lg" style={{ background: '#fbeceb', color: '#b3261e' }}>{err}</div>}
+      <button onClick={save} disabled={saving || !dirty} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: dirty ? GREEN : '#a9b5ad', boxShadow: dirty ? '0 6px 16px rgba(21,56,38,.25)' : 'none' }}>
+        {saving ? 'Speichert…' : dirty ? 'Speichern' : 'Gespeichert ✓'}
+      </button>
+      <button onClick={() => { setCfg(JSON.parse(JSON.stringify(DEFAULT_HOURS))); setDirty(true); setErr(''); }} className="w-full mt-2 py-2 text-[11.5px] font-semibold" style={{ color: PANEL_MUTED }}>Standard wiederherstellen (Dienstag ab 01.11.2026 geschlossen)</button>
+    </div>
+  );
+}
+
 function LoyaltyAdminPanel() {
   const [search, setSearch] = useState('');
   const [newStampIdx, setNewStampIdx] = useState(-1);
@@ -10061,6 +10438,9 @@ function StaffPanelView({ back }) {
 
               {settingsGroup === 'website' && (
                 <>
+                  <SettingsRow id="hours" sub="Wochenplan, Ruhetage, Urlaub & Feiertage" icon="🕐" title="Öffnungszeiten & Ruhetage" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <HoursEditor />
+                  </SettingsRow>
                   <SettingsRow id="spotlight" sub="Große animierte Karte oben auf der Startseite" icon="🎬" title="Animierte Produktkarte 1 (oben)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} />
                   </SettingsRow>
@@ -12381,7 +12761,7 @@ function StampMuehleAdmin() {
             <span className="text-sm font-medium">Mühür aktiv</span><PanelSwitch on={cfg.enabled !== false} onColor={GREEN} />
           </button>
           <button onClick={() => save({ ...cfg, openOnly: cfg.openOnly === false }, 'Gespeichert')} disabled={busy} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-[10px] mb-3" style={inputSt}>
-            <span className="min-w-0 text-left"><span className="block text-sm font-medium">Nur während der Öffnungszeiten</span><span className="block text-[11px]" style={{ color: PANEL_MUTED }}>11:30–22:00 Uhr (+ 30 Min.)</span></span>
+            <span className="min-w-0 text-left"><span className="block text-sm font-medium">Nur während der Öffnungszeiten</span><span className="block text-[11px]" style={{ color: PANEL_MUTED }}>laut Öffnungszeiten-Plan (+ 30 Min.)</span></span>
             <PanelSwitch on={cfg.openOnly !== false} onColor={GREEN} />
           </button>
           <div className="text-[11px] font-bold tracking-[.1em] mb-1.5" style={{ color: PANEL_MUTED }}>LINK FÜR DEN NFC-CHIP</div>
@@ -12763,6 +13143,13 @@ function AppMain() {
     });
   }, []);
   useEffect(() => {
+    // Öffnungszeiten aus dem Personal-Bereich laden und bei Änderung neu zeichnen.
+    const on = () => forceRerender((n) => n + 1);
+    window.addEventListener('bk-hours-changed', on);
+    loadHoursConfig().then(on);
+    return () => window.removeEventListener('bk-hours-changed', on);
+  }, []);
+  useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
@@ -12793,7 +13180,7 @@ function AppMain() {
     // Bewertung live aus den echten Einstellungen laden, statt einen festen
     // Wert im Code zu hinterlegen, der mit der Zeit veraltet und nicht mehr
     // zur Zahl passt, die im Personal-Bereich gepflegt wird.
-    safeGet('siteconfig:rating').then((r) => {
+    Promise.all([safeGet('siteconfig:rating'), loadHoursConfig()]).then(([r]) => {
       const ratingValue = r && r.score ? String(r.score) : '4.6';
       const reviewCount = r && r.count ? String(r.count) : '293';
       const script = document.createElement('script');
@@ -12836,9 +13223,7 @@ function AppMain() {
           "ratingValue": ratingValue,
           "reviewCount": reviewCount
         },
-        "openingHoursSpecification": isTuesdayOpenNow(new Date())
-          ? [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }]
-          : [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:30", "closes": "22:00" }],
+        "openingHoursSpecification": schemaHoursSpec(new Date()),
         "servesHalal": true,
         "sameAs": ["https://instagram.com/BodrumKebapVechta"]
       });
