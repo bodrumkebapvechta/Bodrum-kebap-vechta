@@ -21,10 +21,46 @@ async function isTriggerEnabled(key) {
   }
 }
 
+// Ist heute (Berlin) geöffnet? Liest denselben Plan wie die Website
+// (siteconfig:hours, im Personal-Bereich änderbar). Fehlt er oder ist er
+// unlesbar, gilt der Standard: ab 01.11.2026 ist dienstags Ruhetag.
+// Ohne diese Prüfung ginge ab 01.11. jeden Dienstag eine falsche
+// "wir haben heute für dich geöffnet"-Nachricht an alle Abonnenten.
+async function isOpenToday() {
+  const todayKey = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' }); // YYYY-MM-DD
+  const weekday = new Date(todayKey + 'T12:00:00Z').getUTCDay();
+  let cfg = null;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/kv_store?key=eq.siteconfig:hours&select=value`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (res.ok) {
+      const rows = await res.json();
+      cfg = rows.length ? rows[0].value : null;
+    }
+  } catch {}
+  if (!cfg || !Array.isArray(cfg.schedules) || cfg.schedules.length === 0) {
+    return !(todayKey >= '2026-11-01' && weekday === 2);
+  }
+  const ex = (Array.isArray(cfg.exceptions) ? cfg.exceptions : []).filter((e) => e && e.from <= todayKey && todayKey <= e.to).pop();
+  if (ex) return ex.closed === false;
+  let act = null;
+  for (const sc of [...cfg.schedules].sort((a, b) => (a.from < b.from ? -1 : 1))) {
+    if (!act || sc.from <= todayKey) act = sc;
+  }
+  const day = act && act.days && (act.days[weekday] || act.days[String(weekday)]);
+  return !day || day.open !== false;
+}
+
 export default async function handler(req, res) {
   const enabled = await isTriggerEnabled('dienstagErinnerung');
   if (!enabled) {
     return res.status(200).json({ skipped: true, reason: 'Trigger in den Einstellungen deaktiviert' });
+  }
+
+  if (!(await isOpenToday())) {
+    return res.status(200).json({ skipped: true, reason: 'Heute ist Ruhetag laut Öffnungszeiten-Plan' });
   }
 
   const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
