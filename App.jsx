@@ -1365,6 +1365,36 @@ async function generateReceiptImage({ items, total, code, name, pickupTime, note
 
   return canvas.toDataURL('image/png');
 }
+
+// ── Info-Seiten per QR-Code (z. B. Aushang im Laden) ─────────────────────────
+// https://www.bodrumkebapvechta.de/?info=ruhetag  → zeigt den Aushang als Seite.
+// Neue Seite: Bild in /public ablegen und hier einen Eintrag ergänzen.
+const INFO_PAGES = {
+  ruhetag: { img: '/ruhetag-info.jpg', alt: 'Wichtige Information: Ab dem 01.11.2026 ist wie gewohnt jeden Dienstag wieder ein Ruhetag. Vielen Dank für euer Verständnis.' },
+};
+function infoSlugFromUrl() {
+  try { const v = new URLSearchParams(window.location.search).get('info'); return v && INFO_PAGES[v] ? v : ''; } catch { return ''; }
+}
+function InfoPageView({ slug, onHome }) {
+  const { lang, t } = useLang();
+  const page = INFO_PAGES[slug];
+  const H = hoursTexts(lang);
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center px-4 py-6" style={{ background: CREAM }}>
+      <img src="/logo.png" alt="Bodrum Kebap" className="w-14 h-14 rounded-full mb-4" style={{ background: GREEN }} />
+      <img src={page.img} alt={page.alt} className="w-full rounded-3xl" style={{ maxWidth: 520, boxShadow: '0 18px 44px rgba(21,56,38,.18)', animation: 'infoIn .5s cubic-bezier(.2,.8,.2,1) both' }} />
+      <style>{`@keyframes infoIn { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } } @media (prefers-reduced-motion: reduce) { img { animation: none !important; } }`}</style>
+      <div className="w-full rounded-2xl p-4 mt-5 text-center" style={{ maxWidth: 520, background: '#fff', border: '1px solid #ece2cf' }}>
+        <div className="text-[11px] font-black tracking-[.14em] mb-1.5" style={{ color: '#a4906c' }}>{t('heroOpeningHours').toUpperCase()}</div>
+        {H.lines.map((l, i) => <div key={i} className="font-bold text-sm" style={{ color: GREEN }}>{l}</div>)}
+        {H.closedLine && <div className="font-bold text-sm mt-0.5" style={{ color: CHILI }}>{H.closedLine}</div>}
+        {H.notes.map((n, i) => <div key={i} className="text-xs font-semibold mt-1.5" style={{ color: ORANGE }}>ℹ️ {n}</div>)}
+      </div>
+      <button onClick={onHome} className="w-full mt-4 py-3.5 rounded-2xl font-black text-sm text-white" style={{ maxWidth: 520, background: GREEN, boxShadow: '0 8px 20px rgba(21,56,38,.25)' }}>{t('tischMenuBackHome')} →</button>
+    </div>
+  );
+}
+
 function logVisit(lang, source) {
   try {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -13126,13 +13156,14 @@ function AppMain() {
   const isTischMenu = isTischMenuUrl();
   const isCatering = isCateringUrl();
   const stampToken = stampTokenFromUrl();
+  const infoSlug = infoSlugFromUrl();
   // Vorübergehend deaktiviert (kommt später zurück) — auf false setzen,
   // um alle Effekte an einer Stelle auszuschalten, ohne den bereits
   // gebauten Code (KartenWheelView, KARTEN_WHEEL_PRIZES, Routing) zu löschen.
   const KARTENRAD_ENABLED = false;
   const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : 'home');
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : infoSlug ? 'info' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const [, forceRerender] = useState(0);
@@ -13237,6 +13268,7 @@ function AppMain() {
     // greift hier nie, weil HomeView in diesem Fall gar nicht gerendert wird.
     // Ohne diesen Aufruf wurden QR-Besuche bisher überhaupt nicht gezählt.
     if (isTischMenu) logVisit(langCtx.lang, 'qr_tisch');
+    if (infoSlug) logVisit(langCtx.lang, `qr_info_${infoSlug}`);
   }, []);
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
@@ -13308,6 +13340,10 @@ function AppMain() {
 
   if (view === 'tischmenu') {
     return <LangContext.Provider value={ctxValue}><WeatherEffect /><OpeningLoader /><TischMenuView back={isTischMenu ? undefined : () => go('home')} initialAction={pendingAction} onConsumeAction={() => setPendingAction(null)} />{installHelpModal}<CookieBanner /></LangContext.Provider>;
+  }
+
+  if (view === 'info') {
+    return <LangContext.Provider value={ctxValue}><InfoPageView slug={infoSlug || 'ruhetag'} onHome={() => { try { window.history.replaceState({}, '', '/'); } catch {} go('home'); }} /></LangContext.Provider>;
   }
 
   if (view === 'kartenrad') {
