@@ -744,7 +744,7 @@ const MENU = [
   // des Filters in WhatsAppOrderView/GroupOrderView (MENU.filter(m =>
   // m.items.length > 0)) für Kunden unsichtbar, solange kein Eintrag drin ist.
   { key: 'neu', label: 'Neu hinzugefügt', items: [
-    { id: 'na192', name: 'Kapsalon', price: 6.0, desc: 'Pommes Frites, Dönerfleisch, geschmolzener Käse, frischer Salat (Eisberg, Tomaten, Zwiebeln), Knoblauchsauce & Sauce nach Wahl – z.B. Joppiesauce', alg: 'a,i,15' },
+    { id: 'na192', name: 'Kapsalon', price: 7.0, desc: 'Pommes Frites, Dönerfleisch, geschmolzener Käse, frischer Salat (Eisberg, Tomaten, Zwiebeln), Knoblauchsauce & Sauce nach Wahl – z.B. Joppiesauce', alg: 'a,i,15' },
     { id: 'na193', name: 'Portion Joppiesauce', price: 2.0, desc: 'Holländische Kultsoße – cremig, leicht süß mit Curry & Zwiebeln', alg: 'e,k' },
   ]},
   { key: 'kebap', label: 'Kebap', items: [
