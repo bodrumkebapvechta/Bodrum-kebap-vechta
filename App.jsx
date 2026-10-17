@@ -8570,33 +8570,11 @@ function PanelToast() {
 }
 
 
-// ── Personal-Login: "Kepenk" (Rollladen) ─────────────────────────────────────
-// Vollbild. Die PIN-Anzeige ist ein abstrakter Dönerspieß: jede Ziffer lässt
-// eine Scheibe von unten nach oben aufglühen. Richtig → Spieß dreht sich,
-// der Rollladen fährt hoch und gibt das Panel frei. Falsch → Scheiben fallen ab.
-function StaffGateClock() {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => { const t = setInterval(() => setNow(new Date()), 15000); return () => clearInterval(t); }, []);
-  const two = (n) => String(n).padStart(2, '0');
-  const hm = `${two(now.getHours())}:${two(now.getMinutes())}`;
-  const date = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-  const st = getOpenStatus(now);
-  const info = dayInfo(now);
-  const label = st.open
-    ? `Geöffnet bis ${st.closeAt}`
-    : !info.open
-      ? (info.note || 'Heute Ruhetag')
-      : st.nextOpen && dateKey(st.nextOpen) === dateKey(now)
-        ? `Öffnet um ${two(st.nextOpen.getHours())}:${two(st.nextOpen.getMinutes())}`
-        : 'Geschlossen';
-  return (
-    <div className="sg-clock">
-      <div className="sg-time">{hm}</div>
-      <div className="sg-date">{date}</div>
-      <div className="sg-shop"><span className="sg-shopdot" style={{ background: st.open ? '#6ee7a0' : '#ff8a6a' }} />{label}</div>
-    </div>
-  );
-}
+// ── Personal-Login ───────────────────────────────────────────────────────────
+// Vollbild, bewusst ruhig. Die PIN-Anzeige ist ein abstrakter Dönerspieß:
+// jede Ziffer lässt eine Scheibe von unten nach oben aufglühen. Richtig → der
+// Spieß dreht sich und der Login zieht sich kreisförmig in den Spieß zusammen
+// (das Panel liegt schon darunter). Falsch → Scheiben werden rot und fallen ab.
 function SpitMeter({ total, filled, stage, keystroke }) {
   const wMax = 112, wMin = 56;
   const step = total > 1 ? (wMax - wMin) / (total - 1) : 0;
@@ -8621,6 +8599,15 @@ function SpitMeter({ total, filled, stage, keystroke }) {
 }
 function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, setRemember, disabled, leaving, onExited }) {
   const doneRef = useRef(false);
+  const spitRef = useRef(null);
+  const [irisAt, setIrisAt] = useState('50% 34%');
+  useEffect(() => {
+    if (stage !== 'unlocked' || !spitRef.current) return;
+    const r = spitRef.current.getBoundingClientRect();
+    setIrisAt(`${Math.round(r.left + r.width / 2)}px ${Math.round(r.top + r.height / 2)}px`);
+  }, [stage]);
+  const REMEMBER_STEPS = [{ id: null, label: 'Aus' }, { id: '10m', label: '10 Min' }, { id: '1h', label: '1 Std' }, { id: 'today', label: 'bis heute Abend' }];
+  const remIdx = Math.max(0, REMEMBER_STEPS.findIndex((o) => o.id === remember));
   const finish = () => { if (doneRef.current) return; doneRef.current = true; onExited(); };
   useEffect(() => {
     if (!leaving) { doneRef.current = false; return undefined; }
@@ -8635,34 +8622,25 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
   const status = stage === 'wrong'
     ? 'Falscher PIN – bitte noch einmal'
     : stage === 'unlocked'
-      ? 'Willkommen, der Laden ist offen'
-      : pin.length ? `${pin.length} von ${pinLen}` : 'PIN eingeben';
+      ? 'Willkommen'
+      : 'PIN eingeben';
   // Per Portal direkt in <body>: so liegt der Login garantiert über allem
   // (auch über Hinweisleisten) und ist echtes Vollbild, egal welche
   // Eltern-Elemente Transformationen oder eigene Ebenen haben.
   return ReactDOM.createPortal(
-    <div className={`sg-root ${leaving ? 'sg-leave' : ''}`} onAnimationEnd={(e) => { if (e.target === e.currentTarget && leaving) finish(); }} role="dialog" aria-label="Personal-Bereich entsperren">
+    <div className={`sg-root ${leaving ? 'sg-leave' : ''}`} style={{ '--iris': irisAt }} onAnimationEnd={(e) => { if (e.target === e.currentTarget && leaving) finish(); }} role="dialog" aria-label="Personal-Bereich entsperren">
       <style>{`
         .sg-root { position: fixed; inset: 0; z-index: 600; height: 100dvh; overflow: hidden; color: #fff6ea; display: flex; flex-direction: column;
           background:
-            radial-gradient(ellipse 60% 38% at 50% 44%, rgba(255,170,60,.13), transparent 70%),
-            repeating-linear-gradient(180deg, rgba(255,255,255,.028) 0 2px, rgba(0,0,0,.05) 2px 3px, transparent 3px 38px),
+            radial-gradient(ellipse 55% 30% at 50% 30%, rgba(255,170,60,.12), transparent 70%),
             linear-gradient(180deg, #123323 0%, #0d2619 60%, #0a1f14 100%);
           padding: max(14px, env(safe-area-inset-top)) 20px max(18px, env(safe-area-inset-bottom)); font-variant-numeric: tabular-nums; }
-        .sg-root::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: #081a10; border-top: 1px solid rgba(255,199,56,.28); }
-        .sg-leave { animation: sgRoll .62s cubic-bezier(.75,0,.25,1) both; }
-        @keyframes sgRoll { 0% { transform: translateY(0); } 12% { transform: translateY(1.5%); } 100% { transform: translateY(-104%); } }
+        .sg-leave { animation: sgIris .6s cubic-bezier(.7,0,.25,1) both; }
+        @keyframes sgIris { 0% { clip-path: circle(150% at var(--iris)); } 100% { clip-path: circle(0% at var(--iris)); } }
         .sg-top { display: flex; align-items: center; justify-content: space-between; }
         .sg-back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: rgba(255,246,234,.72); padding: 8px 10px 8px 4px; border-radius: 10px; }
-        .sg-back:focus-visible, .sg-key:focus-visible, .sg-seg button:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
-        .sg-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: rgba(255,246,234,.8); }
-        .sg-brand span { font-weight: 500; color: rgba(255,246,234,.5); padding-left: 8px; border-left: 1px solid rgba(255,246,234,.2); }
-        .sg-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; width: 100%; max-width: 380px; margin: 0 auto; min-height: 0; }
-        .sg-clock { text-align: center; }
-        .sg-time { font-size: clamp(48px, 9dvh, 76px); font-weight: 200; letter-spacing: -.02em; line-height: 1; }
-        .sg-date { margin-top: 6px; font-size: 15px; font-weight: 500; color: rgba(255,246,234,.7); }
-        .sg-shop { margin-top: 10px; display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.78); padding: 5px 11px; border-radius: 99px; background: rgba(255,255,255,.06); }
-        .sg-shopdot { width: 7px; height: 7px; border-radius: 50%; }
+        .sg-back:focus-visible, .sg-key:focus-visible, .sg-remember:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
+        .sg-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(22px, 5dvh, 48px); width: 100%; max-width: 380px; margin: 0 auto; min-height: 0; }
         .sg-spit { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(4px, .8dvh, 7px); padding: 18px 0 16px; }
         .sg-skewer { position: absolute; top: 4px; bottom: 0; left: 50%; width: 3px; margin-left: -1.5px; border-radius: 2px; background: linear-gradient(180deg, #d9c49a, #8f7c56); opacity: .55; }
         .sg-knob { position: absolute; top: 0; left: 50%; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: #ffc738; box-shadow: 0 0 0 3px rgba(255,199,56,.18); transition: background .3s, box-shadow .3s; }
@@ -8684,23 +8662,18 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
         .sg-key:active { transform: scale(.93); background: rgba(255,199,56,.22); }
         .sg-key.sg-ghost { background: transparent; }
         .sg-key:disabled { opacity: .55; }
-        .sg-remember { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
-        .sg-remember > span { font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.62); white-space: nowrap; }
-        .sg-seg { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.25); }
-        .sg-seg button { padding: 6px 9px; border-radius: 9px; font-size: 12px; font-weight: 600; color: rgba(255,246,234,.68); transition: background .2s, color .2s; white-space: nowrap; }
-        .sg-seg button[aria-pressed="true"] { background: #ffc738; color: #153826; }
+        .sg-remember { font-size: 13px; font-weight: 600; color: rgba(255,246,234,.55); padding: 8px 12px; border-radius: 10px; }
+        .sg-remember b { color: #ffc738; font-weight: 700; }
         @media (prefers-reduced-motion: reduce) { .sg-root, .sg-root * { animation: none !important; transition: none !important; } }
       `}</style>
       <div className="sg-top">
         <button className="sg-back" onClick={onBack} disabled={disabled}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-          Zur Website
+          Website
         </button>
-        <div className="sg-brand">Bodrum Kebap<span>Personal</span></div>
       </div>
       <div className="sg-main">
-        <StaffGateClock />
-        <div className="flex flex-col items-center gap-2">
+        <div ref={spitRef} className="flex flex-col items-center gap-2">
           <SpitMeter total={pinLen} filled={pin.length} stage={stage} keystroke={keystroke} />
           <div className="sg-status" aria-live="polite" style={{ color: stage === 'wrong' ? '#ff8a8a' : stage === 'unlocked' ? '#8ff0b5' : 'rgba(255,246,234,.7)' }}>{status}</div>
         </div>
@@ -8713,14 +8686,9 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
             </button>
           )))}
         </div>
-        <div className="sg-remember">
-          <span>Angemeldet bleiben</span>
-          <div className="sg-seg" role="group" aria-label="Angemeldet bleiben">
-            {[{ id: null, label: 'Nein' }, { id: '10m', label: '10 Min' }, { id: '1h', label: '1 Std' }, { id: 'today', label: 'Heute' }].map((o) => (
-              <button key={o.label} aria-pressed={remember === o.id} onClick={() => setRemember(o.id)} disabled={disabled}>{o.label}</button>
-            ))}
-          </div>
-        </div>
+        <button className="sg-remember" onClick={() => setRemember(REMEMBER_STEPS[(remIdx + 1) % REMEMBER_STEPS.length].id)} disabled={disabled} aria-label={`Angemeldet bleiben: ${REMEMBER_STEPS[remIdx].label}. Tippen zum Ändern.`}>
+          Angemeldet bleiben: <b>{REMEMBER_STEPS[remIdx].label}</b>
+        </button>
       </div>
     </div>,
     document.body
