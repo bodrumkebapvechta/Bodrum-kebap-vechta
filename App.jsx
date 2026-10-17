@@ -8571,47 +8571,26 @@ function PanelToast() {
 
 
 // ── Personal-Login ───────────────────────────────────────────────────────────
-// Vollbild, bewusst ruhig. Die PIN-Anzeige ist ein abstrakter Dönerspieß:
-// jede Ziffer lässt eine Scheibe von unten nach oben aufglühen. Richtig → der
-// Spieß dreht sich und der Login zieht sich kreisförmig in den Spieß zusammen
-// (das Panel liegt schon darunter). Falsch → Scheiben werden rot und fallen ab.
-function SpitMeter({ total, filled, stage, keystroke }) {
-  const wMax = 112, wMin = 56;
-  const step = total > 1 ? (wMax - wMin) / (total - 1) : 0;
+// Vollbild, zweigeteilt: oben Markengelb mit dem großen Schloss, unten ein
+// dunkelgrünes Blatt mit PIN-Strichen und Zifferntasten.
+// Tippen → das Schloss zuckt kurz. Falscher PIN → Schloss rüttelt, Striche rot.
+// Richtiger PIN → Schloss springt auf, dann gleiten Gelb nach oben und Grün nach
+// unten auseinander und geben das Panel frei, das schon darunter liegt.
+function GateLockFallback({ open }) {
   return (
-    <div className={`sg-spit ${stage === 'wrong' ? 'sg-wrong' : ''} ${stage === 'unlocked' ? 'sg-ok' : ''}`} aria-hidden="true">
-      <span className="sg-skewer" />
-      <span className="sg-knob" />
-      {Array.from({ length: total }).map((_, i) => {
-        const fromBottom = total - 1 - i;
-        const on = fromBottom < filled || stage === 'unlocked';
-        const isNew = fromBottom === filled - 1 && stage === 'idle';
-        return (
-          <span
-            key={isNew ? `l${i}-${keystroke}` : `l${i}`}
-            className={`sg-layer ${on ? 'sg-on' : ''} ${isNew ? 'sg-new' : ''}`}
-            style={{ width: wMax - i * step, '--d': `${fromBottom * 0.06}s` }}
-          />
-        );
-      })}
-    </div>
+    <svg width="96" height="96" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M16 22V15a8 8 0 0 1 16 0v7" fill="none" stroke="#153826" strokeWidth="4.2" strokeLinecap="round" style={{ transformOrigin: '32px 22px', transform: open ? 'translateY(-4px) rotate(28deg)' : 'none', transition: 'transform .5s cubic-bezier(.34,1.5,.64,1)' }} />
+      <rect x="10" y="21" width="28" height="21" rx="6" fill="#153826" />
+      <circle cx="24" cy="30" r="2.6" fill="#fff6ea" />
+      <rect x="22.8" y="31" width="2.4" height="5" rx="1.2" fill="#fff6ea" />
+    </svg>
   );
 }
 function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, setRemember, disabled, leaving, onExited }) {
   const doneRef = useRef(false);
-  const spitRef = useRef(null);
-  const [irisAt, setIrisAt] = useState('50% 34%');
-  useEffect(() => {
-    if (stage !== 'unlocked' || !spitRef.current) return;
-    const r = spitRef.current.getBoundingClientRect();
-    setIrisAt(`${Math.round(r.left + r.width / 2)}px ${Math.round(r.top + r.height / 2)}px`);
-  }, [stage]);
-  const REMEMBER_STEPS = [{ id: null, label: 'Aus' }, { id: '10m', label: '10 Min' }, { id: '1h', label: '1 Std' }, { id: 'today', label: 'bis heute Abend' }];
-  const remIdx = Math.max(0, REMEMBER_STEPS.findIndex((o) => o.id === remember));
-  const finish = () => { if (doneRef.current) return; doneRef.current = true; onExited(); };
   useEffect(() => {
     if (!leaving) { doneRef.current = false; return undefined; }
-    const t = setTimeout(finish, 900); // Fallback, falls keine Animation läuft (reduzierte Bewegung)
+    const t = setTimeout(() => { if (!doneRef.current) { doneRef.current = true; onExited(); } }, 700);
     return () => clearTimeout(t);
   }, [leaving]);
   useEffect(() => {
@@ -8619,74 +8598,73 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
   }, []);
-  const status = stage === 'wrong'
-    ? 'Falscher PIN – bitte noch einmal'
-    : stage === 'unlocked'
-      ? 'Willkommen'
-      : 'PIN eingeben';
-  // Per Portal direkt in <body>: so liegt der Login garantiert über allem
-  // (auch über Hinweisleisten) und ist echtes Vollbild, egal welche
-  // Eltern-Elemente Transformationen oder eigene Ebenen haben.
+  const REMEMBER_STEPS = [{ id: null, label: 'Aus' }, { id: '10m', label: '10 Min' }, { id: '1h', label: '1 Std' }, { id: 'today', label: 'bis heute Abend' }];
+  const remIdx = Math.max(0, REMEMBER_STEPS.findIndex((o) => o.id === remember));
+  const status = stage === 'wrong' ? 'Falscher PIN' : stage === 'unlocked' ? 'Willkommen' : 'PIN eingeben';
+  const lockAnim = stage === 'wrong' ? 'lgRattle .5s ease' : stage === 'idle' && keystroke ? `${keystroke % 2 ? 'lgTapA' : 'lgTapB'} .22s ease` : 'none';
+  // Per Portal direkt in <body>: echtes Vollbild über allen anderen Ebenen.
   return ReactDOM.createPortal(
-    <div className={`sg-root ${leaving ? 'sg-leave' : ''}`} style={{ '--iris': irisAt }} onAnimationEnd={(e) => { if (e.target === e.currentTarget && leaving) finish(); }} role="dialog" aria-label="Personal-Bereich entsperren">
+    <div className={`lg-root ${leaving ? 'lg-leave' : ''}`} role="dialog" aria-label="Personal-Bereich entsperren">
       <style>{`
-        .sg-root { position: fixed; inset: 0; z-index: 600; height: 100dvh; overflow: hidden; color: #fff6ea; display: flex; flex-direction: column;
-          background:
-            radial-gradient(ellipse 55% 30% at 50% 30%, rgba(255,170,60,.12), transparent 70%),
-            linear-gradient(180deg, #123323 0%, #0d2619 60%, #0a1f14 100%);
-          padding: max(14px, env(safe-area-inset-top)) 20px max(18px, env(safe-area-inset-bottom)); font-variant-numeric: tabular-nums; }
-        .sg-leave { animation: sgIris .6s cubic-bezier(.7,0,.25,1) both; }
-        @keyframes sgIris { 0% { clip-path: circle(150% at var(--iris)); } 100% { clip-path: circle(0% at var(--iris)); } }
-        .sg-top { display: flex; align-items: center; justify-content: space-between; }
-        .sg-back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: rgba(255,246,234,.72); padding: 8px 10px 8px 4px; border-radius: 10px; }
-        .sg-back:focus-visible, .sg-key:focus-visible, .sg-remember:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
-        .sg-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(22px, 5dvh, 48px); width: 100%; max-width: 380px; margin: 0 auto; min-height: 0; }
-        .sg-spit { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(4px, .8dvh, 7px); padding: 18px 0 16px; }
-        .sg-skewer { position: absolute; top: 4px; bottom: 0; left: 50%; width: 3px; margin-left: -1.5px; border-radius: 2px; background: linear-gradient(180deg, #d9c49a, #8f7c56); opacity: .55; }
-        .sg-knob { position: absolute; top: 0; left: 50%; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: #ffc738; box-shadow: 0 0 0 3px rgba(255,199,56,.18); transition: background .3s, box-shadow .3s; }
-        .sg-layer { position: relative; display: block; height: clamp(10px, 1.6dvh, 13px); border-radius: 99px; background: rgba(255,246,234,.06); box-shadow: inset 0 0 0 1px rgba(255,246,234,.16); transition: background .25s, box-shadow .25s; }
-        .sg-layer.sg-on { background: linear-gradient(90deg, #e2681c 0%, #ffb23e 30%, #ffd77a 50%, #ffb23e 70%, #e2681c 100%); background-size: 200% 100%; box-shadow: 0 0 16px rgba(255,160,50,.42), inset 0 -2px 0 rgba(120,40,0,.25); }
-        .sg-layer.sg-new { animation: sgDrop .42s cubic-bezier(.2,1.4,.4,1) both; }
-        @keyframes sgDrop { 0% { transform: translateY(-16px) scaleX(.62); opacity: 0; filter: brightness(1.8); } 100% { transform: none; opacity: 1; filter: none; } }
-        .sg-ok .sg-layer { animation: sgTurn .7s linear infinite, sgGlow .5s ease var(--d) both; }
-        .sg-ok .sg-knob { background: #6ee7a0; box-shadow: 0 0 0 5px rgba(110,231,160,.22), 0 0 22px rgba(110,231,160,.5); }
-        @keyframes sgTurn { from { background-position: 0% 0; } to { background-position: -200% 0; } }
-        @keyframes sgGlow { 0% { filter: brightness(1); } 50% { filter: brightness(1.6); } 100% { filter: brightness(1.15); } }
-        .sg-wrong { animation: sgShake .45s ease; }
-        .sg-wrong .sg-layer.sg-on { background: #ff5a5a; box-shadow: 0 0 14px rgba(255,90,90,.45); animation: sgFall .5s cubic-bezier(.5,0,.75,0) .22s both; }
-        @keyframes sgShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-11px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(3px); } }
-        @keyframes sgFall { to { transform: translateY(26px) rotate(4deg); opacity: 0; } }
-        .sg-status { min-height: 20px; font-size: 14px; font-weight: 600; text-align: center; transition: color .2s; }
-        .sg-keys { display: grid; grid-template-columns: repeat(3, var(--k)); gap: clamp(8px, 1.6dvh, 14px) clamp(18px, 6vw, 28px); --k: clamp(62px, 9.4dvh, 78px); justify-content: center; }
-        .sg-key { width: var(--k); height: var(--k); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: calc(var(--k) * .4); font-weight: 400; color: #fff6ea; background: rgba(255,246,234,.065); transition: transform .09s ease, background .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
-        .sg-key:active { transform: scale(.93); background: rgba(255,199,56,.22); }
-        .sg-key.sg-ghost { background: transparent; }
-        .sg-key:disabled { opacity: .55; }
-        .sg-remember { font-size: 13px; font-weight: 600; color: rgba(255,246,234,.55); padding: 8px 12px; border-radius: 10px; }
-        .sg-remember b { color: #ffc738; font-weight: 700; }
-        @media (prefers-reduced-motion: reduce) { .sg-root, .sg-root * { animation: none !important; transition: none !important; } }
+        .lg-root { position: fixed; inset: 0; z-index: 600; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; font-variant-numeric: tabular-nums; }
+        .lg-top { position: relative; flex: 0 0 auto; background: #ffc738; color: #153826; padding: max(12px, env(safe-area-inset-top)) 20px 46px; display: flex; flex-direction: column; align-items: center; transition: transform .55s cubic-bezier(.7,0,.25,1) .05s; }
+        .lg-back { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 700; color: rgba(21,56,38,.7); padding: 8px 8px 8px 2px; border-radius: 10px; }
+        .lg-lockwrap { margin-top: clamp(6px, 2dvh, 20px); width: clamp(118px, 19dvh, 168px); height: clamp(118px, 19dvh, 168px); border-radius: 50%; background: #fff6ea; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 10px rgba(255,246,234,.35), 0 18px 40px rgba(120,80,0,.22); transform-origin: 50% 30%; }
+        @keyframes lgTapA { 0%,100% { transform: scale(1); } 45% { transform: scale(1.05); } }
+        @keyframes lgTapB { 0%,100% { transform: scale(1); } 45% { transform: scale(1.05); } }
+        @keyframes lgRattle { 0%,100% { transform: rotate(0); } 15% { transform: rotate(-9deg); } 35% { transform: rotate(8deg); } 55% { transform: rotate(-6deg); } 75% { transform: rotate(4deg); } }
+        .lg-title { margin-top: clamp(12px, 2.4dvh, 22px); font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+        .lg-status { margin-top: 2px; font-size: 14px; font-weight: 600; min-height: 20px; transition: color .2s; }
+        .lg-sheet { position: relative; flex: 1; margin-top: -28px; background: #153826; color: #fff6ea; border-radius: 30px 30px 0 0; padding: 26px 22px max(16px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-shadow: 0 -10px 30px rgba(10,30,20,.25); transition: transform .55s cubic-bezier(.7,0,.25,1) .05s; min-height: 0; }
+        .lg-leave .lg-top { transform: translateY(-105%); }
+        .lg-leave .lg-sheet { transform: translateY(105%); }
+        .lg-pins { display: flex; gap: 10px; padding: 4px 0 2px; }
+        .lg-pins.lg-wrong { animation: lgShake .42s ease; }
+        @keyframes lgShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+        .lg-pin { width: 26px; height: 6px; border-radius: 3px; background: rgba(255,246,234,.16); transition: background .2s; }
+        .lg-pin.on { background: #ffc738; }
+        .lg-pin.new { animation: lgPin .26s cubic-bezier(.2,1.5,.4,1) both; }
+        @keyframes lgPin { from { transform: scaleX(.3); } to { transform: none; } }
+        .lg-wrong .lg-pin.on { background: #ff6b6b; }
+        .lg-ok .lg-pin { background: #6ee7a0; transition: background .2s var(--d); }
+        .lg-keys { width: 100%; max-width: 340px; display: grid; grid-template-columns: repeat(3, 1fr); row-gap: clamp(2px, .8dvh, 8px); }
+        .lg-key { height: clamp(54px, 8.4dvh, 70px); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: clamp(26px, 4dvh, 32px); font-weight: 300; color: #fff6ea; transition: background .12s ease, transform .08s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
+        .lg-key:active { background: rgba(255,199,56,.16); transform: scale(.96); }
+        .lg-key:disabled { opacity: .45; }
+        .lg-remember { font-size: 13px; font-weight: 600; color: rgba(255,246,234,.5); padding: 6px 12px; border-radius: 10px; }
+        .lg-remember b { color: #ffc738; font-weight: 700; }
+        .lg-back:focus-visible, .lg-key:focus-visible, .lg-remember:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+        @media (min-width: 720px) { .lg-root { flex-direction: row; } .lg-top { flex: 1; justify-content: center; padding-bottom: 20px; } .lg-back { position: absolute; top: 18px; left: 20px; } .lg-sheet { flex: 0 0 440px; margin-top: 0; margin-left: -28px; border-radius: 30px 0 0 30px; justify-content: center; gap: 28px; } .lg-leave .lg-top { transform: translateX(-105%); } .lg-leave .lg-sheet { transform: translateX(105%); } }
+        @media (prefers-reduced-motion: reduce) { .lg-root, .lg-root * { animation: none !important; transition: none !important; } }
       `}</style>
-      <div className="sg-top">
-        <button className="sg-back" onClick={onBack} disabled={disabled}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+      <div className="lg-top">
+        <button className="lg-back" onClick={onBack} disabled={disabled}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
           Website
         </button>
-      </div>
-      <div className="sg-main">
-        <div ref={spitRef} className="flex flex-col items-center gap-2">
-          <SpitMeter total={pinLen} filled={pin.length} stage={stage} keystroke={keystroke} />
-          <div className="sg-status" aria-live="polite" style={{ color: stage === 'wrong' ? '#ff8a8a' : stage === 'unlocked' ? '#8ff0b5' : 'rgba(255,246,234,.7)' }}>{status}</div>
+        <div className="lg-lockwrap" style={{ animation: lockAnim }}>
+          <LottiePlayer src="/animations/padlock.json" size={150} holdFrame={10} playSegment={stage === 'unlocked' ? [10, 24] : undefined} placeholder={<GateLockFallback open={stage === 'unlocked'} />} />
         </div>
-        <div className="sg-keys">
+        <div className="lg-title">Personal-Bereich</div>
+        <div className="lg-status" aria-live="polite" style={{ color: stage === 'wrong' ? '#b3261e' : 'rgba(21,56,38,.72)' }}>{status}</div>
+      </div>
+      <div className="lg-sheet">
+        <div className={`lg-pins ${stage === 'wrong' ? 'lg-wrong' : ''} ${stage === 'unlocked' ? 'lg-ok' : ''}`} aria-hidden="true">
+          {Array.from({ length: pinLen }).map((_, i) => {
+            const isNew = i === pin.length - 1 && stage === 'idle';
+            return <span key={isNew ? `p${i}-${keystroke}` : `p${i}`} className={`lg-pin ${i < pin.length || stage === 'unlocked' ? 'on' : ''} ${isNew ? 'new' : ''}`} style={{ '--d': `${i * 0.05}s` }} />;
+          })}
+        </div>
+        <div className="lg-keys">
           {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => (k === '' ? <span key={i} /> : (
-            <button key={i} className={`sg-key ${k === 'del' ? 'sg-ghost' : ''}`} onClick={() => onKey(k)} disabled={disabled || (k === 'del' && !pin.length)} aria-label={k === 'del' ? 'Letzte Ziffer löschen' : k} style={k === 'del' && !pin.length ? { visibility: 'hidden' } : undefined}>
+            <button key={i} className="lg-key" onClick={() => onKey(k)} disabled={disabled || (k === 'del' && !pin.length)} aria-label={k === 'del' ? 'Letzte Ziffer löschen' : k} style={k === 'del' && !pin.length ? { visibility: 'hidden' } : undefined}>
               {k === 'del' ? (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" /><path d="m12.5 9.5 5 5m0-5-5 5" /></svg>
               ) : k}
             </button>
           )))}
         </div>
-        <button className="sg-remember" onClick={() => setRemember(REMEMBER_STEPS[(remIdx + 1) % REMEMBER_STEPS.length].id)} disabled={disabled} aria-label={`Angemeldet bleiben: ${REMEMBER_STEPS[remIdx].label}. Tippen zum Ändern.`}>
+        <button className="lg-remember" onClick={() => setRemember(REMEMBER_STEPS[(remIdx + 1) % REMEMBER_STEPS.length].id)} disabled={disabled} aria-label={`Angemeldet bleiben: ${REMEMBER_STEPS[remIdx].label}. Tippen zum Ändern.`}>
           Angemeldet bleiben: <b>{REMEMBER_STEPS[remIdx].label}</b>
         </button>
       </div>
