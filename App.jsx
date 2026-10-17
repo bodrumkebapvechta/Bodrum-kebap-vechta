@@ -8569,6 +8569,164 @@ function PanelToast() {
   );
 }
 
+
+// ── Personal-Login: "Kepenk" (Rollladen) ─────────────────────────────────────
+// Vollbild. Die PIN-Anzeige ist ein abstrakter Dönerspieß: jede Ziffer lässt
+// eine Scheibe von unten nach oben aufglühen. Richtig → Spieß dreht sich,
+// der Rollladen fährt hoch und gibt das Panel frei. Falsch → Scheiben fallen ab.
+function StaffGateClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 15000); return () => clearInterval(t); }, []);
+  const two = (n) => String(n).padStart(2, '0');
+  const hm = `${two(now.getHours())}:${two(now.getMinutes())}`;
+  const date = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+  const st = getOpenStatus(now);
+  const info = dayInfo(now);
+  const label = st.open
+    ? `Geöffnet bis ${st.closeAt}`
+    : !info.open
+      ? (info.note || 'Heute Ruhetag')
+      : st.nextOpen && dateKey(st.nextOpen) === dateKey(now)
+        ? `Öffnet um ${two(st.nextOpen.getHours())}:${two(st.nextOpen.getMinutes())}`
+        : 'Geschlossen';
+  return (
+    <div className="sg-clock">
+      <div className="sg-time">{hm}</div>
+      <div className="sg-date">{date}</div>
+      <div className="sg-shop"><span className="sg-shopdot" style={{ background: st.open ? '#6ee7a0' : '#ff8a6a' }} />{label}</div>
+    </div>
+  );
+}
+function SpitMeter({ total, filled, stage, keystroke }) {
+  const wMax = 112, wMin = 56;
+  const step = total > 1 ? (wMax - wMin) / (total - 1) : 0;
+  return (
+    <div className={`sg-spit ${stage === 'wrong' ? 'sg-wrong' : ''} ${stage === 'unlocked' ? 'sg-ok' : ''}`} aria-hidden="true">
+      <span className="sg-skewer" />
+      <span className="sg-knob" />
+      {Array.from({ length: total }).map((_, i) => {
+        const fromBottom = total - 1 - i;
+        const on = fromBottom < filled || stage === 'unlocked';
+        const isNew = fromBottom === filled - 1 && stage === 'idle';
+        return (
+          <span
+            key={isNew ? `l${i}-${keystroke}` : `l${i}`}
+            className={`sg-layer ${on ? 'sg-on' : ''} ${isNew ? 'sg-new' : ''}`}
+            style={{ width: wMax - i * step, '--d': `${fromBottom * 0.06}s` }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, setRemember, disabled, leaving, onExited }) {
+  const doneRef = useRef(false);
+  const finish = () => { if (doneRef.current) return; doneRef.current = true; onExited(); };
+  useEffect(() => {
+    if (!leaving) { doneRef.current = false; return undefined; }
+    const t = setTimeout(finish, 900); // Fallback, falls keine Animation läuft (reduzierte Bewegung)
+    return () => clearTimeout(t);
+  }, [leaving]);
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+  const status = stage === 'wrong'
+    ? 'Falscher PIN – bitte noch einmal'
+    : stage === 'unlocked'
+      ? 'Willkommen, der Laden ist offen'
+      : pin.length ? `${pin.length} von ${pinLen}` : 'PIN eingeben';
+  // Per Portal direkt in <body>: so liegt der Login garantiert über allem
+  // (auch über Hinweisleisten) und ist echtes Vollbild, egal welche
+  // Eltern-Elemente Transformationen oder eigene Ebenen haben.
+  return ReactDOM.createPortal(
+    <div className={`sg-root ${leaving ? 'sg-leave' : ''}`} onAnimationEnd={(e) => { if (e.target === e.currentTarget && leaving) finish(); }} role="dialog" aria-label="Personal-Bereich entsperren">
+      <style>{`
+        .sg-root { position: fixed; inset: 0; z-index: 600; height: 100dvh; overflow: hidden; color: #fff6ea; display: flex; flex-direction: column;
+          background:
+            radial-gradient(ellipse 60% 38% at 50% 44%, rgba(255,170,60,.13), transparent 70%),
+            repeating-linear-gradient(180deg, rgba(255,255,255,.028) 0 2px, rgba(0,0,0,.05) 2px 3px, transparent 3px 38px),
+            linear-gradient(180deg, #123323 0%, #0d2619 60%, #0a1f14 100%);
+          padding: max(14px, env(safe-area-inset-top)) 20px max(18px, env(safe-area-inset-bottom)); font-variant-numeric: tabular-nums; }
+        .sg-root::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: #081a10; border-top: 1px solid rgba(255,199,56,.28); }
+        .sg-leave { animation: sgRoll .62s cubic-bezier(.75,0,.25,1) both; }
+        @keyframes sgRoll { 0% { transform: translateY(0); } 12% { transform: translateY(1.5%); } 100% { transform: translateY(-104%); } }
+        .sg-top { display: flex; align-items: center; justify-content: space-between; }
+        .sg-back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: rgba(255,246,234,.72); padding: 8px 10px 8px 4px; border-radius: 10px; }
+        .sg-back:focus-visible, .sg-key:focus-visible, .sg-seg button:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
+        .sg-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: rgba(255,246,234,.8); }
+        .sg-brand span { font-weight: 500; color: rgba(255,246,234,.5); padding-left: 8px; border-left: 1px solid rgba(255,246,234,.2); }
+        .sg-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; width: 100%; max-width: 380px; margin: 0 auto; min-height: 0; }
+        .sg-clock { text-align: center; }
+        .sg-time { font-size: clamp(48px, 9dvh, 76px); font-weight: 200; letter-spacing: -.02em; line-height: 1; }
+        .sg-date { margin-top: 6px; font-size: 15px; font-weight: 500; color: rgba(255,246,234,.7); }
+        .sg-shop { margin-top: 10px; display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.78); padding: 5px 11px; border-radius: 99px; background: rgba(255,255,255,.06); }
+        .sg-shopdot { width: 7px; height: 7px; border-radius: 50%; }
+        .sg-spit { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(4px, .8dvh, 7px); padding: 18px 0 16px; }
+        .sg-skewer { position: absolute; top: 4px; bottom: 0; left: 50%; width: 3px; margin-left: -1.5px; border-radius: 2px; background: linear-gradient(180deg, #d9c49a, #8f7c56); opacity: .55; }
+        .sg-knob { position: absolute; top: 0; left: 50%; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: #ffc738; box-shadow: 0 0 0 3px rgba(255,199,56,.18); transition: background .3s, box-shadow .3s; }
+        .sg-layer { position: relative; display: block; height: clamp(10px, 1.6dvh, 13px); border-radius: 99px; background: rgba(255,246,234,.06); box-shadow: inset 0 0 0 1px rgba(255,246,234,.16); transition: background .25s, box-shadow .25s; }
+        .sg-layer.sg-on { background: linear-gradient(90deg, #e2681c 0%, #ffb23e 30%, #ffd77a 50%, #ffb23e 70%, #e2681c 100%); background-size: 200% 100%; box-shadow: 0 0 16px rgba(255,160,50,.42), inset 0 -2px 0 rgba(120,40,0,.25); }
+        .sg-layer.sg-new { animation: sgDrop .42s cubic-bezier(.2,1.4,.4,1) both; }
+        @keyframes sgDrop { 0% { transform: translateY(-16px) scaleX(.62); opacity: 0; filter: brightness(1.8); } 100% { transform: none; opacity: 1; filter: none; } }
+        .sg-ok .sg-layer { animation: sgTurn .7s linear infinite, sgGlow .5s ease var(--d) both; }
+        .sg-ok .sg-knob { background: #6ee7a0; box-shadow: 0 0 0 5px rgba(110,231,160,.22), 0 0 22px rgba(110,231,160,.5); }
+        @keyframes sgTurn { from { background-position: 0% 0; } to { background-position: -200% 0; } }
+        @keyframes sgGlow { 0% { filter: brightness(1); } 50% { filter: brightness(1.6); } 100% { filter: brightness(1.15); } }
+        .sg-wrong { animation: sgShake .45s ease; }
+        .sg-wrong .sg-layer.sg-on { background: #ff5a5a; box-shadow: 0 0 14px rgba(255,90,90,.45); animation: sgFall .5s cubic-bezier(.5,0,.75,0) .22s both; }
+        @keyframes sgShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-11px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(3px); } }
+        @keyframes sgFall { to { transform: translateY(26px) rotate(4deg); opacity: 0; } }
+        .sg-status { min-height: 20px; font-size: 14px; font-weight: 600; text-align: center; transition: color .2s; }
+        .sg-keys { display: grid; grid-template-columns: repeat(3, var(--k)); gap: clamp(8px, 1.6dvh, 14px) clamp(18px, 6vw, 28px); --k: clamp(62px, 9.4dvh, 78px); justify-content: center; }
+        .sg-key { width: var(--k); height: var(--k); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: calc(var(--k) * .4); font-weight: 400; color: #fff6ea; background: rgba(255,246,234,.065); transition: transform .09s ease, background .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
+        .sg-key:active { transform: scale(.93); background: rgba(255,199,56,.22); }
+        .sg-key.sg-ghost { background: transparent; }
+        .sg-key:disabled { opacity: .55; }
+        .sg-remember { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+        .sg-remember > span { font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.62); white-space: nowrap; }
+        .sg-seg { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.25); }
+        .sg-seg button { padding: 6px 9px; border-radius: 9px; font-size: 12px; font-weight: 600; color: rgba(255,246,234,.68); transition: background .2s, color .2s; white-space: nowrap; }
+        .sg-seg button[aria-pressed="true"] { background: #ffc738; color: #153826; }
+        @media (prefers-reduced-motion: reduce) { .sg-root, .sg-root * { animation: none !important; transition: none !important; } }
+      `}</style>
+      <div className="sg-top">
+        <button className="sg-back" onClick={onBack} disabled={disabled}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+          Zur Website
+        </button>
+        <div className="sg-brand">Bodrum Kebap<span>Personal</span></div>
+      </div>
+      <div className="sg-main">
+        <StaffGateClock />
+        <div className="flex flex-col items-center gap-2">
+          <SpitMeter total={pinLen} filled={pin.length} stage={stage} keystroke={keystroke} />
+          <div className="sg-status" aria-live="polite" style={{ color: stage === 'wrong' ? '#ff8a8a' : stage === 'unlocked' ? '#8ff0b5' : 'rgba(255,246,234,.7)' }}>{status}</div>
+        </div>
+        <div className="sg-keys">
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => (k === '' ? <span key={i} /> : (
+            <button key={i} className={`sg-key ${k === 'del' ? 'sg-ghost' : ''}`} onClick={() => onKey(k)} disabled={disabled || (k === 'del' && !pin.length)} aria-label={k === 'del' ? 'Letzte Ziffer löschen' : k} style={k === 'del' && !pin.length ? { visibility: 'hidden' } : undefined}>
+              {k === 'del' ? (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" /><path d="m12.5 9.5 5 5m0-5-5 5" /></svg>
+              ) : k}
+            </button>
+          )))}
+        </div>
+        <div className="sg-remember">
+          <span>Angemeldet bleiben</span>
+          <div className="sg-seg" role="group" aria-label="Angemeldet bleiben">
+            {[{ id: null, label: 'Nein' }, { id: '10m', label: '10 Min' }, { id: '1h', label: '1 Std' }, { id: 'today', label: 'Heute' }].map((o) => (
+              <button key={o.label} aria-pressed={remember === o.id} onClick={() => setRemember(o.id)} disabled={disabled}>{o.label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function SettingsRow({ id, icon, title, sub, openId, setOpenId, children }) {
   const isOpen = openId === id;
   return (
@@ -9024,6 +9182,12 @@ function StaffPanelView({ back }) {
     } catch { return false; }
   });
   const [unlocking, setUnlocking] = useState(false);
+  // Vollbild-Login ("Kepenk") bleibt nach erfolgreicher PIN noch kurz stehen,
+  // bis der Rollladen hochgefahren ist — das Panel liegt dann schon darunter.
+  const [gateOpen, setGateOpen] = useState(() => !ok);
+  useEffect(() => {
+    if (!ok) { setGateOpen(true); setPin(''); setUnlockStage('idle'); setUnlocking(false); }
+  }, [ok]);
   const [staffLookup, setStaffLookup] = useState('');
   const [lookupOpen, setLookupOpen] = useState(false);
   const [openSettingsId, setOpenSettingsId] = useState(null);
@@ -9130,7 +9294,7 @@ function StaffPanelView({ back }) {
           localStorage.setItem('bk_staff_remember_v1', JSON.stringify({ until: Date.now() + durationMs, epoch: epoch || 0 }));
         }).catch(() => {});
       }
-      setTimeout(() => setOk(true), 1100);
+      setTimeout(() => setOk(true), 820);
     } else if (pin.length >= staffPin.length) {
       setUnlockStage('wrong');
       try { if (navigator.vibrate) navigator.vibrate([70, 50, 70]); } catch {}
@@ -10245,89 +10409,23 @@ function StaffPanelView({ back }) {
         onLogout: () => { try { localStorage.removeItem('bk_staff_remember_v1'); } catch {} setOk(false); },
       } : undefined} /></div>
 
+      {gateOpen && (
+        <StaffGate
+          pin={pin}
+          pinLen={pinLen}
+          stage={unlockStage}
+          keystroke={keystroke}
+          onKey={pressPinKey}
+          onBack={back}
+          remember={rememberChoice}
+          setRemember={setRememberChoice}
+          disabled={unlocking}
+          leaving={ok}
+          onExited={() => setGateOpen(false)}
+        />
+      )}
       {!ok ? (
-        <div className="staff-login relative overflow-hidden flex justify-center px-6" style={{ minHeight: 'calc(100vh - 70px)', background: 'radial-gradient(ellipse at 50% 0%, #1f5238 0%, #153826 45%, #0b1d13 100%)' }}>
-          <style>{`
-            @keyframes slIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-            .sl-in { animation: slIn .6s cubic-bezier(.2,.8,.2,1) both; }
-            .sl-aurora { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .32; pointer-events: none; }
-            .sl-a1 { width: 260px; height: 260px; background: #ffc738; top: -80px; left: -80px; animation: slDrift1 14s ease-in-out infinite; }
-            .sl-a2 { width: 280px; height: 280px; background: #2d8a5c; bottom: -90px; right: -80px; animation: slDrift2 16s ease-in-out infinite; }
-            @keyframes slDrift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(70px,50px); } }
-            @keyframes slDrift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-60px,-40px); } }
-            @keyframes slSpin { to { transform: rotate(360deg); } }
-            @keyframes slBreathe { 0%,100% { opacity: .7; } 50% { opacity: 1; } }
-            .sl-spin { animation: slSpin 9s linear infinite, slBreathe 3.2s ease-in-out infinite; }
-            @keyframes slPop { 0% { transform: scale(.4); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
-            @keyframes slShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
-            @keyframes slOut { to { opacity: 0; transform: scale(.96); } }
-            .sl-key { transition: transform .1s ease, background .15s ease; -webkit-tap-highlight-color: transparent; }
-            .sl-key:active { transform: scale(.92); background: rgba(255,199,56,.25) !important; }
-            @media (prefers-reduced-motion: reduce) { .staff-login *, .staff-login { animation: none !important; } }
-          `}</style>
-          <div className="sl-aurora sl-a1" />
-          <div className="sl-aurora sl-a2" />
-          <div className="relative w-full flex flex-col items-center pt-8 pb-10" style={{ maxWidth: 330, animation: unlockStage === 'unlocked' ? 'slOut .35s ease .75s both' : 'none' }}>
-            <div className="sl-in relative" style={{ width: 112, height: 112, animationDelay: '.05s' }}>
-              <svg className="absolute inset-0" width="112" height="112" viewBox="0 0 112 112" aria-hidden="true">
-                <circle cx="56" cy="56" r="52" fill="none" stroke="rgba(255,199,56,.15)" strokeWidth="3" />
-                <circle className={unlockStage === 'idle' ? 'sl-spin' : ''} cx="56" cy="56" r="52" fill="none" stroke={unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : GOLD} strokeWidth="3" strokeLinecap="round" strokeDasharray="327" strokeDashoffset={unlockStage === 'unlocked' ? 0 : 105} style={{ transformOrigin: '56px 56px', transformBox: 'view-box', transition: 'stroke-dashoffset .7s cubic-bezier(.65,0,.35,1), stroke .3s' }} />
-              </svg>
-              <div className="absolute rounded-full flex items-center justify-center overflow-hidden" style={{ inset: 14, background: 'rgba(255,255,255,.06)' }}>
-                <LottiePlayer src="/animations/padlock.json" size={136} holdFrame={10} playSegment={unlockStage === 'unlocked' ? [10, 24] : undefined} placeholder={<AnimatedLock open={unlockStage === 'unlocked'} />} />
-              </div>
-            </div>
-            <div className="sl-in mt-4 text-[19px] font-black text-center" style={{ animationDelay: '.12s', color: unlockStage === 'unlocked' ? '#7ed99b' : '#fff6ea', transition: 'color .3s' }}>
-              {unlockStage === 'unlocked' ? 'Willkommen!' : 'Personal-Bereich'}
-            </div>
-            <div className="sl-in mt-1 text-[13px] text-center" style={{ animationDelay: '.18s', color: unlockStage === 'wrong' ? '#ff8a8a' : 'rgba(255,246,234,.6)', minHeight: 18 }}>
-              {unlockStage === 'wrong' ? 'Falscher PIN' : unlockStage === 'unlocked' ? 'Panel wird geöffnet…' : 'Bitte PIN eingeben'}
-            </div>
-            <div className="sl-in my-6" style={{ animationDelay: '.24s' }}>
-              <div className="flex gap-3" style={{ animation: unlockStage === 'wrong' ? 'slShake .42s ease' : 'none' }} aria-label={`${pin.length} von ${pinLen} Ziffern`}>
-                {Array.from({ length: pinLen }).map((_, i) => {
-                  const filled = i < pin.length;
-                  const col = unlockStage === 'unlocked' ? '#34c759' : unlockStage === 'wrong' ? '#ff4d4d' : GOLD;
-                  const d = unlockStage === 'unlocked' ? i * 0.07 : 0;
-                  return (
-                    <span
-                      key={i === pin.length - 1 ? `d${i}-${keystroke}` : `d${i}`}
-                      className="block rounded-full"
-                      style={{ width: 13, height: 13, border: `1.5px solid ${filled || unlockStage === 'unlocked' ? col : 'rgba(255,199,56,.5)'}`, background: filled || unlockStage === 'unlocked' ? col : 'transparent', transition: `background .25s ${d}s, border-color .25s ${d}s`, animation: i === pin.length - 1 && unlockStage === 'idle' ? 'slPop .28s cubic-bezier(.3,1.6,.5,1)' : 'none' }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-            <div className="sl-in grid" style={{ gridTemplateColumns: 'repeat(3, 68px)', gap: '14px 24px', animationDelay: '.3s' }}>
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => (k === '' ? <span key={i} /> : (
-                <button key={i} onClick={() => pressPinKey(k)} disabled={unlocking} aria-label={k === 'del' ? 'Löschen' : k} className="sl-key rounded-full flex items-center justify-center" style={{ width: 68, height: 68, background: k === 'del' ? 'transparent' : 'rgba(255,255,255,.07)', color: '#fff6ea', fontSize: 26, fontWeight: 400 }}>
-                  {k === 'del' ? (
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff6ea" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" /><path d="m12.5 9.5 5 5m0-5-5 5" /></svg>
-                  ) : k}
-                </button>
-              )))}
-            </div>
-            <div className="sl-in w-full mt-7 rounded-2xl p-3.5" style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,199,56,.2)', animationDelay: '.38s' }}>
-              <button onClick={() => setRememberChoice(rememberChoice ? null : '1h')} disabled={unlocking} className="w-full flex items-center justify-between gap-3 text-left">
-                <span className="min-w-0">
-                  <span className="block text-[13px] font-semibold" style={{ color: '#fff6ea' }}>Auf diesem Gerät merken</span>
-                  <span className="block text-[11px]" style={{ color: 'rgba(255,246,234,.55)' }}>{rememberHint}</span>
-                </span>
-                <PanelSwitch on={!!rememberChoice} onColor={GOLD} />
-              </button>
-              <div style={{ display: 'grid', gridTemplateRows: rememberChoice ? '1fr' : '0fr', marginTop: rememberChoice ? 10 : 0, transition: 'grid-template-rows .3s ease, margin-top .3s ease' }}>
-                <div style={{ overflow: 'hidden' }}>
-                  <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'rgba(0,0,0,.22)' }}>
-                    {[{ id: '10m', label: '10 Min' }, { id: '1h', label: '1 Stunde' }, { id: 'today', label: 'Heute' }].map((o) => (
-                      <button key={o.id} onClick={() => setRememberChoice(o.id)} disabled={unlocking} className="flex-1 py-2 rounded-[9px] text-xs font-semibold transition-colors" style={rememberChoice === o.id ? { background: GOLD, color: GREEN } : { color: 'rgba(255,246,234,.7)' }}>{o.label}</button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div style={{ minHeight: 'calc(100vh - 70px)', background: '#0d2619' }} />
       ) : (
         <div className="staff-panel relative overflow-hidden" style={{ background: PANEL_BG, minHeight: 'calc(100vh - 70px)', paddingBottom: 96, paddingTop: 20 }}>
           <style>{`
