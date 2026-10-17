@@ -8574,8 +8574,9 @@ function PanelToast() {
 // Vollbild: Laden-Foto unscharf und abgedunkelt im Hintergrund, in der Mitte
 // eine Glas-Karte mit dem Lottie-Schloss, PIN-Punkten, Zifferntasten und
 // "Angemeldet bleiben". Tippen → Schloss zuckt. Falscher PIN → Schloss
-// rüttelt, Punkte rot. Richtiger PIN → Schloss springt auf, Karte hebt ab,
-// Foto blendet aus und gibt das Panel frei, das schon darunter liegt.
+// rüttelt, Punkte rot. Richtiger PIN → Schloss springt auf, aus dem Schloss-
+// Kreis breitet sich Dunkelgrün über den ganzen Bildschirm aus, danach blendet
+// das Grün weich aus und gibt das Panel frei, das schon darunter liegt.
 function GateLockFallback({ open }) {
   return (
     <svg width="64" height="64" viewBox="0 0 48 48" aria-hidden="true">
@@ -8588,6 +8589,13 @@ function GateLockFallback({ open }) {
 }
 function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, setRemember, disabled, leaving, onExited }) {
   const doneRef = useRef(false);
+  const lockRef = useRef(null);
+  const [floodAt, setFloodAt] = useState('50% 30%');
+  useEffect(() => {
+    if (stage !== 'unlocked' || !lockRef.current) return;
+    const r = lockRef.current.getBoundingClientRect();
+    setFloodAt(`${Math.round(r.left + r.width / 2)}px ${Math.round(r.top + r.height / 2)}px`);
+  }, [stage]);
   useEffect(() => {
     if (!leaving) { doneRef.current = false; return undefined; }
     const t = setTimeout(() => { if (!doneRef.current) { doneRef.current = true; onExited(); } }, 650);
@@ -8651,20 +8659,21 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
         .g-seg button { flex: 1; padding: 7px 0; border-radius: 9px; font-size: 12.5px; font-weight: 700; color: rgba(255,246,234,.7); transition: background .2s, color .2s; }
         .g-seg button[aria-pressed="true"] { background: #ffc738; color: #153826; }
         .g-back:focus-visible, .g-key:focus-visible, .g-rem-row:focus-visible, .g-seg button:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
-        .g-leave { background: transparent; }
-        .g-leave .g-card { transform: translateY(-30px) scale(.92); opacity: 0; }
-        .g-leave .g-photo, .g-leave .g-shade, .g-leave .g-back { opacity: 0; }
+        .g-flood { position: absolute; inset: 0; z-index: 5; background: radial-gradient(circle at var(--at), #1f5238 0%, #153826 45%, #0f2a1c 100%); clip-path: circle(0px at var(--at)); animation: gFlood .5s cubic-bezier(.65,0,.25,1) .28s forwards; }
+        @keyframes gFlood { to { clip-path: circle(150% at var(--at)); } }
+        .g-root.g-leave { opacity: 0; transition: opacity .42s ease; }
         @media (prefers-reduced-motion: reduce) { .g-root, .g-root * { animation: none !important; transition: none !important; } }
       `}</style>
       <div className="g-photo" />
       <div className="g-shade" />
+      {stage === 'unlocked' && <div className="g-flood" style={{ '--at': floodAt }} aria-hidden="true" />}
       <div className="g-wrap">
         <button className="g-back" onClick={onBack} disabled={disabled}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
           Website
         </button>
         <div className={`g-card ${stage === 'wrong' ? 'shake' : ''}`}>
-          <div className="g-lockbox">
+          <div className="g-lockbox" ref={lockRef}>
             <div className="g-lock" style={{ animation: lockAnim }}>
               <LottiePlayer src="/animations/padlock.json" size={128} holdFrame={10} playSegment={stage === 'unlocked' ? [10, 24] : undefined} placeholder={<GateLockFallback open={stage === 'unlocked'} />} />
             </div>
