@@ -8571,31 +8571,22 @@ function PanelToast() {
 
 
 // ── Personal-Login ───────────────────────────────────────────────────────────
-// Vollbild-Login mit dem Lottie-Schloss. Drei Entwürfe zur Auswahl:
-//   ?gate=a  Foto  – Laden-Foto abgedunkelt im Hintergrund, Glas-Karte in der Mitte
-//   ?gate=b  Ruhig – tiefes Grün, großes Schloss, Tasten als feine Ringe
-//   ?gate=c  Zweiteilig – oben Grün mit Schloss, unten helles Tastenfeld
-// Die Wahl wird auf dem Gerät gemerkt (nur zum Vergleichen gedacht).
-function gateVariant() {
-  try {
-    const q = new URLSearchParams(window.location.search).get('gate');
-    if (q && /^[abc]$/.test(q)) { localStorage.setItem('bk_gate_variant', q); return q; }
-    const v = localStorage.getItem('bk_gate_variant');
-    return v && /^[abc]$/.test(v) ? v : 'a';
-  } catch { return 'a'; }
-}
-function GateLockFallback({ open, color = '#fff6ea' }) {
+// Vollbild: Laden-Foto unscharf und abgedunkelt im Hintergrund, in der Mitte
+// eine Glas-Karte mit dem Lottie-Schloss, PIN-Punkten, Zifferntasten und
+// "Angemeldet bleiben". Tippen → Schloss zuckt. Falscher PIN → Schloss
+// rüttelt, Punkte rot. Richtiger PIN → Schloss springt auf, Karte hebt ab,
+// Foto blendet aus und gibt das Panel frei, das schon darunter liegt.
+function GateLockFallback({ open }) {
   return (
     <svg width="64" height="64" viewBox="0 0 48 48" aria-hidden="true">
-      <path d="M16 22V15a8 8 0 0 1 16 0v7" fill="none" stroke={color} strokeWidth="4.2" strokeLinecap="round" style={{ transformOrigin: '32px 22px', transform: open ? 'translateY(-4px) rotate(28deg)' : 'none', transition: 'transform .5s cubic-bezier(.34,1.5,.64,1)' }} />
-      <rect x="10" y="21" width="28" height="21" rx="6" fill={color} />
+      <path d="M16 22V15a8 8 0 0 1 16 0v7" fill="none" stroke="#fff6ea" strokeWidth="4.2" strokeLinecap="round" style={{ transformOrigin: '32px 22px', transform: open ? 'translateY(-4px) rotate(28deg)' : 'none', transition: 'transform .5s cubic-bezier(.34,1.5,.64,1)' }} />
+      <rect x="10" y="21" width="28" height="21" rx="6" fill="#fff6ea" />
       <circle cx="24" cy="30" r="2.6" fill="#153826" />
       <rect x="22.8" y="31" width="2.4" height="5" rx="1.2" fill="#153826" />
     </svg>
   );
 }
 function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, setRemember, disabled, leaving, onExited }) {
-  const variant = useMemo(() => gateVariant(), []);
   const doneRef = useRef(false);
   useEffect(() => {
     if (!leaving) { doneRef.current = false; return undefined; }
@@ -8607,173 +8598,116 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
   }, []);
-  const REMEMBER_STEPS = [{ id: null, label: 'Aus' }, { id: '10m', label: '10 Min' }, { id: '1h', label: '1 Std' }, { id: 'today', label: 'bis heute Abend' }];
-  const remIdx = Math.max(0, REMEMBER_STEPS.findIndex((o) => o.id === remember));
+  const REMEMBER_OPTS = [{ id: '10m', label: '10 Min', hint: 'für 10 Minuten' }, { id: '1h', label: '1 Std', hint: 'für 1 Stunde' }, { id: 'today', label: 'Heute', hint: 'bis heute 23:59' }];
+  const remOn = !!remember;
+  const remHint = remOn ? `Ohne PIN ${(REMEMBER_OPTS.find((o) => o.id === remember) || REMEMBER_OPTS[1]).hint}` : 'PIN bei jedem Öffnen';
   const status = stage === 'wrong' ? 'Falscher PIN' : stage === 'unlocked' ? 'Willkommen' : 'PIN eingeben';
   const tap = stage === 'idle' && keystroke ? `${keystroke % 2 ? 'gTapA' : 'gTapB'} .22s ease` : 'none';
   const lockAnim = stage === 'wrong' ? 'gRattle .5s ease' : tap;
-  const lockSize = variant === 'b' ? 168 : 128;
 
-  const lock = (
-    <div className="g-lock" style={{ animation: lockAnim }}>
-      <LottiePlayer src="/animations/padlock.json" size={lockSize} holdFrame={10} playSegment={stage === 'unlocked' ? [10, 24] : undefined} placeholder={<GateLockFallback open={stage === 'unlocked'} />} />
-    </div>
-  );
-  const dots = (
-    <div className={`g-dots ${stage === 'wrong' ? 'g-wrong' : ''} ${stage === 'unlocked' ? 'g-ok' : ''}`} aria-hidden="true">
-      {Array.from({ length: pinLen }).map((_, i) => {
-        const isNew = i === pin.length - 1 && stage === 'idle';
-        return <span key={isNew ? `d${i}-${keystroke}` : `d${i}`} className={`g-dot ${i < pin.length || stage === 'unlocked' ? 'on' : ''} ${isNew ? 'new' : ''}`} style={{ '--d': `${i * 0.05}s` }} />;
-      })}
-    </div>
-  );
-  const keys = (
-    <div className="g-keys">
-      {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => (k === '' ? <span key={i} /> : (
-        <button key={i} className={`g-key ${k === 'del' ? 'g-del' : ''}`} onClick={() => onKey(k)} disabled={disabled || (k === 'del' && !pin.length)} aria-label={k === 'del' ? 'Letzte Ziffer löschen' : k} style={k === 'del' && !pin.length ? { visibility: 'hidden' } : undefined}>
-          {k === 'del' ? (
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" /><path d="m12.5 9.5 5 5m0-5-5 5" /></svg>
-          ) : k}
-        </button>
-      )))}
-    </div>
-  );
-  const rememberBtn = (
-    <button className="g-remember" onClick={() => setRemember(REMEMBER_STEPS[(remIdx + 1) % REMEMBER_STEPS.length].id)} disabled={disabled} aria-label={`Angemeldet bleiben: ${REMEMBER_STEPS[remIdx].label}. Tippen zum Ändern.`}>
-      Angemeldet bleiben: <b>{REMEMBER_STEPS[remIdx].label}</b>
-    </button>
-  );
-  const back = (
-    <button className="g-back" onClick={onBack} disabled={disabled}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-      Website
-    </button>
-  );
-  const title = <div className="g-title">Personal-Bereich</div>;
-  const statusEl = <div className="g-status" aria-live="polite">{status}</div>;
-
-  const common = `
-    .g-root { position: fixed; inset: 0; z-index: 600; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; font-variant-numeric: tabular-nums; color: #fff6ea; }
-    .g-back { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; padding: 8px 8px 8px 2px; border-radius: 10px; color: rgba(255,246,234,.7); }
-    .g-lock { display: flex; align-items: center; justify-content: center; transform-origin: 50% 35%; }
-    @keyframes gTapA { 0%,100% { transform: scale(1); } 45% { transform: scale(1.05); } }
-    @keyframes gTapB { 0%,100% { transform: scale(1); } 45% { transform: scale(1.05); } }
-    @keyframes gRattle { 0%,100% { transform: rotate(0); } 15% { transform: rotate(-9deg); } 35% { transform: rotate(8deg); } 55% { transform: rotate(-6deg); } 75% { transform: rotate(4deg); } }
-    .g-title { font-size: 21px; font-weight: 800; letter-spacing: -.01em; text-align: center; }
-    .g-status { font-size: 14px; font-weight: 600; min-height: 20px; text-align: center; color: ${stage === 'wrong' ? '#ff8a8a' : stage === 'unlocked' ? '#8ff0b5' : 'rgba(255,246,234,.65)'}; }
-    .g-dots { display: flex; gap: 14px; justify-content: center; }
-    .g-dots.g-wrong { animation: gShake .42s ease; }
-    @keyframes gShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
-    .g-dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid rgba(255,246,234,.45); transition: background .2s, border-color .2s; }
-    .g-dot.on { background: #ffc738; border-color: #ffc738; }
-    .g-dot.new { animation: gPop .26s cubic-bezier(.2,1.6,.4,1) both; }
-    @keyframes gPop { from { transform: scale(.3); } to { transform: none; } }
-    .g-wrong .g-dot.on { background: #ff6b6b; border-color: #ff6b6b; }
-    .g-ok .g-dot { background: #6ee7a0; border-color: #6ee7a0; transition: background .2s var(--d), border-color .2s var(--d); }
-    .g-keys { display: grid; grid-template-columns: repeat(3, var(--k)); justify-content: center; gap: clamp(10px, 1.8dvh, 16px) clamp(20px, 6vw, 30px); --k: clamp(60px, 9dvh, 74px); }
-    .g-key { width: var(--k); height: var(--k); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: calc(var(--k) * .42); font-weight: 300; color: inherit; transition: transform .08s ease, background .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
-    .g-key:active { transform: scale(.94); }
-    .g-key:disabled { opacity: .45; }
-    .g-del { background: transparent !important; border: 0 !important; }
-    .g-remember { font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 10px; color: rgba(255,246,234,.5); }
-    .g-remember b { color: #ffc738; font-weight: 700; }
-    .g-back:focus-visible, .g-key:focus-visible, .g-remember:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
-    @media (prefers-reduced-motion: reduce) { .g-root, .g-root * { animation: none !important; transition: none !important; } }
-  `;
-
-  let css = '';
-  let body = null;
-  if (variant === 'a') {
-    css = `
-      .g-root { background: #0b1d13; }
-      .g-photo { position: absolute; inset: -20px; background: url(/hero.jpg) center/cover no-repeat; filter: blur(14px) saturate(1.1); transform: scale(1.05); transition: opacity .5s ease, transform .6s ease; }
-      .g-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,24,15,.62), rgba(8,24,15,.86)); }
-      .g-wrap { position: relative; flex: 1; display: flex; flex-direction: column; padding: max(12px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
-      .g-card { margin: auto; width: 100%; max-width: 360px; border-radius: 30px; padding: 22px 18px 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 30px 70px rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; gap: clamp(10px, 2dvh, 18px); transition: transform .5s cubic-bezier(.7,0,.25,1), opacity .45s ease; }
-      .g-card.shake { animation: gShake .42s ease; }
-      .g-lockbox { width: 104px; height: 104px; border-radius: 50%; background: rgba(21,56,38,.85); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 6px rgba(255,199,56,.16); overflow: hidden; }
-      .g-key { background: rgba(255,255,255,.1); }
-      .g-key:active { background: rgba(255,199,56,.3); }
-      .g-leave .g-card { transform: translateY(-30px) scale(.92); opacity: 0; }
-      .g-leave .g-photo, .g-leave .g-shade { opacity: 0; transition: opacity .5s ease .1s; }
-      .g-leave { background: transparent; transition: background .5s ease .1s; }
-    `;
-    body = (
-      <>
-        <div className="g-photo" />
-        <div className="g-shade" />
-        <div className="g-wrap">
-          <div>{back}</div>
-          <div className={`g-card ${stage === 'wrong' ? 'shake' : ''}`}>
-            <div className="g-lockbox">{lock}</div>
-            <div>{title}{statusEl}</div>
-            {dots}
-            {keys}
-            {rememberBtn}
-          </div>
-        </div>
-      </>
-    );
-  } else if (variant === 'b') {
-    css = `
-      .g-root { background: radial-gradient(ellipse 70% 45% at 50% 28%, #1d4a33 0%, #123323 55%, #0b1d13 100%); padding: max(12px, env(safe-area-inset-top)) 20px max(16px, env(safe-area-inset-bottom)); transition: opacity .45s ease .15s; }
-      .g-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(14px, 3.2dvh, 30px); }
-      .g-key { background: transparent; border: 1px solid rgba(255,246,234,.22); }
-      .g-key:active { background: rgba(255,246,234,.14); }
-      .g-lock { transition: transform .6s cubic-bezier(.6,0,.3,1); }
-      .g-leave { opacity: 0; }
-      .g-leave .g-lock { transform: scale(5); }
-      .g-leave .g-hide { opacity: 0; transition: opacity .25s ease; }
-    `;
-    body = (
-      <>
-        <div className="g-hide">{back}</div>
-        <div className="g-main">
-          {lock}
-          <div className="g-hide flex flex-col items-center gap-3">{title}{statusEl}{dots}</div>
-          <div className="g-hide">{keys}</div>
-          <div className="g-hide">{rememberBtn}</div>
-        </div>
-      </>
-    );
-  } else {
-    css = `
-      .g-top { background: radial-gradient(ellipse 80% 70% at 50% 40%, #1d4a33, #153826 70%); padding: max(12px, env(safe-area-inset-top)) 20px 44px; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform .55s cubic-bezier(.7,0,.25,1) .05s; }
-      .g-top .g-back { align-self: flex-start; }
-      .g-sheet { flex: 1; margin-top: -28px; background: #fff6ea; color: #153826; border-radius: 30px 30px 0 0; padding: 24px 20px max(14px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; min-height: 0; transition: transform .55s cubic-bezier(.7,0,.25,1) .05s; box-shadow: 0 -12px 30px rgba(0,0,0,.18); }
-      .g-sheet .g-dot { border-color: rgba(21,56,38,.35); }
-      .g-sheet .g-dot.on { background: #153826; border-color: #153826; }
-      .g-sheet .g-wrong .g-dot.on { background: #d62828; border-color: #d62828; }
-      .g-sheet .g-ok .g-dot { background: #2f9e5b; border-color: #2f9e5b; }
-      .g-sheet .g-key { background: rgba(21,56,38,.06); font-weight: 400; }
-      .g-sheet .g-key:active { background: rgba(255,199,56,.45); }
-      .g-sheet .g-remember { color: rgba(21,56,38,.55); }
-      .g-sheet .g-remember b { color: #153826; }
-      .g-leave .g-top { transform: translateY(-105%); }
-      .g-leave .g-sheet { transform: translateY(105%); }
-      @media (min-width: 720px) { .g-root { flex-direction: row; } .g-top { flex: 1; justify-content: center; padding-bottom: 20px; } .g-top .g-back { position: absolute; top: 18px; left: 20px; } .g-sheet { flex: 0 0 440px; margin: 0 0 0 -28px; border-radius: 30px 0 0 30px; justify-content: center; gap: 26px; } .g-leave .g-top { transform: translateX(-105%); } .g-leave .g-sheet { transform: translateX(105%); } }
-    `;
-    body = (
-      <>
-        <div className="g-top">
-          {back}
-          {lock}
-          {title}
-          {statusEl}
-        </div>
-        <div className="g-sheet">
-          {dots}
-          {keys}
-          {rememberBtn}
-        </div>
-      </>
-    );
-  }
   // Per Portal direkt in <body>: echtes Vollbild über allen anderen Ebenen.
   return ReactDOM.createPortal(
     <div className={`g-root ${leaving ? 'g-leave' : ''}`} role="dialog" aria-label="Personal-Bereich entsperren">
-      <style>{common + css}</style>
-      {body}
+      <style>{`
+        .g-root { position: fixed; inset: 0; z-index: 600; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; font-variant-numeric: tabular-nums; color: #fff6ea; background: #0b1d13; transition: background .5s ease .1s; }
+        .g-photo { position: absolute; inset: -20px; background: url(/hero.jpg) center/cover no-repeat; filter: blur(14px) saturate(1.1); transform: scale(1.05); transition: opacity .5s ease .1s; }
+        .g-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,24,15,.62), rgba(8,24,15,.86)); transition: opacity .5s ease .1s; }
+        .g-wrap { position: relative; flex: 1; display: flex; flex-direction: column; padding: max(10px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom)); min-height: 0; }
+        .g-back { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; padding: 8px 8px 8px 2px; border-radius: 10px; color: rgba(255,246,234,.75); }
+        .g-card { margin: auto; width: 100%; max-width: 360px; border-radius: 30px; padding: clamp(16px, 2.6dvh, 22px) 16px 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 30px 70px rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.7dvh, 16px); transition: transform .5s cubic-bezier(.7,0,.25,1), opacity .45s ease; }
+        .g-card.shake { animation: gShake .42s ease; }
+        .g-lockbox { width: clamp(84px, 12dvh, 104px); height: clamp(84px, 12dvh, 104px); border-radius: 50%; background: rgba(21,56,38,.88); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 6px rgba(255,199,56,.16); overflow: hidden; flex-shrink: 0; }
+        .g-lock { display: flex; align-items: center; justify-content: center; transform-origin: 50% 35%; }
+        @keyframes gTapA { 0%,100% { transform: scale(1); } 45% { transform: scale(1.06); } }
+        @keyframes gTapB { 0%,100% { transform: scale(1); } 45% { transform: scale(1.06); } }
+        @keyframes gRattle { 0%,100% { transform: rotate(0); } 15% { transform: rotate(-9deg); } 35% { transform: rotate(8deg); } 55% { transform: rotate(-6deg); } 75% { transform: rotate(4deg); } }
+        .g-title { font-size: 20px; font-weight: 800; letter-spacing: -.01em; text-align: center; }
+        .g-status { font-size: 14px; font-weight: 600; min-height: 20px; text-align: center; color: ${stage === 'wrong' ? '#ff8a8a' : stage === 'unlocked' ? '#8ff0b5' : 'rgba(255,246,234,.65)'}; }
+        .g-dots { display: flex; gap: 14px; justify-content: center; }
+        .g-dots.g-wrong { animation: gShake .42s ease; }
+        @keyframes gShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+        .g-dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid rgba(255,246,234,.45); transition: background .2s, border-color .2s; }
+        .g-dot.on { background: #ffc738; border-color: #ffc738; }
+        .g-dot.new { animation: gPop .26s cubic-bezier(.2,1.6,.4,1) both; }
+        @keyframes gPop { from { transform: scale(.3); } to { transform: none; } }
+        .g-wrong .g-dot.on { background: #ff6b6b; border-color: #ff6b6b; }
+        .g-ok .g-dot { background: #6ee7a0; border-color: #6ee7a0; transition: background .2s var(--d), border-color .2s var(--d); }
+        .g-keys { display: grid; grid-template-columns: repeat(3, var(--k)); justify-content: center; gap: clamp(8px, 1.5dvh, 14px) clamp(18px, 6vw, 28px); --k: clamp(56px, 8.4dvh, 70px); }
+        .g-key { width: var(--k); height: var(--k); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: calc(var(--k) * .42); font-weight: 300; color: inherit; background: rgba(255,255,255,.1); transition: transform .08s ease, background .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
+        .g-key:active { transform: scale(.94); background: rgba(255,199,56,.3); }
+        .g-key:disabled { opacity: .45; }
+        .g-del { background: transparent !important; }
+        .g-rem { width: 100%; border-radius: 18px; background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.08); }
+        .g-rem-row { width: 100%; display: flex; align-items: center; gap: 11px; padding: 10px 12px; text-align: left; border-radius: 18px; }
+        .g-rem-ico { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: ${remOn ? 'rgba(255,199,56,.2)' : 'rgba(255,255,255,.08)'}; color: ${remOn ? '#ffc738' : 'rgba(255,246,234,.7)'}; transition: background .2s, color .2s; flex-shrink: 0; }
+        .g-rem-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .g-rem-text b { font-size: 14px; font-weight: 700; color: #fff6ea; }
+        .g-rem-text small { font-size: 12px; font-weight: 500; color: rgba(255,246,234,.6); }
+        .g-switch { width: 44px; height: 26px; border-radius: 13px; padding: 3px; background: ${remOn ? '#ffc738' : 'rgba(255,255,255,.2)'}; transition: background .2s; flex-shrink: 0; }
+        .g-switch i { display: block; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transform: translateX(${remOn ? '18px' : '0'}); transition: transform .22s cubic-bezier(.3,1.4,.5,1); }
+        .g-rem-opts { display: grid; grid-template-rows: ${remOn ? '1fr' : '0fr'}; transition: grid-template-rows .28s ease; }
+        .g-rem-opts > div { overflow: hidden; }
+        .g-seg { display: flex; gap: 4px; margin: 0 10px 10px; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.22); }
+        .g-seg button { flex: 1; padding: 7px 0; border-radius: 9px; font-size: 12.5px; font-weight: 700; color: rgba(255,246,234,.7); transition: background .2s, color .2s; }
+        .g-seg button[aria-pressed="true"] { background: #ffc738; color: #153826; }
+        .g-back:focus-visible, .g-key:focus-visible, .g-rem-row:focus-visible, .g-seg button:focus-visible { outline: 2px solid #ffc738; outline-offset: 2px; }
+        .g-leave { background: transparent; }
+        .g-leave .g-card { transform: translateY(-30px) scale(.92); opacity: 0; }
+        .g-leave .g-photo, .g-leave .g-shade, .g-leave .g-back { opacity: 0; }
+        @media (prefers-reduced-motion: reduce) { .g-root, .g-root * { animation: none !important; transition: none !important; } }
+      `}</style>
+      <div className="g-photo" />
+      <div className="g-shade" />
+      <div className="g-wrap">
+        <button className="g-back" onClick={onBack} disabled={disabled}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+          Website
+        </button>
+        <div className={`g-card ${stage === 'wrong' ? 'shake' : ''}`}>
+          <div className="g-lockbox">
+            <div className="g-lock" style={{ animation: lockAnim }}>
+              <LottiePlayer src="/animations/padlock.json" size={128} holdFrame={10} playSegment={stage === 'unlocked' ? [10, 24] : undefined} placeholder={<GateLockFallback open={stage === 'unlocked'} />} />
+            </div>
+          </div>
+          <div>
+            <div className="g-title">Personal-Bereich</div>
+            <div className="g-status" aria-live="polite">{status}</div>
+          </div>
+          <div className={`g-dots ${stage === 'wrong' ? 'g-wrong' : ''} ${stage === 'unlocked' ? 'g-ok' : ''}`} aria-hidden="true">
+            {Array.from({ length: pinLen }).map((_, i) => {
+              const isNew = i === pin.length - 1 && stage === 'idle';
+              return <span key={isNew ? `d${i}-${keystroke}` : `d${i}`} className={`g-dot ${i < pin.length || stage === 'unlocked' ? 'on' : ''} ${isNew ? 'new' : ''}`} style={{ '--d': `${i * 0.05}s` }} />;
+            })}
+          </div>
+          <div className="g-keys">
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => (k === '' ? <span key={i} /> : (
+              <button key={i} className={`g-key ${k === 'del' ? 'g-del' : ''}`} onClick={() => onKey(k)} disabled={disabled || (k === 'del' && !pin.length)} aria-label={k === 'del' ? 'Letzte Ziffer löschen' : k} style={k === 'del' && !pin.length ? { visibility: 'hidden' } : undefined}>
+                {k === 'del' ? (
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" /><path d="m12.5 9.5 5 5m0-5-5 5" /></svg>
+                ) : k}
+              </button>
+            )))}
+          </div>
+          <div className="g-rem">
+            <button className="g-rem-row" role="switch" aria-checked={remOn} onClick={() => setRemember(remOn ? null : '1h')} disabled={disabled}>
+              <span className="g-rem-ico" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3" /><path d="M10.5 18h3" /></svg>
+              </span>
+              <span className="g-rem-text"><b>Angemeldet bleiben</b><small>{remHint}</small></span>
+              <span className="g-switch" aria-hidden="true"><i /></span>
+            </button>
+            <div className="g-rem-opts">
+              <div>
+                <div className="g-seg" role="group" aria-label="Wie lange angemeldet bleiben">
+                  {REMEMBER_OPTS.map((o) => (
+                    <button key={o.id} aria-pressed={remember === o.id} onClick={() => setRemember(o.id)} disabled={disabled} tabIndex={remOn ? 0 : -1}>{o.label}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>,
     document.body
   );
