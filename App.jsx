@@ -538,7 +538,7 @@ function useLang() {
   const [lang, setLang] = useState(() => {
     try { return localStorage.getItem('bk_lang') || 'de'; } catch { return 'de'; }
   });
-  const changeLang = (l) => { setLang(l); try { localStorage.setItem('bk_lang', l); } catch {} };
+  const changeLang = (l) => { setLang(l); try { localStorage.setItem('bk_lang', l); } catch {} recordLang(l, true); };
   const t = (key) => UI[key]?.[lang] ?? UI[key]?.de ?? key;
   return { lang, setLang: changeLang, t };
 }
@@ -1393,6 +1393,46 @@ function InfoPageView({ slug, onHome }) {
       <button onClick={onHome} className="w-full mt-4 py-3.5 rounded-2xl font-black text-sm text-white" style={{ maxWidth: 520, background: GREEN, boxShadow: '0 8px 20px rgba(21,56,38,.25)' }}>{t('tischMenuBackHome')} →</button>
     </div>
   );
+}
+
+
+// ── Sprach-Statistik ─────────────────────────────────────────────────────────
+// Pro Gerät und Tag EIN Eintrag langday:YYYY-MM-DD:<Geräte-ID> mit der Sprache,
+// in der die Seite genutzt wurde (bei Sprachwechsel wird er überschrieben →
+// es zählt die zuletzt gewählte Sprache des Tages) und der Handy-Sprache.
+// Anonym: keine Namen, keine IP. Einträge älter als 90 Tage werden gelöscht.
+function visitorId() {
+  try {
+    let v = localStorage.getItem('bk_vid');
+    if (!v) { v = makeShortCode(10); localStorage.setItem('bk_vid', v); }
+    return v;
+  } catch { return ''; }
+}
+function deviceLang() {
+  try { return String((navigator.languages && navigator.languages[0]) || navigator.language || '').slice(0, 2).toLowerCase(); } catch { return ''; }
+}
+function recordLang(lang, switched) {
+  try {
+    const vid = visitorId();
+    if (!vid || !lang) return;
+    const day = berlinDayKey();
+    const mark = `${day}:${lang}`;
+    const prev = localStorage.getItem('bk_langday') || '';
+    if (prev === mark) return;
+    const changedToday = prev.startsWith(`${day}:`);
+    localStorage.setItem('bk_langday', mark);
+    safeSet(`langday:${day}:${vid}`, { lang, device: deviceLang(), switched: !!(switched || changedToday), ts: Date.now() });
+  } catch {}
+}
+async function cleanupOldLangStats() {
+  try {
+    if (sessionStorage.getItem('bk_langclean')) return;
+    sessionStorage.setItem('bk_langclean', '1');
+    const d = berlinNow(); d.setDate(d.getDate() - 90);
+    const cutoff = `langday:${dateKey(d)}`;
+    const rows = await safeListPrefixOldest('langday:', 500);
+    await Promise.all(rows.filter((r) => r.key < cutoff).map((r) => safeDeleteKey(r.key)));
+  } catch {}
 }
 
 function logVisit(lang, source) {
@@ -8908,6 +8948,68 @@ function HoursEditor() {
   );
 }
 
+
+// Personal-Bereich → Statistik: In welcher Sprache wird die Seite genutzt?
+function LanguageStats() {
+  const [range, setRange] = useState(7);
+  const [rows, setRows] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    setRows(null);
+    const days = [];
+    for (let i = 0; i < range; i++) { const d = berlinNow(); d.setDate(d.getDate() - i); days.push(dateKey(d)); }
+    Promise.all(days.map((k) => safeListPrefix(`langday:${k}:`, 1000))).then((rs) => { if (alive) setRows(rs.flat()); });
+    return () => { alive = false; };
+  }, [range]);
+  const total = rows ? rows.length : 0;
+  const site = {}, device = {};
+  let switched = 0, mismatch = 0;
+  (rows || []).forEach((r) => {
+    const v = r.value || {};
+    if (!v.lang) return;
+    site[v.lang] = (site[v.lang] || 0) + 1;
+    if (v.device) device[v.device] = (device[v.device] || 0) + 1;
+    if (v.switched) switched++;
+    if (v.device && LANG_NAMES[v.device] && v.device !== v.lang) mismatch++;
+  });
+  const siteRows = Object.entries(site).sort((a, b) => b[1] - a[1]);
+  const deviceRows = Object.entries(device).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const pct = (n) => (total ? Math.round((n / total) * 100) : 0);
+  const DEVICE_NAMES = { de: 'Deutsch', en: 'Englisch', tr: 'Türkisch', ro: 'Rumänisch', nl: 'Niederländisch', sq: 'Albanisch', ku: 'Kurdisch', pl: 'Polnisch', ru: 'Russisch', ar: 'Arabisch', uk: 'Ukrainisch', fr: 'Französisch', es: 'Spanisch', it: 'Italienisch', bg: 'Bulgarisch', fa: 'Persisch' };
+  const Bar = ({ label, n, color }) => (
+    <div className="mb-2">
+      <div className="flex justify-between text-[12.5px] font-semibold mb-1" style={{ color: PANEL_TEXT }}>
+        <span>{label}</span>
+        <span style={{ color: PANEL_MUTED }}>{n} · {pct(n)} %</span>
+      </div>
+      <div className="h-2 rounded-full overflow-hidden" style={{ background: '#efebe3' }}>
+        <div className="h-full rounded-full" style={{ width: `${Math.max(3, pct(n))}%`, background: color, transformOrigin: 'left', animation: 'spBar .6s cubic-bezier(.2,.8,.2,1) both' }} />
+      </div>
+    </div>
+  );
+  return (
+    <div>
+      <div className="flex gap-1 p-1 rounded-xl mb-3" style={{ background: '#f4f2ed' }}>
+        {[{ d: 1, l: 'Heute' }, { d: 7, l: '7 Tage' }, { d: 30, l: '30 Tage' }].map((o) => (
+          <button key={o.d} onClick={() => setRange(o.d)} className="flex-1 py-2 rounded-lg text-xs font-bold" style={range === o.d ? { background: GREEN, color: '#fff' } : { color: PANEL_MUTED }}>{o.l}</button>
+        ))}
+      </div>
+      {rows === null && <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt…</p>}
+      {rows && total === 0 && <p className="text-xs" style={{ color: PANEL_MUTED }}>Noch keine Daten für diesen Zeitraum. Die Sprach-Zählung läuft seit dem 19.10.2026.</p>}
+      {rows && total > 0 && (
+        <>
+          <p className="text-[12px] mb-2.5" style={{ color: PANEL_MUTED }}><b style={{ color: PANEL_TEXT }}>{total}</b> Besucher · so haben sie die Seite gelesen:</p>
+          {siteRows.map(([l, n], i) => <Bar key={l} label={`${LANG_FLAGS[l] || '🌐'} ${LANG_NAMES[l] || l}`} n={n} color={i === 0 ? GREEN : '#7aa58c'} />)}
+          <p className="text-[11.5px] mt-1 mb-3" style={{ color: PANEL_MUTED }}>{switched} davon haben die Sprache selbst umgestellt.</p>
+          <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>SPRACHE DES HANDYS</div>
+          {deviceRows.map(([l, n]) => <Bar key={l} label={DEVICE_NAMES[l] || l.toUpperCase()} n={n} color="#d9a441" />)}
+          {mismatch > 0 && <p className="text-[11.5px] mt-1 rounded-lg px-3 py-2" style={{ background: '#fdf1d8', color: '#8a5a00' }}>{mismatch} Besucher hatten ein Handy in einer Sprache, die die Seite anbietet, haben sie aber in einer anderen Sprache gesehen.</p>}
+        </>
+      )}
+    </div>
+  );
+}
+
 function LoyaltyAdminPanel() {
   const [search, setSearch] = useState('');
   const [newStampIdx, setNewStampIdx] = useState(-1);
@@ -11105,6 +11207,9 @@ function StaffPanelView({ back }) {
                   </SettingsRow>
                 )}
 
+                <SettingsRow id="statSprachen" icon="🌍" title="Sprachen der Besucher" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                  <LanguageStats />
+                </SettingsRow>
                 <SettingsRow id="statKundenwuensche" icon="💡" title={`Kundenwünsche (${wishes.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                   {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
                   {wishes.slice(0, 30).map((w) => (
@@ -13355,6 +13460,7 @@ function AppMain() {
     });
   }, []);
   const langCtx = useLang();
+  useEffect(() => { recordLang(langCtx.lang, false); cleanupOldLangStats(); }, []);
   useEffect(() => {
     // Tischmenü wird bisher NUR aufgerufen, wenn jemand über den QR-Code
     // (Link mit ?menu=1) direkt einsteigt — HomeView's eigener logVisit()
