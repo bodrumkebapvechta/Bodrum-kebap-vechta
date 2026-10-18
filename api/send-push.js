@@ -9,12 +9,22 @@
 // mitgeschickt wird, geht die Nachricht stattdessen NUR an das Gerät, das
 // beim Personal-Login mit dem Tag "owner" markiert wurde.
 
+import { verifyToken } from './_lib/staff.js';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { title, message, url, targetOwner } = req.body || {};
+  const { title, message, url, targetOwner, token } = req.body || {};
+  // Nachrichten an ALLE Abonnenten nur für eingeloggtes Personal.
+  // Hinweise nur an das Inhaber-Gerät (neue Bestellung usw.) bleiben offen,
+  // weil Kunden-Aktionen sie auslösen.
+  if (!targetOwner) {
+    let allowed = false;
+    try { allowed = !!(await verifyToken(token)); } catch {}
+    if (!allowed) return res.status(401).json({ error: 'Nicht angemeldet' });
+  }
   if (!title || !message) {
     return res.status(400).json({ error: 'title und message sind erforderlich' });
   }

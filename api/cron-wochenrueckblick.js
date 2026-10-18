@@ -16,11 +16,13 @@ async function fetchPrefix(prefix, limit = 3000) {
 }
 
 async function saveReport(key, value) {
+  // weeklyreport:* darf nur der Server schreiben (Row Level Security).
+  const WRITE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_KEY;
   await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
     method: 'POST',
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: WRITE_KEY,
+      Authorization: `Bearer ${WRITE_KEY}`,
       'Content-Type': 'application/json',
       Prefer: 'resolution=merge-duplicates',
     },
