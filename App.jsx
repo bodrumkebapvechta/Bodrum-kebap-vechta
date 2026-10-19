@@ -9034,16 +9034,17 @@ function LanguageStats() {
   });
   const siteRows = Object.entries(site).sort((a, b) => b[1] - a[1]);
   const deviceRows = Object.entries(device).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const pct = (n) => (total ? Math.round((n / total) * 100) : 0);
-  const DEVICE_NAMES = { de: 'Deutsch', en: 'Englisch', tr: 'Türkisch', ro: 'Rumänisch', nl: 'Niederländisch', sq: 'Albanisch', ku: 'Kurdisch', pl: 'Polnisch', ru: 'Russisch', ar: 'Arabisch', uk: 'Ukrainisch', fr: 'Französisch', es: 'Spanisch', it: 'Italienisch', bg: 'Bulgarisch', fa: 'Persisch' };
-  const Bar = ({ label, n, color }) => (
-    <div className="mb-2">
-      <div className="flex justify-between text-[12.5px] font-semibold mb-1" style={{ color: PANEL_TEXT }}>
+  const maxSite = siteRows.length ? siteRows[0][1] : 1;
+  const maxDevice = deviceRows.length ? deviceRows[0][1] : 1;
+  const DEVICE_NAMES = { de: 'Deutsch', en: 'Englisch', tr: 'Türkisch', ro: 'Rumänisch', nl: 'Niederländisch', sq: 'Albanisch', ku: 'Kurdisch', pl: 'Polnisch', ru: 'Russisch', ar: 'Arabisch', uk: 'Ukrainisch', fr: 'Französisch', es: 'Spanisch', it: 'Italienisch', bg: 'Bulgarisch', fa: 'Persisch', zh: 'Chinesisch', hr: 'Kroatisch', sr: 'Serbisch', bs: 'Bosnisch', el: 'Griechisch', pt: 'Portugiesisch', hu: 'Ungarisch', cs: 'Tschechisch', vi: 'Vietnamesisch', hi: 'Hindi', ur: 'Urdu', ti: 'Tigrinya', so: 'Somali', ja: 'Japanisch', ko: 'Koreanisch' };
+  const Bar = ({ label, n, max, color }) => (
+    <div className="mb-2.5">
+      <div className="flex justify-between items-baseline text-[14px] font-semibold mb-1" style={{ color: PANEL_TEXT }}>
         <span>{label}</span>
-        <span style={{ color: PANEL_MUTED }}>{n} · {pct(n)} %</span>
+        <span className="text-[16px] font-black">{n}</span>
       </div>
       <div className="h-2 rounded-full overflow-hidden" style={{ background: '#efebe3' }}>
-        <div className="h-full rounded-full" style={{ width: `${Math.max(3, pct(n))}%`, background: color, transformOrigin: 'left', animation: 'spBar .6s cubic-bezier(.2,.8,.2,1) both' }} />
+        <div className="h-full rounded-full" style={{ width: `${Math.max(4, Math.round((n / max) * 100))}%`, background: color, transformOrigin: 'left', animation: 'spBar .6s cubic-bezier(.2,.8,.2,1) both' }} />
       </div>
     </div>
   );
@@ -9058,12 +9059,22 @@ function LanguageStats() {
       {rows && total === 0 && <p className="text-xs" style={{ color: PANEL_MUTED }}>Noch keine Daten für diesen Zeitraum. Die Sprach-Zählung läuft seit dem 19.10.2026.</p>}
       {rows && total > 0 && (
         <>
-          <p className="text-[12px] mb-2.5" style={{ color: PANEL_MUTED }}><b style={{ color: PANEL_TEXT }}>{total}</b> Besucher · so haben sie die Seite gelesen:</p>
-          {siteRows.map(([l, n], i) => <Bar key={l} label={`${LANG_FLAGS[l] || '🌐'} ${LANG_NAMES[l] || l}`} n={n} color={i === 0 ? GREEN : '#7aa58c'} />)}
-          <p className="text-[11.5px] mt-1 mb-3" style={{ color: PANEL_MUTED }}>{switched} davon haben die Sprache selbst umgestellt.</p>
-          <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>SPRACHE DES HANDYS</div>
-          {deviceRows.map(([l, n]) => <Bar key={l} label={DEVICE_NAMES[l] || l.toUpperCase()} n={n} color="#d9a441" />)}
-          {mismatch > 0 && <p className="text-[11.5px] mt-1 rounded-lg px-3 py-2" style={{ background: '#fdf1d8', color: '#8a5a00' }}>{mismatch} Besucher hatten ein Handy in einer Sprache, die die Seite anbietet, haben sie aber in einer anderen Sprache gesehen.</p>}
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="text-[28px] font-black leading-none" style={{ color: GREEN }}>{total}</span>
+            <span className="text-[13px] font-semibold" style={{ color: PANEL_MUTED }}>Besucher</span>
+          </div>
+          <div className="text-[13px] font-bold mb-2" style={{ color: PANEL_TEXT }}>Seite gelesen auf</div>
+          {siteRows.map(([l, n], i) => <Bar key={l} label={`${LANG_FLAGS[l] || '🌐'} ${LANG_NAMES[l] || l}`} n={n} max={maxSite} color={i === 0 ? GREEN : '#7aa58c'} />)}
+          <div className="text-[13px] font-bold mt-4 mb-2" style={{ color: PANEL_TEXT }}>Sprache am Handy</div>
+          {deviceRows.map(([l, n]) => <Bar key={l} label={DEVICE_NAMES[l] || l.toUpperCase()} n={n} max={maxDevice} color="#d9a441" />)}
+          <div className="mt-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold flex justify-between" style={{ background: '#f4f2ed', color: PANEL_TEXT }}>
+            <span>Sprache selbst gewechselt</span><span className="font-black">{switched}</span>
+          </div>
+          {mismatch > 0 && (
+            <div className="mt-2 rounded-xl px-3 py-2.5 text-[13px] font-semibold flex justify-between gap-3" style={{ background: '#fdf1d8', color: '#8a5a00' }}>
+              <span>Nicht in ihrer Handy-Sprache gelesen (obwohl angeboten)</span><span className="font-black">{mismatch}</span>
+            </div>
+          )}
         </>
       )}
     </div>
