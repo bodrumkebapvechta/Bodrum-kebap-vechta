@@ -11,6 +11,8 @@
 // Jeder Push geht NUR an das eine Gerät mit dem passenden "loyalty_code"-Tag
 // (siehe OneSignal.User.addTag im Frontend), nicht an alle Abonnenten.
 
+import { kvSet } from './_lib/staff.js';
+
 const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
 const LOYALTY_TARGET = 8;
@@ -25,17 +27,9 @@ async function fetchAllLoyaltyCards() {
   return res.json();
 }
 
+// Schreibt mit dem Service-Role-Key (Stempelkarten sind für Browser schreibgeschützt).
 async function saveCard(key, value) {
-  await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
-    method: 'POST',
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'resolution=merge-duplicates',
-    },
-    body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
-  });
+  await kvSet(key, value);
 }
 
 async function sendToCode(REST_API_KEY, code, title, message) {

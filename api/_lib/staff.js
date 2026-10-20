@@ -99,3 +99,10 @@ export function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
   try { return JSON.parse(req.body || '{}'); } catch { return {}; }
 }
+
+// Alle Einträge mit diesem Präfix (max. limit), neueste zuerst.
+export async function kvList(prefix, limit = 1000) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=${limit}`, { headers: headers() });
+  if (!r.ok) throw new Error(`kvList ${r.status}`);
+  return r.json();
+}

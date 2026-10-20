@@ -1607,62 +1607,36 @@ function newStampToken() {
 function stampTokenFromUrl() {
   try { return new URLSearchParams(window.location.search).get('stamp') || ''; } catch { return ''; }
 }
-// Schreibt eine Karte und MELDET Fehler (statt sie zu verschlucken), damit
-// niemals ein Stempel als "gespeichert" angezeigt wird, der nicht gespeichert ist.
-async function saveLoyaltyCard(code, value) {
-  const ok = await safeSet(`loyalty:${code}`, value);
-  if (!ok) throw new Error('LOYALTY_OFFLINE');
+// Stempelkarte: ALLE Schreibvorgänge laufen über den Server (/api/staff-write
+// mit { loyalty: '<aktion>' }). Der Browser darf "loyalty:*" nur noch lesen –
+// so kann sich niemand selbst Stempel in die Datenbank schreiben.
+// Wirft Error('LOYALTY_OFFLINE') bei Netz-/Serverfehlern (nie stillschweigend
+// "gespeichert" anzeigen, was nicht gespeichert ist), sonst Error mit .status.
+async function loyaltyApi(action, params) {
+  let res;
+  try {
+    res = await fetch('/api/staff-write', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loyalty: action, ...(params || {}), staffToken: getStaffToken() || undefined }) });
+  } catch { throw new Error('LOYALTY_OFFLINE'); }
+  const j = await res.json().catch(() => ({}));
+  if (res.status === 401) { clearStaffToken(); try { window.dispatchEvent(new Event('bk-staff-expired')); } catch {} }
+  if (res.status >= 500 || res.status === 0) throw new Error('LOYALTY_OFFLINE');
+  if (!res.ok) { const e = new Error(j.error || 'LOYALTY_ERROR'); e.status = res.status; throw e; }
+  return j;
 }
-// WICHTIG: getLoyaltyCard wirft bei Serverfehlern, statt null zu liefern.
-// null heißt nur noch "Karte existiert wirklich nicht". So kann bei einem
-// Ausfall nie eine bestehende Karte (z.B. 6 Stempel) durch eine neue, leere
-// überschrieben werden.
+// Willkommensgeschenk: 1 Stempel gratis. referredBy wird nur GESPEICHERT — der
+// Freundschaftsbonus kommt erst beim ersten echten Personal-Stempel (Server).
 async function ensureLoyaltyCard(code, referredBy) {
   const existing = await getLoyaltyCard(code);
   if (existing) return { card: existing, isNew: false };
-  // Willkommensgeschenk: 1 Stempel gratis, ohne dass ein Besuch nötig ist.
-  // referredBy wird nur GESPEICHERT (kein Bonus hier!) — der Freundschaftsbonus
-  // wird erst beim ERSTEN echten, personalbestätigten Stempel ausgelöst (siehe
-  // addLoyaltyStamp), damit niemand durch bloßes Anklicken eines Links ohne
-  // jeden Besuch Stempel für sich und andere erschleichen kann.
-  const fresh = { stamps: 1, createdAt: Date.now(), welcomeStamp: true };
-  if (referredBy && referredBy !== code) {
-    const referrerExists = await getLoyaltyCard(referredBy);
-    if (referrerExists) fresh.referredBy = referredBy;
-  }
-  await saveLoyaltyCard(code, fresh);
-  try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source: 'welcome' }); } catch {}
-  return { card: fresh, isNew: true };
+  const j = await loyaltyApi('create', { code, referredBy: referredBy || undefined });
+  return { card: j.card, isNew: !!j.isNew };
 }
-// source: 'staff' (Personal-Bereich, Standard) oder 'self' (Selbst-Stempel per NFC-Mühür).
-// Der Freundschaftsbonus wird NUR bei Personal-Stempeln ausgelöst — ein Selbst-Stempel
-// kann über einen weitergegebenen Link missbraucht werden und soll keinen Bonus erzeugen.
-async function addLoyaltyStamp(code, source = 'staff') {
-  const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
-  const updated = { ...card, stamps: Math.min(LOYALTY_TARGET, card.stamps + 1), lastStampAt: Date.now() };
-  if (source === 'self') updated.lastSelfStampDay = berlinDayKey();
-  // Freundschaftsbonus: erst JETZT (beim ersten echten, von Personal
-  // bestätigten Stempel dieses Kunden) auslösen — nie beim bloßen Anlegen
-  // der Karte. So braucht jeder Bonus mindestens einen echten Besuch.
-  if (source !== 'self' && card.referredBy && !card.referralProcessed) {
-    updated.stamps = Math.min(LOYALTY_TARGET, updated.stamps + 1);
-    updated.referralProcessed = true;
-    try {
-      const referrerCard = await getLoyaltyCard(card.referredBy);
-      if (referrerCard) {
-        await safeSet(`loyalty:${card.referredBy}`, { ...referrerCard, stamps: Math.min(LOYALTY_TARGET, (referrerCard.stamps || 0) + 1) });
-      }
-    } catch {}
-  }
-  await saveLoyaltyCard(code, updated);
-  try { await safeSet(`loyaltystamp:${Date.now()}-${makeShortCode(4)}`, { code, ts: Date.now(), source }); } catch {}
-  return updated;
+// Nur Personal (Selbst-Stempel per NFC: loyaltyApi('selfStamp', …)).
+async function addLoyaltyStamp(code) {
+  return (await loyaltyApi('stamp', { code })).card;
 }
 async function redeemLoyaltyCard(code) {
-  const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
-  const updated = { ...card, stamps: 0, lastRedeemedAt: Date.now(), redeemedCount: (card.redeemedCount || 0) + 1, almostThereNotified: false };
-  await saveLoyaltyCard(code, updated);
-  return updated;
+  return (await loyaltyApi('redeem', { code })).card;
 }
 // Geburtstag (gespeichert als "MM-TT") heute? 29.02. wird in Nicht-Schaltjahren am 28.02. gefeiert.
 function isBirthdayToday(mmdd) {
@@ -1674,22 +1648,13 @@ function isBirthdayToday(mmdd) {
   const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
   return mmdd === '02-29' && !leap && today === '02-28';
 }
-
+// Kunden können den Geburtstag nur einmal eintragen; ändern nur das Personal.
 async function setLoyaltyBirthday(code, mmdd) {
-  const card = (await getLoyaltyCard(code)) || { stamps: 0, createdAt: Date.now() };
-  const updated = { ...card, birthday: mmdd };
-  await saveLoyaltyCard(code, updated);
-  return updated;
+  return (await loyaltyApi('birthday', { code, mmdd })).card;
 }
+// "Löschen" legt die Karte (inkl. Stempel-Historie) 30 Tage in den Papierkorb.
 async function deleteLoyaltyCard(code) {
-  await safeDeleteKey(`loyalty:${code}`);
-  // Zugehörige Stempel-Historie ebenfalls entfernen, damit "Letzte Stempel"
-  // nicht weiter alte Testdaten anzeigt.
-  try {
-    const rows = await safeListPrefix('loyaltystamp:', 500);
-    const matching = rows.filter((r) => r.value?.code === code);
-    await Promise.all(matching.map((r) => safeDeleteKey(r.key)));
-  } catch {}
+  try { return !!(await loyaltyApi('delete', { code })).ok; } catch { return false; }
 }
 async function isPushTriggerEnabled(key) {
   try {
@@ -4400,7 +4365,7 @@ function LoyaltyModal({ lang, t, onClose }) {
     setBdayError('');
     if (!bdayMonth || !bdayDay || +mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) { setBdayError(t('loyaltyBirthdayInvalid')); return; }
     let updated;
-    try { updated = await setLoyaltyBirthday(code, `${mm}-${dd}`); } catch { alert(t('loyaltyOffline')); return; }
+    try { updated = await setLoyaltyBirthday(code, `${mm}-${dd}`); } catch (e) { if (e && e.status) setBdayError(t('loyaltyBirthdayInvalid')); else alert(t('loyaltyOffline')); return; }
     setCard(updated);
     setBdaySaved(true);
   };
@@ -9219,12 +9184,15 @@ function LoyaltyAdminPanel() {
 
   const deleteCard = async () => {
     if (!result || result === 'notfound') return;
-    if (!confirm(`Karte ${result.code} wirklich komplett löschen? Das kann nicht rückgängig gemacht werden.`)) return;
+    if (!confirm(`Karte ${result.code} löschen?\n\nSie liegt danach 30 Tage im Papierkorb (Stempelkarte → Papierkorb) und kann dort wiederhergestellt werden.`)) return;
     setBusy(true);
-    await deleteLoyaltyCard(result.code);
-    setResult(null);
-    setSearch('');
-    setMsg(`${result.code} wurde gelöscht ✓`);
+    const ok = await deleteLoyaltyCard(result.code);
+    if (ok) {
+      setResult(null);
+      setSearch('');
+      setMsg(`${result.code} liegt im Papierkorb (30 Tage wiederherstellbar)`);
+      try { window.dispatchEvent(new Event('bk-loyalty-trash')); } catch {}
+    } else setMsg('⚠️ NICHT gelöscht – Server nicht erreichbar.');
     setBusy(false);
   };
 
@@ -11772,10 +11740,12 @@ function StaffPanelView({ back }) {
                       </div>
                       <button
                         onClick={async () => {
-                          if (!confirm(`Karte ${c.code} wirklich komplett löschen?`)) return;
-                          await deleteLoyaltyCard(c.code);
+                          if (!confirm(`Karte ${c.code} (${c.stamps || 0} Stempel) löschen?\n\nSie liegt danach 30 Tage im Papierkorb und kann wiederhergestellt werden.`)) return;
+                          if (!(await deleteLoyaltyCard(c.code))) { alert('Nicht gelöscht – Server nicht erreichbar.'); return; }
                           setAllLoyaltyCards((prev) => prev.filter((x) => x.code !== c.code));
                           setLoyaltyStats((prev) => prev ? { ...prev, totalCards: prev.totalCards - 1 } : prev);
+                          panelToast(`${c.code} im Papierkorb`);
+                          try { window.dispatchEvent(new Event('bk-loyalty-trash')); } catch {}
                         }}
                         className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ background: '#f7ded9' }}
@@ -11786,6 +11756,11 @@ function StaffPanelView({ back }) {
                   ))}
                 </div>
               )}
+
+              <LoyaltyTrash onRestored={(code, card) => {
+                setAllLoyaltyCards((prev) => [{ code, ...card }, ...prev.filter((x) => x.code !== code)].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
+                setLoyaltyStats((prev) => prev ? { ...prev, totalCards: prev.totalCards + 1 } : prev);
+              }} />
 
               <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
                 <LoyaltyAdminPanel />
@@ -12937,13 +12912,14 @@ function StampSelfView({ token, onHome, onCard }) {
   useEffect(() => {
     let alive = true;
     try { const sv = localStorage.getItem('bk_loyalty_code'); if (sv && /^BK-[A-Z0-9]{4}$/.test(sv)) setSuffix(sv.slice(3)); } catch {}
-    safeGet(STAMP_CFG_KEY).then((c) => {
+    // Der Link-Schlüssel wird nur noch auf dem Server geprüft (nicht mehr öffentlich lesbar).
+    loyaltyApi('selfCheck', { token }).then((c) => {
       if (!alive) return;
       setCfg(c);
-      if (!c || !c.token || c.token !== token) setPhase('invalid');
-      else if (c.enabled === false) setPhase('disabled');
+      if (!c || !c.valid) setPhase('invalid');
+      else if (!c.enabled) setPhase('disabled');
       else { setPhase('form'); logEvent('stamp_self_open'); }
-    });
+    }).catch(() => { if (alive) setPhase('invalid'); });
     return () => { alive = false; };
   }, []);
   const onType = (v) => {
@@ -12961,12 +12937,16 @@ function StampSelfView({ token, onHome, onCard }) {
     const back = (m) => { setMsg(m); setPhase('form'); busyRef.current = false; };
     try {
       const code = `BK-${suffix}`;
-      if (cfg && cfg.openOnly !== false && !selfStampOpen(berlinNow())) { back({ kind: 'err', text: L('closed') }); return; }
-      const card = await getLoyaltyCard(code);
-      if (!card) { back({ kind: 'err', text: t('loyaltyCodeNotFound') }); return; }
-      if (card.lastSelfStampDay === berlinDayKey()) { back({ kind: 'info', text: L('already') }); return; }
-      if ((card.stamps || 0) >= LOYALTY_TARGET) { back({ kind: 'info', text: L('full') }); return; }
-      const updated = await addLoyaltyStamp(code, 'self');
+      if (cfg && cfg.openOnly && !selfStampOpen(berlinNow())) { back({ kind: 'err', text: L('closed') }); return; }
+      // Alle Prüfungen (Link gültig, Öffnungszeit, 1×/Tag, Karte voll) macht der Server.
+      const r = await loyaltyApi('selfStamp', { code, token });
+      if (r.error === 'invalid') { setPhase('invalid'); busyRef.current = false; return; }
+      if (r.error === 'disabled') { setPhase('disabled'); busyRef.current = false; return; }
+      if (r.error === 'closed') { back({ kind: 'err', text: L('closed') }); return; }
+      if (r.error === 'notfound') { back({ kind: 'err', text: t('loyaltyCodeNotFound') }); return; }
+      if (r.error === 'already') { back({ kind: 'info', text: L('already') }); return; }
+      if (r.error === 'full') { back({ kind: 'info', text: L('full') }); return; }
+      const updated = r.card;
       try { if (!localStorage.getItem('bk_loyalty_code')) localStorage.setItem('bk_loyalty_code', code); } catch {}
       logEvent('stamp_self_done');
       setResult({ code, stamps: updated.stamps, full: updated.stamps >= LOYALTY_TARGET });
@@ -13070,14 +13050,71 @@ function StampSelfView({ token, onHome, onCard }) {
   );
 }
 
+// Papierkorb für gelöschte Stempelkarten (30 Tage wiederherstellbar).
+function LoyaltyTrash({ onRestored }) {
+  const [items, setItems] = useState(null); // null = lädt
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState('');
+  const load = () => loyaltyApi('trashList').then((j) => setItems(j.items || [])).catch(() => setItems((v) => v || []));
+  useEffect(() => {
+    load();
+    const h = () => load();
+    window.addEventListener('bk-loyalty-trash', h);
+    return () => window.removeEventListener('bk-loyalty-trash', h);
+  }, []);
+  const daysLeft = (ts) => Math.max(0, 30 - Math.floor((Date.now() - ts) / 86400000));
+  const restore = async (it) => {
+    setBusy(it.code);
+    try {
+      const j = await loyaltyApi('restore', { code: it.code });
+      setItems((prev) => (prev || []).filter((x) => x.code !== it.code));
+      onRestored && onRestored(it.code, j.card);
+      panelToast(`${it.code} wiederhergestellt – ${j.card?.stamps || 0} Stempel`);
+    } catch { alert('Wiederherstellen fehlgeschlagen – bitte erneut versuchen.'); }
+    setBusy('');
+  };
+  const purge = async (it) => {
+    if (!confirm(`${it.code} endgültig löschen? Das kann NICHT rückgängig gemacht werden.`)) return;
+    setBusy(it.code);
+    try { await loyaltyApi('purge', { code: it.code }); setItems((prev) => (prev || []).filter((x) => x.code !== it.code)); } catch { alert('Fehlgeschlagen.'); }
+    setBusy('');
+  };
+  if (!items || items.length === 0) return null;
+  return (
+    <div className="bg-white rounded-2xl p-4 mb-3" style={{ boxShadow: '0 3px 10px rgba(21,56,38,.06)' }}>
+      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between">
+        <span className="text-[11px] font-black tracking-widest" style={{ color: '#a4906c' }}>🗑️ PAPIERKORB ({items.length})</span>
+        <span style={{ color: '#a4906c', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>▾</span>
+      </button>
+      {open && (
+        <>
+          <p className="text-[11px] mt-2 mb-1" style={{ color: '#a4906c' }}>Gelöschte Karten bleiben 30 Tage hier und werden dann automatisch entfernt. „Wiederherstellen“ holt Karte und Stempel zurück.</p>
+          {items.map((it) => (
+            <div key={it.code} className="flex items-center justify-between gap-2 py-2" style={{ borderBottom: '1px solid #f0e5cf' }}>
+              <div className="min-w-0">
+                <div className="text-sm font-bold" style={{ color: GREEN }}>{it.code} <span className="text-[11px] font-semibold" style={{ color: '#a4906c' }}>· {it.stamps}/{LOYALTY_TARGET} Stempel</span></div>
+                <div className="text-[10px] font-semibold" style={{ color: '#a4906c' }}>gelöscht {new Date(it.deletedAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} · noch {daysLeft(it.deletedAt)} Tage</div>
+              </div>
+              <div className="flex gap-1.5 flex-shrink-0">
+                <button onClick={() => restore(it)} disabled={!!busy} className="px-3 py-1.5 rounded-full text-[11px] font-bold" style={{ background: GREEN, color: '#fff', opacity: busy && busy !== it.code ? 0.5 : 1 }}>{busy === it.code ? '…' : 'Wiederherstellen'}</button>
+                <button onClick={() => purge(it)} disabled={!!busy} aria-label={`${it.code} endgültig löschen`} className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: '#f7ded9' }}><X size={13} color={CHILI} /></button>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
 // Personal-Bereich (Einstellungen → System): Link für den NFC-Chip, Schalter, Protokoll
 function StampMuehleAdmin() {
   const [cfg, setCfg] = useState(undefined); // undefined = lädt, null = nicht eingerichtet
   const [log, setLog] = useState([]);
   const [busy, setBusy] = useState(false);
   const load = async () => {
-    const c = await safeGet(STAMP_CFG_KEY);
-    setCfg(c && c.token ? c : null);
+    // Nur über den Server lesbar (der Link-Schlüssel ist für Kunden unsichtbar).
+    try { const j = await loyaltyApi('stampCfg'); setCfg(j.cfg && j.cfg.token ? j.cfg : null); } catch { /* bleibt "lädt" statt fälschlich "nicht eingerichtet" */ }
     const rows = await safeListPrefix('loyaltystamp:', 500);
     setLog(rows.filter((r) => r.value && r.value.source === 'self').sort((a, b) => (b.value.ts || 0) - (a.value.ts || 0)));
   };
