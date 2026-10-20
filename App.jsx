@@ -3052,6 +3052,8 @@ const ASSISTANT_R = {
   openNoPrefix: { de: "🔴 Wir haben gerade geschlossen.", en: "🔴 We're currently closed.", tr: "🔴 Şu an kapalıyız.", ro: "🔴 Suntem închiși momentan.", nl: "🔴 We zijn nu gesloten.", sq: "🔴 Jemi mbyllur tani.", ku: "🔴 Em niha girtî ne.", pl: "🔴 Jesteśmy teraz zamknięci." },
   opensIn: { de: "Öffnet in", en: "Opens in", tr: "Açılışa", ro: "Se deschide în", nl: "Opent over", sq: "Hapet pas", ku: "Vedibe piştî", pl: "Otwieramy za" },
   address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
+  sponsor: { de: "🤝 Sponsoring-Anfragen nehmen wir gerne entgegen! Schreib uns kurz, wer ihr seid (Verein, Schule, Event) und was ihr euch vorstellt – am einfachsten über das Kontaktformular oder per WhatsApp. Wir melden uns bei dir.", en: "🤝 We're happy to receive sponsorship requests! Tell us briefly who you are (club, school, event) and what you have in mind – easiest via the contact form or WhatsApp. We'll get back to you.", tr: "🤝 Sponsorluk başvurularını memnuniyetle değerlendiriyoruz! Kim olduğunuzu (kulüp, okul, etkinlik) ve ne düşündüğünüzü kısaca yazın – en kolayı iletişim formu ya da WhatsApp. Size geri dönüş yapacağız.", ro: "🤝 Primim cu plăcere cereri de sponsorizare! Scrie-ne pe scurt cine sunteți (club, școală, eveniment) și ce aveți în minte – cel mai simplu prin formularul de contact sau pe WhatsApp. Revenim noi.", nl: "🤝 Sponsoraanvragen ontvangen we graag! Vertel ons kort wie jullie zijn (club, school, evenement) en wat jullie in gedachten hebben – het makkelijkst via het contactformulier of WhatsApp. We nemen contact met je op.", sq: "🤝 Kërkesat për sponsorizim i pranojmë me kënaqësi! Na shkruani shkurt kush jeni (klub, shkollë, event) dhe çfarë keni në mendje – më e thjeshta përmes formularit të kontaktit ose WhatsApp. Do t'ju kthejmë përgjigje.", ku: "🤝 Em daxwazên sponsoriyê bi kêfxweşî werdigirin! Bi kurtî ji me re binivîse hûn kî ne (klûb, dibistan, çalakî) û çi difikirin – herî hêsan bi forma têkiliyê an WhatsApp. Em ê vegerin te.", pl: "🤝 Chętnie przyjmujemy prośby o sponsoring! Napisz krótko, kim jesteście (klub, szkoła, wydarzenie) i co macie na myśli – najprościej przez formularz kontaktowy lub WhatsApp. Odezwiemy się." },
+  sponsorBtnForm: { de: "✉️ Kontaktformular", en: "✉️ Contact form", tr: "✉️ İletişim formu", ro: "✉️ Formular de contact", nl: "✉️ Contactformulier", sq: "✉️ Formulari i kontaktit", ku: "✉️ Forma têkiliyê", pl: "✉️ Formularz kontaktowy" },
   phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
   budgetList: { de: "💶 Für bis zu {max} bekommst du z.B.:", en: "💶 For up to {max} you can get e.g.:", tr: "💶 {max}'ya kadar örneğin şunları alabilirsin:", ro: "💶 Pentru până la {max} poți lua de ex.:", nl: "💶 Voor maximaal {max} krijg je bijv.:", sq: "💶 Deri në {max} mund të marrësh p.sh.:", ku: "💶 Heta {max} tu dikarî wek van bistînî:", pl: "💶 Do {max} dostaniesz np.:" },
   budgetMore: { de: "…und {n} weitere in der Speisekarte.", en: "…and {n} more on the menu.", tr: "…ve menüde {n} tane daha.", ro: "…și încă {n} în meniu.", nl: "…en nog {n} op de menukaart.", sq: "…dhe {n} të tjera në meny.", ku: "…û {n} yên din di menûyê de.", pl: "…i {n} więcej w menu." },
@@ -3235,6 +3237,9 @@ function getAssistantReply(qRaw, lang) {
     const item = SURPRISE_ITEMS[Math.floor(Math.random() * SURPRISE_ITEMS.length)];
     const descPart = item.desc ? ` ${mx(item.desc, lang)}.` : '';
     return { intent: 'recommend', text: `${ar('recommendPrefix', lang)} **${mx(item.name, lang)}** — ${fmt(item.price)}.${descPart} ${ar('enjoy', lang)}\n\n${nextCampaignHint(lang)}` };
+  }
+  if (has('sponsor', 'sponzor', 'spende', 'spenden', 'bağış', 'trikot')) {
+    return { intent: 'sponsor', text: ar('sponsor', lang) };
   }
   if (has('açık', 'kapalı', 'saat', 'öffnung', 'geöffnet', 'geschlossen', 'uhr', 'hours', 'open ', 'closed', 'wann', 'godzin', 'otwart')) {
     const H = hoursTexts(lang, now);
@@ -3616,6 +3621,21 @@ function AIAssistant() {
                     <button onClick={() => speakText(m.text, m.lang || lang)} className="flex-shrink-0 opacity-60" title="Vorlesen">🔊</button>
                   )}
                 </div>
+                {m.from === 'bot' && m.intent === 'sponsor' && (
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => { setOpen(false); go('home'); setTimeout(() => { try { document.getElementById('kontakt')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch {} }, 350); }}
+                      className="px-3.5 py-2 rounded-full font-bold text-xs text-white"
+                      style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}
+                    >{ar('sponsorBtnForm', m.lang || lang)}</button>
+                    <a
+                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hallo Bodrum Kebap, wir haben eine Sponsoring-Anfrage: ')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="px-3.5 py-2 rounded-full font-bold text-xs text-white"
+                      style={{ background: '#25d366' }}
+                    >💬 WhatsApp</a>
+                  </div>
+                )}
                 {m.from === 'bot' && m.intent === 'trackorder' && (
                   <button onClick={() => go('track')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📦 Jetzt verfolgen</button>
                 )}
