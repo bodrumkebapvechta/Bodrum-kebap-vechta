@@ -12,7 +12,7 @@ const ORANGE = '#ff6a1a';
 const GOLD = '#ffc738';
 const CREAM = '#fff6ea';
 const CHILI = '#d62828';
-const WHATSAPP_NUMBER = '4915210804759';
+const WHATSAPP_NUMBER = '4915216977150'; // Bodrum Kebap WhatsApp: +49 1521 6977150 (Fragen, Catering, Sponsoring – KEINE Bestellungen)
 
 /* ============ ASSETS ============ */
 const LOGO_ICON = "/logo.png";
@@ -3053,6 +3053,8 @@ const ASSISTANT_R = {
   opensIn: { de: "Öffnet in", en: "Opens in", tr: "Açılışa", ro: "Se deschide în", nl: "Opent over", sq: "Hapet pas", ku: "Vedibe piştî", pl: "Otwieramy za" },
   address: { de: "📍 Oyther Straße 37, 49377 Vechta. Über das Menü oben findest du den Button \"Route\" für die direkte Wegbeschreibung.", en: "📍 Oyther Straße 37, 49377 Vechta. Use the \"Route\" button in the top menu for direct directions.", tr: "📍 Oyther Straße 37, 49377 Vechta. Üstteki menüden \"Rota\" butonuna basarsan direkt yol tarifi açılır.", ro: "📍 Oyther Straße 37, 49377 Vechta. Folosește butonul \"Rută\" din meniul de sus pentru indicații directe.", nl: "📍 Oyther Straße 37, 49377 Vechta. Gebruik de \"Route\"-knop in het menu bovenaan voor een directe routebeschrijving.", sq: "📍 Oyther Straße 37, 49377 Vechta. Përdor butonin \"Rruga\" në menynë sipër për udhëzime direkte.", ku: "📍 Oyther Straße 37, 49377 Vechta. Bişkoja \"Rê\" ya di menuya jorîn de bikar bîne bo rêberiyê.", pl: "📍 Oyther Straße 37, 49377 Vechta. Użyj przycisku \"Trasa\" w menu u góry, aby uzyskać wskazówki dojazdu." },
   sponsor: { de: "🤝 Sponsoring-Anfragen nehmen wir gerne entgegen! Schreib uns kurz, wer ihr seid (Verein, Schule, Event) und was ihr euch vorstellt – am einfachsten über das Kontaktformular oder per WhatsApp. Wir melden uns bei dir.", en: "🤝 We're happy to receive sponsorship requests! Tell us briefly who you are (club, school, event) and what you have in mind – easiest via the contact form or WhatsApp. We'll get back to you.", tr: "🤝 Sponsorluk başvurularını memnuniyetle değerlendiriyoruz! Kim olduğunuzu (kulüp, okul, etkinlik) ve ne düşündüğünüzü kısaca yazın – en kolayı iletişim formu ya da WhatsApp. Size geri dönüş yapacağız.", ro: "🤝 Primim cu plăcere cereri de sponsorizare! Scrie-ne pe scurt cine sunteți (club, școală, eveniment) și ce aveți în minte – cel mai simplu prin formularul de contact sau pe WhatsApp. Revenim noi.", nl: "🤝 Sponsoraanvragen ontvangen we graag! Vertel ons kort wie jullie zijn (club, school, evenement) en wat jullie in gedachten hebben – het makkelijkst via het contactformulier of WhatsApp. We nemen contact met je op.", sq: "🤝 Kërkesat për sponsorizim i pranojmë me kënaqësi! Na shkruani shkurt kush jeni (klub, shkollë, event) dhe çfarë keni në mendje – më e thjeshta përmes formularit të kontaktit ose WhatsApp. Do t'ju kthejmë përgjigje.", ku: "🤝 Em daxwazên sponsoriyê bi kêfxweşî werdigirin! Bi kurtî ji me re binivîse hûn kî ne (klûb, dibistan, çalakî) û çi difikirin – herî hêsan bi forma têkiliyê an WhatsApp. Em ê vegerin te.", pl: "🤝 Chętnie przyjmujemy prośby o sponsoring! Napisz krótko, kim jesteście (klub, szkoła, wydarzenie) i co macie na myśli – najprościej przez formularz kontaktowy lub WhatsApp. Odezwiemy się." },
+  waNoOrders: { de: "ℹ️ Über WhatsApp nehmen wir keine Bestellungen an. Bestellen kannst du telefonisch unter 04441 / 95 16 104 oder direkt bei uns im Laden.", en: "ℹ️ We don't take orders via WhatsApp. Please order by phone at 04441 / 95 16 104 or directly in our shop.", tr: "ℹ️ WhatsApp üzerinden sipariş almıyoruz. Sipariş için 04441 / 95 16 104 numarasını arayabilir veya dükkâna gelebilirsin.", ro: "ℹ️ Nu preluăm comenzi prin WhatsApp. Poți comanda telefonic la 04441 / 95 16 104 sau direct în local.", nl: "ℹ️ Via WhatsApp nemen we geen bestellingen aan. Bestel telefonisch via 04441 / 95 16 104 of direct in de zaak.", sq: "ℹ️ Nuk marrim porosi përmes WhatsApp. Mund të porosisësh në telefon 04441 / 95 16 104 ose direkt në lokal.", ku: "ℹ️ Em bi WhatsApp sifarişan nagirin. Tu dikarî bi telefonê 04441 / 95 16 104 an rasterast li dikanê sifariş bidî.", pl: "ℹ️ Nie przyjmujemy zamówień przez WhatsApp. Zamów telefonicznie pod numerem 04441 / 95 16 104 lub bezpośrednio w lokalu." },
+  waContact: { de: "💬 Unser WhatsApp: +49 1521 6977150 – für Fragen, Catering und Sponsoring.", en: "💬 Our WhatsApp: +49 1521 6977150 – for questions, catering and sponsoring.", tr: "💬 WhatsApp numaramız: +49 1521 6977150 – sorular, catering ve sponsorluk için.", ro: "💬 WhatsApp-ul nostru: +49 1521 6977150 – pentru întrebări, catering și sponsorizări.", nl: "💬 Onze WhatsApp: +49 1521 6977150 – voor vragen, catering en sponsoring.", sq: "💬 WhatsApp-i ynë: +49 1521 6977150 – për pyetje, catering dhe sponsorizim.", ku: "💬 WhatsApp-a me: +49 1521 6977150 – ji bo pirs, catering û sponsoriyê.", pl: "💬 Nasz WhatsApp: +49 1521 6977150 – w sprawie pytań, cateringu i sponsoringu." },
   sponsorBtnForm: { de: "✉️ Kontaktformular", en: "✉️ Contact form", tr: "✉️ İletişim formu", ro: "✉️ Formular de contact", nl: "✉️ Contactformulier", sq: "✉️ Formulari i kontaktit", ku: "✉️ Forma têkiliyê", pl: "✉️ Formularz kontaktowy" },
   phone: { de: "📞 04441 / 95 16 104 — tippe oben auf den gelben \"Anrufen\"-Button für einen Direktanruf.", en: "📞 04441 / 95 16 104 — tap the yellow \"Call\" button at the top to call directly.", tr: "📞 04441 / 95 16 104 — üstteki sarı \"Ara\" butonuna basarak direkt arayabilirsin.", ro: "📞 04441 / 95 16 104 — apasă butonul galben \"Sună\" de sus pentru apel direct.", nl: "📞 04441 / 95 16 104 — tik op de gele \"Bellen\"-knop bovenaan om direct te bellen.", sq: "📞 04441 / 95 16 104 — troko butonin e verdhë \"Telefono\" lart për të thirrur direkt.", ku: "📞 04441 / 95 16 104 — bişkoja zer a \"Telefon\" li jor bitikîne da ku rasterast telefon bikî.", pl: "📞 04441 / 95 16 104 — dotknij żółty przycisk \"Zadzwoń\" u góry, aby zadzwonić bezpośrednio." },
   budgetList: { de: "💶 Für bis zu {max} bekommst du z.B.:", en: "💶 For up to {max} you can get e.g.:", tr: "💶 {max}'ya kadar örneğin şunları alabilirsin:", ro: "💶 Pentru până la {max} poți lua de ex.:", nl: "💶 Voor maximaal {max} krijg je bijv.:", sq: "💶 Deri në {max} mund të marrësh p.sh.:", ku: "💶 Heta {max} tu dikarî wek van bistînî:", pl: "💶 Do {max} dostaniesz np.:" },
@@ -3270,6 +3272,9 @@ function getAssistantReply(qRaw, lang) {
   }
   if (has('karte', 'kredit', 'ec-karte', 'kartenzahlung', 'card', 'kart ile', 'kart mı', 'kartla', 'bargeld', 'bar bezahl', 'bar zahlen', 'nakit', 'cash', 'kontaktlos', 'contactless', 'girocard')) {
     return { intent: 'payment', text: ar('paymentYes', lang) };
+  }
+  if (has('whatsapp', 'whats app', 'whatsap', 'watsapp', 'wattsapp') && !orderingEnabled()) {
+    return { intent: 'whatsapp', text: `${ar('waContact', lang)}\n\n${ar('waNoOrders', lang)}` };
   }
   if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
     return { intent: 'order', text: orderingEnabled() ? ar('orderOn', lang) : ar('orderOff', lang) };
@@ -3635,6 +3640,12 @@ function AIAssistant() {
                       style={{ background: '#25d366' }}
                     >💬 WhatsApp</a>
                   </div>
+                )}
+                {m.from === 'bot' && m.intent === 'sponsor' && !orderingEnabled() && (
+                  <div className="mt-1.5 px-3 py-2 rounded-xl text-[11.5px] font-semibold max-w-[85%]" style={{ background: '#fdf1d8', color: '#8a5a00' }}>{ar('waNoOrders', m.lang || lang)}</div>
+                )}
+                {m.from === 'bot' && m.intent === 'whatsapp' && (
+                  <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: '#25d366' }}>💬 WhatsApp</a>
                 )}
                 {m.from === 'bot' && m.intent === 'trackorder' && (
                   <button onClick={() => go('track')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📦 Jetzt verfolgen</button>
