@@ -9571,6 +9571,12 @@ function StaffPanelView({ back }) {
     return () => window.removeEventListener('bk-staff-expired', onExpired);
   }, []);
   useEffect(() => { safeGet('siteconfig:staffPinLength').then((r) => { if (r && r.len >= 4 && r.len <= 8) setStaffPinLen(r.len); }); }, []);
+  // Server-Funktion schon beim Öffnen des PIN-Bildschirms aufwecken (Kaltstart
+  // dauert sonst ~1 s und fiel genau nach der letzten Ziffer an).
+  useEffect(() => {
+    if (ok) return;
+    try { fetch('/api/staff-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'ping' }), keepalive: true }).catch(() => {}); } catch {}
+  }, [ok]);
   const saveOwnerPassword = async () => {
     if (newOwnerPw.trim().length < 4) { setOwnerPwMsg('Neues Passwort muss mind. 4 Zeichen haben'); setTimeout(() => setOwnerPwMsg(''), 2500); return; }
     if (newOwnerPw !== newOwnerPw2) { setOwnerPwMsg('Neue Passwörter stimmen nicht überein'); setTimeout(() => setOwnerPwMsg(''), 2500); return; }
@@ -9606,7 +9612,7 @@ function StaffPanelView({ back }) {
           if (j.lastLogin) setLastLoginAt(j.lastLogin);
           setUnlockStage('unlocked');
           unlockAudio();
-          setTimeout(() => setOk(true), 820);
+          setTimeout(() => setOk(true), 480);
         } else if (r.status === 429) {
           wrong(`Zu viele Versuche – bitte ${j.retryInMin || 15} Min warten`);
         } else if (r.status === 401) {
