@@ -5424,6 +5424,65 @@ function MeltingCheese({ uid = 'a', variant = 'cheese' }) {
     </svg>
   );
 }
+// Kapsalon-Teaser direkt im Hero (sofort sichtbar beim Öffnen der Seite,
+// ohne Scrollen). Füllt den Freiraum unter der Überschrift.
+const HK_T = {
+  cta: { de: 'Jetzt probieren', en: 'Try it now', tr: 'Hemen dene', ro: 'Încearcă acum', nl: 'Nu proberen', sq: 'Provoje tani', ku: 'Niha biceribîne', pl: 'Spróbuj teraz' },
+};
+function HeroKapsTeaser({ go, lang }) {
+  const item = ALL_MENU_ITEMS.find((it) => it.id === 'na192');
+  if (!item) return <div className="h-48 sm:h-56" />;
+  const L = (k) => (SPOT_T[k] && (SPOT_T[k][lang] || SPOT_T[k].de)) || (HK_T[k] && (HK_T[k][lang] || HK_T[k].de)) || '';
+  const price = item.price ?? item.priceSmall;
+  const priceLabel = Number.isInteger(price) ? `${price} €` : fmt(price);
+  const open = () => { logEvent('hero_kapsalon', { item: item.name }); go('tischmenu', { initialCatHint: item.catKey }); };
+  return (
+    <div className="min-h-[12rem] sm:min-h-[14rem] flex items-center py-3">
+      <style>{`
+        .hk-card { position: relative; width: 100%; max-width: 440px; text-align: left; border-radius: 24px; padding: 30px 18px 16px; overflow: visible; color: #fff6ea;
+          background: linear-gradient(150deg, rgba(21,56,38,.92), rgba(12,36,24,.95)); border: 1.5px solid rgba(255,199,56,.55);
+          box-shadow: 0 18px 40px rgba(0,0,0,.35), 0 0 0 0 rgba(255,199,56,.5); animation: hkIn .7s cubic-bezier(.2,.9,.25,1.15) both, hkGlow 2.6s ease-in-out 1s infinite; -webkit-tap-highlight-color: transparent; }
+        .hk-card:active { transform: scale(.98); }
+        .hk-cheese { position: absolute; left: 0; right: 0; top: 0; height: 18px; border-radius: 24px 24px 0 0; background: linear-gradient(180deg, #ffe08a, #ffc738); overflow: visible; }
+        .hk-drip { position: absolute; top: 12px; width: 12px; border-radius: 0 0 8px 8px; background: linear-gradient(180deg, #ffc738, #f5b21f); transform-origin: top; animation: hkDrip 2.8s ease-in-out infinite; }
+        .hk-badge { display: inline-block; background: #ff6a1a; color: #fff; font-size: 11px; font-weight: 900; letter-spacing: .1em; padding: 3px 10px; border-radius: 999px; box-shadow: 0 4px 12px rgba(255,106,26,.45); animation: hkPop .5s .45s cubic-bezier(.3,1.6,.5,1) both; }
+        .hk-word { display: flex; margin-top: 6px; font-weight: 900; font-size: clamp(30px, 9vw, 44px); line-height: 1; letter-spacing: .02em; }
+        .hk-word span { display: inline-block; background: linear-gradient(180deg, #fff3c4, #ffc738 70%, #e59a12); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 rgba(0,0,0,.25)); animation: hkLetter .6s cubic-bezier(.3,1.5,.5,1) both; }
+        .hk-sub { margin-top: 6px; padding-right: 78px; font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.78); }
+        .hk-row { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .hk-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #ffc738; }
+        .hk-cta svg { animation: hkArrow 1.4s ease-in-out infinite; }
+        .hk-price { position: absolute; right: 14px; top: -14px; width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; font-size: 19px; color: #153826;
+          background: radial-gradient(circle at 35% 30%, #fff1b8, #ffc738 60%, #e9a216); border: 3px solid #fff6ea; box-shadow: 0 8px 20px rgba(0,0,0,.35); animation: hkPrice .6s .7s cubic-bezier(.3,1.6,.5,1) both, hkWiggle 3s 1.6s ease-in-out infinite; }
+        .hk-emoji { position: absolute; right: 18px; bottom: 10px; font-size: 34px; animation: hkFloat 3s ease-in-out infinite; }
+        @keyframes hkIn { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
+        @keyframes hkGlow { 0%,100% { box-shadow: 0 18px 40px rgba(0,0,0,.35), 0 0 0 0 rgba(255,199,56,.45); } 50% { box-shadow: 0 18px 40px rgba(0,0,0,.35), 0 0 0 10px rgba(255,199,56,0); } }
+        @keyframes hkDrip { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.35); } }
+        @keyframes hkPop { from { transform: scale(0) rotate(-20deg); } to { transform: scale(1) rotate(0); } }
+        @keyframes hkLetter { from { transform: translateY(-40px) rotate(-10deg); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes hkPrice { from { transform: scale(0) rotate(-60deg); } to { transform: scale(1) rotate(-8deg); } }
+        @keyframes hkWiggle { 0%,100% { transform: rotate(-8deg) scale(1); } 10% { transform: rotate(6deg) scale(1.1); } 20% { transform: rotate(-8deg) scale(1); } }
+        @keyframes hkArrow { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+        @keyframes hkFloat { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-5px) rotate(4deg); } }
+        @media (prefers-reduced-motion: reduce) { .hk-card, .hk-card * { animation: none !important; } }
+      `}</style>
+      <button type="button" className="hk-card" onClick={open} aria-label={`${item.name} – ${priceLabel} – ${L('cta')}`}>
+        <span className="hk-cheese" aria-hidden="true">
+          {[[22, 14, 0], [70, 22, .4], [128, 10, .9], [190, 26, .2], [256, 16, .7], [318, 20, 1.1]].map(([x, h, d], i) => (
+            <span key={i} className="hk-drip" style={{ left: x, height: h, animationDelay: `${d}s` }} />
+          ))}
+        </span>
+        <span className="hk-price" aria-hidden="true">{priceLabel}</span>
+        <span className="hk-badge">✨ {L('neu')}</span>
+        <span className="hk-word" aria-hidden="true">{item.name.toUpperCase().split('').map((c, i) => <span key={i} style={{ animationDelay: `${0.15 + i * 0.06}s` }}>{c}</span>)}</span>
+        <span className="hk-sub" style={{ display: 'block' }}>{L('kapsTag')} · {L('kapsSub')}</span>
+        <span className="hk-row"><span className="hk-cta">{L('cta')} <ArrowRight size={15} /></span></span>
+        <span className="hk-emoji" aria-hidden="true">🍟🧀</span>
+      </button>
+    </div>
+  );
+}
+
 function ProductSpotlight({ go, cfgKey = 'siteconfig:spotlight', defaults = SPOT_DEFAULT, uid = 'a' }) {
   const { lang } = React.useContext(LangContext);
   const [cfg, setCfg] = useState(null);
@@ -6110,7 +6169,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             )}
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
-            <div className="h-48 sm:h-56" />
+            <HeroKapsTeaser go={go} lang={lang} />
             {ONLINE_ORDER_TEST && <OnlineOrderButton lang={lang} />}
             {!orderingEnabled() && (
               <div className="flex flex-wrap gap-3 mb-5">
@@ -11429,7 +11488,7 @@ function StaffPanelView({ back }) {
                   const EVENT_LABELS = {
                     hero_menu: '📋 Hero: Speisekarte',
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
-                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', catering_view: '🍽️ Catering-Seite geöffnet', stamp_self_open: '🪵 Stempel-Mühür geöffnet', stamp_self_done: '🪵 Selbst-Stempel geholt', catering_request: '🍽️ Catering-Anfrage gesendet', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
+                    hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', hero_kapsalon: '🧀 Hero: Kapsalon angetippt', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', catering_view: '🍽️ Catering-Seite geöffnet', stamp_self_open: '🪵 Stempel-Mühür geöffnet', stamp_self_done: '🪵 Selbst-Stempel geholt', catering_request: '🍽️ Catering-Anfrage gesendet', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
                     hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
