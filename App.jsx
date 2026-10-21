@@ -5424,39 +5424,69 @@ function MeltingCheese({ uid = 'a', variant = 'cheese' }) {
     </svg>
   );
 }
-// Kapsalon-Teaser direkt im Hero (sofort sichtbar beim Öffnen der Seite,
-// ohne Scrollen). Füllt den Freiraum unter der Überschrift.
+// Produkt-Teaser direkt im Hero (sofort sichtbar beim Öffnen der Seite, ohne
+// Scrollen). Personal-Bereich → Einstellungen → Website → "Startseiten-Teaser":
+// an/aus, Produkt, Etikett, Zusatz, Foto. Standard: Kapsalon.
+// siteconfig:heroTeaser = { enabled, itemId, badge, photo, tagline }
+const HERO_TEASER_DEFAULT = { enabled: true, itemId: 'na192', badge: 'neu', photo: '', tagline: '' };
 const HK_T = {
-  cta: { de: 'Jetzt probieren', en: 'Try it now', tr: 'Hemen dene', ro: 'Încearcă acum', nl: 'Nu proberen', sq: 'Provoje tani', ku: 'Niha biceribîne', pl: 'Spróbuj teraz' },
+  cta: { de: 'Jetzt ansehen', en: 'Take a look', tr: 'Hemen bak', ro: 'Vezi acum', nl: 'Nu bekijken', sq: 'Shiko tani', ku: 'Niha binêre', pl: 'Zobacz teraz' },
 };
-function HeroKapsTeaser({ go, lang }) {
-  const item = ALL_MENU_ITEMS.find((it) => it.id === 'na192');
+function HeroTeaser({ go, lang }) {
+  const [cfg, setCfg] = useState(null);
+  const [photos, setPhotos] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    safeGet('siteconfig:heroTeaser').then((r) => { if (alive) setCfg({ ...HERO_TEASER_DEFAULT, ...(r || {}) }); });
+    Promise.all([safeListPrefix('tischphoto:', 500), safeGet('siteconfig:photoOverrides')]).then(([rows, ov]) => {
+      const map = {};
+      (rows || []).forEach((r) => { if (r.value?.url) map[r.key.replace(/^tischphoto:/, '')] = r.value.url; });
+      if (alive) setPhotos({ tisch: map, ov: ov || {} });
+    });
+    return () => { alive = false; };
+  }, []);
+  // Bis die Einstellung geladen ist: gleicher Platz wie vorher (kein Springen).
+  if (!cfg) return <div className="min-h-[12rem] sm:min-h-[14rem]" />;
+  const item = cfg.enabled ? ALL_MENU_ITEMS.find((it) => it.id === cfg.itemId) : null;
   if (!item) return <div className="h-48 sm:h-56" />;
-  const L = (k) => (SPOT_T[k] && (SPOT_T[k][lang] || SPOT_T[k].de)) || (HK_T[k] && (HK_T[k][lang] || HK_T[k].de)) || '';
+  const isKaps = item.id === 'na192';
+  const L = (k) => { const o = SPOT_T[k] || HK_T[k]; return o ? (o[lang] || o.de) : ''; };
   const price = item.price ?? item.priceSmall;
   const priceLabel = Number.isInteger(price) ? `${price} €` : fmt(price);
+  const photo = cfg.photo || (photos && (photos.tisch[`imp-${item.id}`] || photos.tisch[item.id] || photos.ov[item.id])) || '';
+  const tagline = cfg.tagline || (isKaps ? L('kapsTag') : '');
+  const descFull = isKaps ? L('kapsSub') : mx(item.desc || '', lang);
+  const desc = descFull.length > 60 ? `${descFull.slice(0, 58).trim()}…` : descFull;
+  const sub = [tagline, desc].filter(Boolean).join(' · ');
+  const word = item.name.replace(/^Portion\s+/i, '').toUpperCase();
+  const wordFs = word.length <= 9 ? 'clamp(30px, 9vw, 44px)' : word.length <= 14 ? 'clamp(22px, 6.4vw, 34px)' : 'clamp(18px, 5vw, 26px)';
+  const badgeKey = ['neu', 'tipp', 'angebot'].includes(cfg.badge) ? cfg.badge : 'neu';
+  const badgeIcon = { neu: '✨', tipp: '⭐', angebot: '🔥' }[badgeKey];
   const open = () => { logEvent('hero_kapsalon', { item: item.name }); go('tischmenu', { initialCatHint: item.catKey }); };
   return (
     <div className="min-h-[12rem] sm:min-h-[14rem] flex items-center py-3">
       <style>{`
-        .hk-card { position: relative; width: 100%; max-width: 440px; text-align: left; border-radius: 24px; padding: 30px 18px 16px; overflow: visible; color: #fff6ea;
-          background: linear-gradient(150deg, rgba(21,56,38,.92), rgba(12,36,24,.95)); border: 1.5px solid rgba(255,199,56,.55);
+        .hk-card { position: relative; width: 100%; max-width: 440px; text-align: left; border-radius: 24px; padding: 30px 18px 16px; color: #fff6ea; isolation: isolate;
+          background: #10301f; border: 1.5px solid rgba(255,199,56,.55);
           box-shadow: 0 18px 40px rgba(0,0,0,.35), 0 0 0 0 rgba(255,199,56,.5); animation: hkIn .7s cubic-bezier(.2,.9,.25,1.15) both, hkGlow 2.6s ease-in-out 1s infinite; -webkit-tap-highlight-color: transparent; }
         .hk-card:active { transform: scale(.98); }
-        .hk-cheese { position: absolute; left: 0; right: 0; top: 0; height: 18px; border-radius: 24px 24px 0 0; background: linear-gradient(180deg, #ffe08a, #ffc738); overflow: visible; }
+        .hk-photo { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; z-index: -1; }
+        .hk-photo img { position: absolute; right: 0; top: 0; height: 100%; width: 68%; object-fit: cover; animation: hkZoom 9s ease-in-out infinite alternate; transform-origin: 70% 50%; }
+        .hk-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #10301f 30%, rgba(16,48,31,.82) 52%, rgba(16,48,31,.15) 80%, rgba(16,48,31,0)), linear-gradient(0deg, rgba(16,48,31,.65), transparent 45%); }
+        .hk-cheese { position: absolute; left: 0; right: 0; top: 0; height: 18px; border-radius: 24px 24px 0 0; background: linear-gradient(180deg, #ffe08a, #ffc738); }
         .hk-drip { position: absolute; top: 12px; width: 12px; border-radius: 0 0 8px 8px; background: linear-gradient(180deg, #ffc738, #f5b21f); transform-origin: top; animation: hkDrip 2.8s ease-in-out infinite; }
         .hk-badge { display: inline-block; background: #ff6a1a; color: #fff; font-size: 11px; font-weight: 900; letter-spacing: .1em; padding: 3px 10px; border-radius: 999px; box-shadow: 0 4px 12px rgba(255,106,26,.45); animation: hkPop .5s .45s cubic-bezier(.3,1.6,.5,1) both; }
-        .hk-word { display: flex; margin-top: 6px; font-weight: 900; font-size: clamp(30px, 9vw, 44px); line-height: 1; letter-spacing: .02em; }
-        .hk-word span { display: inline-block; background: linear-gradient(180deg, #fff3c4, #ffc738 70%, #e59a12); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 rgba(0,0,0,.25)); animation: hkLetter .6s cubic-bezier(.3,1.5,.5,1) both; }
-        .hk-sub { margin-top: 6px; padding-right: 78px; font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.78); }
-        .hk-row { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .hk-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #ffc738; }
+        .hk-word { display: flex; flex-wrap: wrap; margin-top: 6px; font-weight: 900; line-height: 1; letter-spacing: .02em; max-width: 78%; }
+        .hk-word span { display: inline-block; background: linear-gradient(180deg, #fff3c4, #ffc738 70%, #e59a12); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 rgba(0,0,0,.35)); animation: hkLetter .6s cubic-bezier(.3,1.5,.5,1) both; }
+        .hk-sub { margin-top: 6px; max-width: 64%; font-size: 12.5px; font-weight: 600; color: rgba(255,246,234,.85); text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+        .hk-cta { margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #153826; background: #ffc738; padding: 6px 12px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
         .hk-cta svg { animation: hkArrow 1.4s ease-in-out infinite; }
         .hk-price { position: absolute; right: 14px; top: -14px; width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; font-size: 19px; color: #153826;
           background: radial-gradient(circle at 35% 30%, #fff1b8, #ffc738 60%, #e9a216); border: 3px solid #fff6ea; box-shadow: 0 8px 20px rgba(0,0,0,.35); animation: hkPrice .6s .7s cubic-bezier(.3,1.6,.5,1) both, hkWiggle 3s 1.6s ease-in-out infinite; }
         .hk-emoji { position: absolute; right: 18px; bottom: 10px; font-size: 34px; animation: hkFloat 3s ease-in-out infinite; }
         @keyframes hkIn { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
         @keyframes hkGlow { 0%,100% { box-shadow: 0 18px 40px rgba(0,0,0,.35), 0 0 0 0 rgba(255,199,56,.45); } 50% { box-shadow: 0 18px 40px rgba(0,0,0,.35), 0 0 0 10px rgba(255,199,56,0); } }
+        @keyframes hkZoom { from { transform: scale(1); } to { transform: scale(1.12); } }
         @keyframes hkDrip { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.35); } }
         @keyframes hkPop { from { transform: scale(0) rotate(-20deg); } to { transform: scale(1) rotate(0); } }
         @keyframes hkLetter { from { transform: translateY(-40px) rotate(-10deg); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -5467,17 +5497,18 @@ function HeroKapsTeaser({ go, lang }) {
         @media (prefers-reduced-motion: reduce) { .hk-card, .hk-card * { animation: none !important; } }
       `}</style>
       <button type="button" className="hk-card" onClick={open} aria-label={`${item.name} – ${priceLabel} – ${L('cta')}`}>
+        {photo && <span className="hk-photo" aria-hidden="true"><img src={photo} alt="" decoding="async" /></span>}
         <span className="hk-cheese" aria-hidden="true">
           {[[22, 14, 0], [70, 22, .4], [128, 10, .9], [190, 26, .2], [256, 16, .7], [318, 20, 1.1]].map(([x, h, d], i) => (
             <span key={i} className="hk-drip" style={{ left: x, height: h, animationDelay: `${d}s` }} />
           ))}
         </span>
         <span className="hk-price" aria-hidden="true">{priceLabel}</span>
-        <span className="hk-badge">✨ {L('neu')}</span>
-        <span className="hk-word" aria-hidden="true">{item.name.toUpperCase().split('').map((c, i) => <span key={i} style={{ animationDelay: `${0.15 + i * 0.06}s` }}>{c}</span>)}</span>
-        <span className="hk-sub" style={{ display: 'block' }}>{L('kapsTag')} · {L('kapsSub')}</span>
-        <span className="hk-row"><span className="hk-cta">{L('cta')} <ArrowRight size={15} /></span></span>
-        <span className="hk-emoji" aria-hidden="true">🍟🧀</span>
+        <span className="hk-badge">{badgeIcon} {L(badgeKey)}</span>
+        <span className="hk-word" aria-hidden="true" style={{ fontSize: wordFs }}>{word.split('').map((c, i) => <span key={i} style={{ animationDelay: `${0.15 + i * 0.06}s` }}>{c === ' ' ? '\u00a0' : c}</span>)}</span>
+        {sub && <span className="hk-sub" style={{ display: 'block' }}>{sub}</span>}
+        <span className="hk-cta">{L('cta')} <ArrowRight size={15} /></span>
+        {!photo && <span className="hk-emoji" aria-hidden="true">{isKaps ? '🍟🧀' : '😋'}</span>}
       </button>
     </div>
   );
@@ -5601,7 +5632,7 @@ function ProductSpotlight({ go, cfgKey = 'siteconfig:spotlight', defaults = SPOT
 }
 
 // Personal-Bereich: Einstellungen für die animierte Produktkarte
-function SpotlightAdmin({ compressImageFile, cfgKey = 'siteconfig:spotlight', defaults = SPOT_DEFAULT }) {
+function SpotlightAdmin({ compressImageFile, cfgKey = 'siteconfig:spotlight', defaults = SPOT_DEFAULT, intro, showStyle = true }) {
   const [cfg, setCfg] = useState(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
@@ -5630,7 +5661,7 @@ function SpotlightAdmin({ compressImageFile, cfgKey = 'siteconfig:spotlight', de
   const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
   return (
     <div>
-      <p className="text-[11px] mb-3 leading-snug" style={{ color: PANEL_MUTED }}>Die große animierte Karte auf der Startseite (schmelzender Käse, fallende Buchstaben). Hier wählst du, welches Produkt sie zeigt.</p>
+      <p className="text-[11px] mb-3 leading-snug" style={{ color: PANEL_MUTED }}>{intro || 'Die große animierte Karte auf der Startseite (schmelzender Käse, fallende Buchstaben). Hier wählst du, welches Produkt sie zeigt.'}</p>
       <button onClick={() => save({ ...cfg, enabled: !cfg.enabled })} disabled={busy} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-[10px] mb-3" style={inputSt}>
         <span className="text-sm font-medium">Karte anzeigen</span>
         <PanelSwitch on={cfg.enabled} onColor={GREEN} />
@@ -5645,12 +5676,14 @@ function SpotlightAdmin({ compressImageFile, cfgKey = 'siteconfig:spotlight', de
           <button key={k} onClick={() => save({ ...cfg, badge: k })} disabled={busy} className="flex-1 py-2 rounded-[10px] text-xs font-semibold" style={cfg.badge === k ? { background: GREEN, color: '#fff' } : inputSt}>{l}</button>
         ))}
       </div>
+{showStyle && (<>
       <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Animation</label>
       <div className="flex gap-1.5 mb-3">
         {[['cheese', '🧀 Schmelzender Käse'], ['sauce', '🥫 Fließende Soße']].map(([k, l]) => (
           <button key={k} onClick={() => save({ ...cfg, style: k })} disabled={busy} className="flex-1 py-2 rounded-[10px] text-xs font-semibold" style={cfg.style === k ? { background: GREEN, color: '#fff' } : inputSt}>{l}</button>
         ))}
       </div>
+      </>)}
       <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Kurzer Zusatz (optional, z.B. „Holländische Spezialität")</label>
       <input defaultValue={cfg.tagline} onBlur={(e) => { if (e.target.value !== cfg.tagline) save({ ...cfg, tagline: e.target.value.slice(0, 40) }); }} placeholder="leer lassen = automatisch" className="w-full px-3 py-2.5 rounded-[10px] text-sm mb-3 outline-none" style={inputSt} />
       <label className="block text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Foto</label>
@@ -6169,7 +6202,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             )}
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
-            <HeroKapsTeaser go={go} lang={lang} />
+            <HeroTeaser go={go} lang={lang} />
             {ONLINE_ORDER_TEST && <OnlineOrderButton lang={lang} />}
             {!orderingEnabled() && (
               <div className="flex flex-wrap gap-3 mb-5">
@@ -10859,6 +10892,9 @@ function StaffPanelView({ back }) {
                 <>
                   <SettingsRow id="hours" sub="Wochenplan, Ruhetage, Urlaub & Feiertage" icon="🕐" title="Öffnungszeiten & Ruhetage" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <HoursEditor />
+                  </SettingsRow>
+                  <SettingsRow id="heroTeaser" sub="Karte ganz oben – sofort sichtbar beim Öffnen" icon="🧀" title="Startseiten-Teaser (ganz oben)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <SpotlightAdmin compressImageFile={compressImageFile} cfgKey="siteconfig:heroTeaser" defaults={HERO_TEASER_DEFAULT} showStyle={false} intro="Die Karte direkt unter der Überschrift – Kunden sehen sie sofort, ohne zu scrollen. Hier kannst du sie ausschalten, ein anderes Produkt wählen oder ein eigenes Foto hochladen." />
                   </SettingsRow>
                   <SettingsRow id="spotlight" sub="Große animierte Karte oben auf der Startseite" icon="🎬" title="Animierte Produktkarte 1 (oben)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} />
