@@ -1697,6 +1697,56 @@ const WHEEL_PRIZES = [
 // Wenn alle alten Gewinne eingelöst sind: Räder-Code + api/create-spincode.js löschen.
 // Ausnahme: Auf dem Testgerät (?ordertest=1) sind die Räder sichtbar, damit der
 // komplette Bestellablauf inkl. Glücksrad getestet werden kann. Kunden sehen sie weiterhin nicht.
+// ── Online-Bestellung über die Partner-Plattform (bestellbei.de / Stadtmarkt Vechta) ──
+// TESTPHASE: Der Button ist für Kunden UNSICHTBAR. Sichtbar nur auf Geräten,
+// die einmal ?onlinetest=1 aufgerufen haben (bleibt gespeichert); ?onlinetest=0 schaltet ab.
+// TODO: echten Link der Bodrum-Kebap-Seite auf bestellbei.de eintragen.
+const ONLINE_ORDER_URL = 'https://bestellbei.de/';
+const ONLINE_ORDER_TEST = (() => {
+  try {
+    const p = new URLSearchParams(window.location.search).get('onlinetest');
+    if (p === '1') { localStorage.setItem('bk_online_order_test', '1'); return true; }
+    if (p === '0') { localStorage.removeItem('bk_online_order_test'); return false; }
+    return localStorage.getItem('bk_online_order_test') === '1';
+  } catch { return false; }
+})();
+const ONLINE_ORDER_T = {
+  title: { de: 'Online bestellen', en: 'Order online', tr: 'Online sipariş', ro: 'Comandă online', nl: 'Online bestellen', sq: 'Porosit online', ku: 'Online sîparîş bide', pl: 'Zamów online' },
+  sub: { de: 'Jetzt bestellen & selbst abholen', en: 'Order now & pick up yourself', tr: 'Şimdi sipariş ver, gel al', ro: 'Comandă acum și ridică personal', nl: 'Nu bestellen & zelf ophalen', sq: 'Porosit tani & merre vetë', ku: 'Niha sîparîş bide & bi xwe bigire', pl: 'Zamów teraz i odbierz osobiście' },
+};
+function OnlineOrderButton({ lang }) {
+  const T = (k) => ONLINE_ORDER_T[k][lang] || ONLINE_ORDER_T[k].de;
+  return (
+    <a href={ONLINE_ORDER_URL} target="_blank" rel="noopener noreferrer" onClick={() => logEvent('online_order_click')} className="oo-btn" aria-label={`${T('title')} – ${T('sub')}`}>
+      <style>{`
+        .oo-btn { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; max-width: 440px; margin-bottom: 18px; padding: 14px 18px 14px 14px; border-radius: 22px; text-decoration: none; color: #fff; isolation: isolate;
+          background: linear-gradient(110deg, #ff3d68, #ff6a1a 35%, #ffc738 55%, #ff6a1a 75%, #ff3d68); background-size: 250% 100%;
+          box-shadow: 0 14px 34px rgba(255,61,104,.45), inset 0 1px 0 rgba(255,255,255,.35);
+          animation: ooFlow 4s linear infinite, ooBob 3s ease-in-out infinite; -webkit-tap-highlight-color: transparent; }
+        .oo-btn::before { content: ''; position: absolute; inset: -4px; border-radius: 26px; border: 2px solid rgba(255,199,56,.85); z-index: -1; animation: ooRing 2s ease-out infinite; }
+        .oo-btn::after { content: ''; position: absolute; inset: 0; border-radius: 22px; overflow: hidden; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%); background-size: 250% 100%; animation: ooShine 2.8s ease-in-out infinite; pointer-events: none; }
+        .oo-btn:active { transform: scale(.97); }
+        .oo-ico { flex: 0 0 auto; width: 52px; height: 52px; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 6px 14px rgba(120,20,40,.25); animation: ooBag 2.2s ease-in-out infinite; }
+        .oo-txt { flex: 1; min-width: 0; line-height: 1.15; text-shadow: 0 1px 2px rgba(120,20,40,.35); }
+        .oo-title { font-size: 21px; font-weight: 900; letter-spacing: -.01em; }
+        .oo-sub { font-size: 12.5px; font-weight: 700; opacity: .95; margin-top: 3px; }
+        .oo-arrow { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; background: rgba(21,56,38,.9); color: #ffc738; display: flex; align-items: center; justify-content: center; animation: ooArrow 1.4s ease-in-out infinite; }
+        .oo-test { position: absolute; top: -9px; right: 14px; background: #153826; color: #ffc738; font-size: 9.5px; font-weight: 900; letter-spacing: .12em; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,199,56,.6); }
+        @keyframes ooFlow { from { background-position: 0% 0; } to { background-position: 250% 0; } }
+        @keyframes ooBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes ooRing { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.08, 1.25); opacity: 0; } }
+        @keyframes ooShine { 0%, 40% { background-position: 150% 0; } 100% { background-position: -100% 0; } }
+        @keyframes ooBag { 0%,100% { transform: rotate(0) scale(1); } 15% { transform: rotate(-12deg) scale(1.08); } 30% { transform: rotate(10deg) scale(1.08); } 45% { transform: rotate(0) scale(1); } }
+        @keyframes ooArrow { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+        @media (prefers-reduced-motion: reduce) { .oo-btn, .oo-btn::before, .oo-btn::after, .oo-ico, .oo-arrow { animation: none !important; } }
+      `}</style>
+      <span className="oo-test">TEST</span>
+      <span className="oo-ico" aria-hidden="true">🛍️</span>
+      <span className="oo-txt"><span className="oo-title" style={{ display: 'block' }}>{T('title')}</span><span className="oo-sub" style={{ display: 'block' }}>{T('sub')}</span></span>
+      <span className="oo-arrow" aria-hidden="true"><ArrowRight size={20} /></span>
+    </a>
+  );
+}
 const WHEELS_ENABLED = (() => {
   try {
     const p = new URLSearchParams(window.location.search).get('ordertest');
@@ -6061,6 +6111,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <div className="h-48 sm:h-56" />
+            {ONLINE_ORDER_TEST && <OnlineOrderButton lang={lang} />}
             {!orderingEnabled() && (
               <div className="flex flex-wrap gap-3 mb-5">
                 <button
