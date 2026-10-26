@@ -2329,7 +2329,10 @@ function loadHalloweenCfg() {
     halloweenSubs.forEach((fn) => fn(halloweenCfg));
   }).catch(() => { halloweenCfg = { mode: 'auto' }; halloweenSubs.forEach((fn) => fn(halloweenCfg)); });
 }
+// Testlink: ?halloween=1 zeigt die Deko nur auf diesem Aufruf (Kunden sehen nichts).
+const HALLOWEEN_PREVIEW = (() => { try { return new URLSearchParams(window.location.search).get('halloween') === '1'; } catch { return false; } })();
 function halloweenActive(cfg, now = berlinNow()) {
+  if (HALLOWEEN_PREVIEW) return true;
   const mode = cfg?.mode || 'auto';
   if (mode === 'on') return true;
   if (mode === 'off') return false;
