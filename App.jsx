@@ -2339,6 +2339,18 @@ function halloweenActive(cfg, now = berlinNow()) {
   const m = now.getMonth() + 1, d = now.getDate();
   return (m === 10 && d >= 29) || (m === 11 && d === 1);
 }
+// Wie useHalloween, aber sofort beim ersten Bild (Konfiguration noch nicht
+// geladen → "automatisch" annehmen). Für den Start-Bildschirm.
+function useHalloweenEager() {
+  const [cfg, setCfg] = useState(halloweenCfg);
+  useEffect(() => {
+    halloweenSubs.add(setCfg);
+    loadHalloweenCfg();
+    if (halloweenCfg) setCfg(halloweenCfg);
+    return () => { halloweenSubs.delete(setCfg); };
+  }, []);
+  return halloweenActive(cfg || { mode: 'auto' });
+}
 function useHalloween() {
   const [cfg, setCfg] = useState(halloweenCfg);
   useEffect(() => {
@@ -2360,6 +2372,28 @@ const HW_T = {
   pl: 'Wesołego Halloween! Cukierek albo psikus? U nas jest döner!',
 };
 const HW_BAT_PATH = 'M50 22c-3-6-7-9-12-10 2 3 2 6 0 8-4-5-11-8-20-7 4 3 6 7 6 11-6-3-13-3-20 1 8 1 15 6 18 12 4-3 9-3 13 0 3-3 6-5 9-5 1 4 4 6 6 6s5-2 6-6c3 0 6 2 9 5 4-3 9-3 13 0 3-6 10-11 18-12-7-4-14-4-20-1 0-4 2-8 6-11-9-1-16 2-20 7-2-2-2-5 0-8-5 1-9 4-12 10z';
+function HalloweenPumpkin({ size = 170 }) {
+  return (
+    <svg width={size} height={size * 0.92} viewBox="0 0 200 184" aria-hidden="true" style={{ overflow: 'visible' }}>
+      <defs>
+        <radialGradient id="hwPk" cx="45%" cy="40%" r="70%"><stop offset="0" stopColor="#ffa040" /><stop offset=".6" stopColor="#f2701c" /><stop offset="1" stopColor="#b8460c" /></radialGradient>
+        <radialGradient id="hwFace" cx="50%" cy="50%" r="60%"><stop offset="0" stopColor="#fff7b0" /><stop offset=".5" stopColor="#ffd23f" /><stop offset="1" stopColor="#ff9a1a" /></radialGradient>
+      </defs>
+      <path d="M96 30c-2-12 2-22 12-28 4 2 5 6 2 9-6 5-7 12-6 19z" fill="#3f6b2a" />
+      <path d="M108 20c10-8 24-8 32 2-10-2-20 0-28 6z" fill="#5c8c36" />
+      <ellipse cx="62" cy="110" rx="52" ry="66" fill="url(#hwPk)" />
+      <ellipse cx="138" cy="110" rx="52" ry="66" fill="url(#hwPk)" />
+      <ellipse cx="100" cy="108" rx="54" ry="72" fill="url(#hwPk)" />
+      <path d="M78 42c-14 20-18 48-14 70s10 44 18 60M122 42c14 20 18 48 14 70s-10 44-18 60" fill="none" stroke="#a63f0a" strokeWidth="2.5" opacity=".55" />
+      <g className="hw-face" fill="url(#hwFace)">
+        <path d="M58 88l26 4-18 20z" />
+        <path d="M142 88l-26 4 18 20z" />
+        <path d="M100 108l-9 14h18z" />
+        <path d="M48 128c16 20 88 20 104 0-4 22-22 36-52 36s-48-14-52-36zm20 10l6 10 6-9 6 11 7-11 7 11 7-11 6 9 6-10" fillRule="evenodd" />
+      </g>
+    </svg>
+  );
+}
 function HalloweenBanner() {
   const { lang } = React.useContext(LangContext);
   const on = useHalloween();
@@ -2368,8 +2402,8 @@ function HalloweenBanner() {
     <div className="hw-banner mx-4 mt-3 mb-1 rounded-2xl relative overflow-hidden" role="note">
       <style>{`
         .hw-banner { background: linear-gradient(115deg, #1d0b2a, #3b1450 45%, #7a2a0c 80%, #ff6a1a); color: #fff1dc; box-shadow: 0 10px 28px rgba(40,10,60,.35); border: 1.5px solid rgba(255,140,40,.6); }
-        .hw-banner-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 14px; position: relative; z-index: 1; }
-        .hw-pumpkin { font-size: 34px; flex: 0 0 auto; filter: drop-shadow(0 0 10px rgba(255,140,40,.8)); animation: hwPumpkin 2.6s ease-in-out infinite; }
+        .hw-banner-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px 12px 12px; position: relative; z-index: 1; }
+        .hw-pumpkin { font-size: 50px; flex: 0 0 auto; filter: drop-shadow(0 0 10px rgba(255,140,40,.8)); animation: hwPumpkin 2.6s ease-in-out infinite; }
         .hw-text { font-weight: 800; font-size: 14px; line-height: 1.3; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
         .hw-ghost { position: absolute; right: 12px; top: 50%; font-size: 26px; opacity: .85; animation: hwGhost 3.4s ease-in-out infinite; }
         .hw-web { position: absolute; left: 0; top: 0; width: 70px; height: 70px; opacity: .25; }
@@ -6337,9 +6371,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <span key={i} style={{ width: i === heroIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === heroIdx ? GOLD : 'rgba(255,246,234,.4)', transition: 'all .4s ease' }} />
           ))}
         </div>
-        <div className="hero-float absolute text-5xl select-none pointer-events-none" style={{ top: '8%', left: '4%', zIndex: 2, opacity: hwOn ? 0.55 : 0.2 }}>{hwOn ? '🎃' : '🥙'}</div>
-        <div className="hero-float2 absolute text-5xl select-none pointer-events-none" style={{ bottom: '10%', right: '6%', zIndex: 2, opacity: hwOn ? 0.5 : 0.2 }}>{hwOn ? '👻' : '🍕'}</div>
-        <div className="hero-float absolute text-4xl select-none pointer-events-none hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2, opacity: hwOn ? 0.45 : 0.15 }}>{hwOn ? '🎃' : '🔥'}</div>
+        <div className={`hero-float absolute ${hwOn ? 'text-7xl' : 'text-5xl'} select-none pointer-events-none`} style={{ top: '8%', left: '4%', zIndex: 2, opacity: hwOn ? 0.6 : 0.2 }}>{hwOn ? '🎃' : '🥙'}</div>
+        <div className={`hero-float2 absolute ${hwOn ? 'text-6xl' : 'text-5xl'} select-none pointer-events-none`} style={{ bottom: '10%', right: '6%', zIndex: 2, opacity: hwOn ? 0.5 : 0.2 }}>{hwOn ? '👻' : '🍕'}</div>
+        <div className={`hero-float absolute ${hwOn ? 'text-7xl' : 'text-4xl'} select-none pointer-events-none hidden lg:block`} style={{ top: '55%', left: '46%', zIndex: 2, opacity: hwOn ? 0.5 : 0.15 }}>{hwOn ? '🎃' : '🔥'}</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-16 lg:pt-8 lg:pb-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{dpTheme.label[lang] || dpTheme.label.de} · ☪ {t('heroHalal')}</div>
@@ -13147,8 +13181,41 @@ function OpeningLoader() {
     timers.push(setTimeout(leave, MAX));
     return () => { timers.forEach(clearTimeout); window.removeEventListener('load', onLoad); };
   }, [show]);
+  const hw = useHalloweenEager();
   if (!show) return null;
   const name = 'BODRUM KEBAP';
+  if (hw) return (
+    <div onClick={leave} className="fixed inset-0 flex flex-col items-center justify-center cursor-pointer overflow-hidden" style={{ zIndex: 9999, background: 'radial-gradient(ellipse at 50% 40%, #4a1d63 0%, #24103a 50%, #0b0612 100%)', opacity: leaving ? 0 : 1, transition: 'opacity .7s ease' }}>
+      <style>{`
+        @keyframes hwInPumpkin { 0% { opacity: 0; transform: translateY(-120px) scale(.6) rotate(-14deg); } 60% { opacity: 1; transform: translateY(10px) scale(1.06) rotate(4deg); } 80% { transform: translateY(-4px) scale(.98) rotate(-2deg); } 100% { opacity: 1; transform: none; } }
+        @keyframes hwFaceOn { 0%, 45% { opacity: 0; } 50% { opacity: 1; } 55% { opacity: .3; } 62%, 100% { opacity: 1; } }
+        @keyframes hwFlicker { 0%,100% { opacity: 1; } 20% { opacity: .82; } 40% { opacity: .95; } 60% { opacity: .75; } 80% { opacity: .92; } }
+        @keyframes hwHalo { 0%,100% { opacity: .45; transform: scale(1); } 50% { opacity: .8; transform: scale(1.1); } }
+        @keyframes hwOutBat { 0% { opacity: 0; transform: translate(0,0) scale(.3); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.1); } }
+        @keyframes hwFlapI { from { transform: scaleY(1); } to { transform: scaleY(.35); } }
+        @keyframes hwChar { 0% { opacity: 0; transform: translateY(14px); filter: blur(4px); } 100% { opacity: 1; transform: none; filter: blur(0); } }
+        @keyframes hwTrack { 0% { opacity: 0; letter-spacing: .1em; } 100% { opacity: 1; letter-spacing: .45em; } }
+        .hw-face { animation: hwFaceOn 1.4s ease .3s both, hwFlicker 1.1s ease-in-out 1.8s infinite; filter: drop-shadow(0 0 8px #ffb02e); }
+      `}</style>
+      <div className="relative flex flex-col items-center" style={{ transform: leaving ? 'translateY(-24px)' : 'none', transition: 'transform .5s ease' }}>
+        <div className="relative" style={{ width: 200, height: 184 }}>
+          <div className="absolute rounded-full" style={{ inset: -40, background: 'radial-gradient(circle, rgba(255,150,40,.55), transparent 65%)', animation: 'hwHalo 1.8s ease-in-out .8s infinite' }} />
+          {[{ tx: '-150px', ty: '-160px', d: 1.0 }, { tx: '160px', ty: '-140px', d: 1.25 }, { tx: '-120px', ty: '-220px', d: 1.5 }, { tx: '130px', ty: '-230px', d: 1.7 }].map((b, i) => (
+            <div key={i} className="absolute" style={{ left: 82, top: 70, '--tx': b.tx, '--ty': b.ty, animation: `hwOutBat 1.3s ease-out ${b.d}s both` }}>
+              <svg width="40" height="18" viewBox="0 0 100 45" style={{ animation: 'hwFlapI .2s ease-in-out infinite alternate' }}><path d={HW_BAT_PATH} fill="#0b0612" /></svg>
+            </div>
+          ))}
+          <div className="relative" style={{ animation: 'hwInPumpkin 1s cubic-bezier(.3,1.4,.5,1) both' }}><HalloweenPumpkin size={200} /></div>
+        </div>
+        <div className="mt-6 font-black text-[26px] leading-none" style={{ color: '#ffe6c2', letterSpacing: '.06em', textShadow: '0 0 18px rgba(255,140,40,.45)' }}>
+          {name.split('').map((ch, i) => (
+            <span key={i} className="inline-block" style={{ whiteSpace: 'pre', animation: `hwChar .6s cubic-bezier(.2,.8,.2,1) ${0.9 + i * 0.06}s both` }}>{ch}</span>
+          ))}
+        </div>
+        <div className="mt-3 text-[12px] font-black" style={{ color: '#ff8a2a', paddingLeft: '.45em', animation: 'hwTrack 1s cubic-bezier(.2,.8,.2,1) 1.6s both' }}>HAPPY HALLOWEEN</div>
+      </div>
+    </div>
+  );
   return (
     <div onClick={leave} className="fixed inset-0 flex flex-col items-center justify-center cursor-pointer" style={{ zIndex: 9999, background: `radial-gradient(ellipse at 50% 42%, #22573c 0%, ${GREEN} 55%, #0b1f15 100%)`, transform: leaving ? 'translateY(-100%)' : 'none', transition: 'transform .75s cubic-bezier(.76,0,.24,1)' }} aria-hidden="true">
       <style>{`
