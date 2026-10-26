@@ -2315,6 +2315,149 @@ function useWeather() {
   return data;
 }
 
+// ── Halloween-Deko ───────────────────────────────────────────────────────────
+// siteconfig:halloween = { mode: 'auto' | 'on' | 'off' }
+// auto = 29.10. bis 01.11. (Berliner Datum), jedes Jahr automatisch.
+let halloweenCfg = null;
+const halloweenSubs = new Set();
+let halloweenLoading = false;
+function loadHalloweenCfg() {
+  if (halloweenCfg || halloweenLoading) return;
+  halloweenLoading = true;
+  safeGet('siteconfig:halloween').then((r) => {
+    halloweenCfg = { mode: 'auto', ...(r || {}) };
+    halloweenSubs.forEach((fn) => fn(halloweenCfg));
+  }).catch(() => { halloweenCfg = { mode: 'auto' }; halloweenSubs.forEach((fn) => fn(halloweenCfg)); });
+}
+function halloweenActive(cfg, now = berlinNow()) {
+  const mode = cfg?.mode || 'auto';
+  if (mode === 'on') return true;
+  if (mode === 'off') return false;
+  const m = now.getMonth() + 1, d = now.getDate();
+  return (m === 10 && d >= 29) || (m === 11 && d === 1);
+}
+function useHalloween() {
+  const [cfg, setCfg] = useState(halloweenCfg);
+  useEffect(() => {
+    halloweenSubs.add(setCfg);
+    loadHalloweenCfg();
+    if (halloweenCfg) setCfg(halloweenCfg);
+    return () => { halloweenSubs.delete(setCfg); };
+  }, []);
+  return !!cfg && halloweenActive(cfg);
+}
+const HW_T = {
+  de: 'Happy Halloween! Süßes oder Saures? Bei uns gibt’s Döner!',
+  en: 'Happy Halloween! Trick or treat? We’ve got döner!',
+  tr: 'Mutlu Cadılar Bayramı! Şeker mi, şaka mı? Bizde döner var!',
+  ro: 'Halloween fericit! Păcăleală sau dulciuri? La noi e döner!',
+  nl: 'Happy Halloween! Snoep of je leven? Bij ons is er döner!',
+  sq: 'Gëzuar Halloween! Ëmbëlsira apo rreng? Te ne ka döner!',
+  ku: 'Halloween pîroz be! Şîranî an henek? Li cem me döner heye!',
+  pl: 'Wesołego Halloween! Cukierek albo psikus? U nas jest döner!',
+};
+const HW_BAT_PATH = 'M50 22c-3-6-7-9-12-10 2 3 2 6 0 8-4-5-11-8-20-7 4 3 6 7 6 11-6-3-13-3-20 1 8 1 15 6 18 12 4-3 9-3 13 0 3-3 6-5 9-5 1 4 4 6 6 6s5-2 6-6c3 0 6 2 9 5 4-3 9-3 13 0 3-6 10-11 18-12-7-4-14-4-20-1 0-4 2-8 6-11-9-1-16 2-20 7-2-2-2-5 0-8-5 1-9 4-12 10z';
+function HalloweenBanner() {
+  const { lang } = React.useContext(LangContext);
+  const on = useHalloween();
+  if (!on) return null;
+  return (
+    <div className="hw-banner mx-4 mt-3 mb-1 rounded-2xl relative overflow-hidden" role="note">
+      <style>{`
+        .hw-banner { background: linear-gradient(115deg, #1d0b2a, #3b1450 45%, #7a2a0c 80%, #ff6a1a); color: #fff1dc; box-shadow: 0 10px 28px rgba(40,10,60,.35); border: 1.5px solid rgba(255,140,40,.6); }
+        .hw-banner-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 14px; position: relative; z-index: 1; }
+        .hw-pumpkin { font-size: 34px; flex: 0 0 auto; filter: drop-shadow(0 0 10px rgba(255,140,40,.8)); animation: hwPumpkin 2.6s ease-in-out infinite; }
+        .hw-text { font-weight: 800; font-size: 14px; line-height: 1.3; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
+        .hw-ghost { position: absolute; right: 12px; top: 50%; font-size: 26px; opacity: .85; animation: hwGhost 3.4s ease-in-out infinite; }
+        .hw-web { position: absolute; left: 0; top: 0; width: 70px; height: 70px; opacity: .25; }
+        @keyframes hwPumpkin { 0%,100% { transform: rotate(-6deg) scale(1); filter: drop-shadow(0 0 6px rgba(255,140,40,.6)); } 50% { transform: rotate(6deg) scale(1.08); filter: drop-shadow(0 0 16px rgba(255,160,40,1)); } }
+        @keyframes hwGhost { 0%,100% { transform: translateY(-60%) translateX(0); } 50% { transform: translateY(-40%) translateX(-6px); } }
+        @media (prefers-reduced-motion: reduce) { .hw-pumpkin, .hw-ghost { animation: none; } }
+      `}</style>
+      <svg className="hw-web" viewBox="0 0 70 70" aria-hidden="true" fill="none" stroke="#fff" strokeWidth="1">
+        <path d="M0 0L70 70M0 0L70 30M0 0L30 70M0 0L70 0M0 0L0 70" />
+        <path d="M14 0C14 8 8 14 0 14M30 0C30 17 17 30 0 30M48 0C48 27 27 48 0 48M66 0C66 37 37 66 0 66" />
+      </svg>
+      <div className="hw-banner-row" style={{ paddingRight: 52 }}>
+        <span className="hw-pumpkin" aria-hidden="true">🎃</span>
+        <span className="hw-text">{HW_T[lang] || HW_T.de}</span>
+      </div>
+      <span className="hw-ghost" aria-hidden="true">👻</span>
+    </div>
+  );
+}
+// Fliegende Fledermäuse + Spinne (nur Startseite, klickt nichts weg).
+function HalloweenLayer() {
+  const on = useHalloween();
+  if (!on) return null;
+  const bats = [
+    { top: 16, dur: 16, delay: 1, size: 64, bob: 3.2 },
+    { top: 34, dur: 21, delay: 7, size: 46, bob: 2.6 },
+    { top: 24, dur: 18, delay: 13, size: 56, bob: 3.8, rev: true },
+  ];
+  const content = (
+    <div aria-hidden="true" className="hw-layer">
+      <style>{`
+        .hw-layer { position: fixed; inset: 0; pointer-events: none; z-index: 35; overflow: hidden; }
+        .hw-bat { position: absolute; left: 0; animation-name: hwFly; animation-timing-function: linear; animation-iteration-count: infinite; animation-fill-mode: both; }
+        .hw-bat.rev { animation-name: hwFlyRev; }
+        .hw-bat-bob { animation: hwBob ease-in-out infinite alternate; }
+        .hw-bat svg { display: block; animation: hwFlap .22s ease-in-out infinite alternate; transform-origin: 50% 40%; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+        @keyframes hwFly { 0% { transform: translateX(-12vw); } 100% { transform: translateX(112vw); } }
+        @keyframes hwFlyRev { 0% { transform: translateX(112vw) scaleX(-1); } 100% { transform: translateX(-12vw) scaleX(-1); } }
+        @keyframes hwBob { from { transform: translateY(-24px); } to { transform: translateY(24px); } }
+        @keyframes hwFlap { from { transform: scaleY(1); } to { transform: scaleY(.35); } }
+        .hw-spider { position: absolute; right: 22px; top: 0; display: flex; flex-direction: column; align-items: center; animation: hwDrop 9s ease-in-out infinite; }
+        .hw-spider i { width: 1px; background: rgba(255,255,255,.55); height: 100%; flex: 1; }
+        @keyframes hwDrop { 0%,100% { height: 120px; } 45%,60% { height: 230px; } }
+        @media (prefers-reduced-motion: reduce) { .hw-layer { display: none; } }
+      `}</style>
+      {bats.map((b, i) => (
+        <div key={i} className={`hw-bat ${b.rev ? 'rev' : ''}`} style={{ top: `${b.top}vh`, animationDuration: `${b.dur}s`, animationDelay: `${b.delay}s` }}>
+          <div className="hw-bat-bob" style={{ animationDuration: `${b.bob}s` }}>
+            <svg width={b.size} height={b.size * 0.45} viewBox="0 0 100 45"><path d={HW_BAT_PATH} fill="#1a0f22" /></svg>
+          </div>
+        </div>
+      ))}
+      <div className="hw-spider">
+        <i />
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#1a0f22" strokeWidth="1.6" strokeLinecap="round">
+          <path d="M9 11 3 7M9 13 2 13M9 15 3 19M10 17 6 23M17 11 23 7M17 13 24 13M17 15 23 19M16 17 20 23" />
+          <ellipse cx="13" cy="14" rx="4.6" ry="5.4" fill="#1a0f22" />
+          <circle cx="11.6" cy="12.6" r=".9" fill="#ff6a1a" stroke="none" /><circle cx="14.4" cy="12.6" r=".9" fill="#ff6a1a" stroke="none" />
+        </svg>
+      </div>
+    </div>
+  );
+  return ReactDOM.createPortal(content, document.body);
+}
+function HalloweenAdmin() {
+  const [mode, setMode] = useState(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { safeGet('siteconfig:halloween').then((r) => setMode((r && r.mode) || 'auto')); }, []);
+  if (!mode) return <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt…</p>;
+  const save = async (m) => {
+    setBusy(true);
+    const ok = await safeSet('siteconfig:halloween', { mode: m });
+    setBusy(false);
+    if (ok) { setMode(m); halloweenCfg = { mode: m }; halloweenSubs.forEach((fn) => fn(halloweenCfg)); panelToast('Gespeichert'); }
+    else alert('Konnte nicht gespeichert werden – bitte erneut versuchen.');
+  };
+  const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
+  const activeNow = halloweenActive({ mode });
+  return (
+    <div>
+      <p className="text-[11px] mb-3 leading-snug" style={{ color: PANEL_MUTED }}>Fliegende Fledermäuse, eine Spinne und ein Halloween-Banner auf der Startseite. „Automatisch“ zeigt die Deko jedes Jahr vom 29.10. bis 01.11.</p>
+      <div className="flex gap-1.5 mb-2">
+        {[['auto', '🗓️ Automatisch'], ['on', '🎃 An'], ['off', 'Aus']].map(([k, l]) => (
+          <button key={k} onClick={() => save(k)} disabled={busy} className="flex-1 py-2 rounded-[10px] text-xs font-semibold" style={mode === k ? { background: GREEN, color: '#fff' } : inputSt}>{l}</button>
+        ))}
+      </div>
+      <p className="text-[11px] font-semibold" style={{ color: activeNow ? '#c2410c' : PANEL_MUTED }}>{activeNow ? '🎃 Gerade sichtbar auf der Startseite' : 'Gerade nicht sichtbar'}</p>
+    </div>
+  );
+}
+
 function WeatherEffect() {
   const weather = useWeather();
   const effect = weather?.type || null;
@@ -5812,6 +5955,7 @@ const DAY_PHASE_THEME = {
 };
 
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
+  const hwOn = useHalloween();
   const dayPhase = useDayPhase();
   // Abschnitte unterhalb des ersten Bildschirms gleiten beim Scrollen weich herein.
   const homeRootRef = useRef(null);
@@ -6159,6 +6303,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <span className="text-2xl">🎡</span> Dienstags-Glücksrad — jetzt drehen!
         </button>
       )}
+      <HalloweenBanner />
       <CampaignBanner />
       <MittagsBanner menu={HOME_EFFECTIVE_MENU} onPhotoClick={setLightbox} />
       {now.getDay() === 6 && <WeekendComboPromo go={go} top />}
@@ -6189,9 +6334,9 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <span key={i} style={{ width: i === heroIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === heroIdx ? GOLD : 'rgba(255,246,234,.4)', transition: 'all .4s ease' }} />
           ))}
         </div>
-        <div className="hero-float absolute text-5xl select-none pointer-events-none opacity-20" style={{ top: '8%', left: '4%', zIndex: 2 }}>🥙</div>
-        <div className="hero-float2 absolute text-5xl select-none pointer-events-none opacity-20" style={{ bottom: '10%', right: '6%', zIndex: 2 }}>🍕</div>
-        <div className="hero-float absolute text-4xl select-none pointer-events-none opacity-15 hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2 }}>🔥</div>
+        <div className="hero-float absolute text-5xl select-none pointer-events-none" style={{ top: '8%', left: '4%', zIndex: 2, opacity: hwOn ? 0.55 : 0.2 }}>{hwOn ? '🎃' : '🥙'}</div>
+        <div className="hero-float2 absolute text-5xl select-none pointer-events-none" style={{ bottom: '10%', right: '6%', zIndex: 2, opacity: hwOn ? 0.5 : 0.2 }}>{hwOn ? '👻' : '🍕'}</div>
+        <div className="hero-float absolute text-4xl select-none pointer-events-none hidden lg:block" style={{ top: '55%', left: '46%', zIndex: 2, opacity: hwOn ? 0.45 : 0.15 }}>{hwOn ? '🎃' : '🔥'}</div>
         <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-16 lg:pt-8 lg:pb-24 grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-2" style={{ background: 'rgba(255,199,56,.15)', color: GOLD, border: '1px solid rgba(255,199,56,.4)', animation: 'softFloat 4s ease-in-out infinite' }}>{dpTheme.label[lang] || dpTheme.label.de} · ☪ {t('heroHalal')}</div>
@@ -10908,6 +11053,9 @@ function StaffPanelView({ back }) {
                   <SettingsRow id="spotlight2" sub="Zweite animierte Karte weiter unten" icon="🎬" title="Animierte Produktkarte 2 (weiter unten)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} cfgKey="siteconfig:spotlight2" defaults={SPOT2_DEFAULT} />
                   </SettingsRow>
+                  <SettingsRow id="halloween" sub="Fledermäuse, Spinne & Banner (29.10.–01.11.)" icon="🎃" title="Halloween-Deko" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <HalloweenAdmin />
+                  </SettingsRow>
                   <SettingsRow id="dailyBanner" sub="Kurze Info oben auf der Startseite" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <textarea value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} rows={3} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
                     {dailyBannerImg && <img loading="lazy" decoding="async" src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
@@ -13836,7 +13984,7 @@ function AppMain() {
 
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><WeatherEffect /><OpeningLoader /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><HalloweenLayer /><OpeningLoader /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
   }
 
   if (view === 'stamp') {
