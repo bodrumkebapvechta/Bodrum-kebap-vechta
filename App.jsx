@@ -13268,8 +13268,25 @@ const ST_T = {
   off: { de: 'Selbst-Stempel sind gerade nicht verfügbar. Bitte frag das Team.', en: 'Self-service stamps are currently unavailable. Please ask the team.', tr: 'Kendi damgan şu an kullanılamıyor. Lütfen ekibe sor.', ro: 'Ștampilele self-service nu sunt disponibile acum. Întreabă echipa.', nl: 'Zelf stempelen is nu niet beschikbaar. Vraag het team.', sq: 'Vula vetëshërbyese nuk është e disponueshme tani. Pyet ekipin.', ku: 'Mohra bi xwe niha nayê bikaranîn. Ji tîmê bipirse.', pl: 'Samodzielne pieczątki są teraz niedostępne. Zapytaj zespół.' },
   noCard: { de: 'Noch keine Karte? Erstelle sie auf der Startseite unter „Stempelkarte".', en: 'No card yet? Create one on the home page under “Stempelkarte”.', tr: 'Henüz kartın yok mu? Ana sayfada “Stempelkarte” bölümünden oluştur.', ro: 'Nu ai încă un card? Creează-l pe pagina principală la „Stempelkarte”.', nl: 'Nog geen kaart? Maak er een op de startpagina onder „Stempelkarte”.', sq: 'Nuk ke kartë? Krijoje në faqen kryesore te „Stempelkarte”.', ku: 'Hê karta te tune? Li rûpela serî di „Stempelkarte” de çêke.', pl: 'Nie masz jeszcze karty? Utwórz ją na stronie głównej w „Stempelkarte”.' },
   home: { de: 'Zur Startseite', en: 'Go to home page', tr: 'Ana sayfaya git', ro: 'La pagina principală', nl: 'Naar de startpagina', sq: 'Te faqja kryesore', ku: 'Biçe rûpela serî', pl: 'Do strony głównej' },
+  tap: { de: 'Dieser Stempel-Link ist abgelaufen. Bitte halte dein Handy direkt im Laden an den Stempel.', en: 'This stamp link has expired. Please hold your phone to the stamp in the shop.', tr: 'Bu damga bağlantısının süresi doldu. Lütfen telefonunu dükkandaki damgaya doğrudan tut.', ro: 'Acest link a expirat. Te rugăm să ții telefonul direct lângă ștampila din magazin.', nl: 'Deze stempellink is verlopen. Houd je telefoon in de winkel direct tegen de stempel.', sq: 'Kjo lidhje ka skaduar. Ju lutem mbajeni telefonin direkt te vula në dyqan.', ku: 'Ev girêdan qediya. Ji kerema xwe telefona xwe li dikanê rasterast nêzî mohrê bike.', pl: 'Ten link wygasł. Przyłóż telefon bezpośrednio do pieczątki w lokalu.' },
   card: { de: 'Meine Karte ansehen', en: 'View my card', tr: 'Kartımı gör', ro: 'Vezi cardul meu', nl: 'Bekijk mijn kaart', sq: 'Shiko kartën time', ku: 'Karta min bibîne', pl: 'Zobacz moją kartę' },
 };
+// Parameter eines sicheren NFC-Chips (NTAG 424 DNA) – einmal auslesen und
+// danach aus der Adresszeile entfernen, damit der Link nicht weitergegeben wird.
+const SUN_PARAMS = (() => {
+  try {
+    const raw = window.location.search || '';
+    const q = new URLSearchParams(raw);
+    const g = (...ks) => { for (const k of ks) { const v = q.get(k); if (v) return v; } return undefined; };
+    const sp = { picc: g('picc', 'picc_data', 'e'), uid: g('uid'), ctr: g('ctr'), cmac: g('cmac', 'c'), raw };
+    if (sp.cmac) {
+      ['picc', 'picc_data', 'e', 'uid', 'ctr', 'cmac', 'c'].forEach((k) => q.delete(k));
+      const rest = q.toString();
+      window.history.replaceState(null, '', window.location.pathname + (rest ? `?${rest}` : ''));
+    }
+    return sp.cmac ? sp : null;
+  } catch { return null; }
+})();
 function StampSelfView({ token, onHome, onCard }) {
   const { lang, t } = React.useContext(LangContext);
   const L = (k) => (ST_T[k] && (ST_T[k][lang] || ST_T[k].de)) || k;
@@ -13283,11 +13300,12 @@ function StampSelfView({ token, onHome, onCard }) {
     let alive = true;
     try { const sv = localStorage.getItem('bk_loyalty_code'); if (sv && /^BK-[A-Z0-9]{4}$/.test(sv)) setSuffix(sv.slice(3)); } catch {}
     // Der Link-Schlüssel wird nur noch auf dem Server geprüft (nicht mehr öffentlich lesbar).
-    loyaltyApi('selfCheck', { token }).then((c) => {
+    loyaltyApi('selfCheck', { token, sun: SUN_PARAMS || undefined }).then((c) => {
       if (!alive) return;
       setCfg(c);
       if (!c || !c.valid) setPhase('invalid');
       else if (!c.enabled) setPhase('disabled');
+      else if (c.tap) setPhase('tap');
       else { setPhase('form'); logEvent('stamp_self_open'); }
     }).catch(() => { if (alive) setPhase('invalid'); });
     return () => { alive = false; };
@@ -13309,8 +13327,9 @@ function StampSelfView({ token, onHome, onCard }) {
       const code = `BK-${suffix}`;
       if (cfg && cfg.openOnly && !selfStampOpen(berlinNow())) { back({ kind: 'err', text: L('closed') }); return; }
       // Alle Prüfungen (Link gültig, Öffnungszeit, 1×/Tag, Karte voll) macht der Server.
-      const r = await loyaltyApi('selfStamp', { code, token });
+      const r = await loyaltyApi('selfStamp', { code, token, sun: SUN_PARAMS || undefined });
       if (r.error === 'invalid') { setPhase('invalid'); busyRef.current = false; return; }
+      if (r.error === 'tap') { setPhase('tap'); busyRef.current = false; return; }
       if (r.error === 'disabled') { setPhase('disabled'); busyRef.current = false; return; }
       if (r.error === 'closed') { back({ kind: 'err', text: L('closed') }); return; }
       if (r.error === 'notfound') { back({ kind: 'err', text: t('loyaltyCodeNotFound') }); return; }
@@ -13352,10 +13371,10 @@ function StampSelfView({ token, onHome, onCard }) {
       <div className="max-w-md mx-auto px-5 pt-7 pb-10">
         <div className="rounded-3xl p-5 st-in" style={box}>
           {phase === 'checking' && <p className="text-center text-sm py-8" style={{ color: '#a89878' }}>…</p>}
-          {(phase === 'invalid' || phase === 'disabled') && (
+          {(phase === 'invalid' || phase === 'disabled' || phase === 'tap') && (
             <div className="text-center py-5">
-              <div className="text-4xl mb-3">🔒</div>
-              <p className="text-[15px] font-semibold leading-relaxed" style={{ color: GREEN }}>{phase === 'invalid' ? L('invalid') : L('off')}</p>
+              <div className="text-4xl mb-3">{phase === 'tap' ? '📲' : '🔒'}</div>
+              <p className="text-[15px] font-semibold leading-relaxed" style={{ color: GREEN }}>{phase === 'invalid' ? L('invalid') : phase === 'tap' ? L('tap') : L('off')}</p>
               <button onClick={onHome} className="mt-5 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GREEN, color: '#fff' }}>{L('home')}</button>
             </div>
           )}
@@ -13477,6 +13496,71 @@ function LoyaltyTrash({ onRestored }) {
   );
 }
 
+// Sicherer Chip (NTAG 424 DNA): jedes Antippen erzeugt einen Einmal-Link.
+function SdmAdmin({ link }) {
+  const [st, setSt] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [showKeys, setShowKeys] = useState(false);
+  const load = () => loyaltyApi('sdmGet').then(setSt).catch(() => setSt((v) => v || { error: true }));
+  useEffect(() => { load(); }, []);
+  const set = async (params, toast) => {
+    setBusy(true);
+    try { const j = await loyaltyApi('sdmSet', params); setSt((v) => ({ ...(v || {}), ...j })); panelToast(toast || 'Gespeichert'); }
+    catch (e) { alert(e && e.message && e.message !== 'LOYALTY_OFFLINE' ? e.message : 'Nicht gespeichert – bitte erneut versuchen.'); }
+    setBusy(false);
+  };
+  const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
+  const mono = { fontFamily: 'ui-monospace, Menlo, monospace' };
+  if (!st) return <p className="text-xs" style={{ color: PANEL_MUTED }}>Lädt …</p>;
+  if (st.error) return <p className="text-xs" style={{ color: CHILI }}>Nicht erreichbar.</p>;
+  const factory = st.kMeta === '0'.repeat(32) && st.kFile === '0'.repeat(32);
+  const template = `${link}&picc=${'0'.repeat(32)}&cmac=${'0'.repeat(16)}`;
+  const copy = async (txt) => { try { await navigator.clipboard.writeText(txt); panelToast('Kopiert'); } catch { prompt('Zum Kopieren:', txt); } };
+  return (
+    <div className="rounded-[12px] p-3 mb-3" style={{ border: `1.5px solid ${st.required ? '#34a065' : PANEL_LINE}`, background: '#fff' }}>
+      <div className="text-[11px] font-bold tracking-[.1em] mb-1" style={{ color: PANEL_MUTED }}>🔐 SICHERER CHIP (NTAG 424 DNA)</div>
+      <p className="text-[11.5px] leading-snug mb-2.5" style={{ color: '#5b5240' }}>Normale Chips öffnen immer denselben Link – wer ihn speichert, kann ohne Besuch Stempel holen. Ein NTAG-424-DNA-Chip hängt bei jedem Antippen einen <b>Einmal-Code</b> an. Gespeicherte oder weitergeleitete Links funktionieren dann nicht mehr.</p>
+      {!st.configured ? (
+        <div className="flex flex-col gap-1.5">
+          <button onClick={() => set({ factory: true }, 'Eingerichtet')} disabled={busy} className="w-full py-2.5 rounded-[10px] text-[13px] font-semibold" style={{ background: GREEN, color: '#fff' }}>Einrichten (Werks-Schlüssel des Chips)</button>
+          <button onClick={() => { if (confirm('Eigene Schlüssel erzeugen? Sie müssen beim Beschreiben des Chips eingetragen werden.')) set({ generate: true }, 'Schlüssel erzeugt'); }} disabled={busy} className="w-full py-2 rounded-[10px] text-[12px] font-semibold" style={inputSt}>Eigene Schlüssel erzeugen (sicherer, für Profis)</button>
+        </div>
+      ) : (
+        <>
+          <button onClick={() => {
+            if (!st.required && !(st.tags || []).length && !confirm('Es wurde noch kein sicherer Chip erkannt. Trotzdem nur sichere Chips erlauben? Der alte Chip funktioniert dann nicht mehr.')) return;
+            set({ required: !st.required }, st.required ? 'Alte Chips wieder erlaubt' : 'Nur noch sichere Chips');
+          }} disabled={busy} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-[10px] mb-2" style={inputSt}>
+            <span className="min-w-0 text-left"><span className="block text-sm font-medium">Nur sichere Chips akzeptieren</span><span className="block text-[11px]" style={{ color: PANEL_MUTED }}>erst einschalten, wenn der neue Chip getestet ist</span></span>
+            <PanelSwitch on={!!st.required} onColor={GREEN} />
+          </button>
+          <div className="text-[11px] font-semibold mb-1" style={{ color: PANEL_MUTED }}>Link zum Beschreiben (mit Platzhaltern)</div>
+          <div className="rounded-[10px] px-3 py-2 text-[11px] break-all mb-1.5" style={{ ...inputSt, ...mono }}>{template}</div>
+          <button onClick={() => copy(template)} className="w-full py-2 rounded-[10px] text-[12px] font-semibold mb-2" style={{ background: GREEN, color: '#fff' }}>🔗 Link kopieren</button>
+          <div className="text-[11.5px] leading-relaxed rounded-[10px] px-3 py-2 mb-2" style={{ background: PANEL_BG, color: '#5b5240' }}>
+            <b>Beschreiben</b> (App „NXP TagWriter", Android): Neuer Datensatz → Link → obigen Link einfügen → <i>SDM / Mirroring</i> aktivieren: <b>verschlüsselte PICC-Daten</b> auf die Nullen nach <span style={mono}>picc=</span>, <b>CMAC</b> auf die Nullen nach <span style={mono}>cmac=</span> → Schreiben. {factory ? 'Schlüssel: Werkseinstellung (alles 0) lassen.' : 'Schlüssel: die unten angezeigten eintragen.'}
+          </div>
+          <button onClick={() => setShowKeys((v) => !v)} className="text-[11px] font-semibold underline mb-1" style={{ color: PANEL_MUTED }}>{showKeys ? 'Schlüssel ausblenden' : `Schlüssel anzeigen (${factory ? 'Werkseinstellung' : 'eigene'})`}</button>
+          {showKeys && (
+            <div className="text-[11px] break-all mb-2" style={{ ...mono, color: PANEL_TEXT }}>
+              <div>SDM-Meta-Read (PICC): {st.kMeta}</div>
+              <div>SDM-File-Read (CMAC): {st.kFile}</div>
+            </div>
+          )}
+          <div className="text-[11px] font-bold tracking-[.1em] mt-2 mb-1" style={{ color: PANEL_MUTED }}>ERKANNTE SICHERE CHIPS</div>
+          {(st.tags || []).length === 0 ? <div className="text-[12px]" style={{ color: PANEL_MUTED }}>Noch keiner – Chip beschreiben und einmal antippen.</div> : st.tags.map((tg) => (
+            <div key={tg.uid} className="flex justify-between text-[12px] font-semibold py-0.5" style={{ color: PANEL_TEXT }}>
+              <span style={mono}>✓ {tg.uid}</span>
+              <span style={{ color: PANEL_MUTED }}>{tg.seen >= 0 ? `${tg.seen}× angetippt` : ''}{tg.at ? ` · ${new Date(tg.at).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}` : ''}</span>
+            </div>
+          ))}
+          <button onClick={load} className="mt-1.5 text-[11px] font-semibold underline" style={{ color: PANEL_MUTED }}>Aktualisieren</button>
+        </>
+      )}
+    </div>
+  );
+}
+
 // Personal-Bereich (Einstellungen → System): Link für den NFC-Chip, Schalter, Protokoll
 function StampMuehleAdmin() {
   const [cfg, setCfg] = useState(undefined); // undefined = lädt, null = nicht eingerichtet
@@ -13529,6 +13613,7 @@ function StampMuehleAdmin() {
           <div className="rounded-[10px] px-3 py-2.5 mb-3 text-[11.5px] leading-relaxed" style={{ background: PANEL_BG, color: '#5b5240' }}>
             <b>Chip beschreiben:</b> App „NFC Tools" → Schreiben → Datensatz hinzufügen → URL → Link einfügen → Schreiben, Handy an den Chip halten. Danach in „Weitere Aktionen" den Chip <b>sperren</b>, sonst kann ihn jemand überschreiben. Chip nicht auf Metall kleben.
           </div>
+          <SdmAdmin link={link} />
           <div className="text-[11px] font-bold tracking-[.1em] mb-1.5" style={{ color: PANEL_MUTED }}>SELBST-STEMPEL · HEUTE: {todayCount}</div>
           {log.length === 0 && <div className="text-[12px]" style={{ color: PANEL_MUTED }}>Noch keine Selbst-Stempel.</div>}
           {log.slice(0, 8).map((r) => (

@@ -13,6 +13,7 @@
 // "secret:loyaltytrash:<code>" – für Browser unsichtbar, nur über diese API.
 import crypto from 'crypto';
 import { kvGet, kvSet, kvDelete, kvList, verifyToken } from './staff.js';
+import { verifySunParams, newKeyHex } from './sdm.js';
 
 export const LOYALTY_TARGET = 8;
 const CODE_RE = /^BK-[A-Z0-9]{4}$/;
@@ -114,7 +115,41 @@ function tokenOk(cfg, token) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-async function selfStamp({ code, token }) {
+// ── Sichere NFC-Chips (NTAG 424 DNA, SUN) ────────────────────────────────────
+// secret:sdmConfig = { kMeta, kFile, required }   (Schlüssel als 32 Hex-Zeichen)
+// secret:sdmtag:<UID> = { seen, used, at }         (höchster gesehener / verbrauchter Zähler)
+// Jedes Antippen erzeugt einen neuen Zähler. Ein Link wird nur akzeptiert, wenn
+// sein Zähler noch NICHT verbraucht ist UND nicht älter als der zuletzt gesehene –
+// ein gespeicherter/kopierter Link ist also spätestens nach dem nächsten
+// Antippen (oder nach dem Einlösen) wertlos.
+const SDM_CFG = 'secret:sdmConfig';
+async function readSdm() { return (await kvGet(SDM_CFG)) || null; }
+function sunOf(sdm, sp) {
+  if (!sdm || !sdm.kMeta || !sdm.kFile || !sp || !sp.cmac) return null;
+  try { return verifySunParams(sp, sdm.kMeta, sdm.kFile); } catch { return null; }
+}
+// sp = { picc, uid, ctr, cmac, raw } aus dem Link (vom Browser durchgereicht)
+function sunParams(body) {
+  const sp = body && body.sun && typeof body.sun === 'object' ? body.sun : {};
+  const pick = (k) => (typeof sp[k] === 'string' ? sp[k].slice(0, 300) : undefined);
+  return { picc: pick('picc'), uid: pick('uid'), ctr: pick('ctr'), cmac: pick('cmac'), raw: pick('raw') };
+}
+// Prüft den Chip-Teil des Links. Liefert { ok:true, sun } | { ok:true } (nicht nötig) | { ok:false }.
+async function checkSun(sdm, sp, consume) {
+  const hasParams = !!(sp && sp.cmac);
+  if (!hasParams) return { ok: !(sdm && sdm.required) };
+  const sun = sunOf(sdm, sp);
+  if (!sun) return { ok: false };
+  const key = `secret:sdmtag:${sun.uid}`;
+  const rec = (await kvGet(key)) || { seen: -1, used: -1 };
+  if (sun.ctr <= (rec.used ?? -1) || sun.ctr < (rec.seen ?? -1)) return { ok: false, replay: true };
+  const next = { seen: Math.max(rec.seen ?? -1, sun.ctr), used: consume ? sun.ctr : (rec.used ?? -1), at: Date.now() };
+  await kvSet(key, next);
+  return { ok: true, sun };
+}
+
+async function selfStamp(body) {
+  const { code, token } = body;
   const cfg = await readStampCfg();
   if (!tokenOk(cfg, token)) return { error: 'invalid' };
   if (cfg.enabled === false) return { error: 'disabled' };
@@ -124,7 +159,11 @@ async function selfStamp({ code, token }) {
   if (!card) return { error: 'notfound' };
   if (card.lastSelfStampDay === berlinParts().key) return { error: 'already' };
   if ((card.stamps || 0) >= LOYALTY_TARGET) return { error: 'full' };
-  return { card: await addStamp(code, 'self') };
+  // Chip-Prüfung zuletzt und mit "verbrauchen": erst wenn alles andere passt,
+  // wird der Zähler entwertet (sonst wäre ein Tipp bei z. B. falschem Code verloren).
+  const chk = await checkSun(await readSdm(), sunParams(body), true);
+  if (!chk.ok) return { error: 'tap' };
+  return { card: await addStamp(code, 'self'), secure: !!chk.sun };
 }
 
 async function birthday({ code, mmdd }, staff) {
@@ -212,7 +251,8 @@ export async function handleLoyalty(body) {
     if (action === 'selfCheck') {
       const cfg = await readStampCfg();
       if (!tokenOk(cfg, body.token)) return [200, { valid: false }];
-      return [200, { valid: true, enabled: cfg.enabled !== false, openOnly: cfg.openOnly !== false }];
+      const chk = await checkSun(await readSdm(), sunParams(body), false);
+      return [200, { valid: true, enabled: cfg.enabled !== false, openOnly: cfg.openOnly !== false, tap: !chk.ok }];
     }
     if (action === 'selfStamp') return [200, await selfStamp(body)];
     const staff = await verifyToken(body.staffToken);
@@ -228,6 +268,27 @@ export async function handleLoyalty(body) {
     if (action === 'restore') return [200, await restore(body)];
     if (action === 'purge') return [200, await purge(body)];
     if (action === 'stampCfg') return [200, { cfg: await readStampCfg() }];
+    if (action === 'sdmGet') {
+      const sdm = await readSdm();
+      const tags = (await kvList('secret:sdmtag:', 50)).map((r) => ({ uid: r.key.split(':').pop(), used: r.value?.used, seen: r.value?.seen, at: r.value?.at }));
+      return [200, { configured: !!(sdm && sdm.kMeta), required: !!(sdm && sdm.required), kMeta: sdm?.kMeta || '', kFile: sdm?.kFile || '', tags }];
+    }
+    if (action === 'sdmSet') {
+      const cur = (await readSdm()) || {};
+      const next = { ...cur };
+      if (body.generate) { next.kMeta = newKeyHex(); next.kFile = newKeyHex(); next.required = false; }
+      if (body.factory) { next.kMeta = '0'.repeat(32); next.kFile = '0'.repeat(32); }
+      if (typeof body.kMeta === 'string' && typeof body.kFile === 'string') {
+        if (!/^[0-9a-fA-F]{32}$/.test(body.kMeta) || !/^[0-9a-fA-F]{32}$/.test(body.kFile)) fail(400, 'Schlüssel: je 32 Hex-Zeichen');
+        next.kMeta = body.kMeta.toUpperCase(); next.kFile = body.kFile.toUpperCase();
+      }
+      if (typeof body.required === 'boolean') {
+        if (body.required && !next.kMeta) fail(400, 'Zuerst Schlüssel einrichten');
+        next.required = body.required;
+      }
+      if (!(await kvSet(SDM_CFG, next))) fail(503, 'Speichern fehlgeschlagen');
+      return [200, { ok: true, configured: !!next.kMeta, required: !!next.required, kMeta: next.kMeta || '', kFile: next.kFile || '' }];
+    }
     return [400, { error: 'Aktion unbekannt' }];
   } catch (err) {
     if (err instanceof HttpError) return [err.status, { error: err.message }];
