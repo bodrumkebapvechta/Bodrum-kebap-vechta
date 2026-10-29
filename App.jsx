@@ -1158,7 +1158,12 @@ function niceCase(str, lang) {
   return str.charAt(0) + str.slice(1).toLocaleLowerCase(loc);
 }
 function isStaffDevice() {
-  try { return localStorage.getItem(STAFF_DEVICE_KEY) === '1' || !!getStaffToken(); } catch { return false; }
+  try {
+    // Auch Geräte, die schon Test-/Inhaber-Funktionen benutzt haben, zählen als Personal-Gerät.
+    return localStorage.getItem(STAFF_DEVICE_KEY) === '1' || !!getStaffToken()
+      || localStorage.getItem('bk_order_test_device') === '1' || localStorage.getItem('bk_online_order_test') === '1'
+      || !!localStorage.getItem('bk_owner_notified_new_sub');
+  } catch { return false; }
 }
 function markStaffDevice() { try { localStorage.setItem(STAFF_DEVICE_KEY, '1'); } catch {} }
 const PERSONAL_LINK = (() => { try { return new URLSearchParams(window.location.search).has('personal'); } catch { return false; } })();
@@ -9767,7 +9772,7 @@ function StaffPanelView({ back }) {
     if (!token) { setOk(false); return; }
     fetch('/api/staff-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'check', token }) })
       .then((r) => (r.ok ? r.json() : { ok: true }))
-      .then((j) => { if (!j.ok) { clearStaffToken(); setOk(false); } })
+      .then((j) => { if (!j.ok) { clearStaffToken(); setOk(false); } else markStaffDevice(); })
       .catch(() => {});
   }, []);
   useEffect(() => {
@@ -11529,12 +11534,12 @@ function StaffPanelView({ back }) {
                           try {
                             if (window.OneSignal?.User?.addTag) {
                               window.OneSignal.User.addTag('owner', 'true');
-                              setOwnerDeviceMsg('✓ Dieses Gerät ist jetzt das Ana Cihaz (Owner-Gerät).');
+                              markStaffDevice(); setOwnerDeviceMsg('✓ Dieses Gerät ist jetzt das Ana Cihaz (Owner-Gerät).');
                             } else if (window.OneSignalDeferred) {
                               window.OneSignalDeferred.push((OneSignal) => {
                                 try { OneSignal.User.addTag('owner', 'true'); } catch {}
                               });
-                              setOwnerDeviceMsg('✓ Dieses Gerät ist jetzt das Ana Cihaz (Owner-Gerät).');
+                              markStaffDevice(); setOwnerDeviceMsg('✓ Dieses Gerät ist jetzt das Ana Cihaz (Owner-Gerät).');
                             } else {
                               setOwnerDeviceMsg('⚠️ OneSignal ist noch nicht bereit — Seite neu laden und erneut versuchen.');
                             }
