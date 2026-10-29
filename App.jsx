@@ -6304,7 +6304,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               @keyframes nmSlide { from { transform: translateX(100%); } to { transform: none; } }
               @keyframes nmItem { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
               .nm-item { animation: nmItem .35s cubic-bezier(.2,.8,.2,1) both; }
-              @media (prefers-reduced-motion: reduce) { .nm-panel, .nm-item, .nm-dim { animation: none !important; } }
+              .nm-cta { position: relative; overflow: hidden; transition: transform .12s ease; }
+              .nm-cta:active { transform: scale(.97); }
+              .nm-cta::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%); background-size: 250% 100%; animation: nmShine 3.2s ease-in-out 1s infinite; pointer-events: none; }
+              .nm-ico { animation: nmBob 2.4s ease-in-out infinite; }
+              @keyframes nmShine { 0%, 50% { background-position: 150% 0; } 100% { background-position: -100% 0; } }
+              @keyframes nmBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+              @media (prefers-reduced-motion: reduce) { .nm-panel, .nm-item, .nm-dim, .nm-ico, .nm-cta::after { animation: none !important; } }
             `}</style>
             <div className="nm-dim absolute inset-0" onClick={() => setNavOpen(false)} style={{ background: 'rgba(10,24,15,.55)', animation: 'nmFade .25s ease both' }} />
             <div className="nm-panel absolute top-0 right-0 bottom-0 flex flex-col" style={{ width: 'min(86vw, 360px)', background: CREAM, boxShadow: '-20px 0 50px rgba(0,0,0,.25)', animation: 'nmSlide .32s cubic-bezier(.2,.8,.2,1) both', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
@@ -6338,9 +6344,27 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                     <ArrowRight size={15} color="#b8a888" className="ml-auto" />
                   </button>
                 ))}
-                <div className="flex gap-2 px-3 pt-3 mt-2" style={{ borderTop: '1px solid #e8dcc4' }}>
-                  <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'menu' })} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: '#fff', color: GREEN, border: '1px solid #e8dcc4' }}>{t('contactRoute')}</a>
-                  <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: '#fff', color: GREEN, border: '1px solid #e8dcc4' }}><Instagram size={15} color={GREEN} /> Instagram</a>
+                <div className="flex flex-col gap-2.5 px-1 pt-3.5 mt-2" style={{ borderTop: '1px solid #e8dcc4' }}>
+                  <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'menu' })} className="nm-item nm-cta flex items-center gap-3 px-3.5 py-3 rounded-2xl text-white" style={{ animationDelay: '.3s', background: 'linear-gradient(120deg, #1a73e8, #0f9d58)', boxShadow: '0 8px 20px rgba(26,115,232,.35)' }}>
+                    <span className="nm-ico w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#fff' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z" fill="#ea4335" /><circle cx="12" cy="9" r="2.6" fill="#fff" /></svg>
+                    </span>
+                    <span className="min-w-0 flex-1 text-left">
+                      <span className="block font-black text-[15.5px] leading-tight">{t('contactRoute').replace(/^📍\s*/, '')}</span>
+                      <span className="block text-[12px] font-semibold opacity-90">Oyther Straße 37 · Vechta</span>
+                    </span>
+                    <ArrowRight size={18} color="#fff" />
+                  </a>
+                  <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('instagram', { from: 'menu' })} className="nm-item nm-cta flex items-center gap-3 px-3.5 py-3 rounded-2xl text-white" style={{ animationDelay: '.36s', background: 'linear-gradient(120deg, #f9ce34, #ee2a7b 45%, #6228d7)', boxShadow: '0 8px 20px rgba(238,42,123,.35)' }}>
+                    <span className="nm-ico w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#fff' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#e1306c" strokeWidth="2.2"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.4" cy="6.6" r="1.1" fill="#e1306c" stroke="none" /></svg>
+                    </span>
+                    <span className="min-w-0 flex-1 text-left">
+                      <span className="block font-black text-[15.5px] leading-tight">Instagram</span>
+                      <span className="block text-[12px] font-semibold opacity-90">@BodrumKebapVechta</span>
+                    </span>
+                    <ArrowRight size={18} color="#fff" />
+                  </a>
                 </div>
                 {installPrompt && (
                   <button onClick={() => { setNavOpen(false); onInstall(); }} className="w-full mt-2 mx-0 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: 'rgba(255,199,56,.25)', color: GREEN }}>📲 {t('installAppBtn')}</button>
