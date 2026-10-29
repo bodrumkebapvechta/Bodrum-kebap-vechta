@@ -6375,9 +6375,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 {orderingEnabled()
                   ? <button onClick={() => { setNavOpen(false); go('whatsapp'); }} className="w-full py-3.5 rounded-2xl font-black text-[15px] text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}>{t('orderNow')}</button>
                   : <a href="tel:+4944419516104" onClick={() => logEvent('call', { from: 'menu' })} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}><Phone size={17} /> 04441 / 95 16 104</a>}
-                {isStaffDevice() && (
-                  <button onClick={() => { setNavOpen(false); go('staff'); }} className="w-full mt-3 flex items-center justify-center gap-1.5 text-[12px] font-semibold" style={{ color: '#8a7a5c' }}><Lock size={12} /> {t('navStaffArea')}</button>
-                )}
+                <button onClick={() => { setNavOpen(false); go('staff'); }} className="w-full mt-3 flex items-center justify-center gap-1 text-[11px] font-semibold" style={{ color: '#a89878' }}><Lock size={10} /> {t('navStaff')}</button>
               </div>
             </div>
           </div>
@@ -6715,6 +6713,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="flex items-center gap-4">
             <button onClick={() => go('impressum')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>{t('footerImpressum')}</button>
             <button onClick={() => go('datenschutz')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>{t('footerDatenschutz')}</button>
+            <button onClick={() => go('staff')} className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: '#6b5a3e' }}><Lock size={9} /> {t('navStaff')}</button>
           </div>
         </div>
       </footer>
