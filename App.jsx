@@ -1720,8 +1720,7 @@ const WHEEL_PRIZES = [
 // ── Online-Bestellung über die Partner-Plattform (bestellbei.de / Stadtmarkt Vechta) ──
 // TESTPHASE: Der Button ist für Kunden UNSICHTBAR. Sichtbar nur auf Geräten,
 // die einmal ?onlinetest=1 aufgerufen haben (bleibt gespeichert); ?onlinetest=0 schaltet ab.
-// TODO: echten Link der Bodrum-Kebap-Seite auf bestellbei.de eintragen.
-const ONLINE_ORDER_URL = 'https://bestellbei.de/';
+const ONLINE_ORDER_URL = 'https://bestellbei.de/de-DE/shop/bodrum-kebap';
 const ONLINE_ORDER_TEST = (() => {
   try {
     const p = new URLSearchParams(window.location.search).get('onlinetest');
