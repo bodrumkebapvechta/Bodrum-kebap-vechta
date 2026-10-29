@@ -1147,6 +1147,21 @@ function clearStaffToken() {
 }
 const STAFF_WRITE_RE = /^(siteconfig|tischphoto|spincode|weeklyreport):/;
 const PUBLIC_DELETE_RE = /^(order|grouporder|analytics|heartbeat|langday):/;
+// "Personal-Gerät": Der Personal-Button ist nur auf Geräten sichtbar, auf denen
+// schon einmal erfolgreich mit PIN angemeldet wurde. Alle anderen (Kunden)
+// sehen ihn nicht; Zugang dann über bodrumkebapvechta.de/?personal
+const STAFF_DEVICE_KEY = 'bk_staff_device';
+// "STEMPELKARTE" → "Stempelkarte" (nur wenn komplett in Großbuchstaben; tr/ku mit ı/i richtig)
+function niceCase(str, lang) {
+  if (!str || str !== str.toUpperCase()) return str;
+  const loc = lang === 'tr' || lang === 'ku' ? 'tr' : lang || 'de';
+  return str.charAt(0) + str.slice(1).toLocaleLowerCase(loc);
+}
+function isStaffDevice() {
+  try { return localStorage.getItem(STAFF_DEVICE_KEY) === '1' || !!getStaffToken(); } catch { return false; }
+}
+function markStaffDevice() { try { localStorage.setItem(STAFF_DEVICE_KEY, '1'); } catch {} }
+const PERSONAL_LINK = (() => { try { return new URLSearchParams(window.location.search).has('personal'); } catch { return false; } })();
 async function staffApiWrite(op, key, value) {
   const token = getStaffToken();
   if (!token) return false;
@@ -1857,7 +1872,7 @@ function TopBar({ onHome, title, dark = true, staffActions }) {
               {orderingEnabled() ? <button onClick={() => { setGlobalNavOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button> : <button onClick={() => { setGlobalNavOpen(false); go('tischmenu'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>}
               {orderingEnabled() && <button onClick={() => { setGlobalNavOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>}
               {orderingEnabled() && <button onClick={() => { setGlobalNavOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>}
-              <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+              {isStaffDevice() && <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>}
               <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
               <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
                 <LanguageSwitcher lang={lang} setLang={setLang} dark />
@@ -6255,7 +6270,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <button onClick={() => scrollTo('galerie')} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navGallery')}</button>
             <button onClick={() => setWishModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>💡 {t('wishBoxNavLabel')}</button>
             <button onClick={() => setLoyaltyModalOpen(true)} className="text-sm font-semibold" style={{ color: '#d9cdb4' }}>🎟️ {t('titleLoyalty')}</button>
-            <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>
+            {isStaffDevice() && <button onClick={() => go('staff')} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Lock size={13} /> {t('navStaff')}</button>}
             {installPrompt && (
               <button onClick={onInstall} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
             )}
@@ -6277,59 +6292,67 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             </button>
           </div>
         </div>
-        {navOpen && (
-          <div className="fixed inset-0 z-50 md:hidden flex flex-col" style={{ background: `radial-gradient(circle at 85% 0%, rgba(255,199,56,.12), transparent 50%), rgba(10,24,15,.6)`, backdropFilter: 'blur(22px) saturate(1.5)', WebkitBackdropFilter: 'blur(22px) saturate(1.5)', animation: 'pageFade .3s ease-out' }}>
-            <div className="flex items-center justify-between px-6 pt-6 pb-2">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 4px 14px rgba(230,90,10,.4)' }}><img loading="lazy" decoding="async" src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
-                <div>
-                  <div className="text-white font-black text-sm leading-tight">BODRUM KEBAP</div>
-                  <div className="font-bold text-[10px] tracking-widest" style={{ color: GOLD }}>VECHTA</div>
+        {navOpen && ReactDOM.createPortal(
+          <div className="fixed inset-0 md:hidden" role="dialog" aria-label="Menü" style={{ zIndex: 1000 }}>
+            <style>{`
+              @keyframes nmFade { from { opacity: 0; } to { opacity: 1; } }
+              @keyframes nmSlide { from { transform: translateX(100%); } to { transform: none; } }
+              @keyframes nmItem { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+              .nm-item { animation: nmItem .35s cubic-bezier(.2,.8,.2,1) both; }
+              @media (prefers-reduced-motion: reduce) { .nm-panel, .nm-item, .nm-dim { animation: none !important; } }
+            `}</style>
+            <div className="nm-dim absolute inset-0" onClick={() => setNavOpen(false)} style={{ background: 'rgba(10,24,15,.55)', animation: 'nmFade .25s ease both' }} />
+            <div className="nm-panel absolute top-0 right-0 bottom-0 flex flex-col" style={{ width: 'min(86vw, 360px)', background: CREAM, boxShadow: '-20px 0 50px rgba(0,0,0,.25)', animation: 'nmSlide .32s cubic-bezier(.2,.8,.2,1) both', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+              <div className="flex items-center justify-between px-5 pt-5 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ background: ORANGE }}><img loading="lazy" decoding="async" src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
+                  <div>
+                    <div className="font-black text-sm leading-tight" style={{ color: GREEN }}>BODRUM KEBAP</div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.open ? '#22a35a' : '#d62828' }} />
+                      <span className="text-[11px] font-bold" style={{ color: status.open ? '#1f7a45' : '#b3261e' }}>{t(status.labelKey)}</span>
+                    </div>
+                  </div>
                 </div>
+                <button onClick={() => setNavOpen(false)} aria-label="Menü schließen" className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#efe6d4' }}>
+                  <X size={18} color={GREEN} />
+                </button>
               </div>
-              <button onClick={() => setNavOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.18)' }}>
-                <X size={18} color="#fff" />
-              </button>
-            </div>
 
-            <div className="flex-1 overflow-y-auto px-6 pt-6 flex flex-col gap-2.5">
-              {[
-                { onClick: () => (orderingEnabled() ? go('whatsapp') : go('tischmenu')), icon: '📋', label: t('navMenu') },
-                { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
-                { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
-                { onClick: () => { setNavOpen(false); setLoyaltyModalOpen(true); }, icon: '🎟️', label: t('titleLoyalty') },
-                { onClick: () => { setNavOpen(false); scrollTo('nachricht'); }, icon: '📩', label: 'Kontakt' },
-              ].map((item, i) => (
-                <button key={i} onClick={item.onClick} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
-                  <span className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>{item.icon}</span>
-                  <span className="font-bold text-base text-white">{item.label}</span>
-                  <ArrowRight size={16} color="rgba(255,246,234,.35)" className="ml-auto" />
-                </button>
-              ))}
-              <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.1)' }}>
-                <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}><Instagram size={17} color={GOLD} /></span>
-                <span className="font-bold text-base text-white">@BodrumKebapVechta</span>
-                <ArrowRight size={16} color="rgba(255,246,234,.35)" className="ml-auto" />
-              </a>
-              <button onClick={() => go('staff')} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,.04)' }}>
-                <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,.06)' }}><Lock size={15} color="rgba(217,205,180,.7)" /></span>
-                <span className="font-semibold text-sm" style={{ color: 'rgba(217,205,180,.7)' }}>{t('navStaffArea')}</span>
-              </button>
-              {installPrompt && (
-                <button onClick={onInstall} className="flex items-center gap-4 py-3.5 px-3.5 rounded-2xl" style={{ background: 'rgba(255,199,56,.08)' }}>
-                  <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,199,56,.14)' }}>📲</span>
-                  <span className="font-semibold text-sm" style={{ color: GOLD }}>{t('installAppBtn')}</span>
-                </button>
-              )}
-            </div>
+              <nav className="flex-1 overflow-y-auto px-3">
+                {[
+                  { onClick: () => { setNavOpen(false); orderingEnabled() ? go('whatsapp') : go('tischmenu'); }, icon: '📋', label: t('navMenu') },
+                  { onClick: () => { setNavOpen(false); setLoyaltyModalOpen(true); }, icon: '🎟️', label: niceCase(t('titleLoyalty'), lang) },
+                  { onClick: () => scrollTo('galerie'), icon: '🖼️', label: t('navGallery') },
+                  { onClick: () => { setNavOpen(false); setWishModalOpen(true); }, icon: '💡', label: t('wishBoxNavLabel') },
+                  { onClick: () => { setNavOpen(false); scrollTo('nachricht'); }, icon: '✉️', label: t('navContact') },
+                ].map((item, i) => (
+                  <button key={i} onClick={item.onClick} className="nm-item w-full flex items-center gap-3.5 px-3 py-3.5 rounded-xl text-left active:bg-[#efe6d4]" style={{ animationDelay: `${0.06 + i * 0.04}s` }}>
+                    <span className="w-9 h-9 rounded-[10px] flex items-center justify-center text-[17px] flex-shrink-0" style={{ background: '#fff', boxShadow: '0 1px 0 #e8dcc4' }}>{item.icon}</span>
+                    <span className="font-bold text-[16px]" style={{ color: GREEN }}>{item.label}</span>
+                    <ArrowRight size={15} color="#b8a888" className="ml-auto" />
+                  </button>
+                ))}
+                <div className="flex gap-2 px-3 pt-3 mt-2" style={{ borderTop: '1px solid #e8dcc4' }}>
+                  <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'menu' })} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: '#fff', color: GREEN, border: '1px solid #e8dcc4' }}>{t('contactRoute')}</a>
+                  <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: '#fff', color: GREEN, border: '1px solid #e8dcc4' }}><Instagram size={15} color={GREEN} /> Instagram</a>
+                </div>
+                {installPrompt && (
+                  <button onClick={() => { setNavOpen(false); onInstall(); }} className="w-full mt-2 mx-0 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: 'rgba(255,199,56,.25)', color: GREEN }}>📲 {t('installAppBtn')}</button>
+                )}
+              </nav>
 
-            <div className="px-6 pb-8 pt-3">
-              {orderingEnabled()
-                ? <button onClick={() => go('whatsapp')} className="w-full py-4 rounded-2xl font-black text-base text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 26px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>
-                : <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-base text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 26px rgba(230,90,10,.4)' }}><Phone size={17} /> 04441 95 16 104</a>}
+              <div className="px-5 pt-3 pb-5">
+                {orderingEnabled()
+                  ? <button onClick={() => { setNavOpen(false); go('whatsapp'); }} className="w-full py-3.5 rounded-2xl font-black text-[15px] text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}>{t('orderNow')}</button>
+                  : <a href="tel:+4944419516104" onClick={() => logEvent('call', { from: 'menu' })} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}><Phone size={17} /> 04441 / 95 16 104</a>}
+                {isStaffDevice() && (
+                  <button onClick={() => { setNavOpen(false); go('staff'); }} className="w-full mt-3 flex items-center justify-center gap-1.5 text-[12px] font-semibold" style={{ color: '#8a7a5c' }}><Lock size={12} /> {t('navStaffArea')}</button>
+                )}
+              </div>
             </div>
           </div>
-        )}
+        , document.body)}
       </header>
       {WHEELS_ENABLED && isTuesdayToday && (
         <button
@@ -7322,7 +7345,7 @@ function WhatsAppOrderView({ back, initialAction, onConsumeAction, cart, setCart
                       <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('whatsapp'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('navMenu')}</button>
                       <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('group'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('titleGroup')}</button>
                       <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('track'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Timer size={15} /> {t('navTrackOrder')}</button>
-                      <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+                      {isStaffDevice() && <button onClick={() => { setGlobalNavOpen(false); setCartOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>}
                       <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
                       <div className="px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,246,234,.12)' }}>
                         <LanguageSwitcher lang={lang} setLang={setLang} dark />
@@ -9791,6 +9814,7 @@ function StaffPanelView({ back }) {
         if (cancelled) return;
         if (r.ok && j.token) {
           setStaffToken(j.token, j.exp, !!rememberChoice);
+          markStaffDevice();
           if (j.lastLogin) setLastLoginAt(j.lastLogin);
           setUnlockStage('unlocked');
           unlockAudio();
@@ -12798,7 +12822,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
                   <div className="fixed inset-0" style={{ zIndex: 199 }} onClick={() => setGlobalNavOpen(false)} />
                   <div className="absolute top-11 right-0 w-56 rounded-2xl py-2" style={{ background: GREEN, boxShadow: '0 12px 30px rgba(21,56,38,.4)', zIndex: 200, animation: 'modalCardUp .25s cubic-bezier(.25,.46,.45,.94)' }}>
                     <button onClick={() => { setGlobalNavOpen(false); go('home'); }} className="w-full text-left px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}>{t('backToHomeBtn')}</button>
-                    <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>
+                    {isStaffDevice() && <button onClick={() => { setGlobalNavOpen(false); go('staff'); }} className="w-full text-left px-4 py-3 text-sm font-semibold flex items-center gap-2" style={{ color: '#d9cdb4' }}><Lock size={14} /> {t('navStaffArea')}</button>}
                     <a href="https://instagram.com/BodrumKebapVechta" target="_blank" rel="noopener noreferrer" onClick={() => setGlobalNavOpen(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-semibold" style={{ color: '#d9cdb4' }}><Instagram size={15} /> Instagram</a>
                   </div>
                 </>
@@ -13974,7 +13998,7 @@ function AppMain() {
   const KARTENRAD_ENABLED = false;
   const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : infoSlug ? 'info' : 'home');
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : infoSlug ? 'info' : PERSONAL_LINK ? 'staff' : 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const [, forceRerender] = useState(0);
