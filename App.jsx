@@ -5160,6 +5160,9 @@ const GAMES = {
       ctx.fillStyle = g; ctx.fillRect(0, 0, GW, GH);
       if (s.flash > 0) { ctx.fillStyle = `rgba(229,57,53,${s.flash})`; ctx.fillRect(0, 0, GW, GH); }
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      // iPhone (Safari) färbt Emojis mit dem aktuellen fillStyle ein – vorher
+      // war das der Hintergrund-Verlauf → Emojis unsichtbar. Daher deckend schwarz.
+      ctx.fillStyle = '#000';
       ctx.font = '30px sans-serif'; for (const it of s.items) ctx.fillText(it.e, it.x, it.y);
       ctx.font = '56px sans-serif'; ctx.fillText('🥙', s.px, GH - 52);
       ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#e0661a'; for (const p of s.pops) { ctx.globalAlpha = Math.max(0, p.a); ctx.fillText(p.txt, p.x, p.y); } ctx.globalAlpha = 1;
@@ -5243,7 +5246,7 @@ const GAMES = {
       }
       ctx.fillStyle = '#7cb342'; ctx.fillRect(0, GH - 20, GW, 20);
       ctx.save(); ctx.translate(80, s.y); ctx.rotate(Math.max(-0.5, Math.min(0.9, s.vy / 600)));
-      ctx.font = '36px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🥙', 0, 0); ctx.restore();
+      ctx.fillStyle = '#000'; ctx.font = '36px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🥙', 0, 0); ctx.restore();
       ctx.fillStyle = '#153826'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(String(s.score), GW / 2, 44);
       if (!s.started) { ctx.font = 'bold 16px sans-serif'; ctx.fillText('👆 Tap!', GW / 2, GH / 2 + 60); }
     },
