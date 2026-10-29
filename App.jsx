@@ -5091,6 +5091,265 @@ function MemoryMatchGame({ onClose }) {
 }
 
 
+// ======================= MINI-SPIELE (Logo 🎮) =======================
+// Alle 3 Tage ein anderes Spiel (Berliner Datum). Testen: ?game=catch|stack|fly|memory
+const GAME_IDS = ['catch', 'stack', 'fly', 'memory'];
+const GAME_ROTATE_DAYS = 3;
+function gameDayIndex(now = berlinNow()) {
+  const d0 = Date.UTC(2026, 0, 1);
+  const d = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor((d - d0) / 86400000);
+}
+function currentGameId() {
+  try { const p = new URLSearchParams(window.location.search).get('game'); if (GAME_IDS.includes(p)) return p; } catch {}
+  return GAME_IDS[Math.floor(gameDayIndex() / GAME_ROTATE_DAYS) % GAME_IDS.length];
+}
+function daysUntilNextGame() {
+  const i = gameDayIndex();
+  return GAME_ROTATE_DAYS - (((i % GAME_ROTATE_DAYS) + GAME_ROTATE_DAYS) % GAME_ROTATE_DAYS);
+}
+const GAME_T = {
+  start: { de: 'Spielen', en: 'Play', tr: 'Oyna', ro: 'Joacă', nl: 'Spelen', sq: 'Luaj', ku: 'Bilîze', pl: 'Graj' },
+  again: { de: 'Nochmal', en: 'Again', tr: 'Tekrar', ro: 'Din nou', nl: 'Opnieuw', sq: 'Përsëri', ku: 'Dîsa', pl: 'Jeszcze raz' },
+  score: { de: 'Punkte', en: 'Score', tr: 'Puan', ro: 'Puncte', nl: 'Punten', sq: 'Pikë', ku: 'Pûan', pl: 'Punkty' },
+  best: { de: 'Rekord', en: 'Best', tr: 'Rekor', ro: 'Record', nl: 'Record', sq: 'Rekord', ku: 'Rekor', pl: 'Rekord' },
+  newBest: { de: 'Neuer Rekord!', en: 'New record!', tr: 'Yeni rekor!', ro: 'Record nou!', nl: 'Nieuw record!', sq: 'Rekord i ri!', ku: 'Rekora nû!', pl: 'Nowy rekord!' },
+  next: { de: 'Neues Spiel in {n} Tag(en)', en: 'New game in {n} day(s)', tr: '{n} gün sonra yeni oyun', ro: 'Joc nou în {n} zi(le)', nl: 'Nieuw spel over {n} dag(en)', sq: 'Lojë e re pas {n} ditësh', ku: 'Lîstika nû piştî {n} rojan', pl: 'Nowa gra za {n} dni' },
+  over: { de: 'Vorbei!', en: 'Game over!', tr: 'Oyun bitti!', ro: 'Gata!', nl: 'Afgelopen!', sq: 'Mbaroi!', ku: 'Qediya!', pl: 'Koniec!' },
+};
+const GAME_INFO = {
+  catch: { icon: '🥙', name: { de: 'Zutaten-Fang', en: 'Ingredient Catch', tr: 'Malzeme Yakala' }, how: { de: 'Fang Fleisch, Salat & Käse mit dem Brot. Vorsicht vor Chilis 🌶️ – 3 Leben!', en: 'Catch meat, salad & cheese with the bread. Watch out for chilis 🌶️ – 3 lives!', tr: 'Eti, salatayı ve peyniri ekmekle yakala. Acı bibere 🌶️ dikkat – 3 can!' } },
+  stack: { icon: '🧱', name: { de: 'Döner-Turm', en: 'Döner Tower', tr: 'Döner Kulesi' }, how: { de: 'Tippe im richtigen Moment – stapel den höchsten Döner!', en: 'Tap at the right moment – stack the tallest döner!', tr: 'Doğru anda dokun – en yüksek döneri diz!' } },
+  fly: { icon: '🚀', name: { de: 'Fliegender Döner', en: 'Flying Döner', tr: 'Uçan Döner' }, how: { de: 'Tippe zum Fliegen und flieg zwischen den Spießen durch!', en: 'Tap to fly between the skewers!', tr: 'Uçmak için dokun, şişlerin arasından geç!' } },
+};
+function gT(obj, lang) { return (obj && (obj[lang] || obj.de)) || ''; }
+
+const GW = 320, GH = 440;
+// ---- Spiel-Logik: init(), step(s, dt, inp), tap(s), draw(ctx, s) ----
+const GAMES = {
+  catch: {
+    init: () => ({ px: GW / 2, tx: GW / 2, items: [], t: 0, spawn: 0.4, score: 0, lives: 3, time: 45, over: false, flash: 0, pops: [] }),
+    step(s, dt, inp) {
+      s.t += dt; s.time -= dt; s.flash = Math.max(0, s.flash - dt);
+      if (inp.x != null) s.tx = inp.x;
+      if (inp.left) s.tx = s.px - 260 * dt * 4; if (inp.right) s.tx = s.px + 260 * dt * 4;
+      s.tx = Math.max(28, Math.min(GW - 28, s.tx));
+      s.px += (s.tx - s.px) * Math.min(1, dt * 16);
+      s.spawn -= dt;
+      if (s.spawn <= 0) {
+        s.spawn = Math.max(0.32, 0.85 - s.t * 0.012);
+        const bad = Math.random() < Math.min(0.32, 0.18 + s.t * 0.003);
+        const good = ['🥩', '🥬', '🍅', '🧅', '🧀', '🥩'];
+        s.items.push({ x: 20 + Math.random() * (GW - 40), y: -20, vy: 120 + s.t * 4 + Math.random() * 50, e: bad ? '🌶️' : good[Math.floor(Math.random() * good.length)], bad });
+      }
+      for (const it of s.items) it.y += it.vy * dt;
+      s.items = s.items.filter((it) => {
+        if (it.y > GH - 78 && it.y < GH - 30 && Math.abs(it.x - s.px) < 36) {
+          if (it.bad) { s.lives -= 1; s.flash = 0.35; } else { const p = it.e === '🧀' ? 2 : 1; s.score += p; s.pops.push({ x: it.x, y: it.y, txt: `+${p}`, a: 1 }); }
+          return false;
+        }
+        return it.y < GH + 30;
+      });
+      for (const p of s.pops) { p.y -= 40 * dt; p.a -= dt * 1.6; }
+      s.pops = s.pops.filter((p) => p.a > 0);
+      if (s.lives <= 0 || s.time <= 0) s.over = true;
+    },
+    tap() {},
+    draw(ctx, s) {
+      const g = ctx.createLinearGradient(0, 0, 0, GH); g.addColorStop(0, '#fff6ea'); g.addColorStop(1, '#ffe2bf');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, GW, GH);
+      if (s.flash > 0) { ctx.fillStyle = `rgba(229,57,53,${s.flash})`; ctx.fillRect(0, 0, GW, GH); }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '30px sans-serif'; for (const it of s.items) ctx.fillText(it.e, it.x, it.y);
+      ctx.font = '56px sans-serif'; ctx.fillText('🥙', s.px, GH - 52);
+      ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#e0661a'; for (const p of s.pops) { ctx.globalAlpha = Math.max(0, p.a); ctx.fillText(p.txt, p.x, p.y); } ctx.globalAlpha = 1;
+      ctx.fillStyle = '#153826'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'left'; ctx.fillText(`⭐ ${s.score}`, 12, 20);
+      ctx.textAlign = 'center'; ctx.fillText(`⏱ ${Math.max(0, Math.ceil(s.time))}`, GW / 2, 20);
+      ctx.textAlign = 'right'; ctx.fillText('❤️'.repeat(Math.max(0, s.lives)), GW - 10, 20);
+    },
+  },
+  stack: {
+    COLORS: ['#e9b86b', '#8b4a2b', '#4caf50', '#e53935', '#f3e9f7', '#fff3e0', '#a0522d', '#7cb342'],
+    init: () => ({ layers: [{ x: 70, w: 180 }], cur: { x: -90, w: 180, dir: 1 }, speed: 140, score: 0, over: false, cam: 0, falls: [], perfect: 0 }),
+    step(s, dt) {
+      const c = s.cur;
+      c.x += c.dir * s.speed * dt;
+      if (c.x > GW) c.dir = -1; if (c.x + c.w < 0) c.dir = 1;
+      const top = GH - 50 - s.layers.length * 22;
+      const want = Math.max(0, 170 - top);
+      s.cam += (want - s.cam) * Math.min(1, dt * 6);
+      for (const f of s.falls) { f.vy += 900 * dt; f.y += f.vy * dt; }
+      s.falls = s.falls.filter((f) => f.y < GH + 200);
+      s.perfect = Math.max(0, s.perfect - dt);
+    },
+    tap(s) {
+      if (s.over) return;
+      const prev = s.layers[s.layers.length - 1], c = s.cur;
+      const y = GH - 50 - s.layers.length * 22;
+      let a = Math.max(c.x, prev.x), b = Math.min(c.x + c.w, prev.x + prev.w);
+      if (Math.abs(c.x - prev.x) < 5) { a = prev.x; b = prev.x + prev.w; s.perfect = 0.6; }
+      if (b - a <= 0) { s.falls.push({ x: c.x, w: c.w, y, vy: 0, col: this.COLORS[s.layers.length % this.COLORS.length] }); s.over = true; return; }
+      if (c.x < a) s.falls.push({ x: c.x, w: a - c.x, y, vy: 0, col: this.COLORS[s.layers.length % this.COLORS.length] });
+      if (c.x + c.w > b) s.falls.push({ x: b, w: c.x + c.w - b, y, vy: 0, col: this.COLORS[s.layers.length % this.COLORS.length] });
+      s.layers.push({ x: a, w: b - a });
+      s.score += 1;
+      s.speed = Math.min(420, s.speed + 9);
+      const fromLeft = s.layers.length % 2 === 0;
+      s.cur = { x: fromLeft ? -(b - a) * 0.5 : GW - (b - a) * 0.5, w: b - a, dir: fromLeft ? 1 : -1 };
+    },
+    draw(ctx, s) {
+      const g = ctx.createLinearGradient(0, 0, 0, GH); g.addColorStop(0, '#e8f6ee'); g.addColorStop(1, '#fff6ea');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, GW, GH);
+      ctx.save(); ctx.translate(0, s.cam);
+      ctx.fillStyle = '#d7c3a1'; ctx.fillRect(40, GH - 28, GW - 80, 8);
+      const rr = (x, y, w, h, col) => { ctx.fillStyle = col; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, 6); else ctx.rect(x, y, w, h); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(x + 4, y + 3, Math.max(0, w - 8), 3); };
+      s.layers.forEach((l, i) => rr(l.x, GH - 50 - i * 22, l.w, 20, this.COLORS[i % this.COLORS.length]));
+      if (!s.over) rr(s.cur.x, GH - 50 - s.layers.length * 22, s.cur.w, 20, this.COLORS[s.layers.length % this.COLORS.length]);
+      for (const f of s.falls) rr(f.x, f.y, f.w, 20, f.col);
+      ctx.restore();
+      ctx.fillStyle = '#153826'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(s.score), GW / 2, 40);
+      if (s.perfect > 0) { ctx.fillStyle = `rgba(224,102,26,${s.perfect / 0.6})`; ctx.font = 'bold 18px sans-serif'; ctx.fillText('PERFEKT!', GW / 2, 72); }
+    },
+  },
+  fly: {
+    init: () => ({ y: GH / 2, vy: 0, pipes: [], spawn: 1.0, score: 0, over: false, started: false, t: 0 }),
+    step(s, dt) {
+      s.t += dt;
+      if (!s.started) { s.y = GH / 2 + Math.sin(s.t * 3) * 8; return; }
+      s.vy += 950 * dt; s.y += s.vy * dt;
+      const sp = 125 + Math.min(80, s.score * 3);
+      s.spawn -= dt;
+      if (s.spawn <= 0) { s.spawn = 1.45; s.pipes.push({ x: GW + 30, gy: 110 + Math.random() * (GH - 240), gap: Math.max(120, 150 - s.score * 1.5), passed: false }); }
+      for (const p of s.pipes) {
+        p.x -= sp * dt;
+        if (!p.passed && p.x + 23 < 80) { p.passed = true; s.score += 1; }
+        if (Math.abs(p.x - 80) < 23 + 15 && (s.y - 15 < p.gy - p.gap / 2 || s.y + 15 > p.gy + p.gap / 2)) s.over = true;
+      }
+      s.pipes = s.pipes.filter((p) => p.x > -60);
+      if (s.y > GH - 30 || s.y < -40) s.over = true;
+    },
+    tap(s) { if (s.over) return; s.started = true; s.vy = -300; },
+    draw(ctx, s) {
+      const g = ctx.createLinearGradient(0, 0, 0, GH); g.addColorStop(0, '#bfe6ff'); g.addColorStop(1, '#fff1d6');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, GW, GH);
+      for (const p of s.pipes) {
+        const drawSpit = (y0, y1) => {
+          const gr = ctx.createLinearGradient(p.x - 22, 0, p.x + 22, 0); gr.addColorStop(0, '#6b3416'); gr.addColorStop(.5, '#b8632f'); gr.addColorStop(1, '#6b3416');
+          ctx.fillStyle = gr; ctx.fillRect(p.x - 22, y0, 44, y1 - y0);
+          ctx.fillStyle = 'rgba(255,220,160,.35)'; for (let yy = y0 + 6; yy < y1; yy += 14) ctx.fillRect(p.x - 22, yy, 44, 3);
+        };
+        drawSpit(-10, p.gy - p.gap / 2); drawSpit(p.gy + p.gap / 2, GH - 20);
+        ctx.fillStyle = '#9aa3a8'; ctx.fillRect(p.x - 3, p.gy - p.gap / 2 - 2, 6, 10); ctx.fillRect(p.x - 3, p.gy + p.gap / 2 - 8, 6, 10);
+      }
+      ctx.fillStyle = '#7cb342'; ctx.fillRect(0, GH - 20, GW, 20);
+      ctx.save(); ctx.translate(80, s.y); ctx.rotate(Math.max(-0.5, Math.min(0.9, s.vy / 600)));
+      ctx.font = '36px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🥙', 0, 0); ctx.restore();
+      ctx.fillStyle = '#153826'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(String(s.score), GW / 2, 44);
+      if (!s.started) { ctx.font = 'bold 16px sans-serif'; ctx.fillText('👆 Tap!', GW / 2, GH / 2 + 60); }
+    },
+  },
+};
+
+function CanvasGame({ id, onClose }) {
+  const { lang } = React.useContext(LangContext);
+  const info = GAME_INFO[id];
+  const game = GAMES[id];
+  const canvasRef = useRef(null);
+  const stateRef = useRef(null);
+  const inpRef = useRef({ x: null, left: false, right: false });
+  const [phase, setPhase] = useState('intro'); // intro | play | over
+  const [score, setScore] = useState(0);
+  const bestKey = `bk_game_best_${id}`;
+  const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem(bestKey) || '0', 10) || 0; } catch { return 0; } });
+  const [newBest, setNewBest] = useState(false);
+  useEffect(() => {
+    const cv = canvasRef.current; if (!cv) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = GW * dpr; cv.height = GH * dpr;
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!stateRef.current) stateRef.current = game.init();
+    game.draw(ctx, stateRef.current);
+    if (phase !== 'play') return;
+    let raf, last = performance.now();
+    const loop = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      const s = stateRef.current;
+      game.step(s, dt, inpRef.current);
+      game.draw(ctx, s);
+      if (s.over) {
+        setScore(s.score);
+        if (s.score > best) { setBest(s.score); setNewBest(true); try { localStorage.setItem(bestKey, String(s.score)); } catch {} }
+        try { logEvent('game_over', { game: id, score: s.score }); } catch {}
+        setTimeout(() => setPhase('over'), 450);
+        game.draw(ctx, s);
+        let t2 = performance.now();
+        const tail = (n2) => { const d2 = Math.min(0.05, (n2 - t2) / 1000); t2 = n2; game.step(s, d2, inpRef.current); game.draw(ctx, s); if (performance.now() - last < 450) raf = requestAnimationFrame(tail); };
+        raf = requestAnimationFrame(tail);
+        return;
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [phase]);
+  useEffect(() => {
+    const kd = (e) => {
+      if (e.key === 'ArrowLeft') inpRef.current.left = true;
+      if (e.key === 'ArrowRight') inpRef.current.right = true;
+      if ((e.key === ' ' || e.key === 'ArrowUp') && phase === 'play') { e.preventDefault(); game.tap(stateRef.current); }
+    };
+    const ku = (e) => { if (e.key === 'ArrowLeft') inpRef.current.left = false; if (e.key === 'ArrowRight') inpRef.current.right = false; };
+    window.addEventListener('keydown', kd); window.addEventListener('keyup', ku);
+    return () => { window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); };
+  }, [phase]);
+  const toLocalX = (e) => { const r = canvasRef.current.getBoundingClientRect(); return ((e.clientX - r.left) / r.width) * GW; };
+  const onDown = (e) => { if (phase !== 'play') return; inpRef.current.x = toLocalX(e); game.tap(stateRef.current); };
+  const onMove = (e) => { if (phase !== 'play') return; inpRef.current.x = toLocalX(e); };
+  const start = () => { stateRef.current = game.init(); inpRef.current = { x: null, left: false, right: false }; setNewBest(false); setScore(0); setPhase('play'); try { logEvent('game_start', { game: id }); } catch {} };
+  const n = daysUntilNextGame();
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" style={{ background: 'rgba(10,20,14,.72)' }}>
+      <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.4)' }}>
+        <div className="px-5 py-3.5 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
+          <div className="text-white font-black text-sm">{info.icon} {gT(info.name, lang)}</div>
+          <div className="flex items-center gap-3">
+            <span className="text-[12px] font-bold" style={{ color: GOLD }}>🏆 {best}</span>
+            <button onClick={onClose} aria-label="Schließen" className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,246,234,.15)' }}><X size={15} color="#fff" /></button>
+          </div>
+        </div>
+        <div className="relative m-3 rounded-2xl overflow-hidden" style={{ border: '1.5px solid #f0e5cf', touchAction: 'none' }}>
+          <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} style={{ display: 'block', width: '100%', aspectRatio: `${GW} / ${GH}`, touchAction: 'none', userSelect: 'none' }} />
+          {phase !== 'play' && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6" style={{ background: 'rgba(255,246,234,.88)' }}>
+              {phase === 'intro' ? (
+                <>
+                  <div className="text-5xl mb-2">{info.icon}</div>
+                  <div className="font-black text-xl mb-1.5" style={{ color: GREEN }}>{gT(info.name, lang)}</div>
+                  <p className="text-[13px] font-semibold mb-4 leading-snug" style={{ color: '#7a6a52' }}>{gT(info.how, lang)}</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-4xl mb-1">{newBest ? '🏆' : '🎉'}</div>
+                  {newBest && <div className="font-black text-sm" style={{ color: ORANGE }}>{gT(GAME_T.newBest, lang)}</div>}
+                  <div className="font-black text-lg" style={{ color: GREEN }}>{gT(GAME_T.over, lang)} {gT(GAME_T.score, lang)}: {score}</div>
+                  <div className="text-[12px] font-bold mb-4" style={{ color: '#a4906c' }}>{gT(GAME_T.best, lang)}: {best}</div>
+                </>
+              )}
+              <button onClick={start} className="px-7 py-3 rounded-full font-black text-[15px] text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 8px 20px rgba(230,90,10,.35)' }}>{phase === 'intro' ? `▶ ${gT(GAME_T.start, lang)}` : `🔄 ${gT(GAME_T.again, lang)}`}</button>
+            </div>
+          )}
+        </div>
+        <p className="text-center text-[11px] font-semibold pb-3.5" style={{ color: '#a4906c' }}>🎲 {gT(GAME_T.next, lang).replace('{n}', n)}</p>
+      </div>
+    </div>
+  );
+}
+function GameOfTheDay({ onClose }) {
+  const id = currentGameId();
+  if (id === 'memory') return <MemoryMatchGame onClose={onClose} />;
+  return <CanvasGame id={id} onClose={onClose} />;
+}
+
 function MittagsBanner({ menu, onPhotoClick }) {
   const { t } = React.useContext(LangContext);
   const [now, setNow] = useState(new Date());
@@ -6636,7 +6895,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       )}
       {loyaltyModalOpen && <LoyaltyModal lang={lang} t={t} onClose={() => setLoyaltyModalOpen(false)} />}
       {WHEELS_ENABLED && tuesdayWheelOpen && <TuesdayWheelModal t={t} onClose={() => setTuesdayWheelOpen(false)} />}
-      {gameOpen && <MemoryMatchGame onClose={() => setGameOpen(false)} />}
+      {gameOpen && <GameOfTheDay onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
@@ -11776,7 +12035,7 @@ function StaffPanelView({ back }) {
                     hero_tagesempfehlung: '⭐ Hero: Tagesempfehlung',
                     hero_surprise: '🎲 Hero: Überrasch mich', hero_quiz: '🤔 Hero: Was passt zu mir?', hero_kapsalon: '🧀 Hero: Kapsalon angetippt', kapsalon_spotlight: '🎬 Animierte Karte 1 angetippt', catering_view: '🍽️ Catering-Seite geöffnet', stamp_self_open: '🪵 Stempel-Mühür geöffnet', stamp_self_done: '🪵 Selbst-Stempel geholt', catering_request: '🍽️ Catering-Anfrage gesendet', spotlight2: '🎬 Animierte Karte 2 angetippt', story_created: '📸 Story-Foto erstellt', story_shared: '📸 Story-Foto geteilt', story_saved: '📸 Story-Foto gespeichert',
                     hero_loyalty: '🎟️ Hero: Stempelkarte',
-                    hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet',
+                    hero_logo_game: '🎮 Logo: Mini-Spiel geöffnet', game_start: '🎮 Spiel gestartet', game_over: '🎮 Spiel beendet',
                     hero_tuesday_wheel: '🎡 Dienstags-Glücksrad geöffnet',
                     tuesday_wheel_spin: '🎡 Dienstags-Glücksrad gedreht',
                     call: '📞 Anruf-Button',
