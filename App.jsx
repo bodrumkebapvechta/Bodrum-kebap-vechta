@@ -5042,7 +5042,7 @@ function MemoryMatchGame({ onClose }) {
   const restart = () => { setCards(shuffle()); setFlippedIds([]); setMoves(0); setLocked(false); setWon(false); setIsNewBest(false); };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-5" style={{ background: 'rgba(0,0,0,.7)' }}>
+    <div className="fixed inset-0 flex items-center justify-center px-5" style={{ zIndex: 1100, background: 'rgba(0,0,0,.7)' }}>
       <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.4)' }}>
         <div className="px-5 py-4 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
           <div className="text-white font-black text-sm">🧠 Kebap-Memory</div>
@@ -5308,8 +5308,8 @@ function CanvasGame({ id, onClose }) {
   const start = () => { stateRef.current = game.init(); inpRef.current = { x: null, left: false, right: false }; setNewBest(false); setScore(0); setPhase('play'); try { logEvent('game_start', { game: id }); } catch {} };
   const n = daysUntilNextGame();
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" style={{ background: 'rgba(10,20,14,.72)' }}>
-      <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.4)' }}>
+    <div className="fixed inset-0 flex items-center justify-center px-4" style={{ zIndex: 1100, background: 'rgba(10,20,14,.72)' }}>
+      <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: CREAM, boxShadow: '0 20px 50px rgba(0,0,0,.4)', maxHeight: '96dvh' }}>
         <div className="px-5 py-3.5 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${GREEN}, #1d4530)` }}>
           <div className="text-white font-black text-sm">{info.icon} {gT(info.name, lang)}</div>
           <div className="flex items-center gap-3">
@@ -5318,7 +5318,7 @@ function CanvasGame({ id, onClose }) {
           </div>
         </div>
         <div className="relative m-3 rounded-2xl overflow-hidden" style={{ border: '1.5px solid #f0e5cf', touchAction: 'none' }}>
-          <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} style={{ display: 'block', width: '100%', aspectRatio: `${GW} / ${GH}`, touchAction: 'none', userSelect: 'none' }} />
+          <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} style={{ display: 'block', width: `min(100%, calc(70dvh * ${GW / GH}))`, aspectRatio: `${GW} / ${GH}`, margin: '0 auto', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }} />
           {phase !== 'play' && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6" style={{ background: 'rgba(255,246,234,.88)' }}>
               {phase === 'intro' ? (
@@ -5344,10 +5344,16 @@ function CanvasGame({ id, onClose }) {
     </div>
   );
 }
+// Per Portal direkt in <body>: sonst verschiebt ein "transform" weiter oben
+// (Seiten-Animation) das Fenster und Fingertipps landen daneben.
 function GameOfTheDay({ onClose }) {
   const id = currentGameId();
-  if (id === 'memory') return <MemoryMatchGame onClose={onClose} />;
-  return <CanvasGame id={id} onClose={onClose} />;
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+  return ReactDOM.createPortal(id === 'memory' ? <MemoryMatchGame onClose={onClose} /> : <CanvasGame id={id} onClose={onClose} />, document.body);
 }
 
 function MittagsBanner({ menu, onPhotoClick }) {
@@ -6759,7 +6765,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
       {/* SCHNELLZUGRIFF (aus dem Hero ausgelagert, damit dieser nicht überladen wirkt) */}
       <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-6">
-        <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
           <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 6px 16px rgba(255,199,56,.3)' }}>
             <span className="text-lg flex-shrink-0">⭐</span> <span className="truncate w-full">{t('dailyRecommendation')}</span>
           </button>
