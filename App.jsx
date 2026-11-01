@@ -519,6 +519,7 @@ const CATEGORY_LABELS = {
   finger: { de: 'Finger Food', en: 'Finger Food', tr: 'Atıştırmalık', ro: 'Gustări', nl: 'Fingerfood' },
   getraenke: { de: 'Getränke', en: 'Drinks', tr: 'İçecekler', ro: 'Băuturi', nl: 'Drankjes' },
 };
+const GLOBAL_CATEGORY_LABELS = CATEGORY_LABELS;
 function catLabel(key, lang) { return CATEGORY_LABELS[key]?.[lang] ?? CATEGORY_LABELS[key]?.de ?? key; }
 
 const DAY_NAMES = {
@@ -2518,6 +2519,7 @@ function HalloweenAdmin() {
 // siteconfig:callNumber = { tel: '+49…', display: '0152…' } – leer = Festnetz.
 // Im Personal-Bereich umschaltbar (z. B. für ein paar Tage aufs Handy).
 const CALL_DEFAULT = { tel: '+4944419516104', display: '04441 / 95 16 104' };
+const MENU_SUB_T = { de: 'Alle Gerichte & Preise', en: 'All dishes & prices', tr: 'Tüm yemekler ve fiyatlar', ro: 'Toate preparatele și prețurile', nl: 'Alle gerechten & prijzen', sq: 'Të gjitha pjatat & çmimet', ku: 'Hemû xwarin û biha', pl: 'Wszystkie dania i ceny' };
 const CALL_T = { de: 'Jetzt anrufen & bestellen', en: 'Call now & order', tr: 'Hemen ara, sipariş ver', ro: 'Sună acum și comandă', nl: 'Bel nu & bestel', sq: 'Telefono tani & porosit', ku: 'Niha telefon bike & sîparîş bide', pl: 'Zadzwoń i zamów' };
 let callCfg = null;
 const callSubs = new Set();
@@ -6818,7 +6820,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   @keyframes callShine { 0%, 45% { background-position: 150% 0; } 100% { background-position: -100% 0; } }
                   @keyframes callPulse { from { transform: scale(.9); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
                   @keyframes callRing { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-14deg); } 78% { transform: rotate(12deg); } 82% { transform: rotate(-10deg); } 86% { transform: rotate(8deg); } 90% { transform: rotate(0); } }
-                  @media (prefers-reduced-motion: reduce) { .call-big::after, .call-ico, .call-ico::before { animation: none !important; } }
+                  .menu-big { color: #fff; background: linear-gradient(120deg, #ff6a1a, #ff8a3d 55%, #ff3d68); border: 0; width: 100%; }
+                  .menu-ico { background: #fff; color: #ff6a1a; animation: menuBob 2.4s ease-in-out infinite; }
+                  .menu-ico::before { border-color: rgba(255,255,255,.6); }
+                  @keyframes menuBob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2px) rotate(-6deg); } }
+                  @media (prefers-reduced-motion: reduce) { .call-big::after, .call-ico, .call-ico::before, .menu-ico { animation: none !important; } }
                 `}</style>
                 <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'hero' })} className="call-big" aria-label={`${CALL_T[lang] || CALL_T.de}: ${call.display}`}>
                   <span className="call-ico" aria-hidden="true"><Phone size={22} /></span>
@@ -6828,13 +6834,13 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   </span>
                   <ArrowRight size={20} />
                 </a>
-                <button
-                  onClick={() => { logEvent('hero_menu'); go('tischmenu'); }}
-                  className="h-12 w-fit flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
-                  style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: `0 10px 24px rgba(230,90,10,.4), ${dpTheme.accentGlow}`, transition: 'box-shadow 1.2s ease', animation: windSway('goldGlow 2.4s ease-in-out infinite', 2.4, 0) }}
-                >
-                  <span className="text-lg">📋</span> {t('navMenu')}
-                  <ArrowRight size={16} />
+                <button onClick={() => { logEvent('hero_menu'); go('tischmenu'); }} className="call-big menu-big text-left" style={{ boxShadow: `0 12px 28px rgba(230,90,10,.45), ${dpTheme.accentGlow}` }}>
+                  <span className="call-ico menu-ico" aria-hidden="true"><span style={{ fontSize: 24, lineHeight: 1 }}>📋</span></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12.5px] font-bold" style={{ opacity: 0.9 }}>{MENU_SUB_T[lang] || MENU_SUB_T.de}</span>
+                    <span className="block font-black leading-tight" style={{ fontSize: 'clamp(21px, 6vw, 26px)' }}>{t('navMenu')}</span>
+                  </span>
+                  <ArrowRight size={20} />
                 </button>
               </div>
             )}
@@ -12175,7 +12181,9 @@ function StaffPanelView({ back }) {
                     let label;
                     if (ev === 'category') {
                       const catKey = v.value.cat;
-                      label = `📂 Kategorie: ${CATEGORY_LABELS[catKey] || catKey}`;
+                      const plain = String(catKey || '').replace(/^imp-/, '');
+                      const nice = CATEGORY_LABELS[catKey] || CATEGORY_LABELS[`imp-${plain}`] || (GLOBAL_CATEGORY_LABELS[plain] && GLOBAL_CATEGORY_LABELS[plain].de) || (plain ? plain.charAt(0).toUpperCase() + plain.slice(1) : '?');
+                      label = `📂 Kategorie: ${nice}`;
                     } else if (ev === 'item_detail') {
                       label = `🔎 Angesehen: ${v.value.item || '?'}`;
                     } else if (EVENT_LABELS[ev]) {
