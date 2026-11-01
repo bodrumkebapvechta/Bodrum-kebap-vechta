@@ -2518,6 +2518,7 @@ function HalloweenAdmin() {
 // siteconfig:callNumber = { tel: '+49…', display: '0152…' } – leer = Festnetz.
 // Im Personal-Bereich umschaltbar (z. B. für ein paar Tage aufs Handy).
 const CALL_DEFAULT = { tel: '+4944419516104', display: '04441 / 95 16 104' };
+const CALL_T = { de: 'Jetzt anrufen & bestellen', en: 'Call now & order', tr: 'Hemen ara, sipariş ver', ro: 'Sună acum și comandă', nl: 'Bel nu & bestel', sq: 'Telefono tani & porosit', ku: 'Niha telefon bike & sîparîş bide', pl: 'Zadzwoń i zamów' };
 let callCfg = null;
 const callSubs = new Set();
 let callLoading = false;
@@ -2532,6 +2533,26 @@ function useCallNumber() {
     return () => { callSubs.delete(setC); };
   }, []);
   return c || CALL_DEFAULT;
+}
+// Schwebender Anruf-Button (nur Handy, unten links – rechts sitzt der Assistent).
+const CALL_SHORT_T = { de: 'Anrufen', en: 'Call', tr: 'Ara', ro: 'Sună', nl: 'Bellen', sq: 'Telefono', ku: 'Telefon', pl: 'Zadzwoń' };
+function FloatingCall({ call, lang }) {
+  return ReactDOM.createPortal(
+    <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'float' })} className="fcall md:hidden" aria-label={`${CALL_SHORT_T[lang] || CALL_SHORT_T.de}: ${call.display}`}>
+      <style>{`
+        .fcall { position: fixed; left: 14px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 45; display: flex; align-items: center; gap: 8px; padding: 7px 16px 7px 7px; border-radius: 999px; background: linear-gradient(120deg, #ffc738, #ffb51f); color: #153826; font-weight: 900; font-size: 15px; text-decoration: none; box-shadow: 0 10px 26px rgba(0,0,0,.28), 0 0 0 3px rgba(255,255,255,.7); -webkit-tap-highlight-color: transparent; }
+        .fcall:active { transform: scale(.95); }
+        .fcall-ico { position: relative; width: 40px; height: 40px; border-radius: 50%; background: #153826; color: #ffc738; display: flex; align-items: center; justify-content: center; animation: callRing 2.6s ease-in-out infinite; }
+        .fcall-ico::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(21,56,38,.5); animation: callPulse 2s ease-out infinite; }
+        @keyframes callPulse { from { transform: scale(.9); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
+        @keyframes callRing { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-14deg); } 78% { transform: rotate(12deg); } 82% { transform: rotate(-10deg); } 86% { transform: rotate(8deg); } 90% { transform: rotate(0); } }
+        @media (prefers-reduced-motion: reduce) { .fcall-ico, .fcall-ico::before { animation: none !important; } }
+      `}</style>
+      <span className="fcall-ico" aria-hidden="true"><Phone size={19} /></span>
+      {CALL_SHORT_T[lang] || CALL_SHORT_T.de}
+    </a>,
+    document.body
+  );
 }
 function CallNumberAdmin() {
   const cur = useCallNumber();
@@ -6758,23 +6779,34 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <HeroTeaser go={go} lang={lang} />
             {ONLINE_ORDER_TEST && <OnlineOrderButton lang={lang} />}
             {!orderingEnabled() && (
-              <div className="flex flex-wrap gap-3 mb-5">
+              <div className="flex flex-col gap-3 mb-5 max-w-[440px]">
+                <style>{`
+                  .call-big { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; padding: 12px 16px 12px 12px; border-radius: 20px; text-decoration: none; color: #153826; background: linear-gradient(120deg, #ffc738, #ffd95e 50%, #ffb51f); box-shadow: 0 12px 28px rgba(255,180,30,.45), inset 0 1px 0 rgba(255,255,255,.6); -webkit-tap-highlight-color: transparent; transition: transform .1s ease; }
+                  .call-big:active { transform: scale(.97); }
+                  .call-big::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%); background-size: 250% 100%; animation: callShine 3.4s ease-in-out 1s infinite; pointer-events: none; }
+                  .call-ico { position: relative; flex: 0 0 auto; width: 50px; height: 50px; border-radius: 50%; background: #153826; color: #ffc738; display: flex; align-items: center; justify-content: center; animation: callRing 2.6s ease-in-out infinite; }
+                  .call-ico::before { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2.5px solid rgba(21,56,38,.45); animation: callPulse 2s ease-out infinite; }
+                  @keyframes callShine { 0%, 45% { background-position: 150% 0; } 100% { background-position: -100% 0; } }
+                  @keyframes callPulse { from { transform: scale(.9); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
+                  @keyframes callRing { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-14deg); } 78% { transform: rotate(12deg); } 82% { transform: rotate(-10deg); } 86% { transform: rotate(8deg); } 90% { transform: rotate(0); } }
+                  @media (prefers-reduced-motion: reduce) { .call-big::after, .call-ico, .call-ico::before { animation: none !important; } }
+                `}</style>
+                <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'hero' })} className="call-big" aria-label={`${CALL_T[lang] || CALL_T.de}: ${call.display}`}>
+                  <span className="call-ico" aria-hidden="true"><Phone size={22} /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12.5px] font-bold" style={{ opacity: 0.8 }}>{CALL_T[lang] || CALL_T.de}</span>
+                    <span className="block font-black leading-tight" style={{ fontSize: 'clamp(21px, 6vw, 26px)', letterSpacing: '.01em' }}>{call.display}</span>
+                  </span>
+                  <ArrowRight size={20} />
+                </a>
                 <button
                   onClick={() => { logEvent('hero_menu'); go('tischmenu'); }}
-                  className="h-12 flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
+                  className="h-12 w-fit flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
                   style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: `0 10px 24px rgba(230,90,10,.4), ${dpTheme.accentGlow}`, transition: 'box-shadow 1.2s ease', animation: windSway('goldGlow 2.4s ease-in-out infinite', 2.4, 0) }}
                 >
                   <span className="text-lg">📋</span> {t('navMenu')}
                   <ArrowRight size={16} />
                 </button>
-                <a
-                  href={`tel:${call.tel}`}
-                  onClick={() => logEvent('call')}
-                  className="h-12 flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
-                  style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.3)' }}
-                >
-                  <Phone size={16} /> {call.display}
-                </a>
               </div>
             )}
             {orderingEnabled() && (
@@ -6823,16 +6855,16 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-6">
         <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
           <button onClick={() => { logEvent('hero_tagesempfehlung'); scrollTo('tagesempfehlung'); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center leading-tight" style={{ background: GOLD, color: GREEN, boxShadow: '0 6px 16px rgba(255,199,56,.3)' }}>
-            <span className="text-lg flex-shrink-0">⭐</span> <span className="truncate w-full">{t('dailyRecommendation')}</span>
+            <span className="text-lg flex-shrink-0">⭐</span> <span className="w-full" style={{ overflowWrap: 'anywhere', hyphens: 'auto', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{t('dailyRecommendation')}</span>
           </button>
           <button onClick={() => { logEvent('hero_loyalty'); setLoyaltyModalOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: `linear-gradient(135deg, ${CHILI}, #ff6b35)`, boxShadow: '0 6px 16px rgba(214,40,40,.35)' }}>
-            <span className="text-lg flex-shrink-0">🎟️</span> <span className="truncate w-full">{t('loyaltyTabLabel')}</span>
+            <span className="text-lg flex-shrink-0">🎟️</span> <span className="w-full" style={{ overflowWrap: 'anywhere', hyphens: 'auto', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{t('loyaltyTabLabel')}</span>
           </button>
           <button onClick={() => { logEvent('hero_wish'); setWishModalOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2d6a4f, #52a074)', boxShadow: '0 6px 16px rgba(45,106,79,.3)' }}>
-            <span className="text-lg flex-shrink-0">💡</span> <span className="truncate w-full">{t('wishBoxNavLabel')}</span>
+            <span className="text-lg flex-shrink-0">💡</span> <span className="w-full" style={{ overflowWrap: 'anywhere', hyphens: 'auto', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{t('wishBoxNavLabel')}</span>
           </button>
           <button onClick={() => { logEvent('hero_quiz'); setQuizOpen(true); }} className="h-16 flex flex-col items-center justify-center gap-1 px-1 rounded-2xl font-black text-[10px] text-center text-white leading-tight" style={{ background: 'linear-gradient(135deg, #2f9e8f, #3fc4b0)', boxShadow: '0 6px 16px rgba(47,158,143,.3)' }}>
-            <span className="text-lg flex-shrink-0">🤔</span> <span className="truncate w-full">{t('quizTileLabel')}</span>
+            <span className="text-lg flex-shrink-0">🤔</span> <span className="w-full" style={{ overflowWrap: 'anywhere', hyphens: 'auto', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{t('quizTileLabel')}</span>
           </button>
         </div>
       </section>
@@ -6958,6 +6990,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
       {loyaltyModalOpen && <LoyaltyModal lang={lang} t={t} onClose={() => setLoyaltyModalOpen(false)} />}
       {WHEELS_ENABLED && tuesdayWheelOpen && <TuesdayWheelModal t={t} onClose={() => setTuesdayWheelOpen(false)} />}
       {gameOpen && <GameOfTheDay onClose={() => setGameOpen(false)} />}
+      {!orderingEnabled() && !navOpen && <FloatingCall call={call} lang={lang} />}
 
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: 'rgba(21,56,38,.92)', animation: 'viewFade .25s ease', height: '100dvh' }}>
