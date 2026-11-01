@@ -2534,6 +2534,34 @@ function useCallNumber() {
   }, []);
   return c || CALL_DEFAULT;
 }
+// Hinweis-Leiste ganz oben, solange vorübergehend eine andere Nummer gilt.
+const CALL_NOTICE_T = {
+  de: 'Telefon-Bestellungen gerade unter dieser Nummer:', en: 'Phone orders currently at this number:', tr: 'Telefonla sipariş şu an bu numaradan:',
+  ro: 'Comenzi telefonice momentan la acest număr:', nl: 'Telefonisch bestellen momenteel via dit nummer:', sq: 'Porositë me telefon tani në këtë numër:',
+  ku: 'Sîparîşa bi telefonê niha bi vê hejmarê:', pl: 'Zamówienia telefoniczne obecnie pod tym numerem:',
+};
+function CallNotice({ call, lang }) {
+  if (call.tel === CALL_DEFAULT.tel) return null;
+  return (
+    <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'notice' })} className="callnote block mx-4 mt-3 mb-1 rounded-2xl" style={{ textDecoration: 'none' }}>
+      <style>{`
+        .callnote { position: relative; overflow: hidden; background: linear-gradient(120deg, #153826, #1f5238); border: 2px solid #ffc738; box-shadow: 0 10px 26px rgba(21,56,38,.35); animation: callNoteIn .5s cubic-bezier(.2,.9,.3,1.2) both; }
+        .callnote::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,199,56,.28) 50%, transparent 65%); background-size: 250% 100%; animation: callShine 3s ease-in-out .8s infinite; pointer-events: none; }
+        @keyframes callNoteIn { from { opacity: 0; transform: translateY(-10px) scale(.98); } to { opacity: 1; transform: none; } }
+        @keyframes callShine { 0%, 45% { background-position: 150% 0; } 100% { background-position: -100% 0; } }
+        @media (prefers-reduced-motion: reduce) { .callnote, .callnote::after { animation: none !important; } }
+      `}</style>
+      <span className="flex items-center gap-3 px-4 py-3.5">
+        <span className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#ffc738', color: '#153826', animation: 'callRing 2.6s ease-in-out infinite' }}><Phone size={20} /></span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[12.5px] font-bold" style={{ color: '#ffe6a8' }}>📢 {CALL_NOTICE_T[lang] || CALL_NOTICE_T.de}</span>
+          <span className="block font-black text-white leading-tight" style={{ fontSize: 'clamp(22px, 6.4vw, 28px)', letterSpacing: '.01em' }}>{call.display}</span>
+        </span>
+        <ArrowRight size={20} color="#ffc738" />
+      </span>
+    </a>
+  );
+}
 // Schwebender Anruf-Button (nur Handy, unten links – rechts sitzt der Assistent).
 const CALL_SHORT_T = { de: 'Anrufen', en: 'Call', tr: 'Ara', ro: 'Sună', nl: 'Bellen', sq: 'Telefono', ku: 'Telefon', pl: 'Zadzwoń' };
 function FloatingCall({ call, lang }) {
@@ -6732,6 +6760,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <span className="text-2xl">🎡</span> Dienstags-Glücksrad — jetzt drehen!
         </button>
       )}
+      <CallNotice call={call} lang={lang} />
       <HalloweenBanner />
       <CampaignBanner />
       <MittagsBanner menu={HOME_EFFECTIVE_MENU} onPhotoClick={setLightbox} />
