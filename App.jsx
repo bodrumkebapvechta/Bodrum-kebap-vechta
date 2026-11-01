@@ -2514,6 +2514,59 @@ function HalloweenAdmin() {
   );
 }
 
+// ── Anruf-Nummer der "Anrufen"-Buttons ─────────────────────────────────────
+// siteconfig:callNumber = { tel: '+49…', display: '0152…' } – leer = Festnetz.
+// Im Personal-Bereich umschaltbar (z. B. für ein paar Tage aufs Handy).
+const CALL_DEFAULT = { tel: '+4944419516104', display: '04441 / 95 16 104' };
+let callCfg = null;
+const callSubs = new Set();
+let callLoading = false;
+function useCallNumber() {
+  const [c, setC] = useState(callCfg);
+  useEffect(() => {
+    callSubs.add(setC);
+    if (!callCfg && !callLoading) {
+      callLoading = true;
+      safeGet('siteconfig:callNumber').then((r) => { callCfg = r && r.tel ? r : CALL_DEFAULT; callSubs.forEach((fn) => fn(callCfg)); }).catch(() => {});
+    }
+    return () => { callSubs.delete(setC); };
+  }, []);
+  return c || CALL_DEFAULT;
+}
+function CallNumberAdmin() {
+  const cur = useCallNumber();
+  const [val, setVal] = useState('');
+  const [busy, setBusy] = useState(false);
+  const isDefault = cur.tel === CALL_DEFAULT.tel;
+  const save = async (next, toast) => {
+    setBusy(true);
+    const ok = await safeSet('siteconfig:callNumber', next);
+    setBusy(false);
+    if (ok) { callCfg = next.tel ? next : CALL_DEFAULT; callSubs.forEach((fn) => fn(callCfg)); setVal(''); panelToast(toast); }
+    else alert('Konnte nicht gespeichert werden – bitte erneut versuchen.');
+  };
+  const toTel = (v) => {
+    let d = String(v).replace(/[^\d+]/g, '');
+    if (d.startsWith('00')) d = '+' + d.slice(2);
+    if (d.startsWith('0')) d = '+49' + d.slice(1);
+    return /^\+\d{8,15}$/.test(d) ? d : null;
+  };
+  const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
+  return (
+    <div>
+      <p className="text-[11px] mb-2 leading-snug" style={{ color: PANEL_MUTED }}>Nummer hinter allen „Anrufen“-Buttons der Website. Impressum & Datenschutz bleiben beim Festnetz.</p>
+      <div className="rounded-[10px] px-3 py-2.5 mb-2 text-sm font-bold" style={{ background: isDefault ? '#fff' : '#fff4e6', border: `1.5px solid ${isDefault ? PANEL_LINE : '#ff8a3d'}`, color: PANEL_TEXT }}>
+        📞 Aktuell: {cur.display} {isDefault ? <span className="text-[11px] font-semibold" style={{ color: PANEL_MUTED }}>(Festnetz)</span> : <span className="text-[11px] font-semibold" style={{ color: '#c2410c' }}>(vorübergehend)</span>}
+      </div>
+      <div className="flex gap-2 mb-2">
+        <input value={val} onChange={(e) => setVal(e.target.value)} placeholder="z. B. 01521 6977150" inputMode="tel" className="flex-1 min-w-0 px-3 py-2.5 rounded-[10px] text-sm outline-none" style={inputSt} />
+        <button disabled={busy || !val.trim()} onClick={() => { const tel = toTel(val); if (!tel) { alert('Bitte eine gültige Telefonnummer eingeben.'); return; } save({ tel, display: val.trim() }, 'Nummer geändert'); }} className="px-4 rounded-[10px] text-sm font-semibold" style={{ background: GREEN, color: '#fff', opacity: busy || !val.trim() ? 0.5 : 1 }}>Speichern</button>
+      </div>
+      {!isDefault && <button disabled={busy} onClick={() => save({ tel: '', display: '' }, 'Zurück auf Festnetz')} className="w-full py-2.5 rounded-[10px] text-sm font-semibold" style={inputSt}>↩︎ Zurück auf Festnetz ({CALL_DEFAULT.display})</button>}
+    </div>
+  );
+}
+
 function WeatherEffect() {
   const weather = useWeather();
   const effect = weather?.type || null;
@@ -6280,6 +6333,7 @@ const DAY_PHASE_THEME = {
 
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const hwOn = useHalloween();
+  const call = useCallNumber();
   const dayPhase = useDayPhase();
   // Abschnitte unterhalb des ersten Bildschirms gleiten beim Scrollen weich herein.
   const homeRootRef = useRef(null);
@@ -6551,7 +6605,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <Instagram size={16} color="#fff" />
             </a>
             {orderingEnabled() && <button onClick={() => go('whatsapp')} className="cta-pulse px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}>{t('orderNow')}</button>}
-            {!orderingEnabled() && <a href="tel:+4944419516104" onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> 04441 95 16 104</a>}
+            {!orderingEnabled() && <a href={`tel:${call.tel}`} onClick={() => logEvent('call')} className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.4)' }}><Phone size={15} /> {call.display}</a>}
           </nav>
           <div className="flex items-center gap-2 md:hidden">
             <div className="flex items-center rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.1)' }}>
@@ -6641,7 +6695,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
               <div className="px-5 pt-3 pb-5">
                 {orderingEnabled()
                   ? <button onClick={() => { setNavOpen(false); go('whatsapp'); }} className="w-full py-3.5 rounded-2xl font-black text-[15px] text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}>{t('orderNow')}</button>
-                  : <a href="tel:+4944419516104" onClick={() => logEvent('call', { from: 'menu' })} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}><Phone size={17} /> 04441 / 95 16 104</a>}
+                  : <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'menu' })} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}><Phone size={17} /> {call.display}</a>}
                 <button onClick={() => { setNavOpen(false); go('staff'); }} className="w-full mt-3 flex items-center justify-center gap-1 text-[11px] font-semibold" style={{ color: '#a89878' }}><Lock size={10} /> {t('navStaff')}</button>
               </div>
             </div>
@@ -6714,12 +6768,12 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   <ArrowRight size={16} />
                 </button>
                 <a
-                  href="tel:+4944419516104"
+                  href={`tel:${call.tel}`}
                   onClick={() => logEvent('call')}
                   className="h-12 flex items-center gap-2 px-5 rounded-xl font-bold text-sm"
                   style={{ background: GOLD, color: GREEN, boxShadow: '0 8px 20px rgba(255,199,56,.3)' }}
                 >
-                  <Phone size={16} /> 04441 / 95 16 104
+                  <Phone size={16} /> {call.display}
                 </a>
               </div>
             )}
@@ -6923,7 +6977,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
         <div className="grid lg:grid-cols-2 gap-6 items-stretch">
           <div className="rounded-2xl p-6 flex flex-col justify-center" style={{ background: GREEN }}>
             <div className="flex items-start gap-3 mb-4"><MapPin size={18} color={GOLD} className="mt-0.5 flex-shrink-0" /><div><div className="text-white font-bold text-sm">Oyther Straße 37</div><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>49377 Vechta</div></div></div>
-            <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href="tel:+4944419516104" onClick={() => logEvent('call')} className="text-white font-bold text-sm">04441 / 95 16 104</a></div>
+            <div className="flex items-start gap-3 mb-4"><Phone size={16} color={GOLD} className="mt-0.5 flex-shrink-0" /><a href={`tel:${call.tel}`} onClick={() => logEvent('call')} className="text-white font-bold text-sm">{call.display}</a></div>
             <div className="flex items-start gap-3 mb-6"><Clock3 size={16} color={GOLD} className="mt-0.5 flex-shrink-0" />{(() => { const H = hoursTexts(lang); return (<div>{H.lines.map((l, i) => <div key={i} className="text-white font-bold text-sm">{l}</div>)}{H.closedLine && <div className="text-xs font-medium" style={{ color: '#d9cdb4' }}>{H.closedLine}</div>}{H.notes.map((n, i) => <div key={i} className="text-xs font-semibold mt-1" style={{ color: GOLD }}>ℹ️ {n}</div>)}</div>); })()}</div>
             <div className="flex items-start gap-3 mb-6"><span style={{ color: GOLD, fontSize: 16, lineHeight: '16px', marginTop: 2 }}>🅿️</span><div className="text-sm font-medium" style={{ color: '#d9cdb4' }}>{lang === 'de' ? 'Kostenlose Parkplätze direkt vor der Tür' : lang === 'en' ? 'Free parking right in front of the door' : lang === 'tr' ? 'Kapının hemen önünde ücretsiz otopark' : lang === 'ro' ? 'Parcare gratuită chiar în fața ușii' : lang === 'sq' ? 'Parkim falas direkt para derës' : lang === 'ku' ? 'Cîhê parkkirinê yê belaş rasterast li ber derî' : 'Gratis parkeren direct voor de deur'}</div></div>
             <div className="flex flex-wrap gap-3">
@@ -11415,6 +11469,9 @@ function StaffPanelView({ back }) {
                   </SettingsRow>
                   <SettingsRow id="spotlight2" sub="Zweite animierte Karte weiter unten" icon="🎬" title="Animierte Produktkarte 2 (weiter unten)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} cfgKey="siteconfig:spotlight2" defaults={SPOT2_DEFAULT} />
+                  </SettingsRow>
+                  <SettingsRow id="callNumber" sub="Nummer hinter den Anrufen-Buttons" icon="📞" title="Anruf-Nummer" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <CallNumberAdmin />
                   </SettingsRow>
                   <SettingsRow id="halloween" sub="Fledermäuse, Spinne & Banner (29.10.–01.11.)" icon="🎃" title="Halloween-Deko" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <HalloweenAdmin />
