@@ -7007,9 +7007,6 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             )}
             <div className="flex flex-wrap gap-2.5 mt-2.5">
               {orderingEnabled() && <button onClick={() => setTrackModalOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,246,234,.12)', color: CREAM, border: '1px solid rgba(255,246,234,.3)' }}>📦 {t('navTrackOrder')}</button>}
-              {installPrompt && (
-                <button onClick={onInstall} className="flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs" style={{ background: 'rgba(255,199,56,.16)', color: GOLD, border: '1px solid rgba(255,199,56,.4)' }}>{t('installAppBtn')}</button>
-              )}
             </div>
           </div>
           <div className="rounded-2xl p-6 hidden lg:block relative" style={{ background: 'rgba(255,253,249,.97)' }}>
