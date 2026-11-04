@@ -1261,9 +1261,12 @@ async function cleanupOldOrders() {
       const ts = r.value?.createdAt || (r.updated_at ? new Date(r.updated_at).getTime() : 0);
       return !ts || ts < cutoff48h;
     });
+    // Klick-Statistik 8 Tage aufbewahren (für Wochenbericht & tägliche
+    // Auswertung der Kundenfragen); Bestellungen weiterhin nur bis Tagesende.
+    const cutoff8d = todayStart.getTime() - 8 * 24 * 60 * 60 * 1000;
     const staleVisits = visits.filter((r) => {
       const ts = r.value?.ts || (r.updated_at ? new Date(r.updated_at).getTime() : 0);
-      return !ts || ts < todayStart.getTime();
+      return !ts || ts < cutoff8d;
     });
     await Promise.all([...staleOrders, ...staleGroups, ...staleVisits, ...staleBeats].map((r) => safeDeleteKey(r.key)));
   } catch {}
@@ -12211,7 +12214,7 @@ function StaffPanelView({ back }) {
                           <span className="truncate pr-2">{label}</span><span className="flex-shrink-0">{rs.length}</span>
                         </div>
                       ))}
-                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>GESAMT (Rangliste)</div>
+                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>LETZTE 7 TAGE (Rangliste)</div>
                       {rows.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Aktivität erfasst.</p>}
                       {rows.map(([label, rs]) => (
                         <button
