@@ -12,6 +12,7 @@
 // (siehe OneSignal.User.addTag im Frontend), nicht an alle Abonnenten.
 
 import { kvSet } from './_lib/staff.js';
+import { pushText } from './_lib/push-texts.js';
 
 const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
@@ -32,15 +33,14 @@ async function saveCard(key, value) {
   await kvSet(key, value);
 }
 
-async function sendToCode(REST_API_KEY, code, title, message) {
+async function sendToCode(REST_API_KEY, code, textKey, vars) {
   await fetch('https://api.onesignal.com/notifications', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Key ${REST_API_KEY}` },
     body: JSON.stringify({
       app_id: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f',
       filters: [{ field: 'tag', key: 'loyalty_code', relation: '=', value: code }],
-      headings: { en: title, de: title },
-      contents: { en: message, de: message },
+      ...pushText(textKey, vars),
       url: 'https://www.bodrumkebapvechta.de',
       chrome_web_icon: 'https://www.bodrumkebapvechta.de/icon-192.png',
     }),
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
       const cardAgeMs = now - (card.createdAt || 0);
       const MIN_CARD_AGE_MS = 21 * 24 * 60 * 60 * 1000;
       if (card.birthday === todayMMDD && card.lastBirthdayYear !== thisYear && cardAgeMs >= MIN_CARD_AGE_MS) {
-        await sendToCode(REST_API_KEY, code, '🎂 Alles Gute zum Geburtstag!', 'Zeig heute deinen Code an der Kasse — eine kleine Überraschung wartet auf dich! 🎉');
+        await sendToCode(REST_API_KEY, code, 'birthday');
         await saveCard(row.key, { ...card, lastBirthdayYear: thisYear });
         birthdaySent++;
       }
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
 
       // 1) Fast geschafft (einmalig bei 7/8)
       if (stamps === LOYALTY_TARGET - 1 && !card.almostThereNotified) {
-        await sendToCode(REST_API_KEY, code, '🍕 Nur noch 1 Stempel!', 'Beim nächsten Besuch gibt es deine Gratis-Pizza!');
+        await sendToCode(REST_API_KEY, code, 'almostThere');
         await saveCard(row.key, { ...card, almostThereNotified: true });
         almostThereSent++;
         continue; // in derselben Runde nicht zusätzlich die normale Erinnerung schicken
@@ -99,8 +99,8 @@ export default async function handler(req, res) {
         await sendToCode(
           REST_API_KEY,
           code,
-          '🎟️ Deine Stempelkarte wartet!',
-          `Du hast schon ${stamps}/${LOYALTY_TARGET} Stempel — komm vorbei und sammle weiter!`
+          'reminder',
+          { s: stamps, n: LOYALTY_TARGET }
         );
         await saveCard(row.key, { ...card, lastReminderAt: now });
         reminderSent++;

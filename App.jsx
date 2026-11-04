@@ -1495,6 +1495,37 @@ function visitorId() {
 function deviceLang() {
   try { return String((navigator.languages && navigator.languages[0]) || navigator.language || '').slice(0, 2).toLowerCase(); } catch { return ''; }
 }
+// App-Installation: Plattform erkennen (iPhone/iPad, Android, In-App-Browser von Instagram & Co.).
+function installPlatform() {
+  try {
+    const ua = navigator.userAgent || '';
+    const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const android = /Android/i.test(ua);
+    const inApp = /Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Snapchat|Line\//i.test(ua);
+    return { ios, android, inApp, mobile: ios || android };
+  } catch { return { ios: false, android: false, inApp: false, mobile: false }; }
+}
+function isStandaloneNow() {
+  try { return !!(window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)); } catch { return false; }
+}
+// Push-Sprache = Sprache der Website. Sprachen ohne eigenen Push-Text → Deutsch.
+const PUSH_LANGS = ['de', 'en', 'tr', 'pl', 'ro', 'nl'];
+function syncPushLanguage(lang) {
+  try {
+    const pl = PUSH_LANGS.includes(lang) ? lang : 'de';
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push((OneSignal) => {
+      try {
+        const subId = OneSignal.User?.PushSubscription?.id || '';
+        const mark = `${pl}:${subId}`;
+        if (localStorage.getItem('bk_push_lang') === mark) return;
+        OneSignal.User.setLanguage(pl);
+        OneSignal.User.addTag('lang', pl);
+        localStorage.setItem('bk_push_lang', mark);
+      } catch {}
+    });
+  } catch {}
+}
 function recordLang(lang, switched) {
   try {
     const vid = visitorId();
@@ -1505,7 +1536,7 @@ function recordLang(lang, switched) {
     if (prev === mark) return;
     const changedToday = prev.startsWith(`${day}:`);
     localStorage.setItem('bk_langday', mark);
-    safeSet(`langday:${day}:${vid}`, { lang, device: deviceLang(), switched: !!(switched || changedToday), ts: Date.now() });
+    safeSet(`langday:${day}:${vid}`, { lang, device: deviceLang(), switched: !!(switched || changedToday), ...(isStandaloneNow() ? { app: true } : {}), ts: Date.now() });
   } catch {}
 }
 async function cleanupOldLangStats() {
@@ -2091,7 +2122,7 @@ function ReceiptView({ snapshot, onClose }) {
     </ConfigModal>
   );
 }
-function ConfigModal({ onClose, children }) {
+function ConfigModal({ onClose, children, z }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -2099,7 +2130,7 @@ function ConfigModal({ onClose, children }) {
   return ReactDOM.createPortal(
     <div
       className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-6"
-      style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', zIndex: 150, animation: 'modalBgFade .35s ease' }}
+      style={{ background: 'rgba(21,56,38,.55)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', zIndex: z || 150, animation: 'modalBgFade .35s ease' }}
       onClick={onClose}
     >
       <div
@@ -6385,6 +6416,110 @@ const DAY_PHASE_THEME = {
   night: { pageBg: '#0d1f16', heroOverlay: 'linear-gradient(rgba(6,18,12,.6), rgba(4,12,8,.82))', accentGlow: '0 0 16px rgba(255,199,56,.55)', label: { de: 'Noch hungrig?', en: 'Still hungry?', tr: 'Hâlâ aç mısın?', ro: 'Încă flămând?', nl: 'Nog trek?', sq: 'Ende i uritur?', ku: 'Hîn birçî?', pl: 'Wciąż głodny?' } },
 };
 
+/* ============ APP INSTALLIEREN (Karte + Anleitung) ============ */
+const INSTALL_T = {
+  cardTitle: { de: 'Bodrum Kebap als App', en: 'Bodrum Kebap as an app', tr: 'Bodrum Kebap uygulaması', ro: 'Bodrum Kebap ca aplicație', nl: 'Bodrum Kebap als app', sq: 'Bodrum Kebap si aplikacion', ku: 'Bodrum Kebap wek sepan', pl: 'Bodrum Kebap jako aplikacja' },
+  cardSub: { de: 'Stempelkarte immer dabei · Angebote zuerst · gratis', en: 'Stamp card always with you · offers first · free', tr: 'Damga kartın hep yanında · fırsatlar önce sana · ücretsiz', ro: 'Cardul de ștampile mereu la tine · ofertele primul · gratuit', nl: 'Stempelkaart altijd bij je · aanbiedingen als eerste · gratis', sq: 'Karta e vulave gjithmonë me ty · ofertat të parat · falas', ku: 'Karta mohran her bi te re · pêşniyar pêşî · belaş', pl: 'Karta pieczątek zawsze pod ręką · oferty jako pierwszy · za darmo' },
+  cardBtn: { de: 'Installieren', en: 'Install', tr: 'Yükle', ro: 'Instalează', nl: 'Installeren', sq: 'Instalo', ku: 'Saz bike', pl: 'Zainstaluj' },
+  close: { de: 'Schließen', en: 'Close', tr: 'Kapat', ro: 'Închide', nl: 'Sluiten', sq: 'Mbyll', ku: 'Bigire', pl: 'Zamknij' },
+  why1: { de: '🎟️ Stempelkarte mit einem Tipp', en: '🎟️ Stamp card in one tap', tr: '🎟️ Tek dokunuşla damga kartı', ro: '🎟️ Cardul de ștampile dintr-o atingere', nl: '🎟️ Stempelkaart met één tik', sq: '🎟️ Karta e vulave me një prekje', ku: '🎟️ Karta mohran bi yek tikandinê', pl: '🎟️ Karta pieczątek jednym dotknięciem' },
+  why2: { de: '🔔 Angebote als Mitteilung – auch auf dem iPhone', en: '🔔 Offers as notifications – on iPhone too', tr: '🔔 Fırsatlar bildirim olarak – iPhone\'da da', ro: '🔔 Oferte ca notificări – și pe iPhone', nl: '🔔 Aanbiedingen als melding – ook op iPhone', sq: '🔔 Ofertat si njoftime – edhe në iPhone', ku: '🔔 Pêşniyar wek agahdarî – li iPhone jî', pl: '🔔 Oferty jako powiadomienia – także na iPhonie' },
+  why3: { de: '⚡ Öffnet sofort – ohne App Store', en: '⚡ Opens instantly – no App Store', tr: '⚡ Hemen açılır – App Store gerekmez', ro: '⚡ Se deschide instant – fără App Store', nl: '⚡ Opent direct – zonder App Store', sq: '⚡ Hapet menjëherë – pa App Store', ku: '⚡ Yekser vedibe – bê App Store', pl: '⚡ Otwiera się od razu – bez App Store' },
+  iosS1: { de: 'Tippe auf Teilen', en: 'Tap Share', tr: 'Paylaş simgesine dokun', ro: 'Atinge Distribuie', nl: 'Tik op Delen', sq: 'Prek Ndaj', ku: 'Li Parve bike bitikîne', pl: 'Stuknij Udostępnij' },
+  iosS1b: { de: 'unten in Safari – oder hinter „⋯"', en: 'at the bottom in Safari – or behind "⋯"', tr: 'Safari\'de altta – ya da „⋯" içinde', ro: 'jos în Safari – sau în „⋯"', nl: 'onderaan in Safari – of achter „⋯"', sq: 'poshtë në Safari – ose te „⋯"', ku: 'li jêr di Safari de – an li pişt „⋯"', pl: 'na dole w Safari – lub pod „⋯"' },
+  iosS2: { de: '„Zum Home-Bildschirm" wählen', en: 'Choose "Add to Home Screen"', tr: '„Ana Ekrana Ekle"yi seç', ro: 'Alege „Adaugă pe ecranul principal"', nl: 'Kies „Zet op beginscherm"', sq: 'Zgjidh „Shto në ekranin kryesor"', ku: '„Li Ekrana Serekî zêde bike" hilbijêre', pl: 'Wybierz „Do ekranu początkowego"' },
+  iosS2b: { de: 'evtl. nach unten scrollen', en: 'you may need to scroll down', tr: 'gerekirse aşağı kaydır', ro: 'poate trebuie să derulezi', nl: 'eventueel naar beneden scrollen', sq: 'ndoshta lëviz poshtë', ku: 'dibe ku pêwîst be ber bi jêr ve biçî', pl: 'może trzeba przewinąć w dół' },
+  iosS3: { de: 'Oben rechts auf „Hinzufügen"', en: 'Tap "Add" top right', tr: 'Sağ üstte „Ekle"ye dokun', ro: 'Atinge „Adaugă" sus în dreapta', nl: 'Rechtsboven op „Voeg toe"', sq: 'Lart djathtas „Shto"', ku: 'Li jor rastê „Zêde bike"', pl: 'U góry po prawej „Dodaj"' },
+  andS1: { de: 'Tippe oben rechts auf ⋮', en: 'Tap ⋮ at the top right', tr: 'Sağ üstteki ⋮ simgesine dokun', ro: 'Atinge ⋮ sus în dreapta', nl: 'Tik rechtsboven op ⋮', sq: 'Prek ⋮ lart djathtas', ku: 'Li jor rastê li ⋮ bitikîne', pl: 'Stuknij ⋮ w prawym górnym rogu' },
+  andS2: { de: '„App installieren" oder „Zum Startbildschirm hinzufügen"', en: '"Install app" or "Add to Home screen"', tr: '„Uygulamayı yükle" veya „Ana ekrana ekle"', ro: '„Instalează aplicația" sau „Adaugă pe ecranul de pornire"', nl: '„App installeren" of „Toevoegen aan startscherm"', sq: '„Instalo aplikacionin" ose „Shto në ekranin bazë"', ku: '„Sepan saz bike" an „Li ekrana destpêkê zêde bike"', pl: '„Zainstaluj aplikację" lub „Dodaj do ekranu głównego"' },
+  andS3: { de: 'Bestätigen – fertig!', en: 'Confirm – done!', tr: 'Onayla – bitti!', ro: 'Confirmă – gata!', nl: 'Bevestigen – klaar!', sq: 'Konfirmo – gati!', ku: 'Erê bike – qediya!', pl: 'Potwierdź – gotowe!' },
+  inAppTitle: { de: 'Erst im Browser öffnen', en: 'Open in your browser first', tr: 'Önce tarayıcıda aç', ro: 'Deschide mai întâi în browser', nl: 'Eerst in de browser openen', sq: 'Hape fillimisht në shfletues', ku: 'Pêşî di gerokê de veke', pl: 'Najpierw otwórz w przeglądarce' },
+  inAppText: { de: 'In Instagram/Facebook geht das nicht. Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen" (bzw. „In Safari öffnen"). Dann hier noch einmal auf „App installieren".', en: 'This does not work inside Instagram/Facebook. Tap ⋯ at the top right and choose "Open in browser" (or "Open in Safari"). Then tap "Install app" here again.', tr: 'Instagram/Facebook içinde olmuyor. Sağ üstteki ⋯ simgesine dokun ve „Tarayıcıda aç" (veya „Safari\'de aç") seç. Sonra burada tekrar „Uygulamayı yükle"ye dokun.', ro: 'Nu merge în Instagram/Facebook. Atinge ⋯ sus în dreapta și alege „Deschide în browser" (sau „Deschide în Safari"). Apoi atinge din nou „Instalează aplicația".', nl: 'Dit werkt niet in Instagram/Facebook. Tik rechtsboven op ⋯ en kies „Openen in browser" (of „Openen in Safari"). Tik daarna hier opnieuw op „App installeren".', sq: 'Kjo nuk funksionon brenda Instagram/Facebook. Prek ⋯ lart djathtas dhe zgjidh „Hap në shfletues" (ose „Hap në Safari"). Pastaj prek sërish „Instalo aplikacionin".', ku: 'Di nav Instagram/Facebook de nabe. Li jor rastê li ⋯ bitikîne û „Di gerokê de veke" (an „Di Safari de veke") hilbijêre. Paşê li vir dîsa li „Sepan saz bike" bitikîne.', pl: 'To nie działa w Instagramie/Facebooku. Stuknij ⋯ w prawym górnym rogu i wybierz „Otwórz w przeglądarce" (lub „Otwórz w Safari"). Potem stuknij tu ponownie „Zainstaluj aplikację".' },
+};
+const it_ = (k, lang) => INSTALL_T[k]?.[lang] ?? INSTALL_T[k]?.de ?? '';
+const INSTALL_DISMISS_KEY = 'bk_install_card_hidden';
+const INSTALL_DISMISS_DAYS = 14;
+
+function ShareIconIOS({ size = 18, color = '#0a84ff' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3v12" /><path d="M8 7l4-4 4 4" /><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1" />
+    </svg>
+  );
+}
+
+function AppInstallCard({ onInstall }) {
+  const { lang } = React.useContext(LangContext);
+  const [hidden, setHidden] = useState(() => {
+    try { const ts = +localStorage.getItem(INSTALL_DISMISS_KEY) || 0; return Date.now() - ts < INSTALL_DISMISS_DAYS * 864e5; } catch { return false; }
+  });
+  const plat = useMemo(() => installPlatform(), []);
+  if (hidden || !plat.mobile) return null;
+  const hide = () => { try { localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now())); } catch {} logEvent('app_install_dismiss'); setHidden(true); };
+  return (
+    <section className="max-w-7xl mx-auto px-5 lg:px-10 pt-4 md:hidden">
+      <div className="relative flex items-center gap-3 rounded-2xl p-3 pr-2" style={{ background: `linear-gradient(135deg, ${GREEN}, #1f5236)`, boxShadow: '0 10px 26px rgba(21,56,38,.28)' }}>
+        <img src="/icon-192.png" alt="" width={52} height={52} className="flex-shrink-0 rounded-xl" style={{ background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,.25)' }} />
+        <button onClick={onInstall} className="flex-1 min-w-0 text-left">
+          <div className="font-black text-[15px] leading-tight text-white">📲 {it_('cardTitle', lang)}</div>
+          <div className="text-[11.5px] font-semibold leading-snug mt-0.5" style={{ color: '#d9cdb4' }}>{it_('cardSub', lang)}</div>
+        </button>
+        <button onClick={onInstall} className="flex-shrink-0 px-3.5 py-2 rounded-full font-black text-[13px]" style={{ background: GOLD, color: GREEN }}>{it_('cardBtn', lang)}</button>
+        <button onClick={hide} aria-label={it_('close', lang)} className="absolute -top-2 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[13px] font-black" style={{ background: CREAM, color: GREEN, boxShadow: '0 2px 6px rgba(0,0,0,.2)' }}>×</button>
+      </div>
+    </section>
+  );
+}
+
+function InstallGuide({ lang, onClose }) {
+  const plat = installPlatform();
+  const Step = ({ n, children, sub }) => (
+    <div className="flex items-start gap-3 text-left py-2.5" style={{ borderBottom: '1px dashed #e3d5bd' }}>
+      <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-black text-sm" style={{ background: ORANGE, color: '#fff' }}>{n}</span>
+      <div className="min-w-0 pt-0.5">
+        <div className="font-bold text-[14px] leading-snug flex items-center gap-1.5 flex-wrap" style={{ color: GREEN }}>{children}</div>
+        {sub && <div className="text-[11.5px] mt-0.5" style={{ color: '#8a7a5f' }}>{sub}</div>}
+      </div>
+    </div>
+  );
+  return (
+    <ConfigModal onClose={onClose} z={400}>
+      <div className="p-6 text-center">
+        <img src="/icon-192.png" alt="" width={64} height={64} className="mx-auto rounded-2xl mb-3" style={{ boxShadow: '0 8px 20px rgba(0,0,0,.18)' }} />
+        {plat.inApp ? (
+          <>
+            <h3 className="font-black text-lg mb-2" style={{ color: GREEN }}>{it_('inAppTitle', lang)}</h3>
+            <p className="text-sm mb-5" style={{ color: '#7c6d55' }}>{it_('inAppText', lang)}</p>
+          </>
+        ) : (
+          <>
+            <h3 className="font-black text-lg mb-1" style={{ color: GREEN }}>{it_('cardTitle', lang)}</h3>
+            <div className="text-[12px] font-semibold mb-4 space-y-0.5" style={{ color: '#7c6d55' }}>
+              <div>{it_('why1', lang)}</div><div>{plat.ios ? it_('why2', lang) : it_('why2', lang).split(' – ')[0]}</div><div>{it_('why3', lang)}</div>
+            </div>
+            <div className="mb-5">
+              {plat.ios ? (
+                <>
+                  <Step n={1} sub={it_('iosS1b', lang)}>{it_('iosS1', lang)} <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg" style={{ background: '#eef4ff' }}><ShareIconIOS /></span></Step>
+                  <Step n={2} sub={it_('iosS2b', lang)}>{it_('iosS2', lang)} <span className="inline-flex items-center justify-center w-6 h-6 rounded-md text-[15px] font-black" style={{ border: '2px solid #7c6d55', color: '#7c6d55', lineHeight: 1 }}>+</span></Step>
+                  <Step n={3}>{it_('iosS3', lang)}</Step>
+                </>
+              ) : (
+                <>
+                  <Step n={1}>{it_('andS1', lang)}</Step>
+                  <Step n={2}>{it_('andS2', lang)}</Step>
+                  <Step n={3}>{it_('andS3', lang)}</Step>
+                </>
+              )}
+            </div>
+          </>
+        )}
+        <button onClick={onClose} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{UI.installHelpClose?.[lang] || UI.installHelpClose?.de || 'OK'}</button>
+      </div>
+    </ConfigModal>
+  );
+}
+
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const hwOn = useHalloween();
   const call = useCallNumber();
@@ -6432,7 +6567,10 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
   const [quickOrderModalOpen, setQuickOrderModalOpen] = useState(false);
   const [trackModalOpen, setTrackModalOpen] = useState(false);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
-  useEffect(() => { try { if (window.__bkOpenLoyalty) { window.__bkOpenLoyalty = false; setLoyaltyModalOpen(true); } } catch {} }, []);
+  useEffect(() => { try {
+    if (window.__bkOpenLoyalty) { window.__bkOpenLoyalty = false; setLoyaltyModalOpen(true); }
+    else if (new URLSearchParams(window.location.search).get('karte') === '1') { setLoyaltyModalOpen(true); window.history.replaceState({}, '', '/'); }
+  } catch {} }, []);
   const [tuesdayWheelOpen, setTuesdayWheelOpen] = useState(false);
   const isTuesdayToday = useMemo(() => new Date().getDay() === 2, []);
   const [homeSoldOutIds, setHomeSoldOutIds] = useState([]);
@@ -6906,6 +7044,8 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </button>
         </div>
       </section>
+
+      {installPrompt && <AppInstallCard onInstall={() => onInstall('card')} />}
 
       {/* Animierte Produktkarte (im Personal-Bereich einstellbar) */}
       <ProductSpotlight go={go} />
@@ -14471,6 +14611,9 @@ function AppMain() {
         serviceWorkerPath: 'sw.js',
         serviceWorkerParam: { scope: '/' },
       });
+      const curLang = () => { try { return localStorage.getItem('bk_lang') || 'de'; } catch { return 'de'; } };
+      syncPushLanguage(curLang());
+      try { OneSignal.User.PushSubscription.addEventListener('change', () => syncPushLanguage(curLang())); } catch {}
     });
   }, []);
   useEffect(() => {
@@ -14529,6 +14672,7 @@ function AppMain() {
     });
   }, []);
   const langCtx = useLang();
+  useEffect(() => { syncPushLanguage(langCtx.lang); }, [langCtx.lang]);
   useEffect(() => { recordLang(langCtx.lang, false); cleanupOldLangStats(); }, []);
   useEffect(() => {
     // Tischmenü wird bisher NUR aufgerufen, wenn jemand über den QR-Code
@@ -14555,34 +14699,34 @@ function AppMain() {
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
-    const onInstalled = () => setInstallPrompt(null);
+    const onInstalled = () => { setInstallPrompt(null); setIsStandalone(true); logEvent('app_installed', { p: installPlatform().android ? 'android' : 'other' }); };
     window.addEventListener('appinstalled', onInstalled);
     if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) setIsStandalone(true);
     if (window.navigator.standalone) setIsStandalone(true);
     return () => { window.removeEventListener('beforeinstallprompt', handler); window.removeEventListener('appinstalled', onInstalled); };
   }, []);
-  const triggerInstall = async () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      await installPrompt.userChoice;
+  const triggerInstall = async (from) => {
+    const plat = installPlatform();
+    logEvent('app_install_click', { from: typeof from === 'string' ? from : 'button', p: plat.inApp ? 'inapp' : plat.ios ? 'ios' : plat.android ? 'android' : 'desktop' });
+    if (installPrompt && typeof installPrompt.prompt === 'function') {
+      try {
+        installPrompt.prompt();
+        const choice = await installPrompt.userChoice;
+        if (choice?.outcome) logEvent('app_install_' + (choice.outcome === 'accepted' ? 'ok' : 'cancel'));
+      } catch {}
       setInstallPrompt(null);
       return;
     }
     setShowInstallHelp(true);
   };
+  // Installieren-Knopf nur zeigen, wenn es wirklich geht: Android/Chrome mit
+  // Installations-Angebot ODER Handy (iPhone: Anleitung „Zum Home-Bildschirm").
+  const canInstall = !isStandalone && (!!installPrompt || installPlatform().mobile);
 
 
-  const ctxValue = { ...langCtx, installPrompt: isStandalone ? null : (installPrompt || true), onInstall: triggerInstall, go };
-  const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+  const ctxValue = { ...langCtx, installPrompt: canInstall ? (installPrompt || true) : null, onInstall: triggerInstall, go };
   const installHelpModal = showInstallHelp && ReactDOM.createPortal(
-    <ConfigModal onClose={() => setShowInstallHelp(false)}>
-      <div className="p-6 text-center">
-        <div className="text-4xl mb-3">📲</div>
-        <h3 className="font-black text-lg mb-3" style={{ color: GREEN }}>{ctxValue.t('installHelpTitle')}</h3>
-        <p className="text-sm mb-6" style={{ color: '#7c6d55' }}>{isIOS ? ctxValue.t('installHelpIOS') : ctxValue.t('installHelpAndroid')}</p>
-        <button onClick={() => setShowInstallHelp(false)} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN }}>{ctxValue.t('installHelpClose')}</button>
-      </div>
-    </ConfigModal>,
+    <InstallGuide lang={langCtx.lang} onClose={() => setShowInstallHelp(false)} />,
     document.body
   );
   const cartBadge = cartCount > 0 && !cartOpen && ReactDOM.createPortal(
@@ -14595,7 +14739,7 @@ function AppMain() {
 
 
   if (view === 'home') {
-    return <LangContext.Provider value={ctxValue}><WeatherEffect /><HalloweenLayer /><OpeningLoader /><HomeView go={go} installPrompt={installPrompt} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
+    return <LangContext.Provider value={ctxValue}><WeatherEffect /><HalloweenLayer /><OpeningLoader /><HomeView go={go} installPrompt={canInstall ? (installPrompt || true) : null} onInstall={triggerInstall} cartCount={cartCount} />{installHelpModal}{cartBadge}<CookieBanner /><NotificationOptInBanner /><AIAssistant /></LangContext.Provider>;
   }
 
   if (view === 'stamp') {

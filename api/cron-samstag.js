@@ -1,6 +1,7 @@
 // Vercel Cron Job — sendet automatisch jeden Samstag das Samstag-Angebot,
 // unabhängig davon, ob jemand die Website besucht.
 
+import { pushText } from './_lib/push-texts.js';
 const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
 
@@ -41,8 +42,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         app_id: 'e2d12bd5-0cd9-4bf7-9ad9-8d3dd258f16f',
         included_segments: ['Total Subscriptions'],
-        headings: { en: '🎉 Samstag-Angebot ist da!', de: '🎉 Samstag-Angebot ist da!' },
-        contents: { en: 'Pizza-Kombi & Dönerteller-Kombi — nur heute!', de: 'Pizza-Kombi & Dönerteller-Kombi — nur heute!' },
+        ...pushText('samstag'),
         url: 'https://www.bodrumkebapvechta.de',
         chrome_web_icon: 'https://www.bodrumkebapvechta.de/icon-192.png',
         firefox_icon: 'https://www.bodrumkebapvechta.de/icon-192.png',
