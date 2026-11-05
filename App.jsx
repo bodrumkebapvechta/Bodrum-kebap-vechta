@@ -1753,8 +1753,9 @@ const WHEEL_PRIZES = [
 // Ausnahme: Auf dem Testgerät (?ordertest=1) sind die Räder sichtbar, damit der
 // komplette Bestellablauf inkl. Glücksrad getestet werden kann. Kunden sehen sie weiterhin nicht.
 // ── Online-Bestellung über die Partner-Plattform (bestellbei.de / Stadtmarkt Vechta) ──
-// TESTPHASE: Der Button ist für Kunden UNSICHTBAR. Sichtbar nur auf Geräten,
-// die einmal ?onlinetest=1 aufgerufen haben (bleibt gespeichert); ?onlinetest=0 schaltet ab.
+// LIVE seit 05.11.2026. Im Personal-Bereich ein-/ausschaltbar (siteconfig:onlineOrder
+// = { enabled }); ohne Eintrag = AN. ?onlinetest=1 zeigt den Button auf diesem Gerät
+// auch dann, wenn er ausgeschaltet ist (Vorschau), ?onlinetest=0 hebt das auf.
 const ONLINE_ORDER_URL = 'https://bestellbei.de/de-DE/shop/bodrum-kebap';
 const ONLINE_ORDER_TEST = (() => {
   try {
@@ -1768,10 +1769,49 @@ const ONLINE_ORDER_T = {
   title: { de: 'Online bestellen', en: 'Order online', tr: 'Online sipariş', ro: 'Comandă online', nl: 'Online bestellen', sq: 'Porosit online', ku: 'Online sîparîş bide', pl: 'Zamów online' },
   sub: { de: 'Jetzt bestellen & selbst abholen', en: 'Order now & pick up yourself', tr: 'Şimdi sipariş ver, gel al', ro: 'Comandă acum și ridică personal', nl: 'Nu bestellen & zelf ophalen', sq: 'Porosit tani & merre vetë', ku: 'Niha sîparîş bide & bi xwe bigire', pl: 'Zamów teraz i odbierz osobiście' },
 };
-function OnlineOrderButton({ lang }) {
+let onlineOrderCfg = null;
+const onlineOrderSubs = new Set();
+let onlineOrderLoading = false;
+function onlineOrderOn() { return !onlineOrderCfg || onlineOrderCfg.enabled !== false; }
+function useOnlineOrder() {
+  const [c, setC] = useState(onlineOrderCfg);
+  useEffect(() => {
+    onlineOrderSubs.add(setC);
+    if (!onlineOrderCfg && !onlineOrderLoading) {
+      onlineOrderLoading = true;
+      safeGet('siteconfig:onlineOrder').then((r) => { onlineOrderCfg = r && typeof r === 'object' ? r : { enabled: true }; onlineOrderSubs.forEach((fn) => fn(onlineOrderCfg)); }).catch(() => {});
+    }
+    return () => { onlineOrderSubs.delete(setC); };
+  }, []);
+  return !c || c.enabled !== false;
+}
+function OnlineOrderAdmin() {
+  const on = useOnlineOrder();
+  const [busy, setBusy] = useState(false);
+  const save = async (enabled) => {
+    setBusy(true);
+    const ok = await safeSet('siteconfig:onlineOrder', { enabled });
+    setBusy(false);
+    if (ok) { onlineOrderCfg = { enabled }; onlineOrderSubs.forEach((fn) => fn(onlineOrderCfg)); panelToast(enabled ? 'Online-Bestellung AN' : 'Online-Bestellung AUS'); }
+    else alert('Konnte nicht gespeichert werden – bitte erneut versuchen.');
+  };
+  const inputSt = { background: '#fff', border: `1px solid ${PANEL_LINE}`, color: PANEL_TEXT };
+  return (
+    <div>
+      <p className="text-[11px] mb-3 leading-snug" style={{ color: PANEL_MUTED }}>Großer Button „Online bestellen" auf der Startseite und im Menü, führt zu bestellbei.de. Ausschalten z. B. bei Störung, Urlaub oder wenn ihr keine Online-Bestellungen annehmen könnt.</p>
+      <div className="flex gap-1.5 mb-2">
+        {[[true, '🛍️ An'], [false, 'Aus']].map(([k, l]) => (
+          <button key={String(k)} onClick={() => save(k)} disabled={busy} className="flex-1 py-2 rounded-[10px] text-xs font-semibold" style={on === k ? { background: GREEN, color: '#fff' } : inputSt}>{l}</button>
+        ))}
+      </div>
+      <a href={ONLINE_ORDER_URL} target="_blank" rel="noopener noreferrer" className="text-[11px] font-semibold underline" style={{ color: PANEL_MUTED }}>bestellbei-Shop öffnen ↗</a>
+    </div>
+  );
+}
+function OnlineOrderButton({ lang, test }) {
   const T = (k) => ONLINE_ORDER_T[k][lang] || ONLINE_ORDER_T[k].de;
   return (
-    <a href={ONLINE_ORDER_URL} target="_blank" rel="noopener noreferrer" onClick={() => logEvent('online_order_click')} className="oo-btn" aria-label={`${T('title')} – ${T('sub')}`}>
+    <a href={ONLINE_ORDER_URL} target="_blank" rel="noopener noreferrer" onClick={() => logEvent('online_order_click', { from: 'hero' })} className="oo-btn" aria-label={`${T('title')} – ${T('sub')}`}>
       <style>{`
         .oo-btn { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; max-width: 440px; margin-bottom: 18px; padding: 14px 18px 14px 14px; border-radius: 22px; text-decoration: none; color: #fff; isolation: isolate;
           background: linear-gradient(110deg, #ff3d68, #ff6a1a 35%, #ffc738 55%, #ff6a1a 75%, #ff3d68); background-size: 250% 100%;
@@ -1794,7 +1834,7 @@ function OnlineOrderButton({ lang }) {
         @keyframes ooArrow { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
         @media (prefers-reduced-motion: reduce) { .oo-btn, .oo-btn::before, .oo-btn::after, .oo-ico, .oo-arrow { animation: none !important; } }
       `}</style>
-      <span className="oo-test">TEST</span>
+      {test && <span className="oo-test">TEST</span>}
       <span className="oo-ico" aria-hidden="true">🛍️</span>
       <span className="oo-txt"><span className="oo-title" style={{ display: 'block' }}>{T('title')}</span><span className="oo-sub" style={{ display: 'block' }}>{T('sub')}</span></span>
       <span className="oo-arrow" aria-hidden="true"><ArrowRight size={20} /></span>
@@ -3435,6 +3475,7 @@ const ASSISTANT_R = {
   halal: { de: "☪️ Ja, 100% Halal! Alle unsere Produkte sind halal-zertifiziert.", en: "☪️ Yes, 100% Halal! All our products are halal-certified.", tr: "☪️ Evet, %100 Helal! Tüm ürünlerimiz helal sertifikalı.", ro: "☪️ Da, 100% Halal! Toate produsele noastre sunt certificate halal.", nl: "☪️ Ja, 100% Halal! Al onze producten zijn halal-gecertificeerd.", sq: "☪️ Po, 100% Hallall! Të gjitha produktet tona janë të certifikuara hallall.", ku: "☪️ Erê, %100 Helal e! Hemû berhemên me bawernameya helal hene.", pl: "☪️ Tak, 100% Halal! Wszystkie nasze produkty mają certyfikat halal." },
   allergen: { de: "ⓘ Allergen- und Zusatzstoffinfos stehen bei jedem Artikel in der Speisekarte klein daneben, oder tippe oben auf \"ⓘ Allergene\".", en: "ⓘ Allergen and additive info is shown next to each item on the menu, or tap \"ⓘ Allergens\" at the top.", tr: "ⓘ Alerjen ve katkı madde bilgileri Speisekarte'de her ürünün yanında küçük harflerle yazıyor, üstteki \"ⓘ Allergene\" butonuna da bakabilirsin.", ro: "ⓘ Informațiile despre alergeni sunt afișate lângă fiecare produs din meniu, sau apasă \"ⓘ Alergeni\" sus.", nl: "ⓘ Allergie- en toevoegingsinfo staat bij elk artikel op de kaart, of tik boven op \"ⓘ Allergenen\".", sq: "ⓘ Informacioni për alergjenët shfaqet pranë çdo artikulli në menu, ose troko \"ⓘ Alergjenët\" lart.", ku: "ⓘ Agahiyên alerjiyê li tenişta her tiştî di menuyê de tê nîşandan, an li jor li ser \"ⓘ Alerji\" bitikîne.", pl: "ⓘ Informacje o alergenach są przy każdej pozycji w menu, lub dotknij \"ⓘ Alergeny\" u góry." },
   orderOn: { de: "🥙 Zum Bestellen tippe oben auf \"Per WhatsApp bestellen\"!", en: '🥙 To order, tap "Order via WhatsApp" at the top!', tr: "🥙 Sipariş vermek için üstteki \"WhatsApp'tan sipariş ver\" butonuna basabilirsin!", ro: "🥙 Pentru a comanda, apasă \"Comandă prin WhatsApp\" sus!", nl: '🥙 Om te bestellen, tik boven op "Bestellen via WhatsApp"!', sq: '🥙 Për të porositur, troko "Porosit me WhatsApp" lart!', ku: '🥙 Bo sifarişê, li jor li ser "Bi WhatsAppê sifariş bike" bitikîne!', pl: '🥙 Aby zamówić, dotknij "Zamów przez WhatsApp" u góry!' },
+  orderOnline: { de: "🛍️ Ja! Du kannst online bestellen und selbst abholen — tippe unten auf „Online bestellen\". Oder ruf uns an: 04441 / 95 16 104", en: "🛍️ Yes! You can order online and pick it up yourself — tap \"Order online\" below. Or call us: 04441 / 95 16 104", tr: "🛍️ Evet! Online sipariş verip gelip alabilirsin — aşağıdaki „Online sipariş\" butonuna dokun. Ya da bizi ara: 04441 / 95 16 104", ro: "🛍️ Da! Poți comanda online și ridica personal — apasă mai jos pe „Comandă online\". Sau sună-ne: 04441 / 95 16 104", nl: "🛍️ Ja! Je kunt online bestellen en zelf ophalen — tik hieronder op „Online bestellen\". Of bel ons: 04441 / 95 16 104", sq: "🛍️ Po! Mund të porositësh online dhe ta marrësh vetë — troko më poshtë „Porosit online\". Ose na telefono: 04441 / 95 16 104", ku: "🛍️ Erê! Tu dikarî online sîparîş bidî û bi xwe bistînî — li jêr li „Online sîparîş bide\" bitikîne. An telefon bike: 04441 / 95 16 104", pl: "🛍️ Tak! Możesz zamówić online i odebrać osobiście — dotknij poniżej „Zamów online\". Albo zadzwoń: 04441 / 95 16 104" },
   orderOff: { de: "📞 Online-Bestellungen sind aktuell nicht möglich, aber du kannst uns ganz einfach anrufen: 04441 / 95 16 104", en: "📞 Online ordering isn't available right now, but you can easily call us: 04441 / 95 16 104", tr: "📞 Şu an online sipariş sistemi kapalı, ama bizi arayarak kolayca sipariş verebilirsin: 04441 / 95 16 104", ro: "📞 Comenzile online nu sunt momentan posibile, dar ne poți suna ușor: 04441 / 95 16 104", nl: "📞 Online bestellen is nu niet mogelijk, maar je kunt ons gewoon bellen: 04441 / 95 16 104", sq: "📞 Porositë online nuk janë të mundshme tani, por mund të na telefononi: 04441 / 95 16 104", ku: "📞 Sifarişên online niha ne gengaz in, lê tu dikarî bi hêsanî telefon bikî: 04441 / 95 16 104", pl: "📞 Zamówienia online są obecnie niedostępne, ale możesz do nas łatwo zadzwonić: 04441 / 95 16 104" },
   noDelivery: { de: "🚫 Nein, wir bieten leider keinen Lieferservice an — nur Abholung. Du kannst deine Bestellung aber persönlich bei uns abholen: 04441 / 95 16 104", en: "🚫 No, we don't offer delivery — pickup only. You can pick up your order in person: 04441 / 95 16 104", tr: "🚫 Hayır, maalesef teslimat hizmetimiz yok — sadece paket servis (gel-al). Siparişini bizzat gelip alabilirsin: 04441 / 95 16 104", ro: "🚫 Nu, din păcate nu oferim livrare — doar ridicare personală. Poți ridica comanda ta: 04441 / 95 16 104", nl: "🚫 Nee, we bieden helaas geen bezorgservice aan — alleen afhalen. Je kunt je bestelling persoonlijk ophalen: 04441 / 95 16 104", sq: "🚫 Jo, fatkeqësisht nuk ofrojmë shërbim dërgese — vetëm marrje personale. Mund ta marrësh porosinë vetë: 04441 / 95 16 104", ku: "🚫 Na, mixabin em karûbarê radestkirinê pêşkêş nakin — tenê hilanîna kesane. Tu dikarî sifarişa xwe bi xwe bistînî: 04441 / 95 16 104", pl: "🚫 Nie, niestety nie oferujemy dostawy — tylko odbiór osobisty. Możesz odebrać zamówienie osobiście: 04441 / 95 16 104" },
   paymentYes: { de: "✅ Ja, du kannst bei uns mit Karte oder bar bezahlen.", en: "✅ Yes, you can pay by card or cash with us.", tr: "✅ Evet, bizde hem kart hem nakit ödeme yapabilirsin.", ro: "✅ Da, poți plăti cu cardul sau cash la noi.", nl: "✅ Ja, je kunt bij ons met kaart of contant betalen.", sq: "✅ Po, mund të paguash me kartë ose para në dorë tek ne.", ku: "✅ Erê, tu dikarî li cem me bi kart an pere neqid bidî.", pl: "✅ Tak, możesz u nas płacić kartą lub gotówką." },
@@ -3628,8 +3669,8 @@ function getAssistantReply(qRaw, lang) {
   if (has('whatsapp', 'whats app', 'whatsap', 'watsapp', 'wattsapp') && !orderingEnabled()) {
     return { intent: 'whatsapp', text: `${ar('waContact', lang)}\n\n${ar('waNoOrders', lang)}` };
   }
-  if (has('sipariş', 'bestell', 'order', 'zamów', 'comand')) {
-    return { intent: 'order', text: orderingEnabled() ? ar('orderOn', lang) : ar('orderOff', lang) };
+  if (has('sipariş', 'bestell', 'order', 'zamów', 'comand', 'online', 'bestellbei')) {
+    return { intent: 'order', text: orderingEnabled() ? ar('orderOn', lang) : onlineOrderOn() ? ar('orderOnline', lang) : ar('orderOff', lang) };
   }
   if (has('menü', 'menu', 'speisekarte', 'karte')) {
     return { intent: 'menu', text: ar('menuList', lang) };
@@ -4004,6 +4045,9 @@ function AIAssistant() {
                 )}
                 {m.from === 'bot' && (m.intent === 'order' || m.intent === 'quickorder') && orderingEnabled() && (
                   <button onClick={() => go('whatsapp')} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>📋 Zur Speisekarte</button>
+                )}
+                {m.from === 'bot' && m.intent === 'order' && !orderingEnabled() && onlineOrderOn() && (
+                  <a href={ONLINE_ORDER_URL} target="_blank" rel="noopener noreferrer" onClick={() => logEvent('online_order_click', { from: 'assistant' })} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white inline-block" style={{ background: 'linear-gradient(120deg, #ff3d68, #ff6a1a)' }}>🛍️ {ONLINE_ORDER_T.title[lang] || ONLINE_ORDER_T.title.de}</a>
                 )}
                 {m.from === 'bot' && m.intent === 'address' && (
                   <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'assistant' })} className="mt-1.5 px-3.5 py-2 rounded-full font-bold text-xs text-white inline-block" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)` }}>{t('contactRoute')}</a>
@@ -6521,6 +6565,7 @@ function InstallGuide({ lang, onClose }) {
 }
 
 function HomeView({ go, installPrompt, onInstall, cartCount }) {
+  const onlineOrder = useOnlineOrder();
   const hwOn = useHalloween();
   const call = useCallNumber();
   const dayPhase = useDayPhase();
@@ -6858,6 +6903,16 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   </button>
                 ))}
                 <div className="flex flex-col gap-2.5 px-1 pt-3.5 mt-2" style={{ borderTop: '1px solid #e8dcc4' }}>
+                  {onlineOrder && (
+                    <a href={ONLINE_ORDER_URL} target="_blank" rel="noopener noreferrer" onClick={() => logEvent('online_order_click', { from: 'menu' })} className="nm-item nm-cta flex items-center gap-3 px-3.5 py-3 rounded-2xl text-white" style={{ animationDelay: '.26s', background: 'linear-gradient(120deg, #ff3d68, #ff6a1a 60%, #ff9a2e)', boxShadow: '0 8px 20px rgba(255,61,104,.35)' }}>
+                      <span className="nm-ico w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 text-[22px]" style={{ background: '#fff' }} aria-hidden="true">🛍️</span>
+                      <span className="min-w-0 flex-1 text-left">
+                        <span className="block font-black text-[15.5px] leading-tight">{ONLINE_ORDER_T.title[lang] || ONLINE_ORDER_T.title.de}</span>
+                        <span className="block text-[12px] font-semibold opacity-90">{ONLINE_ORDER_T.sub[lang] || ONLINE_ORDER_T.sub.de}</span>
+                      </span>
+                      <ArrowRight size={18} color="#fff" />
+                    </a>
+                  )}
                   <a href="https://www.google.com/maps/dir/?api=1&destination=Oyther+Stra%C3%9Fe+37%2C+49377+Vechta" target="_blank" rel="noopener noreferrer" onClick={() => logEvent('route', { from: 'menu' })} className="nm-item nm-cta flex items-center gap-3 px-3.5 py-3 rounded-2xl text-white" style={{ animationDelay: '.3s', background: 'linear-gradient(120deg, #1a73e8, #0f9d58)', boxShadow: '0 8px 20px rgba(26,115,232,.35)' }}>
                     <span className="nm-ico w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#fff' }}>
                       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z" fill="#ea4335" /><circle cx="12" cy="9" r="2.6" fill="#fff" /></svg>
@@ -6880,7 +6935,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                   </a>
                 </div>
                 {installPrompt && (
-                  <button onClick={() => { setNavOpen(false); onInstall(); }} className="w-full mt-2 mx-0 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: 'rgba(255,199,56,.25)', color: GREEN }}>📲 {t('installAppBtn')}</button>
+                  <button onClick={() => { setNavOpen(false); onInstall(); }} className="w-full mt-2 mx-0 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-bold" style={{ background: 'rgba(255,199,56,.25)', color: GREEN }}>{t('installAppBtn')}</button>
                 )}
               </nav>
 
@@ -6949,7 +7004,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <h1 className="text-white font-black leading-[1.05] mb-4" style={{ fontSize: 'clamp(34px,5vw,58px)', textShadow: '0 4px 24px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.15)', letterSpacing: '-0.01em' }}>{t('heroTitle1')}<br /><span style={{ color: ORANGE, textShadow: '0 4px 20px rgba(230,90,10,.5)' }}>{t('heroTitle2')}</span></h1>
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <HeroTeaser go={go} lang={lang} />
-            {ONLINE_ORDER_TEST && <OnlineOrderButton lang={lang} />}
+            {(onlineOrder || ONLINE_ORDER_TEST) && <OnlineOrderButton lang={lang} test={!onlineOrder} />}
             {!orderingEnabled() && (
               <div className="flex flex-col gap-3 mb-5 max-w-[440px]">
                 <style>{`
@@ -11678,6 +11733,9 @@ function StaffPanelView({ back }) {
                   <SettingsRow id="spotlight2" sub="Zweite animierte Karte weiter unten" icon="🎬" title="Animierte Produktkarte 2 (weiter unten)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <SpotlightAdmin compressImageFile={compressImageFile} cfgKey="siteconfig:spotlight2" defaults={SPOT2_DEFAULT} />
                   </SettingsRow>
+                  <SettingsRow id="onlineOrder" sub="Button „Online bestellen“ (bestellbei.de)" icon="🛍️" title="Online-Bestellung (bestellbei)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
+                    <OnlineOrderAdmin />
+                  </SettingsRow>
                   <SettingsRow id="callNumber" sub="Nummer hinter den Anrufen-Buttons" icon="📞" title="Anruf-Nummer" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <CallNumberAdmin />
                   </SettingsRow>
@@ -12313,6 +12371,7 @@ function StaffPanelView({ back }) {
                     tuesday_wheel_spin: '🎡 Dienstags-Glücksrad gedreht',
                     call: '📞 Anruf-Button',
                     route: '📍 Route/Anfahrt',
+                    online_order_click: '🛍️ Online bestellen (bestellbei)',
                   };
                   const grouped = {};
                   visits.forEach((v) => {
