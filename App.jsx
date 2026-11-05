@@ -3498,7 +3498,14 @@ const ASSISTANT_R = {
   quickOrderInfo: { de: "🔢 Du kannst auch einfach die Nummer deines Wunschprodukts eingeben! Tippe oben auf \"Nummer bestellen\" und gib die Nummer von der Speisekarte ein.", en: "🔢 You can also just enter the number of the item you want! Tap \"Order by number\" at the top and enter the number from the menu.", tr: "🔢 İstediğin ürünün numarasını da girebilirsin! Üstteki \"Nummer bestellen\" butonuna bas, menüdeki numarayı yaz." },
   trackOrderInfo: { de: "📦 Tippe oben auf \"Sipariş Takip\" / \"Bestellung verfolgen\" und gib deinen Bestellcode ein — dann siehst du live, ob deine Bestellung noch vorbereitet wird oder schon fertig ist.", en: "📦 Tap \"Track order\" at the top and enter your order code — you'll see live whether your order is still being prepared or already ready.", tr: "📦 Üstteki \"Sipariş Takip\" butonuna bas, sipariş kodunu gir — siparişinin hazırlanıyor mu yoksa hazır mı olduğunu canlı görürsün." },
 };
-function ar(key, lang) { return ASSISTANT_R[key][lang] || ASSISTANT_R[key].de; }
+// Antworten enthalten die Festnetznummer – solange im Personal-Bereich eine andere
+// Anruf-Nummer gilt (siteconfig:callNumber), wird sie hier automatisch ersetzt.
+function withCallNumber(text) {
+  const c = callCfg;
+  if (!c || !c.tel || c.tel === CALL_DEFAULT.tel || !c.display) return text;
+  return String(text).split(CALL_DEFAULT.display).join(c.display);
+}
+function ar(key, lang) { return withCallNumber(ASSISTANT_R[key][lang] || ASSISTANT_R[key].de); }
 
 // ---- Zusatz-Intents: Budget, Ernährung/Allergene, Neuheiten ----
 const assistantPrice = (it) => it.price ?? it.priceSmall ?? 0;
@@ -13349,6 +13356,7 @@ function ItemDetailSheet({ data, campKind, onClosed }) {
 }
 
 function TischMenuView({ back, initialAction, onConsumeAction }) {
+  const call = useCallNumber();
   const { lang, setLang, t, go } = React.useContext(LangContext);
   const [globalNavOpen, setGlobalNavOpen] = useState(false);
   const [tischMenu, setTischMenu] = useState(null); // null = loading
@@ -13638,7 +13646,7 @@ function TischMenuView({ back, initialAction, onConsumeAction }) {
         <div className="absolute -top-6 -left-6 w-28 h-28 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,199,56,.15), transparent 70%)' }} />
         <div className="relative flex flex-col items-center gap-1.5">
           <div className="flex items-center gap-1.5 text-white font-bold text-sm"><MapPin size={14} color={GOLD} /> Oyther Straße 37, 49377 Vechta</div>
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> 04441 / 95 16 104</div>
+          <div className="flex items-center gap-1.5 text-xs" style={{ color: '#d9cdb4' }}><Phone size={12} color={GOLD} /> <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'tischmenu' })} style={{ color: 'inherit', textDecoration: 'none' }}>{call.display}</a></div>
         </div>
       </div>
       {legendOpen && <AllergenLegendModal onClose={() => setLegendOpen(false)} />}
@@ -14332,6 +14340,7 @@ function CateringCard({ emoji, label, cat, onMenu }) {
 }
 
 function CateringView({ back, onMenu, onPrivacy }) {
+  const call = useCallNumber();
   const src = React.useMemo(() => cateringSrc(), []);
   const today = React.useMemo(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }, []);
   const [f, setF] = useState({ firma: '', name: '', tel: '', email: '', date: '', time: '', people: 10, invoice: false, msg: '', hp: '' });
@@ -14363,7 +14372,7 @@ function CateringView({ back, onMenu, onPrivacy }) {
       body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: `Neue Catering-Anfrage — ${rec.firma || rec.name} (${rec.people} Pers.)`, from_name: 'Bodrum Kebap Website', name: rec.name, ...(rec.email ? { email: rec.email } : {}), message: text }),
     }).then((r) => r.ok).catch(() => false);
     const [saved, mailed] = await Promise.all([safeSet(key, rec), mail]);
-    if (!saved && !mailed) { setStatus('idle'); setErr('Die Anfrage konnte leider nicht gesendet werden. Bitte rufen Sie uns kurz an: 04441 / 95 16 104.'); return; }
+    if (!saved && !mailed) { setStatus('idle'); setErr(`Die Anfrage konnte leider nicht gesendet werden. Bitte rufen Sie uns kurz an: ${call.display}.`); return; }
     try { localStorage.setItem('bk_catering_last', String(Date.now())); } catch {}
     logEvent('catering_request', { src });
     // Push ohne personenbezogene Daten (nur Personenzahl und Datum)
@@ -14447,7 +14456,7 @@ function CateringView({ back, onMenu, onPrivacy }) {
               <button onClick={submit} disabled={status === 'sending'} className="w-full py-3.5 rounded-full font-black text-[15px]" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.3)', opacity: status === 'sending' ? 0.6 : 1 }}>
                 {status === 'sending' ? 'Wird gesendet …' : 'Anfrage senden'}
               </button>
-              <p className="text-center text-[12.5px] mt-3" style={{ color: '#8a7c62' }}>Lieber telefonisch? <a href="tel:044419516104" className="font-bold" style={{ color: GREEN }}>04441 / 95 16 104</a></p>
+              <p className="text-center text-[12.5px] mt-3" style={{ color: '#8a7c62' }}>Lieber telefonisch? <a href={`tel:${call.tel}`} className="font-bold" style={{ color: GREEN }}>{call.display}</a></p>
             </>
           )}
         </div>
