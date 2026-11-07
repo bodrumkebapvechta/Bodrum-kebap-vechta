@@ -139,7 +139,11 @@ async function checkSun(sdm, sp, consume) {
   const hasParams = !!(sp && sp.cmac);
   if (!hasParams) return { ok: !(sdm && sdm.required) };
   const sun = sunOf(sdm, sp);
-  if (!sun) return { ok: false };
+  if (!sun) {
+    // Diagnose (nur Server lesbar): abgelehnte Chip-Parameter für die Einrichtung festhalten.
+    try { await kvSet(`secret:sdmdebug:${Date.now()}`, { picc: sp.picc, uid: sp.uid, ctr: sp.ctr, cmac: sp.cmac, raw: sp.raw, at: Date.now() }); } catch {}
+    return { ok: false };
+  }
   const key = `secret:sdmtag:${sun.uid}`;
   const rec = (await kvGet(key)) || { seen: -1, used: -1 };
   if (sun.ctr <= (rec.used ?? -1) || sun.ctr < (rec.seen ?? -1)) return { ok: false, replay: true };
