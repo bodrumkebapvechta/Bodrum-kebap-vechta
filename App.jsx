@@ -13938,7 +13938,9 @@ const SUN_PARAMS = (() => {
     const raw = window.location.search || '';
     const q = new URLSearchParams(raw);
     const g = (...ks) => { for (const k of ks) { const v = q.get(k); if (v) return v; } return undefined; };
-    const sp = { picc: g('picc', 'picc_data', 'e'), uid: g('uid'), ctr: g('ctr'), cmac: g('cmac', 'c'), raw };
+    // Nur die Hex-Zeichen übernehmen – manche Schreib-Apps hängen z. B. "?sdm=" an.
+    const hx = (v, n) => { if (!v) return v; const m = String(v).match(/^[0-9A-Fa-f]+/); return m ? m[0].slice(0, n) : undefined; };
+    const sp = { picc: hx(g('picc', 'picc_data', 'e'), 32), uid: hx(g('uid'), 14), ctr: hx(g('ctr'), 6), cmac: hx(g('cmac', 'c'), 16), raw };
     if (sp.cmac) {
       ['picc', 'picc_data', 'e', 'uid', 'ctr', 'cmac', 'c'].forEach((k) => q.delete(k));
       const rest = q.toString();
