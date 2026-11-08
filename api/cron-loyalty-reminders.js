@@ -13,6 +13,7 @@
 
 import { kvSet } from './_lib/staff.js';
 import { pushText } from './_lib/push-texts.js';
+import { isOpenTodayBerlin } from './_lib/loyalty.js';
 
 const SUPABASE_URL = 'https://uayewlkcqlgtzmeerhjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dTrkRJ16pFhd2Bp1In-CTQ_jXVnWVcE';
@@ -60,6 +61,10 @@ export default async function handler(req, res) {
     const todayMMDD = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const thisYear = today.getFullYear();
     let almostThereSent = 0, reminderSent = 0, birthdaySent = 0;
+    // An Ruhetagen/Urlaubstagen keine "Komm vorbei"-Erinnerungen — sie gehen
+    // dann automatisch am nächsten geöffneten Tag raus (Bedingungen bleiben erfüllt).
+    let openToday = true;
+    try { openToday = await isOpenTodayBerlin(); } catch {}
 
     for (const row of rows) {
       const code = row.key.replace('loyalty:', '');
@@ -80,7 +85,7 @@ export default async function handler(req, res) {
         birthdaySent++;
       }
 
-      if (stamps < 1 || stamps >= LOYALTY_TARGET) continue;
+      if (!openToday || stamps < 1 || stamps >= LOYALTY_TARGET) continue;
 
       // 1) Fast geschafft (einmalig bei 7/8)
       if (stamps === LOYALTY_TARGET - 1 && !card.almostThereNotified) {
@@ -107,7 +112,7 @@ export default async function handler(req, res) {
       }
     }
 
-    return res.status(200).json({ checked: rows.length, almostThereSent, reminderSent, birthdaySent });
+    return res.status(200).json({ checked: rows.length, openToday, almostThereSent, reminderSent, birthdaySent });
   } catch (err) {
     return res.status(500).json({ error: err.message || String(err) });
   }

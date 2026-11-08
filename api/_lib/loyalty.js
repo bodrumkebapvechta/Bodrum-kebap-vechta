@@ -62,6 +62,14 @@ function dayWindow(cfg, key, dow) {
   if (!d || d.open === false) return null;
   return [hm(d.from, '11:30'), hm(d.to, '22:00')];
 }
+// Hat das Restaurant heute (Berlin) überhaupt geöffnet? (Ruhetag/Urlaub → false)
+export async function isOpenTodayBerlin(now = new Date()) {
+  let cfg = null;
+  try { cfg = await kvGet('siteconfig:hours'); } catch {}
+  if (!cfg || !Array.isArray(cfg.schedules) || !cfg.schedules.length) cfg = defaultHours();
+  const b = berlinParts(now);
+  return dayWindow(cfg, b.key, b.dow) !== null;
+}
 async function isOpenOrJustClosed(now = new Date()) {
   let cfg = null;
   try { cfg = await kvGet('siteconfig:hours'); } catch {}
