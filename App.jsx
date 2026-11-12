@@ -14639,7 +14639,9 @@ function AppMain() {
   const KARTENRAD_ENABLED = false;
   const isKartenrad = KARTENRAD_ENABLED && isKartenradUrl();
   applyOrderTestParam();
-  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : infoSlug ? 'info' : PERSONAL_LINK ? 'staff' : 'home');
+  // Direkte Links für Google-Unternehmensprofil u. Ä.: /?impressum  bzw.  /?datenschutz
+  const legalLink = (() => { try { const q = new URLSearchParams(window.location.search); return q.has('impressum') ? 'impressum' : q.has('datenschutz') ? 'datenschutz' : null; } catch { return null; } })();
+  const [view, setView] = useState(isTischMenu ? 'tischmenu' : isKartenrad ? 'kartenrad' : isCatering ? 'catering' : stampToken ? 'stamp' : infoSlug ? 'info' : PERSONAL_LINK ? 'staff' : legalLink || 'home');
   const [pendingAction, setPendingAction] = useState(null);
   const go = (v, action) => { if (action) setPendingAction(action); setView(v); };
   const [, forceRerender] = useState(0);
