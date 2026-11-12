@@ -43,11 +43,15 @@ export default async function handler(req, res) {
     const ttlSec = body.remember === '10m' ? 600 : body.remember === '1h' ? 3600 : body.remember === 'today' ? secondsUntilBerlinMidnight() : 12 * 3600;
     const exp = now + ttlSec * 1000;
     const token = signToken({ r: 'staff', exp, ep: epoch });
-    await Promise.all([
-      tries.count ? kvSet('secret:pinAttempts', { count: 0, since: now }) : null,
-      kvSet('siteconfig:lastStaffLogin', { ts: now }),
-    ]);
-    return res.status(200).json({ token, exp, lastLogin: prev && prev.ts ? prev.ts : null });
+    // Erst antworten, dann speichern – der Nutzer wartet nicht auf die Schreibzugriffe.
+    res.status(200).json({ token, exp, lastLogin: prev && prev.ts ? prev.ts : null });
+    try {
+      await Promise.all([
+        tries.count ? kvSet('secret:pinAttempts', { count: 0, since: now }) : null,
+        kvSet('siteconfig:lastStaffLogin', { ts: now }),
+      ]);
+    } catch (e) { console.error('[staff-login] nachträgliches Speichern', e); }
+    return undefined;
   } catch (err) {
     console.error('[staff-login]', err);
     return res.status(500).json({ error: 'Serverfehler' });

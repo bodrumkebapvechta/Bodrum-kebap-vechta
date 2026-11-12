@@ -1215,6 +1215,22 @@ async function safeListPrefix(prefix, limit = 20) {
     return rows;
   } catch { return []; }
 }
+// Wie safeListPrefix, aber seitenweise (die Datenbank liefert max. 1000 Zeilen pro Anfrage).
+async function safeListPrefixPaged(prefix, max = 6000) {
+  const out = [];
+  try {
+    for (let off = 0; off < max; off += 1000) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=1000&offset=${off}`, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+      });
+      if (!res.ok) break;
+      const rows = await res.json();
+      out.push(...rows);
+      if (rows.length < 1000) break;
+    }
+  } catch {}
+  return out;
+}
 async function safeListPrefixOldest(prefix, limit = 2000) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.asc&limit=${limit}`, {
@@ -6863,7 +6879,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           </div>
         </div>
         {navOpen && ReactDOM.createPortal(
-          <div className="fixed inset-0 md:hidden" role="dialog" aria-label="Menü" style={{ zIndex: 1000 }}>
+          <div className="fixed inset-x-0 top-0 md:hidden" role="dialog" aria-label="Menü" style={{ zIndex: 1000, height: '100dvh' }}>
             <style>{`
               @keyframes nmFade { from { opacity: 0; } to { opacity: 1; } }
               @keyframes nmSlide { from { transform: translateX(100%); } to { transform: none; } }
@@ -6946,11 +6962,11 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
                 )}
               </nav>
 
-              <div className="px-5 pt-3 pb-5">
+              <div className="px-5 pt-3" style={{ paddingBottom: 'max(22px, calc(env(safe-area-inset-bottom) + 10px))' }}>
                 {orderingEnabled()
                   ? <button onClick={() => { setNavOpen(false); go('whatsapp'); }} className="w-full py-3.5 rounded-2xl font-black text-[15px] text-center text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}>{t('orderNow')}</button>
                   : <a href={`tel:${call.tel}`} onClick={() => logEvent('call', { from: 'menu' })} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-[15px] text-white" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, boxShadow: '0 10px 24px rgba(230,90,10,.35)' }}><Phone size={17} /> {call.display}</a>}
-                <button onClick={() => { setNavOpen(false); go('staff'); }} className="w-full mt-3 flex items-center justify-center gap-1 text-[11px] font-semibold" style={{ color: '#a89878' }}><Lock size={10} /> {t('navStaff')}</button>
+                <button onClick={() => { setNavOpen(false); go('staff'); }} className="w-full mt-1.5 py-2.5 flex items-center justify-center gap-1 text-[12px] font-semibold" style={{ color: '#a89878' }}><Lock size={11} /> {t('navStaff')}</button>
               </div>
             </div>
           </div>
@@ -7295,7 +7311,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
 
       {/* FOOTER */}
       <footer style={{ background: GREEN }} className="mt-4">
-        <div className="max-w-7xl mx-auto px-5 lg:px-10 py-10 flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-10 pb-28 md:pb-10 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img loading="lazy" decoding="async" src={LOGO_ICON} alt="logo" className="w-8 h-8 rounded-full object-contain" style={{ background: CREAM, padding: 2 }} />
             <span className="text-white font-black text-xs">BODRUM KEBAP VECHTA</span>
@@ -7304,7 +7320,7 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
           <div className="flex items-center gap-4">
             <button onClick={() => go('impressum')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>{t('footerImpressum')}</button>
             <button onClick={() => go('datenschutz')} className="text-[10px] font-semibold underline" style={{ color: '#6b5a3e' }}>{t('footerDatenschutz')}</button>
-            <button onClick={() => go('staff')} className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: '#6b5a3e' }}><Lock size={9} /> {t('navStaff')}</button>
+            <button onClick={() => go('staff')} className="flex items-center gap-1 text-[11px] font-semibold py-2 px-1" style={{ color: '#6b5a3e' }}><Lock size={10} /> {t('navStaff')}</button>
           </div>
         </div>
       </footer>
@@ -9661,7 +9677,7 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
   }, [stage]);
   useEffect(() => {
     if (!leaving) { doneRef.current = false; return undefined; }
-    const t = setTimeout(() => { if (!doneRef.current) { doneRef.current = true; onExited(); } }, 650);
+    const t = setTimeout(() => { if (!doneRef.current) { doneRef.current = true; onExited(); } }, 260);
     return () => clearTimeout(t);
   }, [leaving]);
   useEffect(() => {
@@ -9727,9 +9743,9 @@ function StaffGate({ pin, pinLen, stage, keystroke, onKey, onBack, remember, set
         .g-seg button { flex: 1; padding: 7px 0; border-radius: 9px; font-size: 12.5px; font-weight: 800; color: #8a7a5c; transition: background .2s, color .2s; }
         .g-seg button[aria-pressed="true"] { background: #ff6a1a; color: #fff; box-shadow: 0 2px 6px rgba(255,106,26,.35); }
         .g-back:focus-visible, .g-key:focus-visible, .g-rem-row:focus-visible, .g-seg button:focus-visible { outline: 2px solid #ff6a1a; outline-offset: 2px; }
-        .g-flood { position: absolute; inset: 0; z-index: 5; background: radial-gradient(circle at var(--at), #ffffff 0%, #fff6ea 45%, #eef8f1 100%); clip-path: circle(0px at var(--at)); animation: gFlood .5s cubic-bezier(.65,0,.25,1) .28s forwards; }
+        .g-flood { position: absolute; inset: 0; z-index: 5; background: radial-gradient(circle at var(--at), #ffffff 0%, #fff6ea 45%, #eef8f1 100%); clip-path: circle(0px at var(--at)); animation: gFlood .3s cubic-bezier(.65,0,.25,1) .04s forwards; }
         @keyframes gFlood { to { clip-path: circle(150% at var(--at)); } }
-        .g-root.g-leave { opacity: 0; transition: opacity .42s ease; }
+        .g-root.g-leave { opacity: 0; transition: opacity .2s ease; }
         @media (prefers-reduced-motion: reduce) { .g-root, .g-root * { animation: none !important; transition: none !important; } }
       `}</style>
       <div className="g-blob g-b1" aria-hidden="true" />
@@ -10444,7 +10460,7 @@ function StaffPanelView({ back }) {
           if (j.lastLogin) setLastLoginAt(j.lastLogin);
           setUnlockStage('unlocked');
           unlockAudio();
-          setTimeout(() => setOk(true), 480);
+          setTimeout(() => setOk(true), 160);
         } else if (r.status === 429) {
           wrong(`Zu viele Versuche – bitte ${j.retryInMin || 15} Min warten`);
         } else if (r.status === 401) {
@@ -10529,7 +10545,15 @@ function StaffPanelView({ back }) {
   const [waTemplateMsg, setWaTemplateMsg] = useState('');
   const [showTestOrders, setShowTestOrders] = useState(false);
   const [testOrderMsg, setTestOrderMsg] = useState('');
-  const [visits, setVisits] = useState([]);
+  // Klick-Statistik wird 8 Tage aufbewahrt (für Tages-/Wochenberichte). Die Ansicht
+  // zeigt standardmäßig nur HEUTE; "7 Tage" lässt sich umschalten.
+  const [visitsAll, setVisits] = useState([]);
+  const [statRange, setStatRange] = useState('today');
+  const visits = useMemo(() => {
+    const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+    const from = statRange === 'today' ? d0.getTime() : d0.getTime() - 6 * 864e5;
+    return visitsAll.filter((r) => { const ts = r.value?.ts || (r.updated_at ? new Date(r.updated_at).getTime() : 0); return ts >= from; });
+  }, [visitsAll, statRange]);
   const deleteAllAnalytics = async () => {
     if (!confirm('Wirklich ALLE Statistik-Daten löschen? (Besuche, Site-Aktivität, Live-Zähler). Das kann nicht rückgängig gemacht werden.')) return;
     const [analyticsRows, heartbeatRows] = await Promise.all([
@@ -10784,7 +10808,7 @@ function StaffPanelView({ back }) {
   }, [ok, tab]);
   useEffect(() => {
     if (ok && tab === 'analytics') {
-      safeListPrefix('analytics:', 500).then((rows) => setVisits(rows));
+      safeListPrefixPaged('analytics:', 6000).then((rows) => setVisits(rows));
       safeListPrefix('wish:', 100).then((rows) => setWishes(rows.sort((a, b) => b.value.ts - a.value.ts)));
       safeListPrefix('weeklyreport:', 52).then((rows) => setWeeklyReports(rows.map((r) => ({ ...r.value, _key: r.key })).sort((a, b) => b.ts - a.ts)));
       // Glücksrad-Gewinne (Dienstags-Rad + Warenkorb-Rad + Gruppenbestellung-Rad
@@ -12233,7 +12257,12 @@ function StaffPanelView({ back }) {
                     <div className="text-[11.5px] mt-1" style={{ color: PANEL_MUTED }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
                   </div>
                 </div>
-                <div className="text-[10px] font-bold tracking-[.14em] mb-2.5" style={{ color: PANEL_MUTED }}>📊 ÜBERBLICK</div>
+                <div className="flex gap-1.5 mb-3 p-1 rounded-[12px]" style={{ background: '#efe6d3' }}>
+                  {[['today', 'Heute'], ['week', 'Letzte 7 Tage']].map(([k, l]) => (
+                    <button key={k} onClick={() => setStatRange(k)} className="flex-1 py-2 rounded-[9px] text-[12.5px] font-bold" style={statRange === k ? { background: GREEN, color: '#fff' } : { color: '#7c6d55' }}>{l}</button>
+                  ))}
+                </div>
+                <div className="text-[10px] font-bold tracking-[.14em] mb-2.5" style={{ color: PANEL_MUTED }}>📊 ÜBERBLICK · {statRange === 'today' ? 'HEUTE' : 'LETZTE 7 TAGE'}</div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <button onClick={() => openStatsModal('Besuche heute', pageVisits.filter((v) => v.value.ts >= todayStart.getTime()), (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}><PanelCount value={today} /></div>
@@ -12241,7 +12270,7 @@ function StaffPanelView({ back }) {
                   </button>
                   <button onClick={() => openStatsModal('Besuche gesamt', pageVisits, (v) => `${(v.value.lang || '').toUpperCase()} · ${v.value.device === 'mobile' ? '📱' : '💻'}`)} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: GREEN }}><PanelCount value={total} /></div>
-                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{t('visitsRecent')}</div>
+                    <div className="text-[11px] font-bold" style={{ color: '#a4906c' }}>{statRange === 'today' ? 'Seitenaufrufe heute' : 'Seitenaufrufe (7 Tage)'}</div>
                   </button>
                   <button onClick={() => openStatsModal('📞 Anrufe', visits.filter((v) => v.value.event === 'call'))} className="bg-white rounded-[14px] p-4 text-center" style={{ border: `1px solid ${PANEL_LINE}` }}>
                     <div className="font-black text-2xl" style={{ color: ORANGE }}>📞 <PanelCount value={callClicks} /></div>
@@ -12417,7 +12446,7 @@ function StaffPanelView({ back }) {
                           <span className="truncate pr-2">{label}</span><span className="flex-shrink-0">{rs.length}</span>
                         </div>
                       ))}
-                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>LETZTE 7 TAGE (Rangliste)</div>
+                      <div className="text-[11px] font-black tracking-widest mt-3 mb-1" style={{ color: '#a4906c' }}>{statRange === 'today' ? 'HEUTE (Rangliste)' : 'LETZTE 7 TAGE (Rangliste)'}</div>
                       {rows.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Aktivität erfasst.</p>}
                       {rows.map(([label, rs]) => (
                         <button
