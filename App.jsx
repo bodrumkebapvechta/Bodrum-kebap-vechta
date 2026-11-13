@@ -9494,7 +9494,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '2. Hosting', p: 'Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Website werden automatisch technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite) durch den Hosting-Anbieter verarbeitet. Dies dient der technischen Bereitstellung und Sicherheit der Website.' },
       { h: '3. Lokale Speicherung im Browser', p: 'Diese Website verwendet keine Marketing- oder Tracking-Cookies und keine Analysewerkzeuge wie Google Analytics. Zur technischen Funktion speichert die Website jedoch einige Informationen lokal in Ihrem Browser (localStorage), z. B.: Ihre Cookie-Hinweis-Bestätigung, Ihre Spracheinstellung, Favoriten, ob Sie die Website heute bereits besucht haben (zur Vermeidung von Doppelzählungen in der anonymen Statistik) sowie ggf. ein Highscore eines kleinen Spiels. Diese Daten verlassen Ihr Gerät nicht und werden nicht an uns oder Dritte übertragen.' },
       { h: '4. Kontaktformular ("Schreib uns")', p: 'Wenn Sie unser Kontaktformular nutzen, werden Ihr Name, optional Ihre E-Mail-Adresse und Ihre Nachricht verarbeitet. Die Nachricht wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich einsehen können. Gespeicherte Nachrichten werden von uns spätestens am nächsten Tag automatisch gelöscht. Verfassen Sie Ihre Nachricht nicht auf Deutsch, wird der Text vor dem Versand automatisch über den Dienst MyMemory (Drittanbieter) maschinell ins Deutsche übersetzt, damit unser Personal ihn verstehen kann; der Originaltext bleibt zusätzlich einsehbar.' },
-      ...(CATERING_VISIBLE ? [{ h: '4a. Catering- und Großbestell-Anfragen', p: 'Auf unserer Catering-Seite können Sie eine Anfrage zusammenstellen (Anlass, Wunschtermin, Personenzahl, gewünschte Speisen, Ihr Name und Ihre Anmerkungen). Diese Angaben werden nicht auf unserer Website gespeichert. Mit dem Knopf „Per WhatsApp senden“ wird der Text in WhatsApp geöffnet und erst von Ihnen selbst an unsere Geschäftsnummer gesendet. Dabei verarbeitet WhatsApp (WhatsApp Ireland Ltd.) Ihre Nachricht und Ihre Telefonnummer nach den eigenen Datenschutzbestimmungen. Wir verwenden die Nachricht ausschließlich zur Bearbeitung Ihrer Anfrage (Art. 6 Abs. 1 lit. b DSGVO) und löschen den Chat, sobald er dafür nicht mehr benötigt wird, soweit keine gesetzlichen Aufbewahrungspflichten bestehen. Wenn Sie WhatsApp nicht nutzen möchten, rufen Sie uns bitte an.' }] : []),
+      ...(CATERING_VISIBLE ? [{ h: '4a. Catering- und Großbestell-Anfragen', p: 'Auf unserer Catering-Seite können Sie eine Anfrage zusammenstellen (Anlass, Wunschtermin, Personenzahl, gewünschtes Essen, Ihr Name und Ihre Hinweise). Diese Angaben werden nicht auf unserer Website gespeichert. Mit dem Knopf „Per WhatsApp senden“ wird der Text in WhatsApp geöffnet und erst von Ihnen selbst an unsere Geschäftsnummer gesendet. Dabei verarbeitet WhatsApp (WhatsApp Ireland Ltd.) Ihre Nachricht und Ihre Telefonnummer nach den eigenen Datenschutzbestimmungen. Wir verwenden die Nachricht ausschließlich zur Bearbeitung Ihrer Anfrage (Art. 6 Abs. 1 lit. b DSGVO) und löschen den Chat, sobald er dafür nicht mehr benötigt wird, soweit keine gesetzlichen Aufbewahrungspflichten bestehen. Wenn Sie WhatsApp nicht nutzen möchten, rufen Sie uns bitte an.' }] : []),
       { h: '5. Push-Benachrichtigungen', p: 'Sie können freiwillig Benachrichtigungen (z. B. über Aktionen) abonnieren. Hierfür wird der Dienst OneSignal eingesetzt. Bei Ihrer Zustimmung wird eine anonyme Geräte-/Abonnentenkennung bei OneSignal gespeichert, über die wir Ihnen Nachrichten senden können. Sie können das Abonnement jederzeit über Ihre Browser- bzw. Geräteeinstellungen widerrufen.' },
       { h: '6. Standortabfrage (Entfernungsrechner)', p: 'Wenn Sie die Funktion "Meine Entfernung berechnen" nutzen, fragt Ihr Browser mit Ihrer ausdrücklichen Erlaubnis Ihren ungefähren Standort ab. Die Berechnung erfolgt in Ihrem Browser; zur Ermittlung unserer Restaurant-Koordinaten wird der kostenlose Geokodierungsdienst Photon (Komoot) angefragt. Ihr Standort wird nicht gespeichert oder an uns übermittelt.' },
       { h: '7. Anonyme Besucherstatistik', p: 'Wir erfassen anonymisierte Nutzungsdaten (z. B. Sprache, Gerätetyp, Klicks auf Anruf-/Routen-Buttons, an unseren Chat-Assistenten gestellte Fragen) in unserer Datenbank bei Supabase Inc. (EU). Es werden keine Namen, IP-Adressen oder sonstigen direkt personenbezogenen Daten in dieser Statistik gespeichert.' },
@@ -14400,21 +14400,9 @@ const CATERING_T = {
 };
 const CATERING_LEAD_DAYS = 5; // so viele Tage vorher muss angefragt werden
 const CATERING_OCCASIONS = ['Geburtstag', 'Firmenfeier', 'Verein / Schule', 'Hochzeit / Verlobung', 'Sonstiges'];
-// Auswahl-Liste der Speisen (Menge = Stück bzw. Portionen). Reihenfolge = Anzeige.
-const CATERING_ITEMS = [
-  { id: 'doener', emoji: '🥙', label: 'Döner Kebap', unit: 'Stück' },
-  { id: 'duerum', emoji: '🌯', label: 'Dürüm / Rollo', unit: 'Stück' },
-  { id: 'teller', emoji: '🍽️', label: 'Dönerteller / Dönerbox', unit: 'Portionen' },
-  { id: 'lahmacun', emoji: '🫓', label: 'Lahmacun', unit: 'Stück' },
-  { id: 'pizza', emoji: '🍕', label: 'Familienpizza', unit: 'Stück' },
-  { id: 'broetchen', emoji: '🥖', label: 'Pizzabrötchen', unit: 'Portionen' },
-  { id: 'cigkoefte', emoji: '🌶️', label: 'Çiğ Köfte', unit: 'Portionen' },
-  { id: 'salat', emoji: '🥗', label: 'Salat', unit: 'Portionen' },
-  { id: 'getraenke', emoji: '🥤', label: 'Getränke', unit: 'Stück' },
-];
+const CATERING_OCCASION_EMOJI = { 'Geburtstag': '🎂', 'Firmenfeier': '💼', 'Verein / Schule': '🏫', 'Hochzeit / Verlobung': '💍', 'Sonstiges': '✨' };
 function isoPlusDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 function cateringWaText(f) {
-  const items = CATERING_ITEMS.filter((it) => (f.items[it.id] || 0) > 0).map((it) => `• ${f.items[it.id]}× ${it.label}`);
   return [
     '🍽️ *Catering-Anfrage – Bodrum Kebap*',
     '',
@@ -14422,140 +14410,194 @@ function cateringWaText(f) {
     `Abholung am: ${dateDeLong(f.date)}${f.time ? ' um ' + f.time + ' Uhr' : ''}`,
     `Personen: ${f.people}`,
     '',
-    '*Gewünschte Speisen:*',
-    ...(items.length ? items : ['(keine Auswahl – siehe Wünsche)']),
-    ...(f.other.trim() ? [`• Außerdem: ${f.other.trim()}`] : []),
+    '*Gewünschtes Essen:*',
+    f.wish.trim(),
     '',
-    ...(f.msg.trim() ? [`Wünsche / Allergien: ${f.msg.trim()}`, ''] : []),
+    ...(f.msg.trim() ? [`Hinweise / Allergien: ${f.msg.trim()}`, ''] : []),
     `Name: ${f.name.trim()}`,
     ...(f.invoice ? ['Rechnung gewünscht: ja'] : []),
   ].join('\n');
+}
+// Modul-Ebene (nicht in CateringView), damit Eingabefelder den Fokus behalten
+function CateringStep({ n, title, hint, children }) {
+  return (
+    <section className="cz-step">
+      <div className="flex items-center gap-3 mb-3">
+        <span className="cz-num">{n}</span>
+        <div className="min-w-0">
+          <h3 className="cz-serif text-[19px] leading-tight" style={{ color: GREEN }}>{title}</h3>
+          {hint && <p className="text-[12px] mt-0.5" style={{ color: '#9a8a6a' }}>{hint}</p>}
+        </div>
+      </div>
+      {children}
+    </section>
+  );
 }
 
 function CateringView({ back, onMenu, onPrivacy }) {
   const call = useCallNumber();
   const src = React.useMemo(() => cateringSrc(), []);
   const minDate = React.useMemo(() => isoPlusDays(CATERING_LEAD_DAYS), []);
-  const [f, setF] = useState({ occasion: '', name: '', date: '', time: '', people: 10, invoice: false, items: {}, other: '', msg: '' });
+  const [f, setF] = useState({ occasion: '', name: '', date: '', time: '', people: 10, invoice: false, wish: '', msg: '' });
   const [status, setStatus] = useState('idle');
   const [err, setErr] = useState('');
   const set = (k, max) => (e) => setF((x) => ({ ...x, [k]: e.target.value.slice(0, max || 100) }));
-  const qty = (id, d) => setF((x) => ({ ...x, items: { ...x.items, [id]: Math.max(0, Math.min(999, (x.items[id] || 0) + d)) } }));
-  useEffect(() => { logEvent('catering_view', { src }); }, []);
+  const people = (d) => setF((x) => ({ ...x, people: Math.max(1, Math.min(999, (Number(x.people) || 0) + d)) }));
+  useEffect(() => { logEvent('catering_view', { src }); try { window.scrollTo(0, 0); } catch {} }, []);
   // WhatsApp-Nummer = auf der Website hinterlegte Handynummer; bei Festnetz die feste WhatsApp-Nummer.
   const waNumber = /^\+?49\s?1/.test(call.tel || '') ? String(call.tel).replace(/\D/g, '') : WHATSAPP_NUMBER;
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(cateringWaText(f))}`;
-  const anyItem = CATERING_ITEMS.some((it) => (f.items[it.id] || 0) > 0) || f.other.trim().length > 1;
 
   const submit = () => {
     setErr('');
     if (!f.occasion) { setErr('Bitte wählen Sie einen Anlass.'); return; }
-    if (!f.date) { setErr('Bitte wählen Sie ein Datum.'); return; }
+    if (!f.date) { setErr('Bitte wählen Sie ein Abholdatum.'); return; }
     if (f.date < minDate) { setErr(`Bitte mindestens ${CATERING_LEAD_DAYS} Tage im Voraus anfragen (frühestens ${dateDeLong(minDate)}).`); return; }
     if (!(f.people >= 1)) { setErr('Bitte geben Sie die Personenzahl an.'); return; }
-    if (!anyItem) { setErr('Bitte wählen Sie mindestens eine Speise aus oder schreiben Sie Ihren Wunsch.'); return; }
+    if (f.wish.trim().length < 3) { setErr('Bitte schreiben Sie, welches Essen Sie sich wünschen.'); return; }
     if (f.name.trim().length < 2) { setErr('Bitte geben Sie Ihren Namen an.'); return; }
     logEvent('catering_request', { src, people: Number(f.people) });
     setStatus('sent');
+    try { window.scrollTo(0, 0); } catch {}
     window.location.href = waUrl;
   };
 
-  const inp = { background: '#fffaf2', border: '1px solid #e4dfd4', color: GREEN, fontFamily: 'inherit' };
-  const stepBtn = { background: GREEN, color: '#fff' };
   return (
-    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-      <div className="px-5 pt-6 pb-3" style={{ background: GREEN }}>
-        <div className="max-w-xl mx-auto flex items-center gap-3">
-          <button onClick={back} aria-label="Zur Startseite" className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,0.12)' }}><ArrowLeft size={17} color="#fff" /></button>
-          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ background: CREAM }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
-          <div>
-            <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
-            <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>CATERING &amp; GROSSBESTELLUNG</div>
-          </div>
-        </div>
-      </div>
-      <div className="px-5 pt-7 pb-8" style={{ background: `linear-gradient(160deg, #1f5238, ${GREEN} 60%, #0f2a1c)` }}>
-        <div className="max-w-xl mx-auto">
-          <h1 className="font-black text-[28px] leading-tight" style={{ color: CREAM }}>Essen für <span style={{ color: ORANGE }}>Ihre Feier</span></h1>
-          <p className="text-[14px] leading-relaxed mt-2" style={{ color: 'rgba(255,246,234,.85)' }}>Geburtstag, Firmenfeier, Verein oder Familienfest – sagen Sie uns, was Sie brauchen. Wir bereiten alles frisch für Sie vor.</p>
-          <div className="flex flex-wrap gap-2 mt-4">
-            {['☪ 100 % halal', '🔥 Frisch zubereitet', '🛍 Zur Abholung', `📅 ${CATERING_LEAD_DAYS} Tage vorher anfragen`].map((x) => <span key={x} className="text-[12px] px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,.1)', color: CREAM }}>{x}</span>)}
-          </div>
-        </div>
-      </div>
-      <div className="max-w-xl mx-auto px-5">
-        <div className="rounded-3xl p-4 mt-6 mb-8" style={{ background: '#fff', border: '1px solid #efe2c8', boxShadow: '0 8px 24px rgba(21,56,38,.06)' }}>
-          {status === 'sent' ? (
-            <div className="text-center py-5">
-              <div className="text-5xl">💬</div>
-              <h2 className="font-black text-xl mt-2" style={{ color: GREEN }}>Fast geschafft!</h2>
-              <p className="text-[14px] mt-1.5 mb-4" style={{ color: '#7c6d55' }}>WhatsApp öffnet sich mit Ihrer Anfrage. Bitte dort noch auf <b>Senden</b> tippen – wir melden uns bei Ihnen.</p>
-              <div className="flex flex-col gap-2.5 items-center">
-                <a href={waUrl} className="px-5 py-3 rounded-full font-black text-sm" style={{ background: '#25d366', color: '#fff' }}>WhatsApp nochmal öffnen</a>
-                <button onClick={() => setStatus('idle')} className="text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Anfrage ändern</button>
-                <button onClick={back} className="text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Zur Startseite</button>
+    <div className="cz-root min-h-screen w-full overflow-x-hidden">
+      <style>{`
+        .cz-root { background: #0c2016; font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; color: #153826; }
+        .cz-serif { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-weight: 700; letter-spacing: -.01em; }
+        .cz-hero { position: relative; padding: 18px 22px 74px; overflow: hidden; }
+        .cz-hero::before { content: ''; position: absolute; inset: 0; background: url(/doner-spiess.jpg) center 30%/cover; opacity: .34; filter: saturate(1.1); }
+        .cz-hero::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 70% at 80% 0%, rgba(255,199,56,.22), transparent 60%), linear-gradient(180deg, rgba(12,32,22,.72) 0%, rgba(12,32,22,.5) 40%, #0c2016 100%); }
+        .cz-hero > * { position: relative; z-index: 1; }
+        .cz-back { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,246,234,.12); border: 1px solid rgba(255,246,234,.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .cz-eyebrow { display: inline-flex; align-items: center; gap: 10px; color: #ffc738; font-size: 11px; font-weight: 700; letter-spacing: .32em; }
+        .cz-eyebrow::before, .cz-eyebrow::after { content: ''; width: 26px; height: 1px; background: rgba(255,199,56,.7); }
+        .cz-h1 { color: #fff6ea; font-size: clamp(36px, 10vw, 52px); line-height: 1.04; margin-top: 14px; text-shadow: 0 4px 26px rgba(0,0,0,.45); }
+        .cz-h1 em { font-style: italic; color: #ffc738; }
+        .cz-lead { color: rgba(255,246,234,.86); font-size: 14.5px; line-height: 1.6; margin-top: 14px; max-width: 460px; }
+        .cz-facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-top: 22px; max-width: 460px; }
+        .cz-fact { text-align: center; padding: 12px 6px; border-radius: 16px; background: rgba(255,246,234,.08); border: 1px solid rgba(255,199,56,.28); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .cz-fact b { display: block; color: #ffc738; font-size: 19px; line-height: 1; }
+        .cz-fact span { display: block; color: #fff6ea; font-size: 10.5px; font-weight: 600; margin-top: 6px; line-height: 1.25; }
+        .cz-card { position: relative; z-index: 2; max-width: 560px; margin: -46px auto 0; background: #fffaf2; border-radius: 30px 30px 0 0; padding: 26px 20px 34px; box-shadow: 0 -18px 50px rgba(0,0,0,.35); min-height: 60vh; animation: czUp .55s cubic-bezier(.2,.8,.2,1) both; }
+        @media (min-width: 640px) { .cz-card { border-radius: 30px; margin-bottom: 40px; padding: 32px 30px 36px; } }
+        @keyframes czUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+        .cz-promise { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 18px; background: linear-gradient(120deg, #153826, #1f5238); color: #fff6ea; box-shadow: 0 10px 24px rgba(21,56,38,.22); }
+        .cz-promise i { font-style: normal; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #ffc738; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+        .cz-promise b { display: block; font-size: 14px; line-height: 1.25; }
+        .cz-promise span { display: block; font-size: 11.5px; opacity: .8; margin-top: 2px; }
+        .cz-step { padding-top: 24px; margin-top: 24px; border-top: 1px solid #eadfc8; }
+        .cz-num { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 16px; color: #153826; background: #ffc738; box-shadow: 0 0 0 5px rgba(255,199,56,.22); }
+        .cz-occ { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+        .cz-occ button { display: flex; align-items: center; gap: 9px; padding: 13px 12px; border-radius: 16px; background: #fff; border: 1.5px solid #eadfc8; font-size: 13px; font-weight: 600; color: #153826; text-align: left; transition: transform .15s, border-color .15s, background .15s; }
+        .cz-occ button:active { transform: scale(.97); }
+        .cz-occ button span { font-size: 20px; }
+        .cz-occ button.on { background: #153826; border-color: #153826; color: #fff6ea; box-shadow: 0 8px 18px rgba(21,56,38,.25); }
+        .cz-occ button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+        .cz-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9a8a6a; margin-bottom: 6px; }
+        .cz-in { width: 100%; padding: 14px 14px; border-radius: 16px; background: #fff; border: 1.5px solid #eadfc8; color: #153826; font: inherit; font-size: 15px; outline: none; transition: border-color .15s, box-shadow .15s; -webkit-appearance: none; appearance: none; min-height: 50px; }
+        .cz-in:focus { border-color: #ff6a1a; box-shadow: 0 0 0 4px rgba(255,106,26,.14); }
+        .cz-in::placeholder { color: #b9ab8e; }
+        .cz-people { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-radius: 22px; background: #fff; border: 1.5px solid #eadfc8; }
+        .cz-people button { width: 52px; height: 52px; border-radius: 50%; background: #153826; color: #ffc738; font-size: 26px; font-weight: 500; line-height: 1; display: flex; align-items: center; justify-content: center; transition: transform .12s; }
+        .cz-people button:active { transform: scale(.9); }
+        .cz-people input { width: 110px; text-align: center; background: transparent; border: 0; outline: none; font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 38px; color: #153826; -moz-appearance: textfield; }
+        .cz-people input::-webkit-outer-spin-button, .cz-people input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .cz-send { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 17px 18px; border-radius: 999px; background: linear-gradient(120deg, #1fb855, #25d366); color: #fff; font-weight: 800; font-size: 16px; box-shadow: 0 14px 30px rgba(37,211,102,.38); transition: transform .12s; }
+        .cz-send:active { transform: scale(.98); }
+        @media (prefers-reduced-motion: reduce) { .cz-card { animation: none; } }
+      `}</style>
+
+      <header className="cz-hero">
+        <div className="max-w-[560px] mx-auto">
+          <div className="flex items-center justify-between mb-9">
+            <button onClick={back} aria-label="Zur Startseite" className="cz-back"><ArrowLeft size={18} color="#fff6ea" /></button>
+            <div className="flex items-center gap-2.5">
+              <div className="text-right">
+                <div className="font-extrabold text-[13px] leading-tight tracking-wide" style={{ color: '#fff6ea' }}>BODRUM KEBAP</div>
+                <div className="text-[9px] font-bold tracking-[.3em]" style={{ color: GOLD }}>VECHTA</div>
               </div>
+              <div className="w-10 h-10 rounded-full overflow-hidden" style={{ background: CREAM, border: `2px solid ${GOLD}` }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
             </div>
-          ) : (
-            <>
-              <h2 className="font-black text-[19px]" style={{ color: GREEN }}>Unverbindlich anfragen</h2>
-              <p className="text-[12.5px] mt-0.5 mb-3.5" style={{ color: '#8a7c62' }}>Ihre Anfrage geht per WhatsApp direkt an uns. Preis und Details besprechen wir danach mit Ihnen.</p>
+          </div>
+          <div className="cz-eyebrow">CATERING</div>
+          <h1 className="cz-serif cz-h1">Ihr Fest.<br /><em>Unser Essen.</em></h1>
+          <p className="cz-lead">Geburtstag, Firmenfeier, Verein oder Familienfest – sagen Sie uns, was Sie sich wünschen. Wir bereiten alles frisch für Sie zu.</p>
+          <div className="cz-facts">
+            <div className="cz-fact"><b>☪</b><span>100 % halal</span></div>
+            <div className="cz-fact"><b>🛍</b><span>Zur Abholung</span></div>
+            <div className="cz-fact"><b>{CATERING_LEAD_DAYS}</b><span>Tage vorher anfragen</span></div>
+          </div>
+        </div>
+      </header>
 
-              <CateringField label="Anlass *">
-                <div className="flex flex-wrap gap-1.5">
-                  {CATERING_OCCASIONS.map((o) => (
-                    <button key={o} type="button" onClick={() => setF((x) => ({ ...x, occasion: o }))} className="px-3 py-2 rounded-full text-[12.5px] font-bold" style={f.occasion === o ? { background: GREEN, color: '#fff' } : { background: '#fffaf2', border: '1px solid #e4dfd4', color: GREEN }}>{o}</button>
-                  ))}
-                </div>
-              </CateringField>
+      <main className="cz-card">
+        {status === 'sent' ? (
+          <div className="text-center py-6">
+            <div className="mx-auto flex items-center justify-center text-[38px]" style={{ width: 84, height: 84, borderRadius: '50%', background: '#dcf8e6' }}>💬</div>
+            <h2 className="cz-serif text-[28px] mt-4" style={{ color: GREEN }}>Fast geschafft!</h2>
+            <p className="text-[14.5px] leading-relaxed mt-2 mb-5" style={{ color: '#6f6249' }}>WhatsApp öffnet sich mit Ihrer Anfrage.<br />Bitte dort noch auf <b>Senden</b> tippen.</p>
+            <div className="cz-promise text-left mb-6"><i>⏱</i><div><b>Wir melden uns in Kürze bei Ihnen.</b><span>Preis und Details besprechen wir persönlich.</span></div></div>
+            <a href={waUrl} className="cz-send">WhatsApp nochmal öffnen</a>
+            <button onClick={() => setStatus('idle')} className="block mx-auto mt-4 text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Anfrage ändern</button>
+            <button onClick={back} className="block mx-auto mt-2.5 text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Zur Startseite</button>
+          </div>
+        ) : (
+          <>
+            <h2 className="cz-serif text-[26px] leading-tight" style={{ color: GREEN }}>Unverbindlich anfragen</h2>
+            <p className="text-[13px] mt-1.5 mb-4" style={{ color: '#8a7c62' }}>In einer Minute erledigt – Ihre Anfrage kommt per WhatsApp direkt bei uns an.</p>
+            <div className="cz-promise"><i>⏱</i><div><b>Wir melden uns in Kürze bei Ihnen.</b><span>Preis und Details besprechen wir persönlich.</span></div></div>
+
+            <CateringStep n={1} title="Was feiern Sie?">
+              <div className="cz-occ">
+                {CATERING_OCCASIONS.map((o) => (
+                  <button key={o} type="button" onClick={() => setF((x) => ({ ...x, occasion: o }))} className={f.occasion === o ? 'on' : ''} aria-pressed={f.occasion === o}><span aria-hidden="true">{CATERING_OCCASION_EMOJI[o]}</span>{o}</button>
+                ))}
+              </div>
+            </CateringStep>
+
+            <CateringStep n={2} title="Wann holen Sie ab?" hint={`Frühestens ${dateDeLong(minDate)} · Abholung bei uns im Laden`}>
               <div className="grid grid-cols-2 gap-2.5">
-                <CateringField label={`Abholdatum * (ab ${dateDeLong(minDate).replace(/^\S+\s/, '')})`}><input type="date" min={minDate} value={f.date} onChange={set('date', 10)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-                <CateringField label="Uhrzeit (optional)"><input type="time" value={f.time} onChange={set('time', 5)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+                <div><label className="cz-label" htmlFor="cz-date">Datum *</label><input id="cz-date" type="date" min={minDate} value={f.date} onChange={set('date', 10)} className="cz-in" /></div>
+                <div><label className="cz-label" htmlFor="cz-time">Uhrzeit</label><input id="cz-time" type="time" value={f.time} onChange={set('time', 5)} className="cz-in" /></div>
               </div>
-              <CateringField label="Für wie viele Personen? *">
-                <div className="flex items-center justify-between rounded-xl p-1" style={inp}>
-                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.max(1, Number(x.people) - 5) }))} aria-label="weniger" className="w-10 h-9 rounded-lg text-lg font-bold" style={stepBtn}>−</button>
-                  <input type="number" inputMode="numeric" min={1} max={999} value={f.people} onChange={(e) => setF((x) => ({ ...x, people: Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0)) }))} className="w-20 text-center font-black text-base outline-none bg-transparent" style={{ color: GREEN }} />
-                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.min(999, Number(x.people) + 5) }))} aria-label="mehr" className="w-10 h-9 rounded-lg text-lg font-bold" style={stepBtn}>+</button>
-                </div>
-              </CateringField>
+            </CateringStep>
 
-              <div className="text-[11px] font-bold tracking-[.14em] mt-4 mb-2" style={{ color: '#a4906c' }}>WAS MÖCHTEN SIE? *</div>
-              <div className="rounded-2xl overflow-hidden mb-2.5" style={{ border: '1px solid #e4dfd4' }}>
-                {CATERING_ITEMS.map((it, i) => {
-                  const n = f.items[it.id] || 0;
-                  return (
-                    <div key={it.id} className="flex items-center gap-2.5 px-3 py-2" style={{ background: n ? '#fff3df' : '#fffaf2', borderTop: i ? '1px solid #efe7d6' : 'none' }}>
-                      <span className="text-xl" aria-hidden="true">{it.emoji}</span>
-                      <span className="flex-1 min-w-0">
-                        <span className="block font-bold text-[13px] leading-tight" style={{ color: GREEN, overflowWrap: 'anywhere' }}>{it.label}</span>
-                        <span className="block text-[10.5px]" style={{ color: '#a4906c' }}>{it.unit}</span>
-                      </span>
-                      <button type="button" onClick={() => qty(it.id, -1)} disabled={!n} aria-label={`${it.label} weniger`} className="w-7 h-8 rounded-lg text-base font-bold flex-shrink-0" style={{ ...stepBtn, opacity: n ? 1 : 0.25 }}>−</button>
-                      <span className="w-6 text-center font-black text-[15px] flex-shrink-0" style={{ color: GREEN }}>{n}</span>
-                      <button type="button" onClick={() => qty(it.id, 1)} aria-label={`${it.label} mehr`} className="w-7 h-8 rounded-lg text-base font-bold flex-shrink-0" style={stepBtn}>+</button>
-                      <button type="button" onClick={() => qty(it.id, 10)} aria-label={`${it.label} plus 10`} className="h-8 px-1.5 rounded-lg text-[11px] font-black flex-shrink-0" style={{ background: GOLD, color: GREEN }}>+10</button>
-                    </div>
-                  );
-                })}
+            <CateringStep n={3} title="Für wie viele Personen?">
+              <div className="cz-people">
+                <button type="button" onClick={() => people(-1)} aria-label="eine Person weniger">−</button>
+                <input type="number" inputMode="numeric" min={1} max={999} value={f.people} aria-label="Personenzahl" onChange={(e) => setF((x) => ({ ...x, people: Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0)) }))} />
+                <button type="button" onClick={() => people(1)} aria-label="eine Person mehr">+</button>
               </div>
-              <CateringField label="Etwas anderes? (optional)"><input value={f.other} onChange={set('other', 160)} placeholder="z. B. Baklava, vegetarische Platte …" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-              <button type="button" onClick={() => onMenu(undefined)} className="text-[12.5px] font-bold mb-3" style={{ color: ORANGE }}>Speisekarte ansehen →</button>
+            </CateringStep>
 
-              <CateringField label="Wünsche & Allergien (optional)"><textarea value={f.msg} onChange={set('msg', 400)} rows={3} placeholder="z. B. 3× vegetarisch, ohne Zwiebeln, scharf …" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none" style={inp} /></CateringField>
-              <CateringField label="Ihr Name *"><input value={f.name} onChange={set('name', 80)} autoComplete="name" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-              <button type="button" onClick={() => setF((x) => ({ ...x, invoice: !x.invoice }))} className="w-full flex items-center justify-between py-2 mb-1">
-                <span className="text-sm" style={{ color: GREEN }}>Rechnung gewünscht</span>
+            <CateringStep n={4} title="Was dürfen wir zubereiten?" hint="Schreiben Sie einfach, was Sie sich wünschen.">
+              <textarea value={f.wish} onChange={set('wish', 500)} rows={4} placeholder="Beispiel: Çiğ Köfte" className="cz-in" style={{ resize: 'none', lineHeight: 1.5 }} aria-label="Gewünschtes Essen" />
+              <button type="button" onClick={() => onMenu(undefined)} className="text-[12.5px] font-bold mt-2.5" style={{ color: ORANGE }}>Ideen aus unserer Speisekarte →</button>
+              <label className="cz-label mt-4" htmlFor="cz-msg">Hinweise &amp; Allergien (optional)</label>
+              <input id="cz-msg" value={f.msg} onChange={set('msg', 300)} placeholder="z. B. 3× vegetarisch, nicht scharf" className="cz-in" />
+            </CateringStep>
+
+            <CateringStep n={5} title="Ihr Name">
+              <input value={f.name} onChange={set('name', 80)} autoComplete="name" placeholder="Vor- und Nachname" className="cz-in" aria-label="Ihr Name" />
+              <button type="button" onClick={() => setF((x) => ({ ...x, invoice: !x.invoice }))} className="w-full flex items-center justify-between pt-4">
+                <span className="text-[14px] font-semibold" style={{ color: GREEN }}>Rechnung gewünscht</span>
                 <PanelSwitch on={f.invoice} onColor={ORANGE} />
               </button>
-              {err && <p className="text-[13px] font-semibold mb-2.5" style={{ color: CHILI }} role="alert">{err}</p>}
-              <p className="text-[11px] leading-snug mb-3" style={{ color: '#a4906c' }}>Ihre Angaben werden nicht auf der Website gespeichert, sondern erst von Ihnen per WhatsApp an uns gesendet. Mehr dazu in der <button type="button" onClick={onPrivacy} className="underline">Datenschutzerklärung</button>.</p>
-              <button onClick={submit} className="w-full py-3.5 rounded-full font-black text-[15px]" style={{ background: '#25d366', color: '#fff', boxShadow: '0 8px 20px rgba(37,211,102,.35)' }}>💬 Per WhatsApp senden</button>
-              <p className="text-center text-[12.5px] mt-3" style={{ color: '#8a7c62' }}>Lieber telefonisch? <a href={`tel:${call.tel}`} className="font-bold" style={{ color: GREEN }}>{call.display}</a></p>
-            </>
-          )}
-        </div>
-      </div>
+            </CateringStep>
+
+            <div className="mt-7">
+              {err && <p className="text-[13.5px] font-semibold mb-3 px-3.5 py-2.5 rounded-xl" style={{ color: '#b3261e', background: '#fdecea' }} role="alert">{err}</p>}
+              <button onClick={submit} className="cz-send"><span aria-hidden="true">💬</span> Per WhatsApp senden</button>
+              <p className="text-center text-[12.5px] font-semibold mt-3" style={{ color: GREEN }}>⏱ Wir melden uns in Kürze bei Ihnen.</p>
+              <p className="text-[11px] leading-snug text-center mt-3" style={{ color: '#a4906c' }}>Ihre Angaben werden nicht auf der Website gespeichert, sondern erst von Ihnen per WhatsApp gesendet. <button type="button" onClick={onPrivacy} className="underline">Datenschutz</button></p>
+              <p className="text-center text-[13px] mt-4" style={{ color: '#8a7c62' }}>Lieber telefonisch? <a href={`tel:${call.tel}`} className="font-bold" style={{ color: GREEN }}>{call.display}</a></p>
+            </div>
+          </>
+        )}
+      </main>
     </div>
   );
 }
