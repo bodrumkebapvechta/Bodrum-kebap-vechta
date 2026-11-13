@@ -7028,6 +7028,17 @@ function HomeView({ go, installPrompt, onInstall, cartCount }) {
             <p className="text-base mb-6 max-w-md" style={{ color: '#d9cdb4' }}>{t('heroSubtitle')}</p>
             <HeroTeaser go={go} lang={lang} />
             {(onlineOrder || ONLINE_ORDER_TEST) && <OnlineOrderButton lang={lang} test={!onlineOrder} />}
+            {CATERING_VISIBLE && (
+              <button onClick={() => { logEvent('catering_click', { from: 'hero' }); go('catering'); }} className="relative flex items-center gap-3.5 w-full text-left mb-5" style={{ maxWidth: 440, padding: '12px 16px 12px 12px', borderRadius: 20, background: 'rgba(255,246,234,.1)', border: '1.5px solid rgba(255,199,56,.55)' }}>
+                <span className="flex-shrink-0 flex items-center justify-center text-[26px]" style={{ width: 50, height: 50, borderRadius: 16, background: GOLD }} aria-hidden="true">🎉</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-black text-[17px] leading-tight text-white">{CATERING_T.title[lang] || CATERING_T.title.de}</span>
+                  <span className="block text-[12.5px] font-semibold mt-0.5" style={{ color: '#d9cdb4' }}>{CATERING_T.sub[lang] || CATERING_T.sub.de}</span>
+                </span>
+                <ArrowRight size={18} color={GOLD} />
+                {!CATERING_ENABLED && <span style={{ position: 'absolute', top: -9, right: 14, background: '#153826', color: '#ffc738', fontSize: 9.5, fontWeight: 900, letterSpacing: '.12em', padding: '3px 8px', borderRadius: 999, border: '1px solid rgba(255,199,56,.6)' }}>TEST</span>}
+              </button>
+            )}
             {!orderingEnabled() && (
               <div className="flex flex-col gap-3 mb-5 max-w-[440px]">
                 <style>{`
@@ -9464,6 +9475,17 @@ function ImpressumView({ back }) {
 // false = Seite, Personal-Posteingang (außer Altbestand), Zähler und Datenschutz-Abschnitt sind aus.
 // Nichts wurde gelöscht. Zum Wieder-Einschalten auf true setzen.
 const CATERING_ENABLED = false;
+// TESTPHASE: Seite + Startseiten-Knopf sind für Kunden unsichtbar (CATERING_ENABLED = false).
+// Sichtbar nur auf Geräten, die einmal ?cateringtest=1 aufgerufen haben; ?cateringtest=0 schaltet ab.
+const CATERING_TEST = (() => {
+  try {
+    const p = new URLSearchParams(window.location.search).get('cateringtest');
+    if (p === '1') { localStorage.setItem('bk_catering_test', '1'); return true; }
+    if (p === '0') { localStorage.removeItem('bk_catering_test'); return false; }
+    return localStorage.getItem('bk_catering_test') === '1';
+  } catch { return false; }
+})();
+const CATERING_VISIBLE = CATERING_ENABLED || CATERING_TEST;
 // (steht bewusst VOR DATENSCHUTZ_TEXT: diese Konstante wird beim Laden der Seite sofort ausgewertet)
 const DATENSCHUTZ_TEXT = {
   de: { title: 'Datenschutzerklärung',
@@ -9472,7 +9494,7 @@ const DATENSCHUTZ_TEXT = {
       { h: '2. Hosting', p: 'Diese Website wird bei Vercel Inc. gehostet. Beim Aufruf der Website werden automatisch technische Zugriffsdaten (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene Seite) durch den Hosting-Anbieter verarbeitet. Dies dient der technischen Bereitstellung und Sicherheit der Website.' },
       { h: '3. Lokale Speicherung im Browser', p: 'Diese Website verwendet keine Marketing- oder Tracking-Cookies und keine Analysewerkzeuge wie Google Analytics. Zur technischen Funktion speichert die Website jedoch einige Informationen lokal in Ihrem Browser (localStorage), z. B.: Ihre Cookie-Hinweis-Bestätigung, Ihre Spracheinstellung, Favoriten, ob Sie die Website heute bereits besucht haben (zur Vermeidung von Doppelzählungen in der anonymen Statistik) sowie ggf. ein Highscore eines kleinen Spiels. Diese Daten verlassen Ihr Gerät nicht und werden nicht an uns oder Dritte übertragen.' },
       { h: '4. Kontaktformular ("Schreib uns")', p: 'Wenn Sie unser Kontaktformular nutzen, werden Ihr Name, optional Ihre E-Mail-Adresse und Ihre Nachricht verarbeitet. Die Nachricht wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich einsehen können. Gespeicherte Nachrichten werden von uns spätestens am nächsten Tag automatisch gelöscht. Verfassen Sie Ihre Nachricht nicht auf Deutsch, wird der Text vor dem Versand automatisch über den Dienst MyMemory (Drittanbieter) maschinell ins Deutsche übersetzt, damit unser Personal ihn verstehen kann; der Originaltext bleibt zusätzlich einsehbar.' },
-      ...(CATERING_ENABLED ? [{ h: '4a. Catering-Anfragen (Firmen)', p: 'Wenn Sie über unsere Catering-Seite eine Anfrage senden, verarbeiten wir die von Ihnen eingegebenen Daten: Firma (optional), Ansprechpartner, Telefonnummer, optional E-Mail-Adresse, Wunschtermin, Personenzahl, Rechnungswunsch und Ihre Nachricht. Zweck ist ausschließlich die Bearbeitung Ihrer Anfrage und die Rückmeldung an Sie (Art. 6 Abs. 1 lit. b DSGVO). Die Anfrage wird über den Dienst Web3Forms (Drittanbieter) per E-Mail an uns weitergeleitet und zusätzlich in unserer Datenbank bei Supabase Inc. (EU) gespeichert, damit wir sie im internen Personalbereich bearbeiten können. Über den Push-Dienst OneSignal erhalten wir lediglich einen Hinweis ohne Ihre persönlichen Angaben. Gespeicherte Anfragen werden von uns spätestens 30 Tage nach dem Wunschtermin gelöscht. E-Mails, die wir in diesem Zusammenhang erhalten, bewahren wir nur so lange auf, wie es für die Bearbeitung und gegebenenfalls gesetzliche Aufbewahrungspflichten erforderlich ist.' }] : []),
+      ...(CATERING_VISIBLE ? [{ h: '4a. Catering- und Großbestell-Anfragen', p: 'Auf unserer Catering-Seite können Sie eine Anfrage zusammenstellen (Anlass, Wunschtermin, Personenzahl, gewünschte Speisen, Ihr Name und Ihre Anmerkungen). Diese Angaben werden nicht auf unserer Website gespeichert. Mit dem Knopf „Per WhatsApp senden“ wird der Text in WhatsApp geöffnet und erst von Ihnen selbst an unsere Geschäftsnummer gesendet. Dabei verarbeitet WhatsApp (WhatsApp Ireland Ltd.) Ihre Nachricht und Ihre Telefonnummer nach den eigenen Datenschutzbestimmungen. Wir verwenden die Nachricht ausschließlich zur Bearbeitung Ihrer Anfrage (Art. 6 Abs. 1 lit. b DSGVO) und löschen den Chat, sobald er dafür nicht mehr benötigt wird, soweit keine gesetzlichen Aufbewahrungspflichten bestehen. Wenn Sie WhatsApp nicht nutzen möchten, rufen Sie uns bitte an.' }] : []),
       { h: '5. Push-Benachrichtigungen', p: 'Sie können freiwillig Benachrichtigungen (z. B. über Aktionen) abonnieren. Hierfür wird der Dienst OneSignal eingesetzt. Bei Ihrer Zustimmung wird eine anonyme Geräte-/Abonnentenkennung bei OneSignal gespeichert, über die wir Ihnen Nachrichten senden können. Sie können das Abonnement jederzeit über Ihre Browser- bzw. Geräteeinstellungen widerrufen.' },
       { h: '6. Standortabfrage (Entfernungsrechner)', p: 'Wenn Sie die Funktion "Meine Entfernung berechnen" nutzen, fragt Ihr Browser mit Ihrer ausdrücklichen Erlaubnis Ihren ungefähren Standort ab. Die Berechnung erfolgt in Ihrem Browser; zur Ermittlung unserer Restaurant-Koordinaten wird der kostenlose Geokodierungsdienst Photon (Komoot) angefragt. Ihr Standort wird nicht gespeichert oder an uns übermittelt.' },
       { h: '7. Anonyme Besucherstatistik', p: 'Wir erfassen anonymisierte Nutzungsdaten (z. B. Sprache, Gerätetyp, Klicks auf Anruf-/Routen-Buttons, an unseren Chat-Assistenten gestellte Fragen) in unserer Datenbank bei Supabase Inc. (EU). Es werden keine Namen, IP-Adressen oder sonstigen direkt personenbezogenen Daten in dieser Statistik gespeichert.' },
@@ -13806,8 +13828,8 @@ function CookieBanner() {
 }
 
 function isCateringUrl() {
-  if (!CATERING_ENABLED) return false;
-  try { return new URLSearchParams(window.location.search).get('catering') === '1'; } catch { return false; }
+  if (!CATERING_VISIBLE) return false;
+  try { const q = new URLSearchParams(window.location.search); return q.get('catering') === '1' || q.get('cateringtest') === '1'; } catch { return false; }
 }
 function cateringSrc() {
   try { return (new URLSearchParams(window.location.search).get('src') || 'direct').replace(/[^a-z0-9_-]/gi, '').slice(0, 20) || 'direct'; } catch { return 'direct'; }
@@ -14372,123 +14394,163 @@ function CateringCard({ emoji, label, cat, onMenu }) {
   );
 }
 
+const CATERING_T = {
+  title: { de: 'Catering & Großbestellung', en: 'Catering & large orders', tr: 'Catering & toplu sipariş', ro: 'Catering și comenzi mari', nl: 'Catering & grote bestellingen', sq: 'Catering & porosi të mëdha', ku: 'Catering & sîparîşên mezin', pl: 'Catering i duże zamówienia' },
+  sub: { de: 'Für Feiern, Firmen & Vereine – jetzt anfragen', en: 'For parties, companies & clubs – ask now', tr: 'Kutlama, firma ve dernekler için – şimdi sor', ro: 'Pentru petreceri, firme și cluburi', nl: 'Voor feesten, bedrijven & verenigingen', sq: 'Për festa, firma & shoqata', ku: 'Ji bo şahî, fîrma û komeleyan', pl: 'Na imprezy, dla firm i klubów' },
+};
+const CATERING_LEAD_DAYS = 5; // so viele Tage vorher muss angefragt werden
+const CATERING_OCCASIONS = ['Geburtstag', 'Firmenfeier', 'Verein / Schule', 'Hochzeit / Verlobung', 'Sonstiges'];
+// Auswahl-Liste der Speisen (Menge = Stück bzw. Portionen). Reihenfolge = Anzeige.
+const CATERING_ITEMS = [
+  { id: 'doener', emoji: '🥙', label: 'Döner Kebap', unit: 'Stück' },
+  { id: 'duerum', emoji: '🌯', label: 'Dürüm / Rollo', unit: 'Stück' },
+  { id: 'teller', emoji: '🍽️', label: 'Dönerteller / Dönerbox', unit: 'Portionen' },
+  { id: 'lahmacun', emoji: '🫓', label: 'Lahmacun', unit: 'Stück' },
+  { id: 'pizza', emoji: '🍕', label: 'Familienpizza', unit: 'Stück' },
+  { id: 'broetchen', emoji: '🥖', label: 'Pizzabrötchen', unit: 'Portionen' },
+  { id: 'cigkoefte', emoji: '🌶️', label: 'Çiğ Köfte', unit: 'Portionen' },
+  { id: 'salat', emoji: '🥗', label: 'Salat', unit: 'Portionen' },
+  { id: 'getraenke', emoji: '🥤', label: 'Getränke', unit: 'Stück' },
+];
+function isoPlusDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function cateringWaText(f) {
+  const items = CATERING_ITEMS.filter((it) => (f.items[it.id] || 0) > 0).map((it) => `• ${f.items[it.id]}× ${it.label}`);
+  return [
+    '🍽️ *Catering-Anfrage – Bodrum Kebap*',
+    '',
+    `Anlass: ${f.occasion}`,
+    `Abholung am: ${dateDeLong(f.date)}${f.time ? ' um ' + f.time + ' Uhr' : ''}`,
+    `Personen: ${f.people}`,
+    '',
+    '*Gewünschte Speisen:*',
+    ...(items.length ? items : ['(keine Auswahl – siehe Wünsche)']),
+    ...(f.other.trim() ? [`• Außerdem: ${f.other.trim()}`] : []),
+    '',
+    ...(f.msg.trim() ? [`Wünsche / Allergien: ${f.msg.trim()}`, ''] : []),
+    `Name: ${f.name.trim()}`,
+    ...(f.invoice ? ['Rechnung gewünscht: ja'] : []),
+  ].join('\n');
+}
+
 function CateringView({ back, onMenu, onPrivacy }) {
   const call = useCallNumber();
   const src = React.useMemo(() => cateringSrc(), []);
-  const today = React.useMemo(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }, []);
-  const [f, setF] = useState({ firma: '', name: '', tel: '', email: '', date: '', time: '', people: 10, invoice: false, msg: '', hp: '' });
+  const minDate = React.useMemo(() => isoPlusDays(CATERING_LEAD_DAYS), []);
+  const [f, setF] = useState({ occasion: '', name: '', date: '', time: '', people: 10, invoice: false, items: {}, other: '', msg: '' });
   const [status, setStatus] = useState('idle');
   const [err, setErr] = useState('');
   const set = (k, max) => (e) => setF((x) => ({ ...x, [k]: e.target.value.slice(0, max || 100) }));
+  const qty = (id, d) => setF((x) => ({ ...x, items: { ...x.items, [id]: Math.max(0, Math.min(999, (x.items[id] || 0) + d)) } }));
   useEffect(() => { logEvent('catering_view', { src }); }, []);
+  // WhatsApp-Nummer = auf der Website hinterlegte Handynummer; bei Festnetz die feste WhatsApp-Nummer.
+  const waNumber = /^\+?49\s?1/.test(call.tel || '') ? String(call.tel).replace(/\D/g, '') : WHATSAPP_NUMBER;
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(cateringWaText(f))}`;
+  const anyItem = CATERING_ITEMS.some((it) => (f.items[it.id] || 0) > 0) || f.other.trim().length > 1;
 
-  const submit = async () => {
+  const submit = () => {
     setErr('');
-    if (f.hp) { setStatus('sent'); return; } // Spam-Falle: Bots füllen das versteckte Feld aus
-    const v = cateringValidate(f, today);
-    if (v) { setErr(v); return; }
-    try {
-      const last = parseInt(localStorage.getItem('bk_catering_last') || '0', 10);
-      if (last && Date.now() - last < 60000) { setErr('Bitte warten Sie einen Moment, bevor Sie eine weitere Anfrage senden.'); return; }
-    } catch {}
-    setStatus('sending');
-    const rec = { firma: f.firma.trim(), name: f.name.trim(), tel: f.tel.trim(), email: f.email.trim(), date: f.date, time: f.time, people: Number(f.people), invoice: !!f.invoice, msg: f.msg.trim(), src, ts: Date.now(), status: 'neu' };
-    const key = `cateringreq:${Date.now()}-${makeShortCode(4)}`;
-    const text = [
-      `Firma: ${rec.firma || '–'}`, `Ansprechpartner: ${rec.name}`, `Telefon: ${rec.tel}`, `E-Mail: ${rec.email || '–'}`,
-      `Wunschtermin: ${dateDeLong(rec.date)}${rec.time ? ' um ' + rec.time + ' Uhr' : ''}`, `Personen: ${rec.people}`, `Rechnung gewünscht: ${rec.invoice ? 'ja' : 'nein'}`,
-      `Nachricht: ${rec.msg || '–'}`, `Quelle: ${src}`,
-    ].join('\n');
-    const mail = fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: `Neue Catering-Anfrage — ${rec.firma || rec.name} (${rec.people} Pers.)`, from_name: 'Bodrum Kebap Website', name: rec.name, ...(rec.email ? { email: rec.email } : {}), message: text }),
-    }).then((r) => r.ok).catch(() => false);
-    const [saved, mailed] = await Promise.all([safeSet(key, rec), mail]);
-    if (!saved && !mailed) { setStatus('idle'); setErr(`Die Anfrage konnte leider nicht gesendet werden. Bitte rufen Sie uns kurz an: ${call.display}.`); return; }
-    try { localStorage.setItem('bk_catering_last', String(Date.now())); } catch {}
-    logEvent('catering_request', { src });
-    // Push ohne personenbezogene Daten (nur Personenzahl und Datum)
-    sendOwnerPushNotification('🍽️ Neue Catering-Anfrage', `${rec.people} Personen · ${dateDeLong(rec.date)}`);
+    if (!f.occasion) { setErr('Bitte wählen Sie einen Anlass.'); return; }
+    if (!f.date) { setErr('Bitte wählen Sie ein Datum.'); return; }
+    if (f.date < minDate) { setErr(`Bitte mindestens ${CATERING_LEAD_DAYS} Tage im Voraus anfragen (frühestens ${dateDeLong(minDate)}).`); return; }
+    if (!(f.people >= 1)) { setErr('Bitte geben Sie die Personenzahl an.'); return; }
+    if (!anyItem) { setErr('Bitte wählen Sie mindestens eine Speise aus oder schreiben Sie Ihren Wunsch.'); return; }
+    if (f.name.trim().length < 2) { setErr('Bitte geben Sie Ihren Namen an.'); return; }
+    logEvent('catering_request', { src, people: Number(f.people) });
     setStatus('sent');
+    window.location.href = waUrl;
   };
 
   const inp = { background: '#fffaf2', border: '1px solid #e4dfd4', color: GREEN, fontFamily: 'inherit' };
+  const stepBtn = { background: GREEN, color: '#fff' };
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ background: CREAM, fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-      <style>{`@keyframes cgIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } } .cg-in > * { animation: cgIn .5s cubic-bezier(.2,.8,.2,1) backwards; } .cg-in > *:nth-child(2) { animation-delay: .08s; } .cg-in > *:nth-child(3) { animation-delay: .16s; } .cg-in > *:nth-child(4) { animation-delay: .24s; } @media (prefers-reduced-motion: reduce) { .cg-in > * { animation: none; } }`}</style>
       <div className="px-5 pt-6 pb-3" style={{ background: GREEN }}>
         <div className="max-w-xl mx-auto flex items-center gap-3">
           <button onClick={back} aria-label="Zur Startseite" className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,246,234,0.12)' }}><ArrowLeft size={17} color="#fff" /></button>
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ background: CREAM }}><img src={LOGO_ICON} alt="" className="w-full h-full object-cover" /></div>
           <div>
             <div className="font-extrabold text-base leading-tight tracking-wide text-white">BODRUM KEBAP</div>
-            <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>FÜR FIRMEN &amp; TEAMS</div>
+            <div className="text-[10px] font-bold tracking-[0.25em]" style={{ color: GOLD }}>CATERING &amp; GROSSBESTELLUNG</div>
           </div>
         </div>
       </div>
       <div className="px-5 pt-7 pb-8" style={{ background: `linear-gradient(160deg, #1f5238, ${GREEN} 60%, #0f2a1c)` }}>
-        <div className="max-w-xl mx-auto cg-in">
-          <h1 className="font-black text-[28px] leading-tight" style={{ color: CREAM }}>Catering für <span style={{ color: ORANGE }}>Ihr Team</span></h1>
-          <p className="text-[14px] leading-relaxed mt-2" style={{ color: 'rgba(255,246,234,.85)' }}>Besprechung, Schulung oder Feier – wir bereiten das Essen frisch für Sie vor.</p>
+        <div className="max-w-xl mx-auto">
+          <h1 className="font-black text-[28px] leading-tight" style={{ color: CREAM }}>Essen für <span style={{ color: ORANGE }}>Ihre Feier</span></h1>
+          <p className="text-[14px] leading-relaxed mt-2" style={{ color: 'rgba(255,246,234,.85)' }}>Geburtstag, Firmenfeier, Verein oder Familienfest – sagen Sie uns, was Sie brauchen. Wir bereiten alles frisch für Sie vor.</p>
           <div className="flex flex-wrap gap-2 mt-4">
-            {['☪ 100 % halal', '🔥 Frisch zubereitet', '🛍 Zur Abholung'].map((x) => <span key={x} className="text-[12px] px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,.1)', color: CREAM }}>{x}</span>)}
+            {['☪ 100 % halal', '🔥 Frisch zubereitet', '🛍 Zur Abholung', `📅 ${CATERING_LEAD_DAYS} Tage vorher anfragen`].map((x) => <span key={x} className="text-[12px] px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,.1)', color: CREAM }}>{x}</span>)}
           </div>
         </div>
       </div>
       <div className="max-w-xl mx-auto px-5">
-        <div className="text-[11px] font-bold tracking-[.14em] mt-6 mb-2.5" style={{ color: '#a4906c' }}>BELIEBT BEI GRUPPEN</div>
-        <div className="grid grid-cols-2 gap-2.5">
-          <CateringCard onMenu={onMenu} emoji="🍕" label="Familienpizza" cat="familienpizza" />
-          <CateringCard onMenu={onMenu} emoji="🥙" label="Kebap & Teller" cat="kebap" />
-          <CateringCard onMenu={onMenu} emoji="🥖" label="Pizzabrot & Brötchen" cat="pizzabrot" />
-          <CateringCard onMenu={onMenu} emoji="🥗" label="Salate" cat="salat" />
-        </div>
-        <div className="mt-3"><button onClick={() => onMenu(undefined)} className="text-[13px] font-bold" style={{ color: ORANGE }}>Zur Speisekarte →</button></div>
-
         <div className="rounded-3xl p-4 mt-6 mb-8" style={{ background: '#fff', border: '1px solid #efe2c8', boxShadow: '0 8px 24px rgba(21,56,38,.06)' }}>
           {status === 'sent' ? (
             <div className="text-center py-5">
-              <LottiePlayer src="/animations/success.json" size={120} placeholder={<span className="text-5xl">✅</span>} />
-              <h2 className="font-black text-xl mt-1" style={{ color: GREEN }}>Danke für Ihre Anfrage!</h2>
-              <p className="text-[14px] mt-1.5 mb-5" style={{ color: '#7c6d55' }}>Wir melden uns bei Ihnen.</p>
-              <div className="flex flex-col gap-2 items-center">
-                <button onClick={() => onMenu(undefined)} className="px-5 py-2.5 rounded-full font-bold text-sm" style={{ background: GREEN, color: '#fff' }}>Zur Speisekarte</button>
+              <div className="text-5xl">💬</div>
+              <h2 className="font-black text-xl mt-2" style={{ color: GREEN }}>Fast geschafft!</h2>
+              <p className="text-[14px] mt-1.5 mb-4" style={{ color: '#7c6d55' }}>WhatsApp öffnet sich mit Ihrer Anfrage. Bitte dort noch auf <b>Senden</b> tippen – wir melden uns bei Ihnen.</p>
+              <div className="flex flex-col gap-2.5 items-center">
+                <a href={waUrl} className="px-5 py-3 rounded-full font-black text-sm" style={{ background: '#25d366', color: '#fff' }}>WhatsApp nochmal öffnen</a>
+                <button onClick={() => setStatus('idle')} className="text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Anfrage ändern</button>
                 <button onClick={back} className="text-[13px] font-semibold" style={{ color: '#8a7c62' }}>Zur Startseite</button>
               </div>
             </div>
           ) : (
             <>
               <h2 className="font-black text-[19px]" style={{ color: GREEN }}>Unverbindlich anfragen</h2>
-              <p className="text-[12.5px] mt-0.5 mb-3.5" style={{ color: '#8a7c62' }}>Wir melden uns bei Ihnen, um alles Weitere zu besprechen.</p>
-              <div className="grid grid-cols-2 gap-2.5">
-                <CateringField label="Firma (optional)"><input value={f.firma} onChange={set('firma', 80)} autoComplete="organization" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-                <CateringField label="Ansprechpartner *"><input value={f.name} onChange={set('name', 80)} autoComplete="name" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-              </div>
-              <CateringField label="Telefon *"><input type="tel" inputMode="tel" value={f.tel} onChange={set('tel', 30)} autoComplete="tel" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-              <CateringField label="E-Mail (optional)"><input type="email" inputMode="email" value={f.email} onChange={set('email', 100)} autoComplete="email" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-              <div className="grid grid-cols-2 gap-2.5">
-                <CateringField label="Wunschdatum *"><input type="date" min={today} value={f.date} onChange={set('date', 10)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-                <CateringField label="Uhrzeit (optional)"><input type="time" value={f.time} onChange={set('time', 5)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
-              </div>
-              <CateringField label="Personen *">
-                <div className="flex items-center justify-between rounded-xl p-1" style={inp}>
-                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.max(1, Number(x.people) - 1) }))} aria-label="weniger" className="w-10 h-9 rounded-lg text-lg font-bold" style={{ background: GREEN, color: '#fff' }}>−</button>
-                  <span className="font-black text-base" style={{ color: GREEN }}>{f.people}</span>
-                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.min(500, Number(x.people) + 1) }))} aria-label="mehr" className="w-10 h-9 rounded-lg text-lg font-bold" style={{ background: GREEN, color: '#fff' }}>+</button>
+              <p className="text-[12.5px] mt-0.5 mb-3.5" style={{ color: '#8a7c62' }}>Ihre Anfrage geht per WhatsApp direkt an uns. Preis und Details besprechen wir danach mit Ihnen.</p>
+
+              <CateringField label="Anlass *">
+                <div className="flex flex-wrap gap-1.5">
+                  {CATERING_OCCASIONS.map((o) => (
+                    <button key={o} type="button" onClick={() => setF((x) => ({ ...x, occasion: o }))} className="px-3 py-2 rounded-full text-[12.5px] font-bold" style={f.occasion === o ? { background: GREEN, color: '#fff' } : { background: '#fffaf2', border: '1px solid #e4dfd4', color: GREEN }}>{o}</button>
+                  ))}
                 </div>
               </CateringField>
+              <div className="grid grid-cols-2 gap-2.5">
+                <CateringField label={`Abholdatum * (ab ${dateDeLong(minDate).replace(/^\S+\s/, '')})`}><input type="date" min={minDate} value={f.date} onChange={set('date', 10)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+                <CateringField label="Uhrzeit (optional)"><input type="time" value={f.time} onChange={set('time', 5)} className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+              </div>
+              <CateringField label="Für wie viele Personen? *">
+                <div className="flex items-center justify-between rounded-xl p-1" style={inp}>
+                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.max(1, Number(x.people) - 5) }))} aria-label="weniger" className="w-10 h-9 rounded-lg text-lg font-bold" style={stepBtn}>−</button>
+                  <input type="number" inputMode="numeric" min={1} max={999} value={f.people} onChange={(e) => setF((x) => ({ ...x, people: Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0)) }))} className="w-20 text-center font-black text-base outline-none bg-transparent" style={{ color: GREEN }} />
+                  <button type="button" onClick={() => setF((x) => ({ ...x, people: Math.min(999, Number(x.people) + 5) }))} aria-label="mehr" className="w-10 h-9 rounded-lg text-lg font-bold" style={stepBtn}>+</button>
+                </div>
+              </CateringField>
+
+              <div className="text-[11px] font-bold tracking-[.14em] mt-4 mb-2" style={{ color: '#a4906c' }}>WAS MÖCHTEN SIE? *</div>
+              <div className="rounded-2xl overflow-hidden mb-2.5" style={{ border: '1px solid #e4dfd4' }}>
+                {CATERING_ITEMS.map((it, i) => {
+                  const n = f.items[it.id] || 0;
+                  return (
+                    <div key={it.id} className="flex items-center gap-2.5 px-3 py-2" style={{ background: n ? '#fff3df' : '#fffaf2', borderTop: i ? '1px solid #efe7d6' : 'none' }}>
+                      <span className="text-xl" aria-hidden="true">{it.emoji}</span>
+                      <span className="flex-1 min-w-0">
+                        <span className="block font-bold text-[13px] leading-tight" style={{ color: GREEN, overflowWrap: 'anywhere' }}>{it.label}</span>
+                        <span className="block text-[10.5px]" style={{ color: '#a4906c' }}>{it.unit}</span>
+                      </span>
+                      <button type="button" onClick={() => qty(it.id, -1)} disabled={!n} aria-label={`${it.label} weniger`} className="w-7 h-8 rounded-lg text-base font-bold flex-shrink-0" style={{ ...stepBtn, opacity: n ? 1 : 0.25 }}>−</button>
+                      <span className="w-6 text-center font-black text-[15px] flex-shrink-0" style={{ color: GREEN }}>{n}</span>
+                      <button type="button" onClick={() => qty(it.id, 1)} aria-label={`${it.label} mehr`} className="w-7 h-8 rounded-lg text-base font-bold flex-shrink-0" style={stepBtn}>+</button>
+                      <button type="button" onClick={() => qty(it.id, 10)} aria-label={`${it.label} plus 10`} className="h-8 px-1.5 rounded-lg text-[11px] font-black flex-shrink-0" style={{ background: GOLD, color: GREEN }}>+10</button>
+                    </div>
+                  );
+                })}
+              </div>
+              <CateringField label="Etwas anderes? (optional)"><input value={f.other} onChange={set('other', 160)} placeholder="z. B. Baklava, vegetarische Platte …" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
+              <button type="button" onClick={() => onMenu(undefined)} className="text-[12.5px] font-bold mb-3" style={{ color: ORANGE }}>Speisekarte ansehen →</button>
+
+              <CateringField label="Wünsche & Allergien (optional)"><textarea value={f.msg} onChange={set('msg', 400)} rows={3} placeholder="z. B. 3× vegetarisch, ohne Zwiebeln, scharf …" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none" style={inp} /></CateringField>
+              <CateringField label="Ihr Name *"><input value={f.name} onChange={set('name', 80)} autoComplete="name" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inp} /></CateringField>
               <button type="button" onClick={() => setF((x) => ({ ...x, invoice: !x.invoice }))} className="w-full flex items-center justify-between py-2 mb-1">
                 <span className="text-sm" style={{ color: GREEN }}>Rechnung gewünscht</span>
                 <PanelSwitch on={f.invoice} onColor={ORANGE} />
               </button>
-              <CateringField label="Wünsche & Allergien (optional)"><textarea value={f.msg} onChange={set('msg', 500)} rows={3} placeholder="z. B. 3× vegetarisch, ohne Gluten …" className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none" style={inp} /></CateringField>
-              <input value={f.hp} onChange={set('hp', 50)} name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
               {err && <p className="text-[13px] font-semibold mb-2.5" style={{ color: CHILI }} role="alert">{err}</p>}
-              <p className="text-[11px] leading-snug mb-3" style={{ color: '#a4906c' }}>Wir verwenden Ihre Angaben nur zur Bearbeitung dieser Anfrage. Mehr dazu in der <button type="button" onClick={onPrivacy} className="underline">Datenschutzerklärung</button>.</p>
-              <button onClick={submit} disabled={status === 'sending'} className="w-full py-3.5 rounded-full font-black text-[15px]" style={{ background: `linear-gradient(135deg, ${ORANGE}, #ff8a3d)`, color: '#fff', boxShadow: '0 8px 20px rgba(230,90,10,.3)', opacity: status === 'sending' ? 0.6 : 1 }}>
-                {status === 'sending' ? 'Wird gesendet …' : 'Anfrage senden'}
-              </button>
+              <p className="text-[11px] leading-snug mb-3" style={{ color: '#a4906c' }}>Ihre Angaben werden nicht auf der Website gespeichert, sondern erst von Ihnen per WhatsApp an uns gesendet. Mehr dazu in der <button type="button" onClick={onPrivacy} className="underline">Datenschutzerklärung</button>.</p>
+              <button onClick={submit} className="w-full py-3.5 rounded-full font-black text-[15px]" style={{ background: '#25d366', color: '#fff', boxShadow: '0 8px 20px rgba(37,211,102,.35)' }}>💬 Per WhatsApp senden</button>
               <p className="text-center text-[12.5px] mt-3" style={{ color: '#8a7c62' }}>Lieber telefonisch? <a href={`tel:${call.tel}`} className="font-bold" style={{ color: GREEN }}>{call.display}</a></p>
             </>
           )}
