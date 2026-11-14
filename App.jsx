@@ -11792,9 +11792,6 @@ function StaffPanelView({ back }) {
                   <SettingsRow id="callNumber" sub="Nummer hinter den Anrufen-Buttons" icon="📞" title="Anruf-Nummer" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <CallNumberAdmin />
                   </SettingsRow>
-                  <SettingsRow id="halloween" sub="Fledermäuse, Spinne & Banner (29.10.–01.11.)" icon="🎃" title="Halloween-Deko" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <HalloweenAdmin />
-                  </SettingsRow>
                   <SettingsRow id="dailyBanner" sub="Kurze Info oben auf der Startseite" icon="📌" title={t('dailyBannerLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <textarea value={dailyBannerText} onChange={(e) => setDailyBannerText(e.target.value)} placeholder={t('dailyBannerPh')} rows={3} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5 resize-none" style={{ background: '#f7f0e2', color: GREEN }} />
                     {dailyBannerImg && <img loading="lazy" decoding="async" src={dailyBannerImg} alt="" className="w-full h-32 object-cover rounded-lg mb-2.5" />}
@@ -11944,101 +11941,6 @@ function StaffPanelView({ back }) {
                       );
                     })}
                   </SettingsRow>
-                  <SettingsRow id="pushTests" icon="🧪" title="Push testen" sub="Versand & Berechtigung prüfen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <div className="text-[11px] font-bold tracking-[.1em] mb-2" style={{ color: PANEL_MUTED }}>DIREKTER VERSAND</div>
-                    <div>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Sendet sofort eine echte Test-Benachrichtigung über den Server und zeigt die genaue Antwort — zeigt sofort, ob der geheime Schlüssel richtig eingerichtet ist.</p>
-                    <button
-                      onClick={async () => {
-                        setPushRawTestMsg('Sende…');
-                        try {
-                          const res = await fetch('/api/send-push', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ title: '🧪 Testbenachrichtigung', message: 'Wenn du das siehst, funktioniert alles!', token: getStaffToken() }),
-                          });
-                          const data = await res.json().catch(() => ({}));
-                          setPushRawTestMsg(`Status ${res.status}: ${JSON.stringify(data)}`);
-                        } catch (e) {
-                          setPushRawTestMsg('⚠️ Netzwerkfehler: ' + (e?.message || String(e)));
-                        }
-                      }}
-                      className="w-full py-3 rounded-xl font-bold text-sm text-white"
-                      style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
-                    >
-                      🧪 Test-Push jetzt senden
-                    </button>
-                    {pushRawTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushRawTestMsg}</p>}
-                    </div>
-                    <div className="text-[11px] font-bold tracking-[.1em] mt-5 mb-2" style={{ color: PANEL_MUTED }}>BERECHTIGUNG AUF DIESEM GERÄT</div>
-                    <div>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>Fragt sofort beim Antippen nach Benachrichtigungs-Erlaubnis — ohne Wartezeit, ohne automatische Anzeige-Logik. Zeigt dir genau, ob OneSignal grundsätzlich funktioniert.</p>
-                    <button
-                      onClick={() => {
-                        setPushTestMsg('Aktueller Status: ' + (typeof Notification !== 'undefined' ? Notification.permission : 'nicht unterstützt') + ' — frage jetzt (nativ)…');
-                        if (typeof Notification === 'undefined') { setPushTestMsg('⚠️ Dieser Browser unterstützt keine Web-Notifications.'); return; }
-                        Notification.requestPermission().then(async (result) => {
-                          setPushTestMsg('Native Antwort: ' + result);
-                          if (result !== 'granted') return;
-                          try {
-                            setPushTestMsg((m) => m + '\n→ warte auf Service Worker…');
-                            const reg = await Promise.race([
-                              navigator.serviceWorker.ready,
-                              new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: Service Worker wurde nach 8s nicht aktiv')), 8000)),
-                            ]);
-                            setPushTestMsg((m) => m + `\n✓ Service Worker aktiv: ${reg.active?.scriptURL || '?'}`);
-                          } catch (e) {
-                            setPushTestMsg((m) => m + '\n⚠️ ' + (e?.message || String(e)));
-                            return;
-                          }
-                          if (!window.OneSignalDeferred) { setPushTestMsg((m) => m + '\n⚠️ OneSignal-Skript nicht gefunden'); return; }
-                          window.OneSignalDeferred.push(async (OneSignal) => {
-                            try {
-                              setPushTestMsg((m) => m + '\n→ melde bei OneSignal an…');
-                              await Promise.race([
-                                OneSignal.User.PushSubscription.optIn(),
-                                new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: OneSignal-Anmeldung hängt nach 8s')), 8000)),
-                              ]);
-                              const optedIn = OneSignal.User.PushSubscription.optedIn;
-                              const token = OneSignal.User.PushSubscription.token;
-                              setPushTestMsg((m) => m + `\n✓ optIn() fertig — optedIn: ${optedIn}, token: ${token ? 'vorhanden' : 'fehlt noch'}`);
-                              setPushTestMsg((m) => m + '\n→ warte auf ID von OneSignal-Server (bis zu 20s)…');
-                              let id = OneSignal.User.PushSubscription.id;
-                              for (let i = 0; i < 20 && !id; i++) {
-                                await new Promise((r) => setTimeout(r, 1000));
-                                id = OneSignal.User.PushSubscription.id;
-                              }
-                              if (id) {
-                                setPushTestMsg((m) => m + `\n✅ ID erhalten: ${id}`);
-                              } else {
-                                setPushTestMsg((m) => m + `\n⚠️ Nach 20s immer noch keine ID. optedIn: ${OneSignal.User.PushSubscription.optedIn}, token: ${OneSignal.User.PushSubscription.token ? 'vorhanden' : 'fehlt'}`);
-                              }
-                            } catch (e) {
-                              setPushTestMsg((m) => m + '\n⚠️ OneSignal-Anmeldung: ' + (e?.message || String(e)));
-                            }
-                          });
-                        }).catch((e) => {
-                          setPushTestMsg('⚠️ Fehler bei nativer Anfrage: ' + (e?.message || String(e)));
-                        });
-                      }}
-                      className="w-full py-3 rounded-xl font-bold text-sm text-white"
-                      style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}
-                    >
-                      🔔 Jetzt direkt nach Erlaubnis fragen
-                    </button>
-                    {pushTestMsg && <p className="text-left text-xs font-bold mt-2 break-words whitespace-pre-line" style={{ color: '#8a5a1f' }}>{pushTestMsg}</p>}
-                    </div>
-                    <div className="text-[11px] font-bold tracking-[.1em] mt-5 mb-2" style={{ color: PANEL_MUTED }}>BENACHRICHTIGUNG AUF DIESEM GERÄT</div>
-                    <div>
-                    <button onClick={() => { unlockAudio(); notifyNewOrder(); }} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🔔 {t('notifTestBtn')}</button>
-                    </div>
-                  </SettingsRow>
-                  <SettingsRow id="waTemplate" sub="Vorlage für WhatsApp-Bestellungen" icon="💬" title={t('waTemplateLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('waTemplateHint')}</p>
-                    <input value={waTemplateText} onChange={(e) => setWaTemplateText(e.target.value)} placeholder={t('waTemplatePh')} className="w-full px-3 py-2.5 rounded-xl text-sm font-bold outline-none mb-2.5" style={{ background: '#f7f0e2', color: GREEN }} />
-                    <button onClick={saveWaTemplate} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: GREEN, boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}>{t('saveBtn')}</button>
-                    {waTemplateMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{waTemplateMsg}</p>}
-                  </SettingsRow>
                   <SettingsRow id="rating" sub="Google-Sterne & Anzahl auf der Website" icon="⭐" title={t('googleRatingLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <div className="flex gap-2 mb-2.5">
                       <input value={ratingScore} onChange={(e) => setRatingScore(e.target.value)} placeholder="4.6" className="flex-1 px-3 py-2.5 rounded-xl text-sm font-bold outline-none" style={{ background: '#f7f0e2', color: GREEN }} />
@@ -12097,81 +11999,6 @@ function StaffPanelView({ back }) {
                     <button onClick={logoutAllDevices} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{ background: CHILI, boxShadow: '0 6px 16px rgba(214,40,40,.25)' }}>Jetzt alle abmelden</button>
                     {logoutAllMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{logoutAllMsg}</p>}
                   </SettingsRow>
-                  <SettingsRow id="ordering" icon="🛒" title="Online-Bestellungen" sub={orderingEnabled() ? 'Eingeschaltet' : 'Ausgeschaltet'} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                  <div className="rounded-2xl p-4 mb-3" style={{ background: orderingEnabled() ? `linear-gradient(135deg, ${GREEN}, #1f4a34)` : '#fff', border: orderingEnabled() ? 'none' : '1.5px solid #f0e5cf', boxShadow: orderingEnabled() ? '0 8px 22px rgba(21,56,38,.25)' : '0 2px 8px rgba(21,56,38,.04)' }}>
-                    <div className="flex items-center gap-3 mb-2.5">
-                      <span className="text-2xl">🛒</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-black text-sm" style={{ color: orderingEnabled() ? '#fff' : GREEN }}>Bestellsystem</div>
-                        <div className="text-[11px] font-semibold" style={{ color: orderingEnabled() ? '#d9c9a3' : '#a4906c' }}>{orderingEnabled() ? 'Aktiv — Kunden können bestellen' : 'Ausgeschaltet — Kunden sehen nur die Speisekarte'}</div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        const next = !orderingEnabled();
-                        await safeSet('siteconfig:orderingEnabled', next);
-                        dbOrderingEnabled = next;
-                        window.location.reload();
-                      }}
-                      className="w-full py-3 rounded-xl font-bold text-sm"
-                      style={orderingEnabled() ? { background: '#fff', color: CHILI } : { background: GREEN, color: '#fff', boxShadow: '0 6px 16px rgba(21,56,38,.25)' }}
-                    >
-                      {orderingEnabled() ? 'Jetzt ausschalten' : 'Jetzt für alle Kunden einschalten'}
-                    </button>
-                    <p className="text-[10px] font-semibold mt-2.5 text-center" style={{ color: orderingEnabled() ? '#d9c9a3' : '#c4b697' }}>Seite lädt nach der Umstellung automatisch neu.</p>
-                  </div>
-                  </SettingsRow>
-                  {orderingEnabled() && (
-                  <SettingsRow id="testOrder" sub="Probebestellung auslösen" icon="🧪" title={t('testOrderLabel')} openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-2.5" style={{ color: '#a4906c' }}>{t('testOrderHint')}</p>
-                    <button onClick={createTestOrder} className="w-full py-3 rounded-xl font-bold text-sm text-white mb-2" style={{ background: ORANGE, boxShadow: '0 6px 16px rgba(255,106,26,.25)' }}>🧪 {t('testOrderBtn')}</button>
-                    <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
-                      <input type="checkbox" checked={showTestOrders} onChange={(e) => setShowTestOrders(e.target.checked)} />
-                      {t('showTestOrdersLabel')}
-                    </label>
-                    {testOrderMsg && <p className="text-center text-xs font-bold mt-2" style={{ color: '#8a5a1f' }}>{testOrderMsg}</p>}
-                  </SettingsRow>
-                  )}
-                  {orderingEnabled() && (
-                  <SettingsRow id="notifySoundPicker" sub="Ton für neue Bestellungen" icon="🎵" title="Klingelton für neue Bestellungen" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                    <p className="text-[11px] mb-3" style={{ color: '#a4906c' }}>Dieser Ton spielt, wenn im Bestellungen-Tab eine neue Bestellung eingeht.</p>
-                    <div className="flex flex-col gap-2">
-                      {SOUND_OPTIONS.map((s) => (
-                        <div key={s.key} className="flex items-center gap-2">
-                          <button
-                            onClick={() => setNotifySound(s.key)}
-                            className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl text-left"
-                            style={notifySound === s.key ? { background: GREEN, boxShadow: '0 4px 12px rgba(21,56,38,.25)' } : { background: '#f7f0e2' }}
-                          >
-                            <span className="font-bold text-sm" style={{ color: notifySound === s.key ? '#fff' : GREEN }}>{s.label}</span>
-                            {notifySound === s.key && <span className="text-xs font-black" style={{ color: GOLD }}>✓ Aktiv</span>}
-                          </button>
-                          <button
-                            onClick={() => {
-                              try { if (navigator.vibrate) navigator.vibrate(60); } catch {}
-                              try {
-                                const ctx = getAudioCtx();
-                                if (ctx) {
-                                  // Sowohl SOFORT (synchron, im selben Klick — wichtig für iOS,
-                                  // das Audio sonst nach einem "await" blockieren kann) ABPIELEN
-                                  // als auch parallel resume() aufrufen, für maximale Kompatibilität.
-                                  ctx.resume();
-                                  s.play(ctx);
-                                }
-                              } catch {}
-                              setPlayingPreview(s.key);
-                              setTimeout(() => setPlayingPreview(null), 600);
-                            }}
-                            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={playingPreview === s.key ? { background: GOLD, border: '1.5px solid #e3d5bd' } : { background: '#fff', border: '1.5px solid #e3d5bd' }}
-                          >
-                            {playingPreview === s.key ? '🔊' : '▶️'}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </SettingsRow>
-                  )}
                   <SettingsRow id="stampMuehle" sub="NFC-Link, Schalter & Protokoll" icon="🪵" title="Stempel-Mühür (NFC)" openId={openSettingsId} setOpenId={setOpenSettingsId}>
                     <StampMuehleAdmin />
                   </SettingsRow>
@@ -12278,11 +12105,6 @@ function StaffPanelView({ back }) {
                     <div className="font-black text-[26px] leading-none" style={{ color: GREEN }}>{subscriberCount === null ? '…' : <PanelCount value={subscriberCount} />}</div>
                     <div className="text-[11.5px] mt-1" style={{ color: PANEL_MUTED }}>Push-Abonnenten (auf Startbildschirm hinzugefügt)</div>
                   </div>
-                </div>
-                <div className="flex gap-1.5 mb-3 p-1 rounded-[12px]" style={{ background: '#efe6d3' }}>
-                  {[['today', 'Heute'], ['week', 'Letzte 7 Tage']].map(([k, l]) => (
-                    <button key={k} onClick={() => setStatRange(k)} className="flex-1 py-2 rounded-[9px] text-[12.5px] font-bold" style={statRange === k ? { background: GREEN, color: '#fff' } : { color: '#7c6d55' }}>{l}</button>
-                  ))}
                 </div>
                 <div className="text-[10px] font-bold tracking-[.14em] mb-2.5" style={{ color: PANEL_MUTED }}>📊 ÜBERBLICK · {statRange === 'today' ? 'HEUTE' : 'LETZTE 7 TAGE'}</div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
@@ -12589,21 +12411,6 @@ function StaffPanelView({ back }) {
           {tab === 'messages' && (
             <div className="px-5 sp-tab">
               <CateringInbox paused={!CATERING_ENABLED} onNewCount={setCateringNew} />
-              <button
-                onClick={() => setTab('wheel')}
-                className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left mb-5 relative overflow-hidden"
-                style={{ background: `linear-gradient(135deg, ${ORANGE}, ${GOLD})`, boxShadow: '0 10px 26px rgba(230,90,10,.35)' }}
-              >
-                <div className="absolute rounded-full pointer-events-none" style={{ width: 140, height: 140, top: -50, right: -40, background: 'rgba(255,255,255,.15)' }} />
-                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 relative" style={{ background: 'rgba(255,255,255,.22)' }}>
-                  <span className="text-2xl">🎡</span>
-                </div>
-                <div className="min-w-0 relative">
-                  <div className="font-black text-[15px] text-white">Gewinncode prüfen</div>
-                  <div className="text-[11px] font-semibold text-white/85">Bisherige Glücksrad-Gewinne einlösen (Rad ist beendet)</div>
-                </div>
-                <span className="ml-auto text-white text-xl relative">→</span>
-              </button>
               <div className="text-[10px] font-bold tracking-[.14em] mb-2" style={{ color: PANEL_MUTED }}>💬 NACHRICHTEN</div>
               {contactMessages.length === 0 && (
                 <div className="text-center py-14 rounded-2xl" style={{ background: '#fff', border: '1.5px dashed #e3d5bd' }}>
