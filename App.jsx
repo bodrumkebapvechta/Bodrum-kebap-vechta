@@ -12340,9 +12340,6 @@ function StaffPanelView({ back }) {
                   </SettingsRow>
                 )}
 
-                <SettingsRow id="statSprachen" icon="🌍" title="Sprachen der Besucher" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                  <LanguageStats />
-                </SettingsRow>
                 <SettingsRow id="statKundenwuensche" icon="💡" title={`Kundenwünsche (${wishes.length})`} openId={openSettingsId} setOpenId={setOpenSettingsId}>
                   {wishes.length === 0 && <p className="text-xs" style={{ color: '#a4906c' }}>Noch keine Wünsche eingegangen.</p>}
                   {wishes.slice(0, 30).map((w) => (
@@ -12361,59 +12358,6 @@ function StaffPanelView({ back }) {
                     </div>
                   ))}
                 </SettingsRow>
-                {wheelWinLog.length > 0 && (() => {
-                  // Gewinne aus ALLEN Rädern (Dienstags-Rad, Warenkorb-Rad,
-                  // Gruppenbestellung-Rad) — keine Namen gespeichert (siehe
-                  // Datenschutz), daher zeigen wir Code + Preis + Zeitpunkt.
-                  const total = wheelWinLog.length;
-                  const redeemed = wheelWinLog.filter((w) => w.value.redeemed).length;
-                  const byPrize = {};
-                  wheelWinLog.forEach((w) => { byPrize[w.value.prize] = (byPrize[w.value.prize] || 0) + 1; });
-                  const prizeRows = Object.entries(byPrize).sort((a, b) => b[1] - a[1]);
-                  return (
-                    <SettingsRow id="statWheel" icon="🎡" title="Glücksrad-Gewinne" openId={openSettingsId} setOpenId={setOpenSettingsId}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-center flex-1">
-                          <div className="font-black text-lg" style={{ color: GREEN }}>{total}</div>
-                          <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>Gesamt</div>
-                        </div>
-                        <div className="text-center flex-1">
-                          <div className="font-black text-lg" style={{ color: '#34a065' }}>{redeemed}</div>
-                          <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>Eingelöst</div>
-                        </div>
-                        <div className="text-center flex-1">
-                          <div className="font-black text-lg" style={{ color: ORANGE }}>{total - redeemed}</div>
-                          <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>Offen</div>
-                        </div>
-                      </div>
-                      <div className="text-[11px] font-black tracking-widest mb-2" style={{ color: '#a4906c' }}>NACH GEWINN</div>
-                      {prizeRows.map(([prize, count]) => (
-                        <button
-                          key={prize}
-                          onClick={() => openStatsModal(prize, wheelWinLog.filter((w) => w.value.prize === prize), (v) => `Code ${v.value.code} — ${v.value.redeemed ? '✅ eingelöst' : '🟡 offen'}`)}
-                          className="w-full flex items-center justify-between py-1 text-sm font-semibold"
-                          style={{ color: GREEN }}
-                        >
-                          <span className="truncate pr-2">{prize}</span><span className="flex-shrink-0">{count}</span>
-                        </button>
-                      ))}
-                      <div className="text-[11px] font-black tracking-widest mt-4 mb-2" style={{ color: '#a4906c' }}>LETZTE GEWINNE</div>
-                      <div className="flex flex-col gap-1.5">
-                        {wheelWinLog.slice(0, 30).map((w) => (
-                          <div key={w.key} className="rounded-lg px-3 py-2 flex items-center justify-between gap-2" style={{ background: '#f7f0e2' }}>
-                            <div className="min-w-0">
-                              <div className="text-sm font-semibold truncate" style={{ color: GREEN }}>{w.value.prize}</div>
-                              <div className="text-[10px] font-bold" style={{ color: '#a4906c' }}>Code {w.value.code} · {new Date(w.value.ts).toLocaleString('de-DE')}</div>
-                            </div>
-                            <span className="text-[10px] font-black flex-shrink-0 px-2 py-0.5 rounded-full" style={{ background: w.value.redeemed ? '#dcf3e6' : '#fdecd4', color: w.value.redeemed ? '#1d7a45' : ORANGE }}>
-                              {w.value.redeemed ? '✅ Eingelöst' : '🟡 Offen'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </SettingsRow>
-                  );
-                })()}
                 {(() => {
                   // Alle Klick-Events (Kategorien, Hero-Buttons, Anrufe, Route) in einer
                   // gemeinsamen, absteigend sortierten Liste — zeigt auf einen Blick,
